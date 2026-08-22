@@ -1,0 +1,25 @@
+JIANPU_LY ERROR: (notesHad=2 4 7 6 | 0 - 1 3 | 5 4 2 6 | 5 3 1 - | - 7- - - | - - - 6 | 5 - 1 2 | 3 4 7 0 | 6 5 2 - | 3 1 - - | 7 4 0 2) barcheck fail: note crosses barline at "2" with 0 beams (16 skipped from 56 to 72, bypassing 64), scoreNo=1 barNo=11 (but the error could be earlier)
+
+--- score ---
+title=我的梦
+type=work
+alias=我的梦&nbsp;&nbsp;
+%--
+2 4 7 6 0 - 1 3 5
+4 2 6 5 3 1 - - 7- - - - - -
+6 5 | - | | |
+1 2 3 4 |
+7 0 | |
+6 5 |
+2 - |
+3
+1 - - 7 |
+4
+0.
+2 3 - | 4 - - | 1 7. | 5-- 0 | - 6 - | - - - |
+6 5 3 - | 4 | - | - - - - - - - - | '1 - - 1 2 3
+2 3 - | 5 4 | 6 1 7 | - | - 0 | | - | - | | - - - - - - - - | - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+3 2 | - | 5 6 | | 1 4 | 7 | | 0 | - | - |
+5 3 | 2 - |
+- 0 1 2 3 4 5 6 7 - - - - - - -
+%END

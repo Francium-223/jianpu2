@@ -1,0 +1,18 @@
+JIANPU_LY ERROR: (notesHad=2 3 5 4 | - 1 2 - | 4 3 2 - | 5 - - 1 | 0 7 - -) barcheck fail: note crosses barline at "-" with 0 beams (16 skipped from 56 to 72, bypassing 64), scoreNo=1 barNo=5 (but the error could be earlier)
+
+--- score ---
+title=Super Star
+type=work
+%--
+2 3 | 5 | 4 - 1 2 | - |
+4 3 | 2 - | | 5 | - | | | - 1 0. 7 - - - - - - - - - 6 | - '1 - - - - - - - - - - - - -
+4 3 | 2 - 5 6 | | 1 | 7 0 | | - | - | - - - | - - - - - - - - - - | - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+5 3 | - 2 4 1 |
+| 6 7 0 |
+6 5 | - |
+1.
+7 '1
+2 3.
+0 - | - | | | -
+'1
+%END

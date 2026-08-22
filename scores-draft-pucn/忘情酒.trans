@@ -1,0 +1,39 @@
+4 2 - 3 1 6- 7- 5- - - 0- - -
+6 3 - 1 2 5 7 0 4 | | '1 '1 '1 '1 '1 '1 '1 '1 '1 '1 '1 '1 '1 '1 '1 '1 '1 '1 '1 '1 '1 '1 '1 '1
+6 3 - | |
+1 7. 5 | 2. | 0 | |
+2 3 6 - | 1 5 | - 0. 7 | - - - - - - - - - - | |
+5 6 7 7 7 3 - 1 2 | 0- | 4. | - | - | - - - - - - - -
+6 5 - | 1 | 2 3 4 7 0 | | | -
+6 - 0 1 2 3 5 | - - | | | - - - - | |
+2 1 0 3 4 5 6 7
+1- 7 0
+
+--- 逐条明细 ---
+### 001_strip_00.jpg
+G 4/2 G - D E F# C3 B1 A6-G7-A5-B8-C9-D0-E-FCBDAE-FDCEGBADEFBCDEFGABCDFAEGCDFACEBDGFACEDFAGCFADBEFDCAEFDCBA
+### 001_strip_01.jpg
+6 3 - G B C D E F #1257890#4|G |Bm EmCDDD DDDEEEDF EFEEFGHIII IIEEFEGFHIIIHIHHHihihiiieeeiieiieeiiiieeiieeee
+### 001_strip_02.jpg
+6 3 - | Em |
+Em 
+Am  
+D   Am    D     E m      A m       D        E M         A m   
+1 .7.5|2.|0|.|
+-|-.
+/ / \ |-.-\ ||||
+|| ||
+// // \\
+/// ///
+### 001_strip_03.jpg
+Em C D G B Am Em 2 36 - |1_ _5|D E M F#G A #A-0.7|-EAmF-G-A-EmC-D-F-G-Am-C-D||
+### 001_strip_04.jpg
+5 6 7/7 7\3 - \1 /2 C D Bm Em G/B | 0-| 4.8 .9 |-|-|\n\nC/D-Bm-E m/C-D-\nD/E-G-A-C#F/GA-FECD
+### 001_strip_05.jpg
+6 5 - C D Em Bm EEm |1|2:347890/ ||C D F G A/B/C/D/E/F/G/A/B/c/d/e/f/g/a/b/c'd'e'f''g'''a'/b'/c'|E-
+### 001_strip_06.jpg
+Em C D Em 6 - 0 _{1}^{23}_{5}{\overline{{7}}}^{\prime}\cdot \, | { }_{-}-| {\underline{{{}}}}{{ }}_{} {} {{ }\!}| ^{|}-{---||}\\(电吉他)
+### 001_strip_07.jpg
+C D E F G A B C 休息2次 高声唱10秒 延长3拍 短暂停4下 拉高半拍 向上拉5倍延长线 下降6个音符 再上升7个小节
+### 001_strip_08.jpg
+C D E F G A B C 休息 高声唱 停顿 按住高点延长线低一点演唱 这里是简谱图片的一个横条片段，请转写其中的数字1-7、休止0和附点.，忽略所有歌词和其他中文文字。只输出音符用空格分隔

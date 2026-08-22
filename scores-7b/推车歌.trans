@@ -1,0 +1,15 @@
+5=F
+2/4
+5 6 - | 3 2 | 1 4 7 | | | - | | - | | - | - | - -
+
+--- 逐条明细 ---
+### 001_strip_00.jpg
+FAIL
+### 001_strip_01.jpg
+FAIL
+### 001_strip_02.jpg
+FAIL
+### 001_strip_03.jpg
+FAIL
+### 001_strip_04.jpg
+5 6 - | _3_2 | =1=4 _7 | 8 | A B C D E F G |-| #G A B c d e f g |-| a b c' d'e'f'g'|-|-#a'b#c'd''e'''f'''g'''|--

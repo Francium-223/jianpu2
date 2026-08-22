@@ -1,0 +1,22 @@
+JIANPU_LY ERROR: (notesHad=2 3 | 1 5 | 0 4) barcheck fail: note crosses barline at "4" with 0 beams (24 skipped from 16 to 40, bypassing 32), scoreNo=1 barNo=3 (but the error could be earlier)
+
+--- score ---
+title=舀河浜
+type=work
+alias=舀河浜&nbsp;&nbsp;
+%--
+2/4
+2 3 1 5 0 4. 6 7
+2 4 - | | 1- 7 0
+3 5 - | 2 4 | 6. | 1 7 | - - 0 | - | | | | | - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+6 5 - | 3 3 | 6 7 | - 1 | - 0 2 | 4. | | - - |
+3 - 5 6 4 | 2 1 | 7 | | 0. | | - | - - | - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+3 2 | - |
+6 5 | -
+4 1 | - |
+7 | | 0 | |
+- 0 - 1. 5 2 3 4
+1 2 3 4 5 6 0 -
+3 4 - 5 6 2 1 7
+3 4 2 - | 1 7 |
+%END

@@ -1,0 +1,16 @@
+JIANPU_LY ERROR: Can't have rest in chord: 0.--- in score 1
+0.--- | - - |
+^^^^^        
+
+--- score ---
+title=小小的暖
+type=work
+%--
+2 3 | - |
+5 - - |
+4 | - 6 |
+1-- |
+7 | - |
+0.--- | - - |
+2 3 - 4 5 6 1 2 7
+%END

@@ -1,0 +1,17 @@
+title=黑暗的沉思
+type=work
+%TODO:revise
+usertag=to_be_revised
+MBID=0d767be6-aa9c-4312-83ad-e8008ea53f82
+%--
+3 2 4 -
+1 6 | - |
+7--- | 5
+0- |
+1, 2
+3 2 - | |
+5 6 1 7 |
+4 0 | - |
+7 7
+3 2 - | | 6 - - | | 5 4-- 1 7 | | 0. | |
+%END

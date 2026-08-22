@@ -1,0 +1,23 @@
+JIANPU_LY ERROR: (notesHad=2 4 - 1 | 0 7 5 6-) barcheck fail: note crosses barline at "6-" with 0 beams (16 skipped from 56 to 72, bypassing 64), scoreNo=1 barNo=2 (but the error could be earlier)
+
+--- score ---
+title=乡间的小路
+type=work
+alias=乡间的小路简谱(歌词)_卓依婷演唱_岭南印象曲谱
+%--
+2 4 - 1 0 7. 5 6- 3 - - - - - - - - - - - - - - 1 0 7. 5 6- 3 - - - - - - - - - - - - - - 1 0 7. 5 6- 3 - - - - - - - - - - - - - - 1
+3 6 - | 5 | 2 '1 0 1- 7
+3 5 | 4 2 - | 6 | | 1 | | 7 0 | | - | |
+6 3 | 5 2 | 4 3 |
+1 |
+7 -
+0. | |
+3 6 - | 5 | 2 0- 1 4 - - - - - - - - - - - - - - - - - -
+3 4 | 5 - | 2 | | 6 | |
+1 7 |
+0 | |
+3 6 5 - | 2 4 |
+| | 7 1 0 | | | |
+2 1 3 4 5 6 7- 0.
+| - | - 0 1 2 3 4 5 6 7 '1 | -
+%END

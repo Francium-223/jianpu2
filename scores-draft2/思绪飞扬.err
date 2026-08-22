@@ -1,0 +1,19 @@
+JIANPU_LY ERROR: (notesHad=2 4 - - | - - - - | - 2 3 6 | - 5 4 7 | 1 0 - - | - - - - | - - 3 2 | - 6 1 7 | 5 - - 4) barcheck fail: note crosses barline at "4" with 0 beams (24 skipped from 48 to 72, bypassing 64), scoreNo=1 barNo=9 (but the error could be earlier)
+
+--- score ---
+title=思绪飞扬
+type=work
+%--
+2 4 - | - - - - - - | |
+2 3 6 - 5 | 4 7 | 1 0 - - - - - - - -
+3 2 - | 6 | 1 7 | | 5 - - | | 4. 0 | - | - | - - | - | - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+5 3 - | 4 6 2 |
+1 7 - | - |
+0. | - |
+2 3 - | 6 5 | 4. | 1 | 7 | - - 0. | |
+3 6 | - 2 | 5 | - | - 1 4 7 0. |
+5 6 - | 3 2 | 1 4 7. | 0. | - | - | - |
+6 - | 6 0 | |
+0
+1 2 3 4 5 6 7 0.
+%END

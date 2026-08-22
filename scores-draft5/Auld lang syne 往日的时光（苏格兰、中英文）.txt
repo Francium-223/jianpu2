@@ -1,0 +1,11 @@
+title=Auld lang syne 往日的时光（苏格兰、中英文）
+type=work
+%TODO:revise
+usertag=to_be_revised
+%--
+5 3 2 1 4 - 6 - 7- 0. - - - '1 - - - - - - - - -
+6 5 3 2' - 4 1 7
+2 3 4 - | 5 6 7 1 0 |
+5 3' 2 6 4 1 - 7 0, | '1 '1 1 2 3 4 5 6 7 0
+3 2 6 5 -
+%END

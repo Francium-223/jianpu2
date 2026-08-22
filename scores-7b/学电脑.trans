@@ -1,0 +1,40 @@
+7=D
+2 4 -
+3 4 - | 5 | 6 2 1 3 | - | - 7 0
+6 3 2 - | 4 5 |
+1 0. 7 - | - |
+4.. 3...
+5 6 - | 3 2 4 1 7 0 |
+3 - 6 '1 5 | '1 4 2 | 1 - | 0 | |
+2 3 - 4 5 6 7 0 1 2 3 4 5 6 7 0 1 2 3 4 5 6 7 0 1 2 3 4 5 6 7 0 1 2 3 4 5 6 7 0 1 2 3 4 5 6 7
+2 3 - 4 5 6 7 0 1 2 3 4 5 6 7 0 1 2 3 4 5 6 7 0 1 2 3 4 5 6 7 0 1 2 3 4 5 6 7 0 1 2 3 4 5 6 7
+4 3 - 2 5
+4 2 - 3 5 6 1 7 0
+
+--- 逐条明细 ---
+### 001_strip_00.jpg
+FAIL
+### 001_strip_01.jpg
+D 2/4 - D, A,, G,,, F,,, E,,, C,,,, B,,,A,,,G,,,F,,,E,,,C,,,,B,,,A,,,G,,,F,,,E,,,C,,,,B,,,A,,,G,,,F,,,E,,,C,,,,B,,,A,,,G,,,F,,,E,,,C,,,,
+### 001_strip_02.jpg
+3 4 - |5|6 _2_13 |-|-7890:;
+### 001_strip_03.jpg
+6 32   -    |     .45      |
+       |-|        |
+
+10.789-|-|
+         |-|
+
+4..3... ...
+### 001_strip_04.jpg
+5 6 - | _3 __2 ___4 ____1 _____7 _______8______9________0___|
+### 001_strip_05.jpg
+3 - 6 i5 | .i4 =2 | 1 -=|0 ||
+### 001_strip_06.jpg
+2 3 -45678901234567890123456789012345678901234567890123456789
+### 001_strip_07.jpg
+2 3 -45678901234567890123456789012345678901234567890123456789
+### 001_strip_08.jpg
+4 3 -2 #5 G F E D C B A =A ^G ^^F ^=E^D^^C#B=A=G=F=E=D=C=B=ABAGFEDECDABCBAFGEDCBACBADCEFAEGDFCAEBADCFEGAFCDAECDBAEADCBEADEBCADBACEADFGEAFGBAGEFDGFEDA
+### 001_strip_09.jpg
+4 2 -3 #5 b6 g# a1 f7 e8 d9 c0 Bb Aa Gg Ff Ee Dd Cc Bb Ab =G=g ^F=f _E=e D=d C=c B=b A=a G=g=F=f=E=e=D=d=C=c=B=b=A=a=G=g^F=f_E_eD=ddCccBbbAaaGgg=Fff=Eee_DdddCcceeBBbaaGaag_Ffff=EeeeDDddeeCCcceeBBBBaaaGGg_aaga_gFFfEEe_ddCCCbbbAAaad_GggFFFFEeeeeDDDdeeedCCCCbBAaab_Aaaaa=G_ffff=EEEddDddddCccceBbbAaaGga=Fff_Eee_DdddCcceeBBbaaGaag_Ffff=EeeeDDdeeCCcbeeBBBBaaaGGg_aaga_gFFfEEe_ddCCCbbbAAaad_GggFFFFEeeeeDDDdeeedCCCCbBAaab_Aaaaa=G_ffff=EEEddDddddCccceBbbAaaGga=Fff_Eee_DdddCcceeBBbaaGaag_Ffff=EeeeDDdeeCCcbeeBBBBaaaGGg_aaga_gFFfEEe_ddCCCbbbAAaad_GggFFFFEeeeeDDDdeeedCCCCbBAaab_Aaaaa=G_ffff=EEEddDddddCccceBbbAaaGga=Fff_Eee_DdddCcceeBBbaaGaag_Ffff=EeeeDDdeeCCcbeeBBBBaaaGGg_aaga_gFFfEEe_ddCCCbbbAAaad_GggFFFFEeeeeDDDdeeedCCCCbBAaab_Aaaaa=G_ffff=EEEddDddddCccceBbbAaaGga=Fff_Eee_DdddCcceeBBbaaGaag_Ffff=EeeeDDdeeCCcbeeBBBBaaaGGg_aaga_gFFfEEe_ddCCCbbbAAaad_GggFFFFEeeeeDDDdeeedCCCCbBAaab_Aaaaa=G_ffff=EEEddDddddCccceBbbAaaGga=Fff_Eee_DdddCcceeBBbaaGaag_Ffff=EeeeDDdeeCCcbeeBBBBaaaGGg_aaga_gFFfEEe_ddCCCbbbAAaad_GggFFFFEeeeeDDDdeeedCCCCbBAaab_Aaaaa=G_ffff=EEEddDddddCccceBbbAaaGga=Fff_Eee_DdddCcceeBBbaaGaag_Ffff=EeeeDDdeeCCcbeeBBBBaaaGGg_aaga_gFFfEEe_ddCCCbbbAAaad_GggFFFFEeeeeDDDdeeedCCCCbBAaab_Aaaaa=G_ffff=EEEddDddddCccceBbbAaaGga=Fff_Eee_DdddCcceeBBbaaGaag_Ffff=EeeeDDdeeCCcbeeBBBBaaaGGg_aaga_gFFfEEe_ddCCCbbbAAaad_GggFFFFEeeeeDDDdeeedCCCCbBAaab_Aaaaa=G_ffff=EEEddDddddCccceBbbAaaGga=Fff_Eee_DdddCcceeBBbaaGaag_Ffff=EeeeDDdeeCCcbeeBBBBaaaGGg_aaga_gFFfEEe_ddCCCbbbAAaad_GggFFFFEeeeeDDDdeeedCCCCbBAaab_Aaaaa=G_ffff=EEEddDddddCccceBbbAaaGga=Fff_Eee_DdddCcceeBBbaaGaag_Ffff=EeeeDDdeeCCcbeeBBBBaaaGGg_aaga_gFFfEEe_ddCCCbbbAAaad_GggFFFFEeeeeDDDdeeedCCCCbBAaab_Aaaaa=G_ffff=EEEddDddddCccceBbbAaaGga=Fff_Eee_DdddCcceeBBbaaGaag_Ffff=EeeeDDdeeCCcbeeBBBBaaaGGg_aaga_gFFfEEe_ddCCCbbbAAaad_GggFFFFEeeeeDDDdeeedCCCCbBAaab_Aaaaa=G_ffff=EEEddDddddCccceBbbAaaGga=Fff_Eee_DdddCcceeBBbaaGaag_Ffff=EeeeDDdeeCCcbeeBBBBaaaGGg_aaga_gFFfEEe_ddCCCbbbAAaad_GggFFFFEeeeeDDDdeeedCCCCbBAaab_Aaaaa=G_ffff=EEEddDddddCccceBbbAaaGga=Fff_Eee_DdddCcceeBBbaaGaag_Ffff=EeeeDDdeeCCcbeeBBBBaaaGGg_aaga_gFFfEEe_ddCCCbbbAAaad_GggFFFFEeeeeDDDdeeedCCCCbBAaab_Aaaaa=G_ffff=EEEddDddddCccceBbbAaaGga=Fff_Eee_DdddCcceeBBbaaGaag_Ffff=EeeeDDdeeCCcbeeBBBBaaaGGg_aaga_gFFfEEe_ddCCCbbbAAaad_GggFFFFEeeeeDDDdeeedCCCCbBAaab_Aaaaa=G_ffff=EEEddDddddCccceBbbAaaGga=Fff_Eee_DdddCcceeBBbaaGaag_Ffff=EeeeDDdeeCCcbeeBBBBaaaGGg_aaga_gFFfEEe_ddCCCbbbAAaad_GggFFFFEeeeeDDDdeeedCCCCbBAaab_Aaaaa=G_ffff=EEEddDddddCccceBbbAaaGga=Fff_Eee_DdddCcceeBBbaaGaag_Ffff=EeeeDDdeeCCcbeeBBBBaaaGGg_aaga_gFFfEEe_ddCCCbbbAAaad_GggFFFFEeeeeDDDdeeedCCCCbBAaab_Aaaaa=G_ffff=EEEddDddddCccceBbbAaaGga=Fff_Eee_DdddCcceeBBbaaGaag_Ffff=EeeeDDdeeCCcbeeBBBBaaaGGg_aaga_gFFfEEe_ddCCCbbbAAaad_GggFFFFEeeeeDDDdeeedCCCCbBAaab_Aaaaa=G_ffff=EEEddDddddCccceBbbAaaGga=Fff_Eee_DdddCcceeBBbaaGaag_Ffff=EeeeDDdeeCCcbeeBBBBaaaGGg_aaga_gFFfEEe_ddCCCbbbAAaad_GggFFFFEeeeeDDDdeeedCCCCbBAaab_Aaaaa=G_ffff=EEEddDddddCccceBbbAaaGga=Fff_Eee_DdddCcceeBBbaaGaag_Ffff=EeeeDDdeeCCcbeeBBBBaaaGGg_aaga_gFFfEEe_ddCCCbbbAAaad_GggFFFFEeeeeDDDdeeedCCCCbBAaab_Aaaaa=G_ffff=EEEddDddddCccceBbbAaaGga=Fff_Eee_DdddCcceeBBbaaGaag_Ffff=EeeeDDdeeCCcbeeBBBBaaaGGg_aaga_gFFfEEe_ddCCCbbbAAaad_GggFFFFEeeeeDDDdeeedCCCCbBAaab_Aaaaa=G_ffff=EEEddDddddCccceBbbAaaGga=Fff_Eee_DdddCcceeBBbaaGaag_Ffff=EeeeDDdeeCCcbeeBBBBaaaGGg_aaga_gFFfEEe_ddCCCbbbAAaad_GggFFFFEeeeeDDDdeeedCCCCbBAaab_Aaaaa=G_ffff=EEEddDddddCccceBbbAaaGga=Fff_Eee_DdddCcceeBBbaaGaag_Ffff=EeeeDDdeeCCcbeeBBBBaaaGGg_aaga_gFFfEEe_ddCCCbbbAAaad_GggFFFFEeeeeDDDdeeedCCCCbBAaab_Aaaaa=G_ffff=EEEddDddddCccceBbbAaaGga=Fff_Eee_DdddCcceeBBbaaGaag_Ffff=EeeeDDdeeCCcbeeBBBBaaaGGg_aaga_gFFfEEe_ddCCCbbbAAaad_GggFFFFEeeeeDDDdeeedCCCCbBAaab_Aaaaa=G_ffff=EEEddDddddCccceBbbAaaGga=Fff_Eee_DdddCcceeBBbaaGaag_Ffff=EeeeDDdeeCCcbeeBBBBaaaGGg_aaga_gFFfEEe_ddCCCbbbAAaad_GggFFFFEeeeeDDDdeeedCCCCbBAaab_Aaaaa=G_ffff=EEEddDddddCccceBbbAaaGga=Fff_Eee_DdddCcceeBBbaaGaag_Ffff=EeeeDDdeeCCcbeeBBBBaaaGGg_aaga_gFFfEEe_ddCCCbbbAAaad_GggFFFFEeeeeDDDdeeedCCCCbBAaab_Aaaaa=G_ffff=EEEddDddddCccceBbbAaaGga=Fff_Eee_DdddCcceeBBbaaGaag_Ffff=EeeeDDdeeCCcbeeBBBBaaaGGg_aaga_gFFfEEe_ddCCCbbbAAaad_GggFFFFEeeeeDDDdeeedCCCCbBAaab_Aaaaa=G_ffff=EEEddDddddCccceBbbAaaGga=Fff_Eee_DdddCcceeBBbaaGaag_Ffff=EeeeDDdeeCCcbeeBBBBaaaGGg_aaga_gFFfEEe_ddCCCbbbAAaad_GggFFFFEeeeeDDDdeeedCCCCbBAaab_Aaaaa=G_ffff=EEEddDddddCccceBbbAaaGga=Fff_Eee_DdddCcceeBBbaaGaag_Ffff=EeeeDDdeeCCcbeeBBBBaaaGGg_aaga_gFFfEEe_ddCCCbbbAAaad_GggFFFFEeeeeDDDdeeedCCCCbBAaab_Aaaaa=G_ffff=EEEddDddddCccceBbbAaaGga=Fff_Eee_DdddCcceeBBbaaGaag_Ffff=EeeeDDdeeCCcbeeBBBBaaaGGg_aaga_gFFfEEe_ddCCCbbbAAaad_GggFFFFEeeeeDDDdeeedCCCCbBAaab_Aaaaa=G_ffff=EEEddDddddCccceBbbAaaGga=Fff_Eee_DdddCcceeBBbaaGaag_Ffff=EeeeDDdeeCCcbeeBBBBaaaGGg_aaga_gFFfEEe_ddCCCbbbAAaad_GggFFFFEeeeeDDDdeeedCCCCbBAaab_Aaaaa=G_ffff=EEEddDddddCccceBbbAaaGga=Fff_Eee_DdddCcceeBBbaaGaag_Ffff=EeeeDDdeeCCcbeeBBBBaaaGGg_aaga_gFFfEEe_ddCCCbbbAAaad_GggFFFFEeeeeDDDdeeedCCCCbBAaab_Aaaaa=G_ffff=EEEddDddddCccceBbbAaaGga=Fff_Eee_DdddCcceeBBbaaGaag_Ffff=EeeeDDdeeCCcbeeBBBBaaaGGg_aaga_gFFfEEe_ddCCCbbbAAaad_GggFFFFEeeeeDDDdeeedCCCCbBAaab_Aaaaa=G_ffff=EEEddDddddCccceBbbAaaGga=Fff_Eee_DdddCcceeBBbaaGaag_Ffff=EeeeDDdeeCCcbeeBBBBaaaGGg_aaga_gFFfEEe_ddCCCbbbAAaad_GggFFFFEeeeeDDDdeeedCCCCbBAaab_Aaaaa=G_ffff=EEEddDddddCccceBbbAaaGga=Fff_Eee_DdddCcceeBBbaaGaag_Ffff=EeeeDDdeeCCcbeeBBBBaaaGGg_aaga_gFFfEEe_ddCCCbbbAAaad_GggFFFFEeeeeDDDdeeedCCCCbBAaab_Aaaaa=G_ffff=EEEddDddddCccceBbbAaaGga=Fff_Eee_DdddCcceeBBbaaGaag_Ffff=EeeeDDdeeCCcbeeBBBBaaaGGg_aaga_gFFfEEe_ddCCCbbbAAaad_GggFFFFEeeeeDDDdeeedCCCCbBAaab_Aaaaa=G_ffff=EEEddDddddCccceBbbAaaGga=Fff_Eee_DdddCcceeBBbaaGaag_Ffff=EeeeDDdeeCCcbeeBBBBaaaGGg_aaga_gFFfEEe_ddCCCbbbAAaad_GggFFFFEeeeeDDDdeeedCCCCbBAaab_Aaaaa=G_ffff=EEEddDddddCccceBbbAaaGga=Fff_Eee_DdddCcceeBBbaaGaag_Ffff=EeeeDDdeeCCcbeeBBBBaaaGGg_aaga_gFFfEEe_ddCCCbbbAAaad_GggFFFFEeeeeDDDdeeedCCCCbBAaab_Aaaaa=G_ffff=EEEddDddddCccceBbbAaaGga=Fff_Eee_DdddCcceeBBbaaGaag_Ffff=EeeeDDdeeCCcbeeBBBBaaaGGg_aaga_gFFfEEe_ddCCCbbbAAaad_GggFFFFEeeeeDDDdeeedCCCCbBAaab_Aaaaa=G_ffff=EEEddDddddCccceBbbAaaGga=Fff_Eee_DdddCcceeBBbaaGaag_Ffff=EeeeDDdeeCCcbeeBBBBaaaGGg_aaga_gFFfEEe_ddCCCbbbAAaad_GggFFFFEeeeeDDDdeeedCCCCbBAaab_Aaaaa=G_ffff=EEEddDddddCccceBbbAaaGga=Fff_Eee_DdddCcceeBBbaaGaag_Ffff=EeeeDDdeeCCcbeeBBBBaaaGGg_aaga_gFFfEEe_ddCCCbbbAAaad_GggFFFFEeeeeDDDdeeedCCCCbBAaab_Aaaaa=G_ffff=EEEddDddddCccceBbbAaaGga=Fff_Eee_DdddCcceeBBbaaGaag_Ffff=EeeeDDdeeCCcbeeBBBBaaaGGg_aaga_gFFfEEe_ddCCCbbbAAaad_GggFFFFEeeeeDDDdeeedCCCCbBAaab_Aaaaa=G_ffff=EEEddDddddCccceBbbAaaGga=F

@@ -1,0 +1,79 @@
+3 4
+5 6 - | 3 - - | - | 1 2-- | - 7 0 | - - | 4.---.-.--..-... | - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+6 4 - | 5 - - | | 3 2-- | 1 0 | | 7 | | - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+3 - 1 6
+5 2 | 6 |
+4 '1 -
+3
+'1 -
+1.
+7 0. |
+3 | '1 - 6-
+1 4 '1- | 0. 7 |
+5 2 - | 6 3 4 | '1 1 '1 7 | 0. | - | - | | - | - - - - - '1- '1- - - - - - - -
+4 5 - 2 3 | | - | | | 0 1 | - | | 7 - 6. | | |
+'1 '1 '1 '1 '1 '1 '1 '1 '1 '1 '1 '1 '1
+'1 4 '1 '1 '1 '1 '1 '1 '1 '1 '1 '1 '1 '1 '1 '1 '1 '1 '1 '1 '1 '1 '1 '1 '1 '1 '1 '1 '1 '1
+0 '1 '1 '1 '1
+0
+- - 1 7 0,
+0
+1- 7 0. 5 2 4 3 6 - - '1 - - - - - - - - -
+
+--- 逐条明细 ---
+### 001_strip_00.jpg
+F 3/4   F    E     D      C       B        A         G          F           =E            #D             C              B               A                ^G                 ^^F                  EF                   DG                    CE                     DB                      CA                       GB                        FA                         EG                           DA                             CF                               EB                                AC                                  FB                                   GA                                     EC                                       FD                                         AB                                            GC                                               BD                                                  FC                                                        AD                                                             BC                                                              AF                                                                 DC                                                                  BA                                                                      CD                                                                        DF                                                                          CB                                                                            DFCGHABCDFAEGBDFACEGBCDAFDCBAGCFDABCDEF
+### 001_strip_02.jpg
+5 6 - . | 3 -- |-|12--|-7890|--.|4.---.-.--..-...|. --- ... ..-. -.----....-----......------..... ---- ----- ------ ------- -------- --------- ---------- ----------- ------------ ------------- ------------------------------ ----------------------------------------------- ------------------------------------------------------------- ------------------------------------------------------------------------------
+### 001_strip_05.jpg
+6 4 - | 5 -- || 3 =2--|1=0||7 .|=8.|-9-+———– —--- – --- +---- ----+-++----- ++--+------+++-------++++-------- +++---------++++++++---------- ----------- ------------ ------------- ------------------------------ -------------------- --------------------------------------------- --------------------------------------------------------------------------------------------------------------------------
+### 002_strip_00.jpg
+C 3 C . D - E F G A B C #1 =96
+### 002_strip_03.jpg
+5 2 | 6 |
+4 . '1 - 
+3 .
+'1 -
+1.
+7 0. |
+
+|
+
+|
+\|\|
+
+\( \frac{1}{-}^{*}\) \( *\) ^**^ **/**
+**
+
+(8)
+  
+   (9)
+### 002_strip_06.jpg
+\(\frac{5}{2}\)\ 3 \quad | \('1\) -\(6-\)
+1/4 '1-| (0.7s)| 
+(8)  
+|\(|
+
+数字：无 
+
+休止音符数量: 一个（表示为“”）
+
+附点的数量 : 六个 （分别标记在每个符号的上方）
+### 003_strip_00.jpg
+5 2 - | .6 _3_4| i1/8i7/8|.9.0.|-._c_c_| c-c |_| d-d |- e-e /f-f\g-gh-h_i-'1-j_jk-k-l_lm-mn-n-o_o-p_pq-q
+### 003_strip_03.jpg
+4 5 -23   |    .     _         |-      |||01|-||_789-6.|\n\n\ndot dot dash        \ntwist                |\ncircle                 |
+dot                  ||
+dash                   |
+
+Note: The numbers and symbols in the image are not standard musical notation, but rather a representation of notes or chords using different characters to indicate their position on an instrument's fretboard.
+The first row represents 4th finger (index) note with dot above it. Second line is for second hand rest symbol which means no sound produced by that particular string at this point in time while playing the guitar, third one shows a half dash indicating partial bend or pull of strings to change pitch slightly and forthly indicates full duration without any pause between two notes.
+The last row represents 0th finger (ring) note with dot above it.
+### 003_strip_06.jpg
+C C D E F G A B 休息 高声唱 停顿 短暂停长延长线高声音调低音乐谱符号休止0附点.高低音记号(逗号或撇号)
+### 004_strip_00.jpg
+C C D E F G A B 休息 - 高低高声调 . 延长. 短时延长- 没有附点或高低声音号符号的数字1至7和休止0,以及没有其他音符标记，所以这里只显示了这些基本元素。
+### 004_strip_03.jpg
+C D E F G A B C 休息 高声唱 停顿 短暂停长延长线高声音调低音乐谱符号休止0附点.高低音记号(逗号或撇号)
+### 005_strip_02.jpg
+C D E F G A B C 休息D高声E低声音F休止G附点A延长线B停顿1-7、0.5倍速2/4拍3次重复689=ABCD-EFGABCDEFGH-IJKL-MN-O-PQ-RS-TU-VW-X-Y-Z

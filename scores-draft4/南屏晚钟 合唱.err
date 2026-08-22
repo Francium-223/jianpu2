@@ -1,0 +1,20 @@
+JIANPU_LY ERROR: (notesHad=- 0 - 4 | 6 3 2 1 | 5 7 0 6 | 3 5 4 2 | 1 0 7 -) barcheck fail: note crosses barline at "-" with 0 beams (16 skipped from 56 to 72, bypassing 64), scoreNo=1 barNo=5 (but the error could be earlier)
+
+--- score ---
+title=南屏晚钟 合唱
+type=work
+alias=南屏晚钟 合唱简谱
+%--
+- 0 -
+4 6 3 2 1 5 7 0
+6 3 5 4 2 | 1 | 0. 7 - - -
+6 3 2 | 4 | 5 1 7 0 1. 2 3 5 |
+2 3 - | 4 5 6 1 | 7 | - |
+0 | - |
+2 4 - | 3 5 6 | 1 7 0 | - |
+2 3 - | 5 |
+6 4 1 | 7 -
+0
+1 2 3 4 5 6 7 0 -
+1 2 3.
+%END

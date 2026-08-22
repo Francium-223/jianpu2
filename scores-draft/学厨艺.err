@@ -1,0 +1,24 @@
+JIANPU_LY ERROR: (notesHad=2 - | 3 4 | 2 4 | - 1 | 7 6 | 5 - | 3 0) barcheck fail: note crosses barline at "0" with 0 beams (16 skipped from 24 to 40, bypassing 32), scoreNo=1 barNo=7 (but the error could be earlier)
+
+--- score ---
+title=学厨艺
+type=work
+%--
+2/4
+2 - 3 4 |
+2 4 - 1 7 6 5 - 3. 0 - - 7 - 6 5 4 3 2
+5 6 2 - | 3 | 4 | - 1 | | 7-- | | 0--- - - - - | | | | | | - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+5 6 | - |
+3 2 | -
+1 4 |
+7 | -
+0 | -
+3 6 - | i 2 i | 5 4 1 7 0
+6 5 3 | 5 2 | - |
+i i i i | | i i i | - | |
+1.
+2 3 - 4 | 5 6 | 1 7 | |
+0
+1 2 3 4 5 6 7 0 -
+1 2 3 4 5 6 7 0 -
+%END

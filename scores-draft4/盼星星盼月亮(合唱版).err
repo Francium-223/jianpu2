@@ -1,0 +1,37 @@
+JIANPU_LY ERROR: (notesHad=5 3 2 5 | - 6 - 1) barcheck fail: note crosses barline at "1" with 0 beams (24 skipped from 48 to 72, bypassing 64), scoreNo=1 barNo=2 (but the error could be earlier)
+
+--- score ---
+title=盼星星盼月亮(合唱版)
+type=work
+%--
+5 3 2 | 5 - | | 6 | - |
+1. | |
+0 - - - - -
+4 - - - - - - - - - - | -
+7 - - - - - - - - - - | - - |
+2 3 | - | | | - | - | - - | | - - - 0 1 6 5 - - | - - - - - | - - - - - | | - - - - - - - - - - - - | - - - - | - - - - - - - -
+5 3 2 | 6 4 - |
+1 7 |
+0 - - | -
+3
+5 3 | 2 |
+1 6 |
+0 |
+4. 7 -
+2 3 | - | - |
+5 1 6
+7 -
+0. - |
+4
+2 3 |
+5 - |
+6
+1 -
+7
+0.
+6 2 3 - 5 | | | | | 1 | 7 | - | | |
+0
+4.
+2 4 - |
+1 2 3 4 5 6 7 0 -
+%END

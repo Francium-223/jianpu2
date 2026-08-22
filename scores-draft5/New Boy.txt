@@ -1,0 +1,9 @@
+title=New Boy
+type=work
+%TODO:revise
+usertag=to_be_revised
+MBID=c5c1d8e9-59a5-4551-a41b-439f0fdcf95c
+%--
+3/4
+4 3 2 - 5 1 6 7 | 0 | - | - - - - - - - - - - - - - - | | | | - - - - - - - - | - |
+%END

@@ -1,0 +1,342 @@
+通过 9/266
+
+FAIL scores-draft/上海人.txt Error: (notesHad=2 3 1 5 | 4 0 6 7) barcheck fail: note crosses barline at "7" with 0 beams (16 skipped from 56 to 72, bypassing 64), scoreNo=1 barNo=
+FAIL scores-draft/中秋情.txt Error: Can't have rest in chord: 0.-------- in score 1
+1 - - - | | 0.-------- |
+            ^^^^^^^^^^
+FAIL scores-draft/八角树.txt Error: (notesHad=2 4 1 - | 3 - 5 0 | 6 7 6 2 | 3 5 - 4 | 1 7 - 0 | - 6 - 6 | - 6 3 5 | - 2 1 - | 4 0 7 -) barcheck fail: note crosses barline at "-" w
+FAIL scores-draft/太湖水.txt Error: (notesHad=2 4 | - 3 | 5 6 | 1 7 | 2 4 | - 5 | 6 5 | 6 3 | 1 7 | 0 - | 1 1 | - - | - - | - - | - - | - 3 | 2 4 | - 5 | 6 7 | 1 0 | - - | - - | -
+FAIL scores-draft/学厨艺.txt Error: (notesHad=2 - | 3 4 | 2 4 | - 1 | 7 6 | 5 - | 3 0) barcheck fail: note crosses barline at "0" with 0 beams (16 skipped from 24 to 40, bypassing
+FAIL scores-draft/学工歌.txt Error: (notesHad=2 4 1 6 | 3 0 - 7 | 5 2 4 - | 1 7 3 5 | 6 0 3 5 | - 2 4 6 | 1 - 7 - | 0 - 5 6) barcheck fail: note crosses barline at "6" with 0 beam
+FAIL scores-draft/学电脑.txt Error: Ambiguous octave marks (please set OctavesBefore or OctavesAfter if writing them in the middle) in the ' part of '1- in score 1
+'1 - - 1 2 3 4 
+FAIL scores-draft/宜昌队.txt Error: (notesHad=4 4 - - | 0 5 - -) barcheck fail: note crosses barline at "-" with 0 beams (16 skipped from 56 to 72, bypassing 64), scoreNo=1 barNo=
+FAIL scores-draft/寄明月.txt Error: (notesHad=2 3 - 4 | 6 1 5 0 | 7 - - -) barcheck fail: note crosses barline at "-" with 0 beams (16 skipped from 56 to 72, bypassing 64), scoreN
+FAIL scores-draft/小上海.txt Error: (notesHad=2 4 - 3 | 5 6 1 7 | 2 4 - 1 | 5 2 3 6 | 4 - - 1 | - 7 0 - | - - - - | - - - - | - - - - | - - - - | - - - - | - - - - | - - - - | - -
+FAIL scores-draft/小重山.txt Error: (notesHad=4 5 6 3 | 2 1 7 0) barcheck fail: note crosses barline at "0" with 0 beams (24 skipped from 48 to 72, bypassing 64), scoreNo=1 barNo=
+FAIL scores-draft/少年游.txt Error: (notesHad=5 6 - 3 | 2 4 1 7 | 0 3 5 -) barcheck fail: note crosses barline at "-" with 0 beams (16 skipped from 56 to 72, bypassing 64), scoreN
+FAIL scores-draft/当兵乐.txt Error: (notesHad=4 2 - 3 | 5 - - - | - - - - | - 5 6 1 | 3 2 1 1 | 1 1 1 1 | 2 1 1 1 | 1 1 1 4 | 7 0 5- -) barcheck fail: note crosses barline at "-" 
+FAIL scores-draft/忘情酒.txt Error: (notesHad=4 - 6 2 | 3 5 7 1 | 0 6 3 - | 2 1 5 7 | - 6 3 - | 1 7 2- 5) barcheck fail: note crosses barline at "5" with 0 beams (16 skipped from 
+FAIL scores-draft/意难平.txt Error: (notesHad=1- 2 3 4 | 5 6 7 0) barcheck fail: note crosses barline at "0" with 0 beams (24 skipped from 48 to 72, bypassing 64), scoreNo=1 barNo
+FAIL scores-draft/我的梦.txt Error: Ambiguous octave marks (please set OctavesBefore or OctavesAfter if writing them in the middle) in the ' part of '1- in score 1
+1 7 6 5 4 3 2 0
+FAIL scores-draft/推车歌.txt Error: (notesHad=5 | 6 | - | 2 | 3 | 4 | 1 | - | 7 | 0 | 5 | 4 | 3 | 2 | 6 | - | 1 | 7 | 0 | 2 | 5 | - | 6 | 4 | 3 | 1 | 7 | 1 | 0) barcheck fail: not
+FAIL scores-draft/木叶情.txt Error: (notesHad=2 4 - 3 | 5 1 6 2 | 3 - 6 5 | 4 1 7 0 | - - - - | - - - - | - - - - | - - - - | - - - - | - - - - | - - - - | - - - - | - - - - | - -
+FAIL scores-draft/歌友情.txt Error: Can't have rest in chord: 0- in score 1
+4 4 - 7- 6- 5- 2- 1 0- 3- - - - '1 '1- '1 '1- '1- '1 '1 '1 '1 '1 '1 '1- '1 '1 '1 '1 '1-
+               
+FAIL scores-draft/步步高.txt Error: (notesHad=5 3 2 - | 6 4 1 1 | 1 7 - 0 | - - 3 5 | 2 - 1 7 | - - 0 - | - - 6- 4) barcheck fail: note crosses barline at "4" with 0 beams (24 ski
+FAIL scores-draft/男儿泉.txt Error: (notesHad=- - 0 3 | 4 - 2 1 | 0 - - - | - - - - | - - - - | - - - - | - 6 3 - | 6 2 - 4 | 7 1 1 2 | 3 - 5 - | - 1 6 7 | 0 4 3 -) barcheck fail:
+FAIL scores-draft/胭脂妆.txt Error: (notesHad=4 - 2 3 | 5 6 7 1 | 0 3 2 6) barcheck fail: note crosses barline at "6" with 0 beams (16 skipped from 56 to 72, bypassing 64), scoreN
+FAIL scores-draft/舀河浜.txt Error: (notesHad=1 2 | 3 4 | 5 6 | 7 2 | 4 - | 1- 7 | 0 3 | 5 - | 2 6) barcheck fail: note crosses barline at "6" with 0 beams (24 skipped from 16 to 
+FAIL scores-draft/苍穹唤.txt Error: (notesHad=6 3 5 2 | 4 - 1 7 | 5 0 5 6-) barcheck fail: note crosses barline at "6-" with 0 beams (28 skipped from 56 to 84, bypassing 64), scor
+FAIL scores-draft/苕乡情.txt Error: Can't have rest in chord: 0- in score 1
+0- 7, -
+^^
+FAIL scores-draft/苹果香.txt Error: (notesHad=3 5 6 1 | 2 - 1 1 | 4 7 - 0) barcheck fail: note crosses barline at "0" with 0 beams (24 skipped from 48 to 72, bypassing 64), scoreN
+FAIL scores-draft/菜园子.txt Error: (notesHad=2 4 - 3 | 1 6 5 7 | 0 6 2 - | 3 4 1 5) barcheck fail: note crosses barline at "5" with 0 beams (16 skipped from 56 to 72, bypassing 6
+FAIL scores-draft/陆北大.txt Error: Ambiguous octave marks (please set OctavesBefore or OctavesAfter if writing them in the middle) in the ' part of '1- in score 1
+2 4 3 - 1 6 5 -
+FAIL scores-draft/青原赋.txt Error: (notesHad=4 5 2 3 | 6 - 1 7 | 3 0 6 6) barcheck fail: note crosses barline at "6" with 0 beams (16 skipped from 56 to 72, bypassing 64), scoreN
+FAIL scores-draft2/一念暖阳.txt Error: (notesHad=2 4 1 6 | 3 0 - 4 | 6 2 1 1 | 1 5 0 3) barcheck fail: note crosses barline at "3" with 0 beams (24 skipped from 56 to 80, bypassing 6
+FAIL scores-draft2/云台蝴蝶.txt Error: (notesHad=4 2 3 - | 1 6 5 3 | - 2 2 4) barcheck fail: note crosses barline at "4" with 0 beams (28 skipped from 48 to 76, bypassing 64), scoreN
+FAIL scores-draft2/人间共鸣.txt Error: (notesHad=1 2 3 4 | 5 6 7 5 | 6 3 2 - | 1 7 6 - | 3 5 6 1) barcheck fail: note crosses barline at "1" with 0 beams (24 skipped from 48 to 72, b
+FAIL scores-draft2/今天真好.txt Error: (notesHad=1 2 0 4 | 4 3 2 1 | 6 5 1 4 | 1 0 0 0) barcheck fail: note crosses barline at "0" with 0 beams (16 skipped from 56 to 72, bypassing 6
+FAIL scores-draft2/今生不再.txt Error: (notesHad=4 2 1 7 | - 0 3 6- | 5 - - -) barcheck fail: note crosses barline at "-" with 0 beams (16 skipped from 56 to 72, bypassing 64), score
+FAIL scores-draft2/和平鸽哨.txt Error: (notesHad=4 4 6 4 | 1 1 - 7 | 7 6 3 5) barcheck fail: note crosses barline at "5" with 0 beams (24 skipped from 48 to 72, bypassing 64), scoreN
+FAIL scores-draft2/回家过年.txt Error: Ambiguous octave marks (please set OctavesBefore or OctavesAfter if writing them in the middle) in the ' part of '1-. in score 1
+5 6 | 2 - '1 |
+FAIL scores-draft2/大美乡村.txt Error: (notesHad=5 4 - 3 | 2 6 1 2 | 4 6 0 1 | 2 5 3 3 | 2 1 3 6- | 4 7 3 2 | - 0 1 5 | 6 7 4 2) barcheck fail: note crosses barline at "2" with 0 bea
+FAIL scores-draft2/天峰山情.txt Error: (notesHad=2 1 4 0) barcheck fail: note crosses barline at "0" with 0 beams (24 skipped from 48 to 72, bypassing 64), scoreNo=1 barNo=1 (but the
+OK   scores-draft2/太行之歌.txt 原样通过
+FAIL scores-draft2/学校之歌.txt Error: (notesHad=2 1 | 4 - | 3 0 | 5 4 | 2 3 | 5 - | 6 7 | 1 - | 0 - | 5 6 | - 3 | 4 2 | 1 - | 7 0 | - - | 3 6 | 5 - | 2 1 | 7 4 | 0 - | - 2 | 3 - | 5
+FAIL scores-draft2/宾至房山.txt Error: Can't have rest in chord: 0----- in score 1
+0----- | -
+^^^^^^
+FAIL scores-draft2/对月思乡.txt Error: (notesHad=0 1- 7 4 | 5 6 2 3 | 1 5 4 0 | 2 1 4 - | 3 0 5 2) barcheck fail: note crosses barline at "2" with 0 beams (16 skipped from 56 to 72, 
+FAIL scores-draft2/小小的暖.txt Error: Can't have rest in chord: 0.--- in score 1
+0.--- | - - |
+^^^^^
+FAIL scores-draft2/尖兵战歌.txt Error: Ambiguous octave marks (please set OctavesBefore or OctavesAfter if writing them in the middle) in the ' part of '1- in score 1
+6 5 4 - | 2 | 3
+FAIL scores-draft2/思绪飞扬.txt Error: (notesHad=2 4 - - | - - - - | - 2 3 6 | - 5 4 7 | 1 0 - - | - - - - | - - 3 2 | - 6 1 7 | 5 - - 4) barcheck fail: note crosses barline at "4" w
+FAIL scores-draft2/我的老师.txt Error: (notesHad=4 6 2 - | 1 7 0 3) barcheck fail: note crosses barline at "3" with 0 beams (24 skipped from 48 to 72, bypassing 64), scoreNo=1 barNo=
+FAIL scores-draft2/新年祝福.txt Error: (notesHad=2 1 3 4- | 5 6 7 0 | - 3 4 6 | 2 5 6 1 | 7 - 0 6 | 3 4 2 1 | 5 7 0 -) barcheck fail: note crosses barline at "-" with 0 beams (16 ski
+FAIL scores-draft2/有缘的人.txt Error: (notesHad=2 4 - 3 | 5 - 6 1 | 7 0 6 3 | - 5 6 - | 3 2 4 1 | 7 - 0 - | - - - - | - - - - | - - - - | - - - - | - - - - | - - - - | - - - - | - -
+FAIL scores-draft2/梦中女神.txt Error: (notesHad=1 0 - 2 | 3 4 5 6 | 7 6 3 2 | - 5 1 4 | 0 7 - -) barcheck fail: note crosses barline at "-" with 0 beams (16 skipped from 56 to 72, b
+FAIL scores-draft2/激情岁月.txt Error: (notesHad=4 5 2 - | 3 6 1 7 | 0 - - - | - - - - | - - - - | - - - - | - - - - | - - - - | - - - - | - - - - | - - - - | - - - - | - - - - | 6 5
+FAIL scores-draft2/目瑙纵歌.txt Error: (notesHad=2 - 1 7 | 3 5 0 4 | 6 5 3 2 | 5 6 - 1 | 4 0 7- 5) barcheck fail: note crosses barline at "5" with 0 beams (16 skipped from 56 to 72, 
+FAIL scores-draft2/童年的家.txt Error: (notesHad=6 3 | 5 2 | 4 1 | 7 5 | 0 6) barcheck fail: note crosses barline at "6" with 0 beams (16 skipped from 24 to 40, bypassing 32), scoreN
+FAIL scores-draft2/腊梅花开.txt Error: Can't have rest in chord: 0- in score 1
+1 2 3 4 5 6 7 0-
+              ^^
+FAIL scores-draft2/被你感动.txt Error: (notesHad=4 2 3 - | 1 6 3 5 | 1 1 6 - | 2 1 1 - | - 3 7 -) barcheck fail: note crosses barline at "-" with 0 beams (16 skipped from 56 to 72, b
+FAIL scores-draft2/铁血战歌.txt Error: (notesHad=4 2 1 3 | 5 7 6 0) barcheck fail: note crosses barline at "0" with 0 beams (24 skipped from 48 to 72, bypassing 64), scoreNo=1 barNo=
+FAIL scores-draft2/阳光校园.txt Error: (notesHad=0 1- 7 2 | 3 4 5 6 | 1 0 - 2 | 3 4 5 6 | 7 - 1- - | 0 2 - 3-) barcheck fail: note crosses barline at "3-" with 0 beams (16 skipped fr
+FAIL scores-draft2/青春之火.txt Error: (notesHad=- - 1 2 | 3 4 5 6 | 7 0 6 5 | 4 3 2 - | 1 7 0 1) barcheck fail: note crosses barline at "1" with 0 beams (24 skipped from 48 to 72, b
+FAIL scores-draft3/中华你我他.txt Error: Can't have rest in chord: 0- in score 1
+5 6 '1 - | 2 3 | 1 7 '1 - 0-
+                          ^^
+FAIL scores-draft3/亲人子弟兵.txt Error: (notesHad=4 2 5 6 | 7 1 0 6 | 1 5 1 7 | 3 - 0 2 | 1 - 4 - | - - - - | 6 1 5 1 | 7 3 - 0 | 2 1 - 6 | - 3 5 4 | 1 2 1 7) barcheck fail: note cros
+FAIL scores-draft3/人生咏叹调.txt Error: (notesHad=4 5 - 2 | 3 1 6 7 | 0 - - - | - - - - | - - - - | - - - - | - - - - | - - - - | - - - - | - - - - | - - - - | - - - - | 6 5 3 2 | - 4
+FAIL scores-draft3/共进新朝代.txt Error: (notesHad=2 4 5 | 6 - 1 | 7 0 3 | - 2 4 | 1 0 6 | 3 2 6) barcheck fail: note crosses barline at "6" with 0 beams (16 skipped from 40 to 56, byp
+FAIL scores-draft3/天边的牧歌.txt Error: (notesHad=- - 0 4 | 2 3 5 6 | 1 1 1 7 | 0 - - - | - - - - | - - - 2 | 3 - 6 5 | 0 1- 7 6) barcheck fail: note crosses barline at "6" with 0 bea
+FAIL scores-draft3/彝寨山茶红.txt Error: (notesHad=2 - 5 4 | 3 1 6 7 | - - - 1 | - - - - | - - - - | - 5 6 - | 2 3 1- 4) barcheck fail: note crosses barline at "4" with 0 beams (16 ski
+FAIL scores-draft3/情系苏宿园.txt Error: (notesHad=6 5 - 2 | 3 4 1 7 | 0 - - -) barcheck fail: note crosses barline at "-" with 0 beams (16 skipped from 60 to 76, bypassing 64), scoreN
+FAIL scores-draft3/我是有钱人.txt Error: (notesHad=4 2 - 1 | 6 3 5 7 | 0 - - - | 1 - - - | - - - - | - 5 6 - | 3 2 4 1 | 0 - 7 - | - - - - | - - - - | - - - - | - - - - | - - - - | - -
+FAIL scores-draft3/我爱我们家.txt Error: (notesHad=- 1 2 3 | 4 5 6 7 | 0 - - -) barcheck fail: note crosses barline at "-" with 0 beams (16 skipped from 56 to 72, bypassing 64), scoreN
+FAIL scores-draft3/战位有我在.txt Error: (notesHad=6 - 2 - | - - - - | 1 1 3 5 | 1 1 1 7 | - - 1 1) barcheck fail: note crosses barline at "1" with 0 beams (24 skipped from 48 to 72, b
+FAIL scores-draft3/把幸福托起.txt Error: (notesHad=1 2 3 - | 0 7 6 5 | 4 4 4 7 | 2 1 0 5) barcheck fail: note crosses barline at "5" with 0 beams (16 skipped from 56 to 72, bypassing 6
+FAIL scores-draft3/春日肆意游.txt Error: (notesHad=2 4 - 3 | 5 1 6 7 | 0 - - - | - - - - | 1 3 2 1 | 5 4 - 7 | 1 0 6 -) barcheck fail: note crosses barline at "-" with 0 beams (16 skip
+FAIL scores-draft3/月亮的歌声.txt Error: (notesHad=2 3 4 5 | 6 1 7 0 | - 3 5 1 | 6 1 2 4 | 1 7 0 - | - - - - | - - - - | - - - - | - - - - | - - - - | - - - - | - - - - | - 2 3 5 | - 1
+FAIL scores-draft3/梦通新时代.txt Error: Can't have rest in chord: 0- in score 1
+4 - 1 2 3 5 6 7 0- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+FAIL scores-draft3/正在想你哟.txt Error: Can't have rest in chord: 0- in score 1
+6 5 - | 3 2 | 1 | 7 4 | - 0- | | - - - - - - - - -
+                          ^^
+FAIL scores-draft3/江城子桑农.txt Error: (notesHad=1 6 1 - | 2 3 5 4 | 1 7 - 0 | - 2 3 - | 1 0 6 | 5 4 3 2 | 7- 3 2 -) barcheck fail: note crosses barline at "-" with 0 beams (16 skipp
+FAIL scores-draft3/火火中国白.txt Error: (notesHad=2 1 0 5) barcheck fail: note crosses barline at "5" with 0 beams (16 skipped from 56 to 72, bypassing 64), scoreNo=1 barNo=1 (but the
+FAIL scores-draft3/牙刷小卫士.txt Error: (notesHad=2 4 - 1 | 3 5 6 7 | 0 - - -) barcheck fail: note crosses barline at "-" with 0 beams (16 skipped from 56 to 72, bypassing 64), scoreN
+FAIL scores-draft3/美丽的哨卡.txt Error: (notesHad=4 2 3 6 | 5 7 1 0 | 1 1 6 1 | 1 2 3 - | 5 7 4 0 | 1 - - 6) barcheck fail: note crosses barline at "6" with 0 beams (16 skipped from 5
+FAIL scores-draft3/赣南有座城.txt Error: (notesHad=2 - - - | - - - - | - - - - | - - - - | - 1 - 1 | - - - - | 0 1 2 3 | 4 5 6 7 | 6 5 1 3 | 1 2 4 0 | - 7 1 3) barcheck fail: note cros
+FAIL scores-draft3/远方的故乡.txt Error: (notesHad=5 6 1 1 | 2 1 6 5) barcheck fail: note crosses barline at "5" with 0 beams (16 skipped from 56 to 72, bypassing 64), scoreNo=1 barNo=
+FAIL scores-draft3/金色葵花海.txt Error: (notesHad=4 2 3 - | 1 6 6 5 | 2 - 3 1 | 4 7 1 0 | 3 6 5 6 | - 2 7 6 | - 1 0 - | 4- 3 5 6 | 7 6 6 2 | 1 - 4 0 | 2 2- 2- | 6 3 2 1 | 2 5 - 7 | 6 
+FAIL scores-draft3/雨中百合花.txt Error: Can't have rest in chord: 0- in score 1
+3 2 | - | | 5 6 1 | 4 | - | | 7. 0- | - | - | | - | - - - | - - - - - - - - - - - - - - - - - - - - - -
+FAIL scores-draft3/风华十五栽.txt Error: (notesHad=- - 1 2 | 3 4 5 6 | 7 0 6 5 | 3 2 4 - | 1 7 0 6---) barcheck fail: note crosses barline at "6---" with 0 beams (24 skipped from 48 to
+FAIL scores-draft3/风沙胡杨林.txt Error: (notesHad=2 1 4 - | 3 0 5 3) barcheck fail: note crosses barline at "3" with 0 beams (16 skipped from 56 to 72, bypassing 64), scoreNo=1 barNo=
+FAIL scores-draft3/黑暗的沉思.txt Error: Can't have rest in chord: 0- in score 1
+0- |
+^^
+FAIL scores-draft4/See You Again SATB混声合唱谱.txt Error: (notesHad=7 2 1 - | 0 - - 0) barcheck fail: note crosses barline at "0" with 0 beams (16 skipped from 56 to 72, bypassing 64), scoreNo=1 barNo=
+FAIL scores-draft4/一荤一素二声部合唱谱.txt Error: (notesHad=4 6 - 5 | 2 3 1 7 | 3 6 5 - | 1 2 1 0) barcheck fail: note crosses barline at "0" with 0 beams (24 skipped from 48 to 72, bypassing 6
+FAIL scores-draft4/丰收中国年【混声合唱】了.txt Error: Can't have rest in chord: 0- in score 1
+5 | 0- |
+    ^^
+FAIL scores-draft4/丰收中国年（混声合唱）.txt Error: (notesHad=2 3 - 1 | 5 1 4 6 | 7 - 0 1 | - 2 5 - | 1 1 - - | 3- - 1 0) barcheck fail: note crosses barline at "0" with 0 beams (16 skipped from 
+FAIL scores-draft4/儿时二部合唱.txt Error: (notesHad=4 2 5 4 | 4 1 6 7 | 5 6 1 2 | - 1 - - | - - - - | - 3 - - | - 0 1 7) barcheck fail: note crosses barline at "7" with 0 beams (24 skip
+FAIL scores-draft4/光芒二部合唱.txt Error: (notesHad=4 5 4 4 | 1 6 2 3 | - 7 0 3 | 5 - 2 6 | 4 1 7- -) barcheck fail: note crosses barline at "-" with 0 beams (16 skipped from 56 to 72, 
+FAIL scores-draft4/再唱洪湖水（混声合唱）.txt Error: (notesHad=2 4 1 0) barcheck fail: note crosses barline at "0" with 0 beams (24 skipped from 48 to 72, bypassing 64), scoreNo=1 barNo=1 (but the
+FAIL scores-draft4/南屏晚钟 合唱.txt Error: (notesHad=- 0 - 4 | 6 3 2 1 | 5 7 0 6 | 3 5 4 2 | 1 0 7 -) barcheck fail: note crosses barline at "-" with 0 beams (16 skipped from 56 to 72, b
+FAIL scores-draft4/南湖的船党的摇篮合唱谱.txt Error: (notesHad=- 0 - 1) barcheck fail: note crosses barline at "1" with 0 beams (16 skipped from 56 to 72, bypassing 64), scoreNo=1 barNo=1 (but the
+FAIL scores-draft4/城市之光（ 、 合唱）（美声通俗）.txt Error: (notesHad=6 6 0 3 | 2 4 5 6) barcheck fail: note crosses barline at "6" with 0 beams (24 skipped from 48 to 72, bypassing 64), scoreNo=1 barNo=
+FAIL scores-draft4/天河热土 二声部合唱谱.txt Error: (notesHad=2 1 - 3 | 3 2 1 - | 6 1 - - | 5 1 - - | - 3 1 - | - 1 0 4) barcheck fail: note crosses barline at "4" with 0 beams (16 skipped from 5
+OK   scores-draft4/好想爱这个世界啊 三声部合唱.txt 原样通过
+FAIL scores-draft4/小孩子大梦想二部合唱谱.txt Error: (notesHad=2 - - - | - 1 4 2 | - 3 0 5) barcheck fail: note crosses barline at "5" with 0 beams (16 skipped from 56 to 72, bypassing 64), scoreN
+FAIL scores-draft4/我们是运河的流水（女声合唱）.txt Error: (notesHad=2 1 4 - | 3 0 5 3) barcheck fail: note crosses barline at "3" with 0 beams (16 skipped from 56 to 72, bypassing 64), scoreNo=1 barNo=
+FAIL scores-draft4/打起手鼓唱起歌（混声合唱）.txt Error: (notesHad=3 4 2 4 | - 1 7 0 | - 5 3 - | 2 4 6 1 | 7 0 5 6 | - 4 3 2 | 1 7 - 0 | - - - - | - - - - | - - - - | - - - - | - - - - | - - - - | - -
+FAIL scores-draft4/明天女声合唱谱.txt Error: Ambiguous octave marks (please set OctavesBefore or OctavesAfter if writing them in the middle) in the ' part of '1- in score 1
+'1 2 '1 - | '1 
+FAIL scores-draft4/枕着光的她.txt Error: Can't have rest in chord: 0- in score 1
+4 - 2 3 1 5 6 7 0- 1 0 1 1 1 2 1 3 1 4 1 5. 1 6.
+                ^^
+FAIL scores-draft4/枕着光的她合唱.txt Error: Can't have rest in chord: 0-- in score 1
+6 5 | 3 2 | 4 - 1 | - 7 | - | | | | 0-- | - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+FAIL scores-draft4/海阔天空 混声四部合唱谱.txt Error: (notesHad=5 6 - 0 | 2 - 1 4 | 3 6 5 -) barcheck fail: note crosses barline at "-" with 0 beams (16 skipped from 56 to 72, bypassing 64), scoreN
+FAIL scores-draft4/爱就一个字二部合唱谱.txt Error: (notesHad=5 4 4 6 | 2 1 3 7 | 0 - 4 3) barcheck fail: note crosses barline at "3" with 0 beams (16 skipped from 56 to 72, bypassing 64), scoreN
+FAIL scores-draft4/璀璨冒险人二声部合唱.txt Error: (notesHad=4 6 | - - | 0 5) barcheck fail: note crosses barline at "5" with 0 beams (16 skipped from 24 to 40, bypassing 32), scoreNo=1 barNo=3 
+FAIL scores-draft4/盼星星盼月亮(合唱版).txt Error: (notesHad=5 3 2 5 | - 6 - 1) barcheck fail: note crosses barline at "1" with 0 beams (24 skipped from 48 to 72, bypassing 64), scoreNo=1 barNo=
+FAIL scores-draft4/种星星的人合唱谱.txt Error: (notesHad=2 4 2 1 | - 3 5 7- | 0 6 - - | - - 2 4 | - 3 1 6 | 5 0 7 - | - - - - | - - - - | - - - - | - - - - | - - - - | - - - - | - - - - | - 
+FAIL scores-draft4/美丽草原我的家－无伴奏合唱.txt Error: Ambiguous octave marks (please set OctavesBefore or OctavesAfter if writing them in the middle) in the ' part of '1- in score 1
+- - - '1- - - -
+FAIL scores-draft4/老师我想你（合唱版）.txt Error: (notesHad=4 2 - 3 | 5 6 7 - | 1 0 5 6 | - 1 7 6 | 3 1 1 4) barcheck fail: note crosses barline at "4" with 0 beams (16 skipped from 56 to 72, b
+OK   scores-draft4/花开忘忧合唱 珠海童年树合唱团.txt 原样通过
+FAIL scores-draft4/花开种花家合唱.txt Error: (notesHad=3 2 - 5 | 1 3 2 - | 0 3 5 - | 2 4 1 6 | 7 0 3 5) barcheck fail: note crosses barline at "5" with 0 beams (16 skipped from 56 to 72, b
+FAIL scores-draft4/西伯来奴隶合唱.txt Error: (notesHad=3 2 5 - | 1 4 4 5 | 4 3 - 2 | 1 7 6 0) barcheck fail: note crosses barline at "0" with 0 beams (24 skipped from 48 to 72, bypassing 6
+FAIL scores-draft4/锦瑟混声四部合唱谱.txt Error: (notesHad=6 0 - 5 | 4 1 7 2 | 3 1 2 3 | 4 5 6 7 | 0 - 1 2 | 3 4 5 6 | 7 0 - -) barcheck fail: note crosses barline at "-" with 0 beams (16 skip
+OK   scores-draft5/AMANI(粤语).txt 原样通过
+FAIL scores-draft5/ASK.txt Error: (notesHad=3 2 - - | - - - - | - - - - | - - - - | - - - - | - - - - | - - - - | 0 1 5 6 | 7 4 3 2 | 1------------------------------------------
+FAIL scores-draft5/Angel.txt Error: Can't have rest in chord: 0- in score 1
+7 | | | | - 0-
+            ^^
+FAIL scores-draft5/Auld lang syne 往日的时光（苏格兰、中英文）.txt Error: (notesHad=5 3 2 1 | 4 - 6 - | 7- 0 - -) barcheck fail: note crosses barline at "-" with 0 beams (16 skipped from 56 to 72, bypassing 64), score
+FAIL scores-draft5/Colorful Days.txt Error: Ambiguous octave marks (please set OctavesBefore or OctavesAfter if writing them in the middle) in the ' part of '1- in score 1
+2 3 - | 5 4 | 6
+OK   scores-draft5/Come On.txt 原样通过
+FAIL scores-draft5/Flying To The Moon（英文儿童歌）.txt Error: (notesHad=2 3 4 1 | 5 6 7 0) barcheck fail: note crosses barline at "0" with 0 beams (24 skipped from 48 to 72, bypassing 64), scoreNo=1 barNo=
+FAIL scores-draft5/Happy Birthday.txt Error: (notesHad=4 4 1 0 | 2 1 1 1) barcheck fail: note crosses barline at "1" with 0 beams (24 skipped from 48 to 72, bypassing 64), scoreNo=1 barNo=
+FAIL scores-draft5/Here We are.txt Error: (notesHad=5 3 - 2 | 4 6 - - | 1 0 - 7) barcheck fail: note crosses barline at "7" with 0 beams (16 skipped from 56 to 72, bypassing 64), scoreN
+FAIL scores-draft5/Hey Hah.txt Error: (notesHad=2 3 4 5 | 6 7 1 0 | 1 1 1 2 | 1 3 1 4 | 1 5 1 6 | 6 2 - - | - - - - | - - - - | - - - - | - - - - | - - - - | - - - - | - - - - | - -
+FAIL scores-draft5/Hey!Lover.txt Error: (notesHad=5 3 2 - | 4 1 4 0) barcheck fail: note crosses barline at "0" with 0 beams (24 skipped from 48 to 72, bypassing 64), scoreNo=1 barNo=
+FAIL scores-draft5/How Do You Do？（英文儿童歌）.txt Error: Can't have rest in chord: 0,- in score 1
+3 4 - 2 5 6 1 7, 0,-
+                 ^^^
+FAIL scores-draft5/I Like Chopin 我爱肖邦（意、英文歌）.txt Error: (notesHad=2 3 4 1 | 6 5 0 7-) barcheck fail: note crosses barline at "7-" with 0 beams (16 skipped from 56 to 72, bypassing 64), scoreNo=1 barN
+FAIL scores-draft5/Leave.txt Error: (notesHad=5 3 - 2 | 4 - - - | - - - - | - - - 0 | 1 6 3 6) barcheck fail: note crosses barline at "6" with 0 beams (16 skipped from 56 to 72, b
+FAIL scores-draft5/Love Is Bule 蓝色的爱（美、中英文）.txt Error: Can't have rest in chord: 0---- in score 1
+2 5 4 6 - 3 - - | - - - | - - - 1-- 0---- 7------. - - - - - | - - | - - - - - - - - - - - - - - - -
+FAIL scores-draft5/Make a Wish.txt Error: (notesHad=3 6 - 2 | 5 1 1 4 | 7 1 0 - | 6 5 - 2 | 4 3 1 7) barcheck fail: note crosses barline at "7" with 0 beams (16 skipped from 56 to 72, b
+FAIL scores-draft5/Mr.Cool.txt Error: Can't have rest in chord: 0- in score 1
+6 5 4 - 3 2 1 | | | | | 0- |
+                        ^^
+FAIL scores-draft5/My heart will go on（《铁达尼号》主题歌、英文歌）.txt Error: Ambiguous octave marks (please set OctavesBefore or OctavesAfter if writing them in the middle) in the ' part of '1- in score 1
+4 3 2 6 5 7 1 0
+OK   scores-draft5/New Boy.txt 原样通过
+FAIL scores-draft5/Piano.txt Error: (notesHad=1 6 1 - | 5 3 4 2 | 1 0 - - | 7 1 2 - | - - - - | - - - 2 | 5 3 6 7 | 1 1 - 0 | - 4 - 1 | - 2 3 5 | 6 7 - 0 | - 4 - 1 | - 2 3 5 | 6 7
+FAIL scores-draft5/Show Up.txt Error: (notesHad=6 5 1 - | 1 0 2- 6) barcheck fail: note crosses barline at "6" with 0 beams (16 skipped from 56 to 72, bypassing 64), scoreNo=1 barNo
+FAIL scores-draft5/Sing Sing Together（英文儿童歌）.txt Error: (notesHad=2 4 - 1 | 5 7 6 3 | 0 1 1 1 | 1 1 3 2 | - 4 5 1 | 6 7 0 - | - - - 5 | - 1 - 0 | 6 5 4 - | 1 2 0 3 | 7 - - -) barcheck fail: note cros
+FAIL scores-draft5/Sophia.txt Error: (notesHad=3 5 6 5) barcheck fail: note crosses barline at "5" with 0 beams (30 skipped from 60 to 90, bypassing 64), scoreNo=1 barNo=1 (but the
+FAIL scores-draft5/Super Star.txt Error: (notesHad=2 3 5 4 | - 1 2 - | 4 3 2 - | 5 - - 1 | 0 7 - -) barcheck fail: note crosses barline at "-" with 0 beams (16 skipped from 56 to 72, b
+FAIL scores-draft5/Ten Little Babies（英文儿童歌）.txt Error: Incomplete bar at end of score 1 (1 beats)
+OK   scores-draft5/The Basic Song（英文儿童歌）.txt 原样通过
+FAIL scores-draft5/The Moment.txt Error: (notesHad=1 5 1 5 | 4 7 6 7 | 1 2 0 - | - - - - | - - - - | - - 7 6 | 2 3 4 - | 5 6 7 1 | 0 - - - | - - - - | - - - - | - - - - | - - - - | - -
+FAIL scores-draft5/This is.txt Error: (notesHad=5 3 6 - | 4 1 2- 0) barcheck fail: note crosses barline at "0" with 0 beams (16 skipped from 56 to 72, bypassing 64), scoreNo=1 barNo
+FAIL scores-draft5/Wake UP.txt Error: (notesHad=6 7 2 1 | 3 - - 0 | 4 5 2 3 | 5 6 - 1 | 4 0 7 3 | 2 - 6 1 | 5 - 6 0 | 1 1 - 4-) barcheck fail: note crosses barline at "4-" with 0 be
+FAIL scores-draft5/Yesterday Once More 昨日重现（中英文）.txt Error: (notesHad=4 2 | 3 - | 1 6 | 7 5 | 0 6 | 2 3 | 5 1) barcheck fail: note crosses barline at "1" with 0 beams (16 skipped from 24 to 40, bypassing
+FAIL scores-draft-pucn/上海人.txt Error: (notesHad=2 3 1 5 | 4 0 7 6) barcheck fail: note crosses barline at "6" with 0 beams (24 skipped from 48 to 72, bypassing 64), scoreNo=1 barNo=
+FAIL scores-draft-pucn/中秋情.txt Error: Unrecognised command 6=Am in score 1
+6=Am
+^^^^
+FAIL scores-draft-pucn/八角树.txt Error: (notesHad=2 4 1 0 | - 3 6 5 | - 3 2 4 | - 1 7 0 | 1 1 6 3 | 5 - 4 2 | 1 7 - - | 0 6 2 3 | - 0 - 5 | 6 7 1 4 | 3 2 - 5 | 6 4 1 - | 7 0 2 - | 5 6
+FAIL scores-draft-pucn/太湖水.txt Error: (notesHad=2 4 | - 3 | 5 1 | 6 7 | 0 -) barcheck fail: note crosses barline at "-" with 0 beams (16 skipped from 24 to 40, bypassing 32), scoreN
+FAIL scores-draft-pucn/学厨艺.txt Error: (notesHad=1 2 | 3 4 | 5 6 | 0 - | 2 4 | - 1 | 7 6 | 5 - | 3 0) barcheck fail: note crosses barline at "0" with 0 beams (16 skipped from 24 to 4
+FAIL scores-draft-pucn/学工歌.txt Error: (notesHad=2 4 3 - | 1 0 5 6) barcheck fail: note crosses barline at "6" with 0 beams (16 skipped from 56 to 72, bypassing 64), scoreNo=1 barNo=
+FAIL scores-draft-pucn/学电脑.txt Error: (notesHad=1- 2 3 4 | 5 6 7 0) barcheck fail: note crosses barline at "0" with 0 beams (24 skipped from 48 to 72, bypassing 64), scoreNo=1 barNo
+FAIL scores-draft-pucn/宜昌队.txt Error: (notesHad=4 4 - - | 0 5 - -) barcheck fail: note crosses barline at "-" with 0 beams (16 skipped from 56 to 72, bypassing 64), scoreNo=1 barNo=
+FAIL scores-draft-pucn/寄明月.txt Error: (notesHad=2 3 - 1 | 6 0 5- -) barcheck fail: note crosses barline at "-" with 0 beams (16 skipped from 56 to 72, bypassing 64), scoreNo=1 barNo
+FAIL scores-draft-pucn/小上海.txt Error: (notesHad=2 4 - 3 | 1 6 5 7 | 0 2 4 - | 1 7 3 5 | 6 0 5 2) barcheck fail: note crosses barline at "2" with 0 beams (16 skipped from 56 to 72, b
+FAIL scores-draft-pucn/小重山.txt Error: (notesHad=4 3 2 5 | 6 7 1 - | 0 - 6 3) barcheck fail: note crosses barline at "3" with 0 beams (16 skipped from 56 to 72, bypassing 64), scoreN
+FAIL scores-draft-pucn/少年游.txt Error: (notesHad=5 6 - 2 | 3 4 1 7 | 0 3 5 - | 6 1 2 0 | 7 4 2 | 3 4 6 5 | 1 7 0 2 | 3 - 5 6 | 4 1 7 0 | - - - - | - - - - | - - - - | - - - - | - - -
+FAIL scores-draft-pucn/当兵乐.txt Error: Ambiguous octave marks (please set OctavesBefore or OctavesAfter if writing them in the middle) in the ' part of '1- in score 1
+4 5 - 2 3 1 6 -
+FAIL scores-draft-pucn/忘情酒.txt Error: Can't have rest in chord: 0- in score 1
+4 2 - 3 1 6- 7- 5- - - 0- - -
+                       ^^
+FAIL scores-draft-pucn/意难平.txt Error: (notesHad=1 4 2 3 | - 0 5 6) barcheck fail: note crosses barline at "6" with 0 beams (16 skipped from 56 to 72, bypassing 64), scoreNo=1 barNo=
+FAIL scores-draft-pucn/我的梦.txt Error: (notesHad=2 4 7 6 | 0 - 1 3 | 5 4 2 6 | 5 3 1 - | - 7- - - | - - - 6 | 5 - 1 2 | 3 4 7 0 | 6 5 2 - | 3 1 - - | 7 4 0 2) barcheck fail: note cro
+FAIL scores-draft-pucn/推车歌.txt Error: Can't have rest in chord: 0- in score 1
+0- |
+^^
+FAIL scores-draft-pucn/木叶情.txt Error: Can't have rest in chord: 0- in score 1
+2 3 - | 6 5 4 1 | 7 0- 2 3 - - | |
+                    ^^
+FAIL scores-draft-pucn/歌友情.txt Error: Can't have rest in chord: 0- in score 1
+4 4 - 7- 6- 3- 2- 1- 0- - 5 4 3 2 - -
+                     ^^
+FAIL scores-draft-pucn/步步高.txt Error: (notesHad=5 3 2 4 | - 6 1 1 | 1 7 - - | - - - - | - - - - | 3 5 - 6 | 4 1 2 7 | 0 - - - | - - - - | - - - - | - - - - | - - - - | - - - - | - -
+FAIL scores-draft-pucn/男儿泉.txt Error: (notesHad=- - 0 1 | 3 4 - 2 | 1 - - - | - - - - | - - - - | - - - - | 6 3 - 1 | 2 - 1 1 | 1 1 0 7) barcheck fail: note crosses barline at "7" w
+FAIL scores-draft-pucn/胭脂妆.txt Error: (notesHad=4 - 1 2 | 3 5 6 7) barcheck fail: note crosses barline at "7" with 0 beams (24 skipped from 48 to 72, bypassing 64), scoreNo=1 barNo=
+FAIL scores-draft-pucn/舀河浜.txt Error: (notesHad=2 3 | 1 5 | 0 4) barcheck fail: note crosses barline at "4" with 0 beams (24 skipped from 16 to 40, bypassing 32), scoreNo=1 barNo=3 
+FAIL scores-draft-pucn/苍穹唤.txt Error: (notesHad=6 3 5 - | 2 1 1 1 | 1 1 - 4 | 7 0 6 3) barcheck fail: note crosses barline at "3" with 0 beams (16 skipped from 56 to 72, bypassing 6
+FAIL scores-draft-pucn/苕乡情.txt Error: (notesHad=6 - | 5 1 | 6 5 | - 1 | 2 3 | 1 1 | 4 7 | 0 1 | 6 - | 1 1 | 4 7 | 0 1 | 1 6 | - 1 | 1 4 | 7 0 | 1 1 | 6 - | 1 1 | 4 7 | 0 1 | 1 6 | -
+FAIL scores-draft-pucn/苹果香.txt Error: (notesHad=3 5 6 1 | 2 - 1 1 | 4 7 - 0) barcheck fail: note crosses barline at "0" with 0 beams (24 skipped from 48 to 72, bypassing 64), scoreN
+FAIL scores-draft-pucn/菜园子.txt Error: (notesHad=2 3 - 4 | 5 6 1 7 | 6 2 - 3 | 4 1 5- 0) barcheck fail: note crosses barline at "0" with 0 beams (16 skipped from 56 to 72, bypassing 
+FAIL scores-draft-pucn/陆北大.txt Error: Ambiguous octave marks (please set OctavesBefore or OctavesAfter if writing them in the middle) in the ' part of '1- in score 1
+2 4 - - - - - -
+FAIL scores-draft-pucn/青原赋.txt Error: Can't have rest in chord: 0- in score 1
+| - 0- | |
+    ^^
+FAIL scores-draft-pujia/一字诗.txt Error: (notesHad=4 2 | - 3 | 1 7 | 0 5 | 6 -) barcheck fail: note crosses barline at "-" with 0 beams (16 skipped from 24 to 40, bypassing 32), scoreN
+FAIL scores-draft-pujia/一闪一闪亮晶晶.txt Error: (notesHad=5 6 | - 4 | 3 2 | 5 6 | - 4 | 3 2 | 1 4 | 2 5 | - 1 | 6 0) barcheck fail: note crosses barline at "0" with 0 beams (24 skipped from 1
+FAIL scores-draft-pujia/七步诗.txt Error: (notesHad=4 2 - - | - - - 0) barcheck fail: note crosses barline at "0" with 0 beams (24 skipped from 48 to 72, bypassing 64), scoreNo=1 barNo=
+FAIL scores-draft-pujia/七色光之歌.txt Error: (notesHad=2 1 | 3 4 | 5 6 | 7 3 | 5 4 | - 2- | 1 3 | 4 5 | 6 2 | - 1 | 7 - | - 0) barcheck fail: note crosses barline at "0" with 0 beams (24 s
+FAIL scores-draft-pujia/三字经.txt Error: (notesHad=2 4 - 1 | - 0 5 3) barcheck fail: note crosses barline at "3" with 0 beams (16 skipped from 56 to 72, bypassing 64), scoreNo=1 barNo=
+FAIL scores-draft-pujia/上学歌.txt Error: (notesHad=6 5 3 4 | - 2 1 7 | 0 - - -) barcheck fail: note crosses barline at "-" with 0 beams (16 skipped from 56 to 72, bypassing 64), scoreN
+FAIL scores-draft-pujia/九儿.txt Error: (notesHad=4 2 - 1 | 3 5 7 6 | 0 6 2 1) barcheck fail: note crosses barline at "1" with 0 beams (16 skipped from 56 to 72, bypassing 64), scoreN
+FAIL scores-draft-pujia/乡间的小路.txt Error: (notesHad=2 4 - 1 | 0 7 5 6-) barcheck fail: note crosses barline at "6-" with 0 beams (16 skipped from 56 to 72, bypassing 64), scoreNo=1 barN
+FAIL scores-draft-pujia/儿歌.txt Error: (notesHad=4 2 - - | - - - - | - - - 0) barcheck fail: note crosses barline at "0" with 0 beams (24 skipped from 48 to 72, bypassing 64), scoreN
+FAIL scores-draft-pujia/元日.txt Error: (notesHad=4 2 1 3 | 5 7 - - | - - - - | - - 1 1 | 0 1 2 3 | 4 5 6 7 | 5 6 1 2 | 3 4 1 1 | 7 - 0 - | - - - - | - - - - | - - - - | - - - - | - -
+FAIL scores-draft-pujia/兰花草.txt Error: Ambiguous octave marks (please set OctavesBefore or OctavesAfter if writing them in the middle) in the ' part of '1- in score 1
+6 3 | '1 3 6 - 
+FAIL scores-draft-pujia/出塞.txt Error: (notesHad=4 - | 2 1 | 6 5 | 0 7 | 3 6 | 3 2 | 5 4 | 6 1 | 7 1 | - 1 | 0 - | - - | 2 - | - - | - - | - - | - - | - - | - - | - - | - - | - - | 2
+FAIL scores-draft-pujia/别看我只是只羊.txt Error: (notesHad=4 - 2 3 | 1 5 6 7 | 0 - - -) barcheck fail: note crosses barline at "-" with 0 beams (16 skipped from 56 to 72, bypassing 64), scoreN
+FAIL scores-draft-pujia/卖报歌.txt Error: (notesHad=2 4 - 3 | 1 6 5 7 | 0 - - - | - - - 6 | 5 - 3 2 | 4 1 7 0) barcheck fail: note crosses barline at "0" with 0 beams (24 skipped from 5
+FAIL scores-draft-pujia/叶儿船.txt Error: (notesHad=2 4 3 - | 1 6 5 7 | 5 6 - 1 | 1 6 1 3 | 6 - 4 2 | 5 - 7 1 | 0 6 5 3 | - 2 - 4 | - 1 7 - | 0 6 3 -) barcheck fail: note crosses barlin
+FAIL scores-draft-pujia/听妈妈讲那过去的事情.txt Error: (notesHad=2 4 | - 3 | 5 1 | 6 7 | 0 5 | 3 2 | - - | - - | - - | - - | - 1) barcheck fail: note crosses barline at "1" with 0 beams (24 skipped 
+FAIL scores-draft-pujia/咏鹅.txt Error: (notesHad=2 4 | - 1 | - - | 3 5 | - - | - - | - - | - - | - - | - 1 | 2 - | - 6 | - 4 | 7 0 | - - | - - | - 5 | 6 - | 0 - | 7- 2 | 1 3 | 4 6 | 
+FAIL scores-draft-pujia/嘀哩嘀哩.txt Error: (notesHad=2 4 | - - | - 5 | 6 4 | 3 2 | - 1 | 5 6 | - 5 | 0 - | 7 3 | 5 - | 2 4 | - 1 | 6 - | 0 7-) barcheck fail: note crosses barline at "7-"
+FAIL scores-draft-pujia/增广贤文.txt Error: (notesHad=4 2 - 1 | 3 6 0 5) barcheck fail: note crosses barline at "5" with 0 beams (16 skipped from 56 to 72, bypassing 64), scoreNo=1 barNo=
+FAIL scores-draft-pujia/声律启蒙.txt Error: Ambiguous octave marks (please set OctavesBefore or OctavesAfter if writing them in the middle) in the ' part of '1- in score 1
+2 4 - 3 1 6 7 5
+FAIL scores-draft-pujia/外婆的澎湖湾.txt Error: (notesHad=2 - 3 4 | 5 - 6 1 | - - 2 0 | - 7 - -) barcheck fail: note crosses barline at "-" with 0 beams (16 skipped from 56 to 72, bypassing 6
+FAIL scores-draft-pujia/多情的月光.txt Error: (notesHad=3 5 2 6 | 4 1 - 7 | 0 - - - | - - - - | - - - - | - - - - | - - - - | - - - - | - - - - | - - - - | - - - - | - - - - | - - - - | - 5
+FAIL scores-draft-pujia/大风车.txt Error: (notesHad=4 2 - 5) barcheck fail: note crosses barline at "5" with 0 beams (24 skipped from 48 to 72, bypassing 64), scoreNo=1 barNo=1 (but the
+FAIL scores-draft-pujia/女儿歌.txt Error: Can't have rest in chord: 0,- in score 1
+2 4 - 1 7, 0,- - -
+           ^^^
+FAIL scores-draft-pujia/妈妈的吻.txt Error: (notesHad=4 2 - 1 | 3 7 0 5 | 6 5 6 3 | 2 - 1 4 | 7 0 2 5) barcheck fail: note crosses barline at "5" with 0 beams (16 skipped from 56 to 72, b
+FAIL scores-draft-pujia/学习雷锋好榜样.txt Error: (notesHad=2 1 3 4- | 5 6 7 0 | 3 6 - 5 | 2 4 - 1 | 7- 0 - - | - - - - | - - - - | - - - - | - - - - | - - - - | - - - - | - - - - | - - - - | -
+FAIL scores-draft-pujia/宝贝宝贝.txt Error: (notesHad=4 2 1 0 | - - - - | - - - - | - 1 1 0 | 1 1 0 0 | 7 1 7 3) barcheck fail: note crosses barline at "3" with 0 beams (16 skipped from 5
+FAIL scores-draft-pujia/寻胡隐君.txt Error: (notesHad=4 2 | - 1 | 3 4 | 5 3 | 4 - | 6 2 | 1 7 | 1 0 | - - | 2 - | 1 6 | 5 3 | 4 7 | 0 3) barcheck fail: note crosses barline at "3" with 0 
+FAIL scores-draft-pujia/小儿语.txt Error: (notesHad=4 2 - 2 | 3 4 5 6 | - 1 1 1 | 7 0 - - | - - - - | - - - - | - - - - | - - - - | - - - - | - - - - | - - - - | - - - - | - - - - | - -
+FAIL scores-draft-pujia/小兔子乖乖.txt Error: (notesHad=5 6 3 4 | 1 1 2 0) barcheck fail: note crosses barline at "0" with 0 beams (16 skipped from 56 to 72, bypassing 64), scoreNo=1 barNo=
+FAIL scores-draft-pujia/小小少年.txt Error: (notesHad=4 2 | 3 - | 5 6 | 1 7 | 0 - | 1 0 | - - | - - | - - | - - | - - | - - | - - | - - | - - | - - | - - | - - | - - | - - | - - | - - | -
+FAIL scores-draft-pujia/小小雨点.txt Error: (notesHad=2 4 | - 2 | 5 4 | - 3 | 1 6 | 7 0) barcheck fail: note crosses barline at "0" with 0 beams (24 skipped from 16 to 40, bypassing 32), 
+FAIL scores-draft-pujia/小星星.txt Error: Can't have rest in chord: 0- in score 1
+1 7 6- '1 | - 0- | | | | | -
+              ^^
+FAIL scores-draft-pujia/小毛驴.txt Error: (notesHad=4 - - - | - - - - | - - 0 5) barcheck fail: note crosses barline at "5" with 0 beams (16 skipped from 56 to 72, bypassing 64), scoreN
+FAIL scores-draft-pujia/小燕子.txt Error: (notesHad=3 5 1 6 | - 1 3 2 | 1 2 3 5) barcheck fail: note crosses barline at "5" with 0 beams (24 skipped from 48 to 72, bypassing 64), scoreN
+FAIL scores-draft-pujia/小白船.txt Error: Can't have rest in chord: 0-- in score 1
+5 3 - | '1 - - | | 6 - - - | - | 1 - - - - | - | | 7---. 0-- 2- | - - | '1----.- | 4------ - - - - - -
+FAIL scores-draft-pujia/小红帽.txt Error: (notesHad=2 3 | 4 5 | 1 6 | 4 1 | 1 7 | 0 1 | 2 3 | 4 6 | 4 5 | 3 2 | 3 4 | 1 1 | 1 - | - - | - - | - - | 0 - | - 7 | - - | - - | - - | - - | -
+FAIL scores-draft-pujia/小草.txt Error: (notesHad=2 - | - - | - - | - - | - - | - - | - - | - - | - - | 1 4 | 3 0) barcheck fail: note crosses barline at "0" with 0 beams (24 skipped 
+FAIL scores-draft-pujia/小螺号.txt Error: (notesHad=2 4 | - 1 | 7 3 | - 5- | 6 0) barcheck fail: note crosses barline at "0" with 0 beams (24 skipped from 16 to 40, bypassing 32), score
+FAIL scores-draft-pujia/小螺号（少儿歌曲）.txt Error: (notesHad=2 4 | - 1 | 7 3 | 6 5 | 0 -) barcheck fail: note crosses barline at "-" with 0 beams (16 skipped from 24 to 40, bypassing 32), scoreN
+FAIL scores-draft-pujia/弟子规.txt Error: (notesHad=4 2 - 6 | 3 5 7 1 | 0 - - - | - - - - | - - - 1 | 1 2 1 3 | 6 5 - 0 | - 1 7- 4) barcheck fail: note crosses barline at "4" with 0 bea
+FAIL scores-draft-pujia/悯农.txt Error: (notesHad=2 4 - 1 | 7 3 1 7 | 1 7 1 6 | - 4 5 2 | 1 1 0 0) barcheck fail: note crosses barline at "0" with 0 beams (16 skipped from 56 to 72, b
+FAIL scores-draft-pujia/我们是共产主义接班人.txt Error: Ambiguous octave marks (please set OctavesBefore or OctavesAfter if writing them in the middle) in the ' part of '1- in score 1
+3 5 6 | 3 3 2 |
+FAIL scores-draft-pujia/我们是春天.txt Error: Ambiguous octave marks (please set OctavesBefore or OctavesAfter if writing them in the middle) in the ' part of '1- in score 1
+3 5 - | 4 6 '1-
+FAIL scores-draft-pujia/我是一个粉刷匠.txt Error: (notesHad=2 4 | - 1 | 0 5) barcheck fail: note crosses barline at "5" with 0 beams (16 skipped from 24 to 40, bypassing 32), scoreNo=1 barNo=3 
+FAIL scores-draft-pujia/我爱北京天安门.txt Error: (notesHad=2 4 - 5 | 6 5 4 3 | 2 3 4 6 | 7 6 7 5 | 1 0 1 1 | 2 3 1 1) barcheck fail: note crosses barline at "1" with 0 beams (16 skipped from 5
+FAIL scores-draft-pujia/我的好妈妈.txt Error: (notesHad=3 5 2 - | 4 6 - 1 | - 7 0 - | - - - - | - - - - | - - - - | - - - - | - - - - | - - - - | - - - - | - - - - | - - - - | - - - 3 | 5 2
+FAIL scores-draft-pujia/找朋友.txt Error: (notesHad=2 4 | - 1 | 7 0 | 3 5) barcheck fail: note crosses barline at "5" with 0 beams (16 skipped from 24 to 40, bypassing 32), scoreNo=1 ba
+FAIL scores-draft-pujia/拔萝卜.txt Error: (notesHad=5 6 | 3 2 | 5 1 | 2 5 | 6 3 | 2 5 | 3 2 | 1 - | 2 4 | 6 - | 3 5 | 7 1 | 0 - | 5 3 | 2 1 | 4 6 | 7 0) barcheck fail: note crosses barl
+FAIL scores-draft-pujia/摇篮曲.txt Error: (notesHad=4 6 - 2 | 3 5 7 1 | 0 - - -) barcheck fail: note crosses barline at "-" with 0 beams (16 skipped from 56 to 72, bypassing 64), scoreN
+FAIL scores-draft-pujia/数鸭子.txt Error: (notesHad=- 0 2 3 | 4 - 5 - | - - 1 0 | 6-- - 7----- -) barcheck fail: note crosses barline at "-" with 0 beams (16 skipped from 60 to 76, bypa
+FAIL scores-draft-pujia/新年好.txt Error: (notesHad=3 4 1 | 1 1 0 | 1 2 3 | 4 5 6 | 7 - 3 | 5 - 2 | 4 6 1 | 7 - 0 | - - - | - - - | - - - | - - - | - - - | - - - | - - - | - - - | - - -
+FAIL scores-draft-pujia/明日歌.txt Error: (notesHad=4 2 - 6 | 3 5 7 1 | 0 - - - | - - - - | - - - 6 | 3 - 1 2 | 1 5 7 - | 4 1 0 1) barcheck fail: note crosses barline at "1" with 0 beam
+FAIL scores-draft-pujia/明月逐人归.txt Error: (notesHad=6 2 3 - | 5 1 7 1 | 0 1 - -) barcheck fail: note crosses barline at "-" with 0 beams (16 skipped from 56 to 72, bypassing 64), scoreN
+FAIL scores-draft-pujia/春天在哪里.txt Error: (notesHad=3 5 - 2 | 4 - 1 6 | 0 7 - 3) barcheck fail: note crosses barline at "3" with 0 beams (16 skipped from 56 to 72, bypassing 64), scoreN
+FAIL scores-draft-pujia/春晓.txt Error: (notesHad=4 2 | 3 - | 1 6 | 5 7 | 0 - | - - | - - | - - | - - | 1 5 | 3 6 | 5 2 | - - | - 4 | 1 0 | 7-- - | 2 5 | - 6 | 3 1 | 7 -) barcheck fai
+FAIL scores-draft-pujia/晓窗.txt Error: (notesHad=4 2 | - 3 | 1 5- | 6 7) barcheck fail: note crosses barline at "7" with 0 beams (16 skipped from 24 to 40, bypassing 32), scoreNo=1 b
+FAIL scores-draft-pujia/村居.txt Error: (notesHad=4 2 3 - | 1 5 6 7 | 0 - - - | - - - - | 1 5 3 1 | 6 2 4 1 | - 0 7- 5) barcheck fail: note crosses barline at "5" with 0 beams (16 ski
+FAIL scores-draft-pujia/校园的早晨.txt Error: (notesHad=4 2 - - | - - - - | - - - - | 5 6 - 3 | 2 - 4 1 | - 7 0 3) barcheck fail: note crosses barline at "3" with 0 beams (24 skipped from 4
+FAIL scores-draft-pujia/格言联壁.txt Error: (notesHad=4 2 | 3 - | 1 6 | 7 5 | - - | - - | - - | - - | - - | - - | - - | - - | - 5 | 6 7 | - 2 | 3 4 | 1 1 | 0 1) barcheck fail: note crosse
+FAIL scores-draft-pujia/歌声与微笑.txt Error: (notesHad=- - 0 1) barcheck fail: note crosses barline at "1" with 0 beams (16 skipped from 56 to 72, bypassing 64), scoreNo=1 barNo=1 (but the
+FAIL scores-draft-pujia/每当我走过老师窗前.txt Error: (notesHad=5 4 | - 2 | 3 6 | 1 7 | - 0 | - 3 | 6 5 | 4 2 | 5 1 | 7 - | 0 - | 2 4 | - 3 | 5 1 | 6 3 | 4 1 | 1 - | 5 6 | 7 6 | 1 2) barcheck fail:
+FAIL scores-draft-pujia/江南.txt Error: (notesHad=4 2 | 6- 7 | 3- 5 | 1- 0) barcheck fail: note crosses barline at "0" with 0 beams (24 skipped from 16 to 40, bypassing 32), scoreNo=1
+FAIL scores-draft-pujia/洋娃娃和小熊跳舞.txt Error: Can't have rest in chord: 0-----. in score 1
+2 3 4 | 5 5 5 4 1 | - | - | - - - - - - - 0-----. | - - - - - - - - - - | - - - - - - - - - - - - 
+FAIL scores-draft-pujia/清明.txt Error: (notesHad=4 - 5 2 | - 6 1 4 | 3 7 - 0 | 4 2 - 5 | 6 5 - 5 | 3 1 2 - | - - - - | - 0 - - | 7 6 2 - | 5 4 3- | 1 - 7 0 | - - - - | - - - - | - - 
+FAIL scores-draft-pujia/游子吟.txt Error: (notesHad=4 2 | - 1 | 6 3 | 7 5 | 0 5 | 6 1 | 3 2 | 3 7 | 6 - | - - | 1 1 | 2 - | 3 6 | 5 1 | 2 - | 3 6 | 5 1 | 2 - | 2 5 | 3 - | 6 1 | 0 4) ba
+FAIL scores-draft-pujia/烟雨.txt Error: (notesHad=6 3 2 - | - - 5 4 | 1 7 1 2 | 3 5 - 6 | - - - - | - - - - | - - 7 1 | 0 4 - -) barcheck fail: note crosses barline at "-" with 0 beam
+FAIL scores-draft-pujia/熊猫咪咪（少儿歌曲）.txt Error: (notesHad=4 2 - 3 | 5 6 7 0 | 1 2 3 6) barcheck fail: note crosses barline at "6" with 0 beams (16 skipped from 56 to 72, bypassing 64), scoreN
+FAIL scores-draft-pujia/牧羊童.txt Error: (notesHad=6 5 - 4 | 1 3 1 1 | 1 1 7 2 | 1 1 7 0 | - - - - | - - - - | - - 5 4 | - 3 2 - | - 6-- 1 7 | 0 - - - | - - - - | - - - - | - - - - | -
+FAIL scores-draft-pujia/生日歌.txt Error: (notesHad=3 4 5 6 | - 3 - - | - 1 2-- - | 7 0 - - | 4------- - - -) barcheck fail: note crosses barline at "-" with 0 beams (16 skipped from 63
+FAIL scores-draft-pujia/登鹳雀楼.txt Error: (notesHad=3 4 - 1 | 2 - - - | - - - - | - 3 4 5 | 6 - 1 2 | 7 - 1 - | 1 0 5 3 | - 2 6 7 | 1 - 4 0 | - - - - | - - - - | - - - - | - - - - | - -
+FAIL scores-draft-pujia/百家姓.txt Error: (notesHad=4 - - 0) barcheck fail: note crosses barline at "0" with 0 beams (24 skipped from 48 to 72, bypassing 64), scoreNo=1 barNo=1 (but the
+FAIL scores-draft-pujia/相思.txt Error: (notesHad=4 - 6 2 | 3 5 1 7 | 0 - 6 3) barcheck fail: note crosses barline at "3" with 0 beams (16 skipped from 56 to 72, bypassing 64), scoreN
+FAIL scores-draft-pujia/祝你生日快乐.txt Error: (notesHad=1 0 0 | 5 3 1 | - 4 6 | 2 - 7 | 1 0 1 | 6 4 - | 3 1 2 | - 1 - | - 7 5 | 0 0 1- | 7 1- 6 | 5 6 1 | - 4 1 | 1 2 3 | 0 7- 1 | 0 1 3) bar
+FAIL scores-draft-pujia/秋千（少儿歌曲）.txt Error: Can't have rest in chord: 0- in score 1
+6 3 '1 5 | 4 - | | 7 2 0 1 | 0- | | 5. 6 0 0 | - | - | 6 6 3 5. | 0 6 '1
+                             ^
+FAIL scores-draft-pujia/童年的小摇车（少儿歌曲）.txt Error: Ambiguous octave marks (please set OctavesBefore or OctavesAfter if writing them in the middle) in the ' part of '1- in score 1
+3 4 - - - - - -
+FAIL scores-draft-pujia/童年（少儿歌曲.txt Error: (notesHad=4 2 - 3 | 1 0 5 3 | 6 4 2 1 | - - - 7 | 0 - - -) barcheck fail: note crosses barline at "-" with 0 beams (16 skipped from 56 to 72, b
+FAIL scores-draft-pujia/红星歌.txt Error: (notesHad=2 4 3 5 | 6 7 1 6 | 3 2 1 - | 1 1 4 | 1 1 1 1 | 5 1 1 1) barcheck fail: note crosses barline at "1" with 0 beams (16 skipped from 56 
+FAIL scores-draft-pujia/红领巾之歌.txt Error: Can't have rest in chord: 0,- in score 1
+2 4 - 1 7, 0,- -
+           ^^^
+FAIL scores-draft-pujia/红鼻子驯鹿鲁道夫.txt Error: (notesHad=2 1 4 - | 0 5 5 3) barcheck fail: note crosses barline at "3" with 0 beams (16 skipped from 56 to 72, bypassing 64), scoreNo=1 barNo=
+FAIL scores-draft-pujia/蜗牛与黄鹂鸟.txt Error: (notesHad=4 2 3 6 | 5 1 0 7 | - - 2 3 | 5 4 6 - | - 1 0 - | 7- - 1 4 | 2 - 3 0) barcheck fail: note crosses barline at "0" with 0 beams (24 ski
+OK   scores-draft-pujia/让我们荡起双桨.txt 原样通过
+FAIL scores-draft-pujia/论语.txt Error: (notesHad=4 2 - - | - 1 5 1 | 6 1 5 - | 2-- 3 1 0 | 7 4 - 1) barcheck fail: note crosses barline at "1" with 0 beams (16 skipped from 56 to 72,
+FAIL scores-draft-pujia/读唐诗.txt Error: Can't have rest in chord: 0- in score 1
+1 5 4 '1 7 | - 0- '1 |
+               ^^
+FAIL scores-draft-pujia/谷建芬新学堂儿歌系列：千字文.txt Error: (notesHad=2 4 | - 1 | 3 5 | 6 7 | 0 -) barcheck fail: note crosses barline at "-" with 0 beams (16 skipped from 24 to 40, bypassing 32), scoreN
+OK   scores-draft-pujia/谷建芬新学堂儿歌系列：长相思.txt 原样通过
+FAIL scores-draft-pujia/赋得古原草送别.txt Error: (notesHad=4 2 - 1 | 6 3 5 7 | 0 2 3 -) barcheck fail: note crosses barline at "-" with 0 beams (16 skipped from 56 to 72, bypassing 64), scoreN
+FAIL scores-draft-pujia/路灯下的小姑娘.txt Error: (notesHad=2 4 - 3 | 5 6 7 1 | 0 3 6 1 | 5 - 1 1 | 2 0 4 | 7 6 5 4 | - 3 2 1 | 7 0 - 1) barcheck fail: note crosses barline at "1" with 0 beams 
+FAIL scores-draft-pujia/道德经.txt Error: (notesHad=2 4 | - 1 | 0 5) barcheck fail: note crosses barline at "5" with 0 beams (16 skipped from 24 to 40, bypassing 32), scoreNo=1 barNo=3 
+FAIL scores-draft-pujia/采蘑菇的小姑娘.txt Error: Ambiguous octave marks (please set OctavesBefore or OctavesAfter if writing them in the middle) in the ' part of '1.- in score 1
+7-- '1 '1 '1 '
+FAIL scores-draft-pujia/铃儿响叮当.txt Error: (notesHad=4 5 6 3 | 2 1 7 5 | 4 3 2 6 | - 1 7 0 | 3 5 2 - | 4 1 7 0) barcheck fail: note crosses barline at "0" with 0 beams (16 skipped from 5
+FAIL scores-draft-pujia/长歌行.txt Error: (notesHad=4 2 7 6 | 5 3 1 0) barcheck fail: note crosses barline at "0" with 0 beams (24 skipped from 48 to 72, bypassing 64), scoreNo=1 barNo=
+FAIL scores-draft-pujia/静夜思.txt Error: (notesHad=2 4 | - 1 | 0 3) barcheck fail: note crosses barline at "3" with 0 beams (24 skipped from 16 to 40, bypassing 32), scoreNo=1 barNo=3 
+FAIL scores-draft-pujia/马兰谣.txt Error: (notesHad=4 2 4 6 | 5 6 2 1 | 7 - 0 - | 2 1 1 3 | 4 5 6 7 | 2 1 2 3 | 5 0 7 6-) barcheck fail: note crosses barline at "6-" with 0 beams (16 sk
+FAIL scores-draft-pujia/鲁冰花.txt Error: Ambiguous octave marks (please set OctavesBefore or OctavesAfter if writing them in the middle) in the ' part of '1- in score 1
+1 - 2 0 3 4 5 6

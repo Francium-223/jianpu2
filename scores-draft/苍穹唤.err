@@ -1,0 +1,19 @@
+JIANPU_LY ERROR: (notesHad=6 3 5 2 | 4 - 1 7 | 5 0 5 6-) barcheck fail: note crosses barline at "6-" with 0 beams (28 skipped from 56 to 84, bypassing 64), scoreNo=1 barNo=3 (but the error could be earlier)
+
+--- score ---
+title=苍穹唤
+type=work
+%--
+6 3 5 2 4 - | 1 7 | 5 0 | | 5. | | 6-.. |
+6 3 2 5 4 - | 1 | 7
+6 5 | 3 2 | - |
+4 1 7 | - |
+0 | | | | | |
+5 3 | 6 - |
+2 4 | 7 |
+1 0. |
+5 3 | - |
+2 4 | 7 |
+1 0. |
+i 2 i 6 6 5 - | 3 3 5 2 2 3 6 1 0. 0 |
+%END

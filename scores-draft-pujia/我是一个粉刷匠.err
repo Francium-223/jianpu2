@@ -1,0 +1,25 @@
+JIANPU_LY ERROR: (notesHad=2 4 | - 1 | 0 5) barcheck fail: note crosses barline at "5" with 0 beams (16 skipped from 24 to 40, bypassing 32), scoreNo=1 barNo=3 (but the error could be earlier)
+
+--- score ---
+title=我是一个粉刷匠
+type=work
+alias=我是一个粉刷匠简谱_儿歌_我要把那新房子，刷得更漂亮
+%--
+2/4
+2 4 - 1 0. 5 3- - - - - - - - - '1
+5 3 | 2 4 | - |
+6 1 7 | | | |
+0 | | | |
+2 4 - | 5 3 5 3 | | 1 | |
+7 6 |
+0
+2 4 | 6 3 | 1 7 - 0 5.
+5 3 - | 2 4 | 6 1 0. | 7, | - | - - - |
+5 3 - | 2 4 1 | - | 0 | | 7 | | - | - | | | - | - 6 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+5 3 - | 2 4 | 1 | - | | | - | | - | |
+1. 0 2 3 5 7 4 6 1
+1 2 3 4 5 6 0 -
+- - 0
+1 2 3 4 5 6 7
+1 2 3 -
+%END

@@ -1,0 +1,16 @@
+JIANPU_LY ERROR: (notesHad=0 1- 7 4 | 5 6 2 3 | 1 5 4 0 | 2 1 4 - | 3 0 5 2) barcheck fail: note crosses barline at "2" with 0 beams (16 skipped from 56 to 72, bypassing 64), scoreNo=1 barNo=5 (but the error could be earlier)
+
+--- score ---
+title=对月思乡
+type=work
+%--
+0 1- 7 4 5 6
+2 3 1 5 4 0
+2 1 4 - 3 0. 5
+2 - 1 0 3
+4 - |
+- | i I 1 2 3 4 5 6 7 0
+- - 0. 5 1 4 2
+1 0 - 2 3 4 5 6 7
+1 2 3 -
+%END

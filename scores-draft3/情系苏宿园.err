@@ -1,0 +1,26 @@
+JIANPU_LY ERROR: (notesHad=6 5 - 2 | 3 4 1 7 | 0 - - -) barcheck fail: note crosses barline at "-" with 0 beams (16 skipped from 60 to 76, bypassing 64), scoreNo=1 barNo=3 (but the error could be earlier)
+
+--- score ---
+title=情系苏宿园
+type=work
+%--
+6 5 - | 2 3 | 4 1 7 | | | | 0.. | - | | - - - | - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+6 5 - | 2 3 | 4 1 7. | 0 | - | - | - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+2 4 | 5 3 | 6--- | | | | 1 7 | - | - |
+i i - | |
+0. |
+- i - - -
+i i i i i i i i i i i I I I I I I I I I I I I I I I I I I I I I I I I I I I I
+3 2 | - 5 6 i |
+i 4 1
+| 7. 0 - |
+3 2 | - 5 6 i |
+i 4 1
+| 7. 0 - |
+3 2 | - |
+5 6 i 1 3 i
+7 0- |
+4 |
+0 | -
+1 2 3 - 4- 5 6 7 0 - - - - - -
+%END

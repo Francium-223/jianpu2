@@ -1,0 +1,42 @@
+4 5 - 3 2 6 1 7 0 '1 |
+6 5 - 3 | 4 2 1
+6 5 - 3 | 2 | 4 1 0 7 |
+0, 5. - | - |
+0,- - |
+0,. - | -
+0,, - - | -
+0,,, - - |
+0,,,, - - - | |
+6
+6 5 - 3 | 2 4 1 | 7 1 | - 0 | - 1.
+2 0 3 4 - 1 6 | 7 5 7 | 1- '1 '1 1 0 7 3 '1 '1 1
+
+--- 逐条明细 ---
+### 001_strip_00.jpg
+4 5 -3 2 #6 8 17#9 0 . A B C D E F G H I J K L M N O P Q R S T U V W X Y Z [ ] \ ^ _ ` { } ~ | ' ,
+### 001_strip_01.jpg
+6 5 -3 | _4 __2 ___1 ____G F E D C B A G F E D C B A G F E D C B A G F E D C B A G F E D C B A G F E D C B A G F E D C B A G F E D C B A
+### 001_strip_02.jpg
+6 5 -3 |2|4 8 10 9 7 |
+0, 5. .-., |-|
+0,- ,-.|. .
+0,. -.|-.
+0,, -,.-.|-
+0,,, --..|.
+0,,,, ---...||
+
+注：此谱中存在一些不规范的音符标记，如“6”、“8”，这些可能需要根据实际音乐背景进行调整。
+### 001_strip_03.jpg
+6 5 - .3 |2 _4_1|7 1 |-0 8|-9 1.
+### 001_strip_04.jpg
+2 0_3 _4/8 - /16 | 7 5 9 7/8 | 1- =A/A= A/=B/B= B/_C/C=/D/D= D/E E/F F/G G/H H/I I/J J/K K/L L/M M/N N/O O/P P/Q Q/R R/S S/T T/U U/V V/W W/X X/Y Y/Z Z/1 0 _7_3 =A/A/=B/B/_C/C=/D/D= D/E E/F F/G G/H H/I I/J J/K K/L L/M M/N N/O O/P P/Q Q/R R/S S/T T/U U/V V/W W/X X/Y Y/Z Z/1
+### 001_strip_05.jpg
+FAIL
+### 001_strip_06.jpg
+FAIL
+### 001_strip_07.jpg
+FAIL
+### 001_strip_08.jpg
+FAIL
+### 001_strip_09.jpg
+FAIL

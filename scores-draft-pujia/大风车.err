@@ -1,0 +1,15 @@
+JIANPU_LY ERROR: (notesHad=4 2 - 5) barcheck fail: note crosses barline at "5" with 0 beams (24 skipped from 48 to 72, bypassing 64), scoreNo=1 barNo=1 (but the error could be earlier)
+
+--- score ---
+title=大风车
+type=work
+alias=大风车简谱_儿歌_致我们的童年，那里有悠悠转着的大风车
+%--
+4 2 - 5. 7 6- 1 0 3 - - - - - - - - - - - -
+5 4 3 2 '1 6 | 1 - | 7 | | 0 | | | - |
+2 3 | 5 6 | - | | 4 | | 1 7 0 | - - - - | - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+1- 2 3 4 5 6 7 0.
+0
+2 1 4 - 0. 5 3 7
+1 2 3 4 5 6 0 -
+%END

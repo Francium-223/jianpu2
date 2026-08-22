@@ -1,0 +1,17 @@
+JIANPU_LY ERROR: (notesHad=2 3 - 4 | 5 6 2 3 | - 6 5 4 | 1 7 - 5 | 3 - 2 1 | 1 1 1 2 | 3 - 6 5 | 4 1 7 - | 0 3 6 - | 5 2 4 1 | 7 0 - 3 | 6 - - 7 | - - 3 6 | - 5 - 2-) barcheck fail: note crosses barline at "2-" with 0 beams (24 skipped from 48 to 72, bypassing 64), scoreNo=1 barNo=14 (but the error could be earlier)
+
+--- score ---
+title=木叶情
+type=work
+%--
+2 3 - 4 5 6
+2 3 - 6 5 4 1 7 | | - | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | |
+5 3 - 2 | '1 '1 '1 '1
+2 3 - | 6 5 4 1 7 | - 0 |
+3 6 - | 5 2 4 | 1 7 0 | - |
+3 6 - | - |
+7 | - | - |
+3 6 - | 5 - 2-. 4.- 1. | 7 0 | 5 - 2- |
+3 2 - | | | | | | | | |
+2 3 - 4 5 6 7 0 1 2 3 4 5 6 7 0 1 2 3 4 5 6 7 0 1 2 3 4 5 6 7 0 1 2 3 4 5 6 7 0 1 2 3 4 5 6 7
+%END

@@ -1,0 +1,23 @@
+JIANPU_LY ERROR: (notesHad=1 4 2 3 | - 0 5 6) barcheck fail: note crosses barline at "6" with 0 beams (16 skipped from 56 to 72, bypassing 64), scoreNo=1 barNo=2 (but the error could be earlier)
+
+--- score ---
+title=意难平
+type=work
+alias=意难平&nbsp;&nbsp;
+%--
+1 4 2 3 - 0. 5 6 '1- '1
+0
+1 - -
+3 2 - | 6 5 4 1 |
+'1 '1 '1 0-
+2 3 | - 5 6 | | - | | | | 1 4 7 | - | |
+0 | |
+5 6 | '1 |
+'1 6 5 3 2 1 6 7 |
+0 - |
+4
+1- 7 0. 2 5 3 4 6
+1 4 2 0. 5 - - - - - - - - '1- - - - - - - - - -
+1 2 3 4 5 6 0 -
+2 3 1 4 5 0 6 7 1 0
+%END

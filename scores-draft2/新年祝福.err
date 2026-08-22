@@ -1,0 +1,22 @@
+JIANPU_LY ERROR: (notesHad=2 1 3 4- | 5 6 7 0 | - 3 4 6 | 2 5 6 1 | 7 - 0 6 | 3 4 2 1 | 5 7 0 -) barcheck fail: note crosses barline at "-" with 0 beams (16 skipped from 56 to 72, bypassing 64), scoreNo=1 barNo=7 (but the error could be earlier)
+
+--- score ---
+title=新年祝福
+type=work
+%--
+2 1 3 4- 5 6 7 0 -
+3 4 6 2 5 6 | | 1 7 - 0
+6 3 4 | 2 | 1 5 7 |
+0. - - - -
+3 2 | - |
+6 1 5 7 4 0 | - | |
+6 - 5 | 4 |
+3 | 2 |
+1 | | 7 | |
+0 | | | |
+2 4 - | i I 1 2 3 4 5 6 7 0
+0
+1 2 3 4 5 6 0 -
+0
+- 0 1 2 3 4 5 6 7
+%END

@@ -1,0 +1,20 @@
+JIANPU_LY ERROR: (notesHad=5 6 - 0 | 2 - 1 4 | 3 6 5 -) barcheck fail: note crosses barline at "-" with 0 beams (16 skipped from 56 to 72, bypassing 64), scoreNo=1 barNo=3 (but the error could be earlier)
+
+--- score ---
+title=海阔天空 混声四部合唱谱
+type=work
+%--
+5 6 - 0
+2 - 1 4 | 3 6. 5 |
+- - 1 2 3 4 5 6 7 0. - - -
+1 4 - 2 6 - 3 5 | 0 | 7
+1 2 3 4 5 6 7 0 -
+0, -
+1.
+2.
+3- 7 0, -
+4 3 2 - | 1 6 |
+4 2 3 - | | | | 1 6 0 5. 7, | | - | - | - - - - - - - - - - - - - - - - - - - | - - - - - - - - - - - - - - - - - - - - - - - - -
+1 2 - 0
+0 1- 7
+%END

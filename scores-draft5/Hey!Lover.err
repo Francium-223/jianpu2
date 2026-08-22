@@ -1,0 +1,17 @@
+JIANPU_LY ERROR: (notesHad=5 3 2 - | 4 1 4 0) barcheck fail: note crosses barline at "0" with 0 beams (24 skipped from 48 to 72, bypassing 64), scoreNo=1 barNo=2 (but the error could be earlier)
+
+--- score ---
+title=Hey!Lover
+type=work
+%--
+5 3 2 - | 4 1 4 | 0. - | | 6 7 | | | - - - - - - | -
+4 3 - 2 | 5 | 1 7 6 | - 0 | - | - | | - | | - | - - - - - | - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+5 3 4 2
+4 5 2 3 | - | | 1 6 7 0 | | | - | - | - - | - - - - - - - - - - - - - - - - - - - - - - - | - - | - - | | | - - 5
+4 5 - 3 | 2 | |
+1 |
+6
+0
+7 | - | |
+'1
+%END

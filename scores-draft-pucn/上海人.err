@@ -1,0 +1,18 @@
+JIANPU_LY ERROR: (notesHad=2 3 1 5 | 4 0 7 6) barcheck fail: note crosses barline at "6" with 0 beams (24 skipped from 48 to 72, bypassing 64), scoreNo=1 barNo=2 (but the error could be earlier)
+
+--- score ---
+title=上海人
+type=work
+alias=上海人&nbsp;&nbsp;
+%--
+2 3 1 5 4 0 7 6.
+2 4 - 1 7 3 5 6 0
+2 3 | - 6 | 4 5 | - 1 7 | - |
+6 5 | 2 - 3 | - - | | 1-- 7 | | 4--- 0 | - - - - - - | - - | - - - - - - - - - - - - - | - - - - - - - - - - - - - - - - - - - - - -
+2 3 | - 6 5 | - 4 - 1 | - 7 | 0. | 1-
+2 - 5 6 | 3 4 1 | 7 0 | | 5. - | - | | 5 | - 5 - - - - |
+6 5 | 4 3 2 | 7 1 | 0 | | | | '1-
+1 2 3 4 5 6 0 -
+- 3 2 4 5. 1- 7 0 6 - - - - - - -
+1 '1
+%END

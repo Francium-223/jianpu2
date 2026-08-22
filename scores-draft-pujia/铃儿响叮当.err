@@ -1,0 +1,22 @@
+JIANPU_LY ERROR: (notesHad=4 5 6 3 | 2 1 7 5 | 4 3 2 6 | - 1 7 0 | 3 5 2 - | 4 1 7 0) barcheck fail: note crosses barline at "0" with 0 beams (16 skipped from 56 to 72, bypassing 64), scoreNo=1 barNo=6 (but the error could be earlier)
+
+--- score ---
+title=铃儿响叮当
+type=work
+alias=铃儿响叮当简谱_儿歌_Jingle_Bells_Jingle_Bells
+%--
+4 5 6 3 2 1 7
+5 4 | 3 2 | 6 - 1 7 0
+3 5 | 2 | - 4. | 1 | 7 0 6 | - | - 1
+- 1 2 0
+5 3 | 4 6 | 2 1 - 7 0 | | | | | | | - | - | - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+5 2 3 - | 4 | 6 | | 1 | | 7, - 0. | - - - - - - - - - - - - | - - - - - - - | | | | - - - - - - | - - - - - - - - - - - - - - - -
+4 3 2 '1 | '1 - | 5 7 6 |
+1 0 | - |
+'1 | - | | -
+- - '1- - - - - - - - - - - - - - - - -
+2 1 4 - 0. 5
+1 2 3 4 5 6 0 -
+1 0 -
+- - 0 - -
+%END

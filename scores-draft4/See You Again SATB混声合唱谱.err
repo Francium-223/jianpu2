@@ -1,0 +1,12 @@
+JIANPU_LY ERROR: (notesHad=7 2 1 - | 0 - - 0) barcheck fail: note crosses barline at "0" with 0 beams (16 skipped from 56 to 72, bypassing 64), scoreNo=1 barNo=2 (but the error could be earlier)
+
+--- score ---
+title=See You Again SATB混声合唱谱
+type=work
+%--
+7 2 1 - 0. | - |
+- 0, 1 2 -
+2 1 4 - | 7 6 3 |
+6 i I' - i I i
+1 2 3 4 5 6 7 0 -
+%END

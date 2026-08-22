@@ -1,0 +1,23 @@
+JIANPU_LY ERROR: (notesHad=2 3 - 4 | 6 1 5 0 | 7 - - -) barcheck fail: note crosses barline at "-" with 0 beams (16 skipped from 56 to 72, bypassing 64), scoreNo=1 barNo=3 (but the error could be earlier)
+
+--- score ---
+title=寄明月
+type=work
+%--
+2 3 - 4 6 | 1 5 | 0 7. - | - - - - - - - - - - i I - |
+2 3 - | | | - | - - - | | | - | - - - | | | - | - - - | | | - | - - - | | | - | - - - | | | - | - - - | | | - | - - - | | | - |
+2 3 - | 4 5 | 1 - - - - - - - - - - I I - - - - - - - - - - - - -
+3 2 - | 6 |
+| 7 0 |
+1- 5. | -
+2 3 - | i 6 6 6 5 4 7 1 0 | - | | I,
+3 2 | - |
+6 - - | -
+1 i |
+7 | |
+5
+0.
+4
+2 i
+2 4
+%END

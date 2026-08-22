@@ -1,0 +1,30 @@
+﻿song,title,artist,mbid,type,confidence,matched
+上海人.txt,上海人,,52e53731-79b9-4aa2-a657-2dff4cc0ccd7,recording,medium,"{""title"": ""上海人"", ""artists"": [""周麗淇""]}"
+中秋情.txt,中秋情,,,work,,
+八角树.txt,八角树,,,work,,
+太湖水.txt,太湖水,,,work,,
+学厨艺.txt,学厨艺,,,work,,
+学工歌.txt,学工歌,,,work,,"[[""recording"", {""id"": ""6eecc6f8-3bf4-44ef-9f14-8af829628e35"", ""title"": ""红小兵学工歌 = Learning to Be a Worker"", ""artists"": [""Various Artists""], ""score"": 100}]]"
+学电脑.txt,学电脑,,,work,,
+宜昌队.txt,宜昌队,,,work,,
+寄明月.txt,寄明月,,4c796a47-1f24-4c98-a47d-8a14736a8106,work,medium,"{""title"": ""寄明月"", ""artists"": []}"
+小上海.txt,小上海,,,work,,
+小重山.txt,小重山,,,work,,"[[""recording"", {""id"": ""6bdcde0a-6470-42db-ad6a-83a23a5fd04a"", ""title"": ""小重山 LIVE"", ""artists"": [""Chi-yi Luo""], ""score"": 100}], [""recording"", {""id"": ""70cbdaae-ece8-4ffa-80e2-659d651ee0ec"", ""title"": ""小重山・变奏"", ""artists"": [""Chi-yi Luo""], ""score"": 82}]]"
+少年游.txt,少年游,,2e5702a8-3933-4b4e-8c19-0a496b612cd7,work,medium,"{""title"": ""少年遊記"", ""artists"": []}"
+当兵乐.txt,当兵乐,,,work,,
+忘情酒.txt,忘情酒,,9efb6647-b28a-41d0-a926-28328bf09677,recording,medium,"{""title"": ""忘情酒"", ""artists"": [""安东阳""]}"
+意难平.txt,意难平,,,work,,"[[""recording"", {""id"": ""c1610610-e0b2-410b-ae87-6d4ee760010b"", ""title"": ""【插曲】《意難平》"", ""artists"": [""銀臨""], ""score"": 100}]]"
+我的梦.txt,我的梦,,6871714c-8d39-4517-80c0-81b23abab774,recording,medium,"{""title"": ""我的梦"", ""artists"": [""C-BLOCK""]}"
+推车歌.txt,推车歌,,,work,,
+木叶情.txt,木叶情,,,work,,
+歌友情.txt,歌友情,,,work,,
+步步高.txt,步步高,,b135710b-ebf5-4c28-8f18-e459b92e5b42,recording,medium,"{""title"": ""步步高"", ""artists"": [""梁漢文""]}"
+男儿泉.txt,男儿泉,,,work,,
+胭脂妆.txt,胭脂妆,,,work,,
+舀河浜.txt,舀河浜,,,work,,
+苍穹唤.txt,苍穹唤,,,work,,
+苕乡情.txt,苕乡情,,,work,,
+苹果香.txt,苹果香,,aaa6fbad-50f5-40c7-9d50-1c7b968d55c4,recording,medium,"{""title"": ""苹果香"", ""artists"": [""那艺娜""]}"
+菜园子.txt,菜园子,,,work,,
+陆北大.txt,陆北大,,,work,,
+青原赋.txt,青原赋,,,work,,

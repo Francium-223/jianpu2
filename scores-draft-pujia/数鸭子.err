@@ -1,0 +1,27 @@
+JIANPU_LY ERROR: (notesHad=- 0 2 3 | 4 - 5 - | - - 1 0 | 6-- - 7----- -) barcheck fail: note crosses barline at "-" with 0 beams (16 skipped from 60 to 76, bypassing 64), scoreNo=1 barNo=4 (but the error could be earlier)
+
+--- score ---
+title=数鸭子
+type=work
+alias=数鸭子简谱_儿歌_别考个鸭蛋抱回家
+%--
+- | | | 0 | | |
+2 3 | 4 - | | | |
+5 - - | - | | | |
+1 0 | 6-- | - | | | | |
+7-.-.--- - - - - - - - - - | - - | - - - - - - - -
+'1 |
+'1
+1 2 3 4 5 6 7 0. -
+4 2 5 3 - 1 0. 7 6 -
+5 3 '1 | 6 - 4 2 | 7 1 0 '1. - - |
+5 6 | 2 3 | 4 5 3 |
+1 | | | |
+7 | |
+0 - | | |
+0
+- - 0
+4 3 2 - 5 6 |
+1 2 3 -
+- 0 - 1 4
+%END
