@@ -1,0 +1,12 @@
+title=爱就一个字二部合唱谱
+type=work
+%TODO:revise
+usertag=to_be_revised
+copyright=歌谱简谱网,版权归原作者及原网站
+%--
+4/4
+subtitle=爱就一个字
+q2 q3 - 0 0 | 0 0 0 0 |
+q1 q7 0 0 0 | 0 0 0 0 |
+q6 q5 - 0 0 | 0 0 0 0 |
+%END

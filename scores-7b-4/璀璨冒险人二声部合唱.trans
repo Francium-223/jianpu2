@@ -1,0 +1,20 @@
+#KEY none  
+#TIME 4/4  
+
+subtitle=二声部合唱
+
+( (5 q7 q6 q2) | 
+   R{q1 -} A{(3 q0)} |
+   R{q-} A{-}
+ ) 
+
+R{
+    (8 q1 q1 q1 q1 q1 q1 q1 q1)
+    (4 9 q1 q1 q7 q6 q2) | 
+}
+
+subtitle=副歌
+
+(5 q3 - - - |
+   R{q-} A{-}
+ )

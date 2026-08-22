@@ -1,0 +1,15 @@
+title=小草
+type=work
+alias=小草简谱__杨烁____70、80年代听过最多的歌曲
+%TODO:revise
+usertag=to_be_revised
+MBID=fd8db6a4-86ca-495b-91ff-93b219edfc97
+copyright=简谱之家,版权归原作者及原网站
+%--
+2/4
+6 - | 3 6 | - 3
+1 - | 7 0 | - 0 | 0 0 |
+0 0 | 0 0 |
+R{ }
+R{ }
+%END

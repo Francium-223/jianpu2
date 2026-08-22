@@ -1,0 +1,14 @@
+title=云台蝴蝶
+type=work
+%TODO:revise
+usertag=to_be_revised
+copyright=歌谱简谱网,版权归原作者及原网站
+%--
+4/4
+5 3 q2 0 q0 | 0 0 0 0 |
+6 q7 q1' 0 0 | 0 0 0 0 |
+2' - - 0 | 1 7 2 0
+q2 0 0 0 q0 | 0 0 0 0 |
+6 q7 q1' 0 0 | 0 0 0 0 |
+2' - - 0
+%END

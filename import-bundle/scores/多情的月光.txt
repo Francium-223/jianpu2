@@ -1,0 +1,15 @@
+title=多情的月光
+type=work
+alias=多情的月光简谱(歌词)_正月十五演唱_桃李醉春风记谱
+%TODO:revise
+usertag=to_be_revised
+copyright=简谱之家,版权归原作者及原网站
+%--
+4/4
+3 q2 - 0 q0 | 0 0 0 0 |
+6 q5 q7 q1' q2' q0 q0 | 0 0 0 0 |
+q1 0 0 0 q0
+R{ } A{ }
+subtitle=多情的月光层
+3 q2 - 0 q0 | 0 0 0 0 |
+%END

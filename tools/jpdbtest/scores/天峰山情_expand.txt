@@ -1,0 +1,26 @@
+%天峰山情.txt
+%TODO:revise
+MBID=
+title=天峰山情
+type=work
+tag=to_be_revised
+usertag=to_be_revised
+tagroute=
+copyright=歌谱简谱网,版权归原作者及原网站
+%--
+2/4
+6 - | 0 0 |
+5 q3 q0 | 0 0 |
+q7 0 q0
+6 - | 0 0 |
+0 0 | 0 0 |
+1 0 | 0 0 |
+2 0 | 0 0 |
+3. q0 | - 0
+6. q0
+6. q0
+6. q0
+ 
+ 
+1 2
+%END

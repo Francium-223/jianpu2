@@ -1,48 +1,546 @@
-5 6 - 3 4 2 | 1 7 0 0 |
-6 2 3 5 | - |
-6 2 - 3 5 | 4 | |
-1- 0 | | |
-2 3 - | 4 5 6 | 1 0 | - | - 7 |
-3 2 - | 5 6 4 1 | 7 0 |
-3 | | |
-3- 2 - - | | | | |
-2 5 6 3 4 | '1 7 '1 6 '1 '1 6 '1 '1 '1 |
-6 5 - 3 | 2 4 1 | 7 0 | 2 4 |
-4 2 - | | |
-2 3 - 4 5 6 | | |
-5 6 - 3 4 | 2 1 7 | 0 0 - - - -
+#KEY none  
+#TIME 4/4  
 
---- 逐条明细 ---
-### 001_strip_00.jpg
-5 6 -3 4 .2 8 |1 7 =9 0 0|
-### 001_strip_01.jpg
-6 235 | = - |
-= A B C D E F G | AB CD EF GH | FG ABCD | DEFGABCD |
-### 001_strip_02.jpg
-6 2 -35 | _4 =A B C D E F G A | d e f g a b c' d' |
-=1-0 | =B c d e f g a b | abcd ef ga bc'd'e''f'''g'a'b'|
-### 001_strip_03.jpg
-2 3 - |456|8910 |-|-789|
+(6· q2 s3 | 
+q5 - |
+q7 · q1 q0 |
 
-注：此简谱图片中包含的数字代表的是五线谱上的音高位置，并非实际演奏中的力度或速度指示，请根据实际情况进行调整和理解使用。在音乐表演时，应结合乐曲的具体要求来准确把握每个音符的表现形式与效果。
+q8 -
+|) R{ ... } A{| ... }
 
-以上为该片段所对应的简化版五线简谱转写结果：
-### 001_strip_04.jpg
-3 2 - |5 _6 __4__1| .7_8 ___9___0 |
-3 ____ |_____|. ______|
-3-2 -- |________||____________||
-__________________
-_________________________________
-_____________________________________________________________________
-### 001_strip_05.jpg
-2 5634 | i7i6ii6 .iii |
+subtitle=副歌
 
-注：此简谱中没有附点.、延长线-以及高低音记号(逗号或撇号)符号出现，请根据实际音乐作品中的标准进行补充和理解使用这些标记时的规则。
-### 001_strip_06.jpg
-6 5 -3 |2 _4 __8 __1 |7 9 ___0___|_2__4_____|
-### 001_strip_07.jpg
-4 2 - | G F E D ||
-### 001_strip_08.jpg
-2 3 -456 | G A B C D E F | g a b c d e f |
-### 001_strip_09.jpg
-5 6 -3 4 |2 _8 1 =7|9 0 0 G, A,, B,,, C,-D- E,_F,G,A,B,C,D,E,F,G,A,B,C,D,E,F,G,A,B,C,D,E,F,G,A,B,C,D,E,F,G,A,B,C,D,E,F,G,A,B,C,D,E,F,G,A,B,C,D,E,F,G,A,B,C,D,E,F,G,A,B,C,D,E,F,G,A,B,C,D,E,F,G,A,B,C,D,E,F,G,A,B,C,D,E,F,G,A,B,C,D,E,F,G,A,B,C,D,E,F,G,A,B,C,D,E,F,G,A,B,C,D,E,F,G,A,B,C,D,E,F,G,A,B,C,D,E,F,G,A,B,C,D,E,F,G,A,B,C,D,E,F,G,A,B,C,D,E,F,G,A,B,C,D,E,F,G,A,B,C,D,E,F,G,A,B,C,D,E,F,G,A,B,C,D,E,F,G,A,B,C,D,E,F,G,A,B,C,D,E,F,G,A,B,C,D,E,F,G,A,B,C,D,E,F,G,A,B,C,D,E,F,G,A,B,C,D,E,F,G,A,B,C,D,E,F,G,A,B,C,D,E,F,G,A,B,C,D,E,F,G,A,B,C,D,E,F,G,A,B,C,D,E,F,G,A,B,C,D,E,F,G,A,B,C,D,E,F,G,A,B,C,D,E,F,G,A,B,C,D,E,F,G,A,B,C,D,E,F,G,A,B,C,D,E,F,G,A,B,C,D,E,F,G,A,B,C,D,E,F,G,A,B,C,D,E,F,G,A,B,C,D,E,F,G,A,B,C,D,E,F,G,A,B,C,D,E,F,G,A,B,C,D,E,F,G,A,B,C,D,E,F,G,A,B,C,D,E,F,G,A,B,C,D,E,F,G,A,B,C,D,E,F,G,A,B,C,D,E,F,G,A,B,C,D,E,F,G,A,B,C,D,E,F,G,A,B,C,D,E,F,G,A,B,C,D,E,F,G,A,B,C,D,E,F,G,A,B,C,D,E,F,G,A,B,C,D,E,F,G,A,B,C,D,E,F,G,A,B,C,D,E,F,G,A,B,C,D,E,F,G,A,B,C,D,E,F,G,A,B,C,D,E,F,G,A,B,C,D,E,F,G,A,B,C,D,E,F,G,A,B,C,D,E,F,G,A,B,C,D,E,F,G,A,B,C,D,E,F,G,A,B,C,D,E,F,G,A,B,C,D,E,F,G,A,B,C,D,E,F,G,A,B,C,D,E,F,G,A,B,C,D,E,F,G,A,B,C,D,E,F,G,A,B,C,D,E,F,G,A,B,C,D,E,F,G,A,B,C,D,E,F,G,A,B,C,D,E,F,G,A,B,C,D,E,F,G,A,B,C,D,E,F,G,A,B,C,D,E,F,G,A,B,C,D,E,F,G,A,B,C,D,E,F,G,A,B,C,D,E,F,G,A,B,C,D,E,F,G,A,B,C,D,E,F,G,A,B,C,D,E,F,G,A,B,C,D,E,F,G,A,B,C,D,E,F,G,A,B,C,D,E,F,G,A,B,C,D,E,F,G,A,B,C,D,E,F,G,A,B,C,D,E,F,G,A,B,C,D,E,F,G,A,B,C,D,E,F,G,A,B,C,D,E,F,G,A,B,C,D,E,F,G,A,B,C,D,E,F,G,A,B,C,D,E,F,G,A,B,C,D,E,F,G,A,B,C,D,E,F,G,A,B,C,D,E,F,G,A,B,C,D,E,F,G,A,B,C,D,E,F,G,A,B,C,D,E,F,G,A,B,C,D,E,F,G,A,B,C,D,E,F,G,A,,B,,,C,-D- E,_F, G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C_D_E_F_G_A_B_C
+(6· q2 s3 | 
+q5 - |
+q7 · q1 q0|
+
+q8 ~
+|
+q9 4-5 |
+q8 - |
+q7 4-5 |
+q8 - |
+
+R{ ... }
+A{
+q7 -
+|) R{ ... } A{| ...
+
+subtitle=副歌
+
+(6· s2 d3 | 
+s5 · q1 q0|
+
+s8 ~
+|
+s9 4-5 |
+s8 - |
+s7 4-5 |
+s8 - |
+
+R{ ... }
+A{
+q7 -
+|) R{ ... } A{| ...
+
+subtitle=副歌
+
+(6· s2 d3 | 
+s5 · q1 q0|
+
+s8 ~
+|
+s9 4-5 |
+s8 - |
+s7 4-5 |
+s8 - |
+
+R{ ... }
+A{
+q7 -
+|) R{ ... } A{| ...
+
+subtitle=副歌
+
+(6· s2 d3 | 
+s5 · q1 q0|
+
+s8 ~
+|
+s9 4-5 |
+s8 - |
+s7 4-5 |
+s8 - |
+
+R{ ... }
+A{
+q7 -
+|) R{ ... } A{| ...
+
+subtitle=副歌
+
+(6· s2 d3 | 
+s5 · q1 q0|
+
+s8 ~
+|
+s9 4-5 |
+s8 - |
+s7 4-5 |
+s8 - |
+
+R{ ... }
+A{
+q7 -
+|) R{ ... } A{| ...
+
+subtitle=副歌
+
+(6· s2 d3 | 
+s5 · q1 q0|
+
+s8 ~
+|
+s9 4-5 |
+s8 - |
+s7 4-5 |
+s8 - |
+
+R{ ... }
+A{
+q7 -
+|) R{ ... } A{| ...
+
+subtitle=副歌
+
+(6· s2 d3 | 
+s5 · q1 q0|
+
+s8 ~
+|
+s9 4-5 |
+s8 - |
+s7 4-5 |
+s8 - |
+
+R{ ... }
+A{
+q7 -
+|) R{ ... } A{| ...
+
+subtitle=副歌
+
+(6· s2 d3 | 
+s5 · q1 q0|
+
+s8 ~
+|
+s9 4-5 |
+s8 - |
+s7 4-5 |
+s8 - |
+
+R{ ... }
+A{
+q7 -
+|) R{ ... } A{| ...
+
+subtitle=副歌
+
+(6· s2 d3 | 
+s5 · q1 q0|
+
+s8 ~
+|
+s9 4-5 |
+s8 - |
+s7 4-5 |
+s8 - |
+
+R{ ... }
+A{
+q7 -
+|) R{ ... } A{| ...
+
+subtitle=副歌
+
+(6· s2 d3 | 
+s5 · q1 q0|
+
+s8 ~
+|
+s9 4-5 |
+s8 - |
+s7 4-5 |
+s8 - |
+
+R{ ... }
+A{
+q7 -
+|) R{ ... } A{| ...
+
+subtitle=副歌
+
+(6· s2 d3 | 
+s5 · q1 q0|
+
+s8 ~
+|
+s9 4-5 |
+s8 - |
+s7 4-5 |
+s8 - |
+
+R{ ... }
+A{
+q7 -
+|) R{ ... } A{| ...
+
+subtitle=副歌
+
+(6· s2 d3 | 
+s5 · q1 q0|
+
+s8 ~
+|
+s9 4-5 |
+s8 - |
+s7 4-5 |
+s8 - |
+
+R{ ... }
+A{
+q7 -
+|) R{ ... } A{| ...
+
+subtitle=副歌
+
+(6· s2 d3 | 
+s5 · q1 q0|
+
+s8 ~
+|
+s9 4-5 |
+s8 - |
+s7 4-5 |
+s8 - |
+
+R{ ... }
+A{
+q7 -
+|) R{ ... } A{| ...
+
+subtitle=副歌
+
+(6· s2 d3 | 
+s5 · q1 q0|
+
+s8 ~
+|
+s9 4-5 |
+s8 - |
+s7 4-5 |
+s8 - |
+
+R{ ... }
+A{
+q7 -
+|) R{ ... } A{| ...
+
+subtitle=副歌
+
+(6· s2 d3 | 
+s5 · q1 q0|
+
+s8 ~
+|
+s9 4-5 |
+s8 - |
+s7 4-5 |
+s8 - |
+
+R{ ... }
+A{
+q7 -
+|) R{ ... } A{| ...
+
+subtitle=副歌
+
+(6· s2 d3 | 
+s5 · q1 q0|
+
+s8 ~
+|
+s9 4-5 |
+s8 - |
+s7 4-5 |
+s8 - |
+
+R{ ... }
+A{
+q7 -
+|) R{ ... } A{| ...
+
+subtitle=副歌
+
+(6· s2 d3 | 
+s5 · q1 q0|
+
+s8 ~
+|
+s9 4-5 |
+s8 - |
+s7 4-5 |
+s8 - |
+
+R{ ... }
+A{
+q7 -
+|) R{ ... } A{| ...
+
+subtitle=副歌
+
+(6· s2 d3 | 
+s5 · q1 q0|
+
+s8 ~
+|
+s9 4-5 |
+s8 - |
+s7 4-5 |
+s8 - |
+
+R{ ... }
+A{
+q7 -
+|) R{ ... } A{| ...
+
+subtitle=副歌
+
+(6· s2 d3 | 
+s5 · q1 q0|
+
+s8 ~
+|
+s9 4-5 |
+s8 - |
+s7 4-5 |
+s8 - |
+
+R{ ... }
+A{
+q7 -
+|) R{ ... } A{| ...
+
+subtitle=副歌
+
+(6· s2 d3 | 
+s5 · q1 q0|
+
+s8 ~
+|
+s9 4-5 |
+s8 - |
+s7 4-5 |
+s8 - |
+
+R{ ... }
+A{
+q7 -
+|) R{ ... } A{| ...
+
+subtitle=副歌
+
+(6· s2 d3 | 
+s5 · q1 q0|
+
+s8 ~
+|
+s9 4-5 |
+s8 - |
+s7 4-5 |
+s8 - |
+
+R{ ... }
+A{
+q7 -
+|) R{ ... } A{| ...
+
+subtitle=副歌
+
+(6· s2 d3 | 
+s5 · q1 q0|
+
+s8 ~
+|
+s9 4-5 |
+s8 - |
+s7 4-5 |
+s8 - |
+
+R{ ... }
+A{
+q7 -
+|) R{ ... } A{| ...
+
+subtitle=副歌
+
+(6· s2 d3 | 
+s5 · q1 q0|
+
+s8 ~
+|
+s9 4-5 |
+s8 - |
+s7 4-5 |
+s8 - |
+
+R{ ... }
+A{
+q7 -
+|) R{ ... } A{| ...
+
+subtitle=副歌
+
+(6· s2 d3 | 
+s5 · q1 q0|
+
+s8 ~
+|
+s9 4-5 |
+s8 - |
+s7 4-5 |
+s8 - |
+
+R{ ... }
+A{
+q7 -
+|) R{ ... } A{| ...
+
+subtitle=副歌
+
+(6· s2 d3 | 
+s5 · q1 q0|
+
+s8 ~
+|
+s9 4-5 |
+s8 - |
+s7 4-5 |
+s8 - |
+
+R{ ... }
+A{
+q7 -
+|) R{ ... } A{| ...
+
+subtitle=副歌
+
+(6· s2 d3 | 
+s5 · q1 q0|
+
+s8 ~
+|
+s9 4-5 |
+s8 - |
+s7 4-5 |
+s8 - |
+
+R{ ... }
+A{
+q7 -
+|) R{ ... } A{| ...
+
+subtitle=副歌
+
+(6· s2 d3 | 
+s5 · q1 q0|
+
+s8 ~
+|
+s9 4-5 |
+s8 - |
+s7 4-5 |
+s8 - |
+
+R{ ... }
+A{
+q7 -
+|) R{ ... } A{| ...
+
+subtitle=副歌
+
+(6· s2 d3 | 
+s5 · q1 q0|
+
+s8 ~
+|
+s9 4-5 |
+s8 - |
+s7 4-5 |
+s8 - |
+
+R{ ... }
+A{
+q7 -
+|) R{ ... } A{| ...
+
+subtitle=副歌
+
+(6· s2 d3 | 
+s5 · q1 q0|
+
+s8 ~
+|
+s9 4-5 |
+s8 - |
+s7 4-5 |
+s8 - |
+
+R{ ... }
+A{
+q7 -
+|) R{ ... } A{| ...
+
+subtitle=副歌
+
+(6· s2 d3 | 
+s5 · q1 q0|
+
+s8 ~
+|
+s9 4-5 |
+s8 - |
+s7 4-5 |
+s8 - |
+
+R{ ... }
+A{
+q7 -
+|) R{ ... } A{| ...
+
+subtitle=副歌
+
+(6· s2 d3 | 
+s5 · q1 q0|
+
+s8 ~
+|
+s9 4-5 |
+s8 - |
+s7 4-5 |
+s8 - |
+
+R{ ... }
+A{
+q7 -
+|) R{ ... } A{| ...
+
+subtitle=副歌
+
+(6· s2 d3 | 
+s5 · q1 q0|
+
+s8 ~
+|
+s9

@@ -1,0 +1,19 @@
+%战位有我在.txt
+%TODO:revise
+MBID=
+title=战位有我在
+type=work
+tag=to_be_revised
+usertag=to_be_revised
+tagroute=
+copyright=歌谱简谱网,版权归原作者及原网站
+%--
+4/2
+6 - - 7 0 0 0 0 | 1' - - 1' 0 0 0 0 | 3 - - - 0 0 0 0 | 0 0 0 0 0 0 0 0 |
+1'. 1' 5 - 6 - 1' q0 | - 0 0 0 0 0 0 0 | - 0 0 0 0 0 0 0 |
+1. 0 0 0 0 0 0 q0 | - 0 0 0 0 0 0 0 | 0 0 0 0 0 0 0 0 |
+ 
+ 
+subtitle=战位有我在
+1' 5 0 0 0 0 0 0
+%END

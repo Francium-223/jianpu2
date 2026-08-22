@@ -1,0 +1,11 @@
+title=小小雨点
+type=work
+alias=小小雨点简谱(歌词)—少儿演唱—岭南印象曲谱
+%TODO:revise
+usertag=to_be_revised
+copyright=简谱之家,版权归原作者及原网站
+%--
+4/4
+2 - 7 5 | - 7 5 0 | - 3 0 0 | 5 5 3 1 | - 0 0 0 | - 0 0 0 | 0 0 0 0 | - 0 0 0 |
+q6 q6 q6 q6 0 0 | q6 q6 q6 q6 0 0 | 0 0 0 0 |
+%END

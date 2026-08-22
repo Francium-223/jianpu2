@@ -1,0 +1,18 @@
+title=红星歌
+type=work
+alias=红星歌简谱___传唱红星歌_重走红军路
+%TODO:revise
+usertag=to_be_revised
+MBID=e1a7ba21-5aa7-4d1f-a1e1-94ad844db4bc
+copyright=简谱之家,版权归原作者及原网站
+%--
+4/4
+subtitle=红星歌
+2 - 0 0
+6 0 q3 0 q0 | 7 5 q1 0 q0 | 1' 5 q1 0 q0 | 0 0 0 0 |
+1' 5 q1 0 q0 | 0 0 0 0 |
+1 - 0 0
+2. 0 0 q0
+2. 0 0 q0
+2. - - q0
+%END

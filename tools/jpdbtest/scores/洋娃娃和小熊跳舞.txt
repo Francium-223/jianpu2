@@ -1,0 +1,17 @@
+%洋娃娃和小熊跳舞.txt
+%TODO:revise
+MBID=2aa52e70-bf87-4633-b079-7f4034a9a8b2
+title=洋娃娃和小熊跳舞
+type=work
+tag=to_be_revised
+usertag=to_be_revised
+tagroute=
+alias=洋娃娃和小熊跳舞简谱_儿歌_我们一起来跳舞
+copyright=简谱之家,版权归原作者及原网站
+%--
+2/4
+subtitle=洋娃娃和小熊跳舞
+1 0
+0 0 | q3 0 q0 | s6 0 q0. | d5 0 q0. d0 | q7 0 q0 | 0 0 |
+| | R{ s6 d5 q7 0 d0 }
+%END

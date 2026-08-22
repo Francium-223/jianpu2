@@ -1,0 +1,12 @@
+title=我的梦
+type=work
+alias=我的梦&nbsp;
+%TODO:revise
+usertag=to_be_revised
+MBID=8f2a58ed-a454-4a18-bc54-52221661d29a
+copyright=歌谱简谱网,版权归原作者及原网站
+%--
+4/4
+0 0 0 0 | 0 0 0 0 | 0 q5 q3 q2 0 q0 | q1 - 0 0 q0 | 0 0 0 0 | 6 1' 5 0 |
+0 0 0 0 | 0 0 0 0 | 0 0 0 0 | q5 q3 q2 0 0 q0 | 0 0 0 0 | 0 0 0 0 |
+%END

@@ -1,0 +1,25 @@
+%大风车.txt
+%TODO:revise
+MBID=bcfc3429-78eb-4e20-9c1a-f6f69bffd861
+title=大风车
+type=work
+tag=to_be_revised
+usertag=to_be_revised
+tagroute=
+alias=大风车简谱_儿歌_致我们的童年,那里有悠悠转着的大风车
+copyright=简谱之家,版权归原作者及原网站
+%--
+4/4
+5 - - q3 q2 | 1' 7 6 0 | 0 0 0 0 | 0 0 0 0 |
+q0 d1 q0 2 0 q0. d0 | 0 0 0 0 |
+5 - - q3 q2 | 1' 7 6 0 | 0 0 0 0 | 0 0 0 0 |
+q0 d1 q0 2 0 q0. d0 | 0 0 0 0 |
+subtitle=大风车转悠悠
+
+NextScore
+
+5 4 b3 2 | 1' 0 0 0 | 0 0 0 0 |
+q0 d1 2 0 0 s0. | 0 0 0 0 |
+0 0 0 0 | 5 - - q3 q2 | 1' 7 6 0 | 0 0 0 0 | 0 0 0 0 |
+q0 d1 q0 2 0 q0. d0 | 0 0 0 0 |
+%END

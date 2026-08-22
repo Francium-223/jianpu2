@@ -1,0 +1,23 @@
+%花开忘忧合唱 珠海童年树合唱团.txt
+%TODO:revise
+MBID=
+title=花开忘忧合唱 珠海童年树合唱团
+type=work
+tag=to_be_revised
+usertag=to_be_revised
+tagroute=
+copyright=歌谱简谱网,版权归原作者及原网站
+%--
+4/4
+0 q2 0 0 q0 | 0 0 0 0 |
+q3 s6 d7 0 0 0 d0 | 0 0 0 0 |
+s5 - - 0 q0. | 0 0 0 0 |
+1' q2 0 0 q0 | 0 0 0 0 |
+ 
+ 
+subtitle=副歌
+1' q2 0 0 q0 | 0 0 0 0 |
+q3 s6 d7 0 0 0 d0 | 0 0 0 0 |
+s5 - 0 0 q0.
+1' q2 0 0 q0 | 0 0 0 0 |
+%END

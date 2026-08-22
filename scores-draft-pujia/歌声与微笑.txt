@@ -3,6 +3,7 @@ type=work
 alias=歌声与微笑吉他谱_儿歌_寻找不一样的童年儿歌
 %TODO:revise
 usertag=to_be_revised
+MBID=b979352d-0340-4bdb-8a4f-e63f9db3193f
 %--
 - - 0. 1 2
 6 5 - 7 4 2 3 1 0 - - - - - - - - - - '1- - - - - - - - - - - - '1 - - - -

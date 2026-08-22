@@ -3,6 +3,7 @@ type=work
 alias=道德经简谱(歌词)_小海龟演唱组演唱_桃李醉春风记谱
 %TODO:revise
 usertag=to_be_revised
+MBID=b4327c63-49d2-4ddd-83cc-661e2a378341
 %--
 2/4
 2 4 - 1 0. 5 3- 6 7 - - - - - - - - -

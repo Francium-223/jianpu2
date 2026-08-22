@@ -1,0 +1,19 @@
+%摇篮曲.txt
+%TODO:revise
+MBID=3d9d8415-631d-498e-8fed-84f3e1bff356
+title=摇篮曲
+type=work
+tag=to_be_revised
+usertag=to_be_revised
+tagroute=
+alias=摇篮曲简谱_舒伯特_渗透进灵魂的温暖吟唱,放松疲惫
+copyright=简谱之家,版权归原作者及原网站
+%--
+4/4
+subtitle=摇篮曲
+2 q7 1' 6 q0 | - 0 0 0
+3 5 1' 1 | - 0 - 0
+0 0 0 0 | 2 q7 1' 6 q0 | 2 q7 1' 6 q0 | 0 0 0 0 |
+0 0 0 0 | 5 1' 1 - | 0 - 5 1' | - 0 0 0 | 0 0 0 0 |
+2 q7 1' 6 q0
+%END

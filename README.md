@@ -15,10 +15,18 @@
 | 文件 | 说明 |
 |---|---|
 | `crawler.py` | 爬虫：下载简谱图片（jianpu.cn / jianpujia.com），断点续爬 |
-| `convert.py` | 转换：Ollama 识别 → jianpu-db 格式曲谱文件 |
+| `convert.py` | 转换：Ollama 识别 → jianpu-db 格式曲谱文件（含小节/写法规范化） |
+| `tools/preprocess.ps1` | 图片缩放 + 切横条 |
+| `tools/postprocess.py` | 草稿后处理：补 `%TODO:revise` 注释 + `usertag=to_be_revised` |
+| `tools/validate_repo.py` | 用 jianpu-db 的 `score.py` 批量验证仓库兼容性（parse 不报错即兼容） |
+| `tools/validate_drafts.py` | 用本地 jianpu-ly 批量验证格式（原样/补拍号两种方式） |
+| `tools/rerun_errs.py` | 批量重跑失败的歌曲（删 .err 对应文件后重跑对应数据集） |
+| `tools/fix_timesig.py` | 给校验通过的草稿补拍号头行 |
 | `vendor/` | 内置的 `jianpu_ly` + `python-ly` 库（也可用 pip 安装替代） |
-| `images/` | 爬虫输出目录（含测试下载的 130 首歌） |
-| `scores-out/` | 转换输出目录（默认） |
+| `images/` | 爬虫输出目录（280 首歌，按数据集分 7 个子目录） |
+| `images-prep/` | 预处理后的图片（`ready`~`ready5`、`test-jianpucn`、`test-jianpujia`） |
+| `scores-draft*` | 3b 模型草稿输出（7 个目录，已后处理+MBID 补录） |
+| `scores-7b*` | 7b 模型输出（7 个目录，整图单次转写） |
 
 ## 环境准备
 
@@ -116,6 +124,7 @@ type=work
 usertag=儿歌                     # --tags
 alias=小红帽简谱_儿歌_小红帽的故事 # 爬虫原始标题 (与 title 不同时)
 transcriber=你的ID                # --transcriber
+copyright=歌谱简谱网,版权归原作者及原网站  # --copyright (值须文件系统安全)
 %--
 4/4                              # 拍号
 4=90                             # 速度 (谱面有才写)
@@ -135,6 +144,18 @@ R2{ 3 4 5 ,6 ,6 5 ,6 1' } A{ 2' 1' ,6 5 | 3 - 2 - }
 - **分段**：`subtitle=` + `NextScore`（自动补漏）；完全相同的重复可省略或用 `R{}/A{}`
 - **时值全标注**（`q`八分 `s`十六分 `-`二分 `1 - -`附点二分等），不用 `KeepLength`
 
+### 自动规范化（convert.py 内部，保证"能不报错就是对的格式"）
+
+| 规则 | 说明 |
+|---|---|
+| 八度记号 | 高八度撇号统一在数字后（`1'`），低八度逗号统一在数字前（`,6`），与语料一致 |
+| 唱名误读 | 模型输出的 `i`/`I`（高音 1）、`8`/`9`（jianpu-ly 内置高音 1/2）统一为 `1'`/`2'` |
+| 粘连延音线 | `2-` 拆成 `2 -`（jianpu-ly 把 `2-` 当和弦 = 1 拍，语料规范是独立 `-`） |
+| 小节补全 | 每小节用休止补齐到整拍；无小节线的行按拍号自动分小节；超拍小节自动重分 |
+| 结构行清洗 | `R{ ... }` 的省略号、`###`、`#10`、`A{|`、`|}` 等模型噪声自动剔除/拆开 |
+| 结尾清理 | 末尾 `NextScore` 或其后无音符的段落自动删除（否则 jianpu-ly 报空 score） |
+| 超时/退化自愈 | 模型超时、输出只有歌词、上下文不足时自动重启 Ollama 服务器重试一次 |
+
 ### 输出文件
 
 | 文件 | 内容 |
@@ -145,6 +166,35 @@ R2{ 3 4 5 ,6 ,6 5 ,6 1' } A{ 2' 1' ,6 5 | 3 - 2 - }
 | `*.err` | 失败原因 + 对应曲谱（修好 `.trans` 后重跑） |
 | `summary.csv` | 批量结果汇总 |
 | `mbid_review.csv` | MBID 复核清单（缺失/低置信度歌曲 + 候选） |
+
+### 批量流水线（本仓库 280 首歌的实际流程）
+
+```bash
+# 1. 爬虫 → images/ (7 个数据集)
+# 2. 预处理 → images-prep/
+powershell -ExecutionPolicy Bypass -File tools/preprocess.ps1 -Source images/ready -Dest images-prep/ready
+#    (其余 6 个数据集同理; 7b 整图模式不需要切片, 但切片不影响 --no-strips)
+
+# 3. 7b 整图单次转写 (每首 ~10 秒, 全程写 progress.txt 每 10 秒一条)
+python convert.py --input images-prep/ready --out scores-7b --model qwen2.5vl:7b --no-strips
+#    (7 个数据集: ready→scores-7b, ready2→scores-7b-2, ..., test-jianpujia→scores-7b-pujia)
+
+# 4. 失败歌曲用最新代码重跑
+python tools/rerun_errs.py
+
+# 5. 草稿后处理: %TODO:revise + usertag=to_be_revised + copyright=谱源
+python tools/postprocess.py
+python tools/add_copyright.py
+
+# 6. 仓库兼容验证 (用 jianpu-db 的 score.py, parse 不报错即兼容)
+python tools/validate_repo.py
+
+# 7. jianpu-ly 格式验证 (生成 validation_report.txt)
+python tools/validate_drafts.py
+
+# 8. MBID 补录 (给已生成的 .txt 查 MBID, 不重跑识别)
+python convert.py --out scores-7b --mbid-only
+```
 
 ## MBID 自动查找（分级置信度）
 

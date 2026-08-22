@@ -1,0 +1,15 @@
+title=小红帽
+type=work
+alias=小红帽简谱_儿歌_小红帽的故事
+%TODO:revise
+usertag=to_be_revised
+MBID=a099c3db-18e0-4f19-831b-69f7867609b2
+copyright=简谱之家,版权归原作者及原网站
+%--
+2/4
+subtitle=小红帽
+1 - | 3 5 | - 7
+0 0 | q6 0 q0 | q1' 0 q0 | 0 0 |
+0 0 | q6 0 q0 | q1' 0 q0 | 0 0 |
+2' - | 1 0 | 1 ,3 | 1 5 | q6 0 q0 | 0 0 |
+%END

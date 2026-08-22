@@ -1,0 +1,11 @@
+title=How Do You Do？（英文儿童歌）
+type=work
+%TODO:revise
+usertag=to_be_revised
+copyright=歌谱简谱网,版权归原作者及原网站
+%--
+4/4
+3 q2 - 0 q0 | 0 0 0 0 |
+5 s6 d7 0 0 q0 d0 | 0 0 0 0 |
+q1' 0 0 0 q0 | 0 0 0 0 | 0 0 0 0 | 0 0 0 0 |
+%END

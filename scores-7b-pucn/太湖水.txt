@@ -1,0 +1,14 @@
+title=太湖水
+type=work
+alias=太湖水&nbsp;&nbsp;
+%TODO:revise
+usertag=to_be_revised
+copyright=歌谱简谱网,版权归原作者及原网站
+%--
+2/4
+3 - | 0 0 |
+6 0 | 0 0 |
+5 -
+1. q0 | 7 0 | - 0 | 0 0 |
+0. q0
+%END

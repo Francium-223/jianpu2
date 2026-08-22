@@ -1,15 +1,17 @@
-5=F
-2/4
-5 6 - | 3 2 | 1 4 7 | | | - | | - | | - | - | - -
+#KEY none  
+#TIME 4/4  
 
---- 逐条明细 ---
-### 001_strip_00.jpg
-FAIL
-### 001_strip_01.jpg
-FAIL
-### 001_strip_02.jpg
-FAIL
-### 001_strip_03.jpg
-FAIL
-### 001_strip_04.jpg
-5 6 - | _3_2 | =1=4 _7 | 8 | A B C D E F G |-| #G A B c d e f g |-| a b c' d'e'f'g'|-|-#a'b#c'd''e'''f'''g'''|--
+6-5 - | 
+2 ~ q3 |
+q7[ s8 d10 ]| 
+
+s9[ q10 q10 q10]|
+q10[ q10 q10 q10]|
+
+q10[ q10 q10 q10]|
+
+q4 - | 
+2 ~ 5 |
+6-7 - |
+
+6-8 [ s3 d ]|

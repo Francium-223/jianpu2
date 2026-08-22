@@ -1,0 +1,41 @@
+title=海阔天空 混声四部合唱谱
+type=work
+%TODO:revise
+usertag=to_be_revised
+copyright=歌谱简谱网,版权归原作者及原网站
+%--
+4/4
+subtitle=海阔天空
+q2 - 0 0 q0 | q3 q7 s1 0 0 q0. | 6' - 0 0 | 0 0 0 0 | 0 0 0 0 |
+q2 - 0 0 q0 | q3 q7 s1 0 0 q0. | 6' - 0 0 | 0 0 0 0 | 0 0 0 0 |
+q2 - 0 0 q0 | q3 q7 s1 0 0 q0. | 6' - 0 0 | 0 0 0 0 | 0 0 0 0 |
+q2 - 0 0 q0 | q3 q7 s1 0 0 q0. | 6' - 0 0 | 0 0 0 0 | 0 0 0 0 |
+
+NextScore
+
+subtitle=混声四部合唱
+1' 0 0 0
+q4 4 4 0 q0 | 5 5 0 0 | 0 0 0 0 |
+,,2 ,3 - 0
+
+NextScore
+
+subtitle=Beyond
+1' 0 0 0
+q4 4 4 0 q0 | q3 q7 s1 0 0 q0. | 0 0 0 0 |
+,,,2 - 0 0
+
+NextScore
+
+subtitle=海阔天空
+1' 0 0 0
+q4 4 4 0 q0 | q3 q7 s1 0 0 q0. | 0 0 0 0 |
+,,,2 - 0 0
+
+NextScore
+
+subtitle=混声四部合唱
+1' 0 0 0
+q4 4 4 0 q0 | q3 q7 s1 0 0 q0. | 0 0 0 0 |
+,,,2 - 0 0
+%END

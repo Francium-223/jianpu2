@@ -1,0 +1,11 @@
+#KEY none  
+#TIME 4/4 #TEMPO 7=85
+
+6-32 | q3q3q3 |
+R{1~} R{-}
+| q3q3q3 |
+
+R{| 0 } A{{\frac{\underline { \, }} {\,\!}}}
+
+subtitle=intro
+NextScore

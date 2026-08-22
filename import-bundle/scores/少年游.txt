@@ -1,0 +1,11 @@
+title=少年游
+type=work
+%TODO:revise
+usertag=to_be_revised
+MBID=2e5702a8-3933-4b4e-8c19-0a496b612cd7
+copyright=歌谱简谱网,版权归原作者及原网站
+%--
+4/4
+0 5 6 0 | 1' 1' 2 1' | q3 q7 q1' q2' 0 0 | q1 0 q1 1 q1 q0 2 q1 3 0 q0 | 0 0 0 0 |
+R{ }
+%END

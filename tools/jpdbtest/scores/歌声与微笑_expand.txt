@@ -1,0 +1,562 @@
+%歌声与微笑.txt
+%TODO:revise
+MBID=3d2f5853-2e12-4489-adc8-9d8cfa63b915
+title=歌声与微笑
+type=work
+tag=to_be_revised
+usertag=to_be_revised
+tagroute=
+alias=歌声与微笑吉他谱_儿歌_寻找不一样的童年儿歌
+copyright=简谱之家,版权归原作者及原网站
+%--
+4/4
+6 - 0 0 | q2 q3 q7 0 0 q0 | 0 0 0 0 |
+q5 - - 0 q0 | 0 0 0 0 |
+q1 q1 q1 0 0 q0 | 0 0 0 0 |
+subtitle=副歌开始
+R{ q2 q3 q7 0 0 q0 } A{ q5 0 0 0 q0 }
+0 0 0 0 | q1 q1 q1 0 0 q0 | 0 0 0 0 |
+A{ q2 q3 q7 0 0 q0 } 6 0 0 0
+6 0 0 0
+q2 0 0 0 q0 | 0 0 0 0 |
+q3 0 0 0 q0 | 0 0 0 0 |
+q7 0 0 0 q0
+NextScore
+subtitle=副歌结束
+R{ q2 q3 q7 0 0 q0 } A{ q5 0 0 0 q0 }
+0 0 0 0 | q1 q1 q1 0 0 q0 | 0 0 0 0 |
+A{ q2 q3 q7 0 0 q0 } q6 0 0 0 q0
+q6 0 0 0 q0
+q2 0 0 0 q0 | 0 0 0 0 |
+q3 0 0 0 q0 | 0 0 0 0 |
+q7 0 0 0 q0
+NextScore
+subtitle=副歌结束
+R{ q2 q3 q7 0 0 q0 } A{ q5 0 0 0 q0 }
+0 0 0 0 | q1 q1 q1 0 0 q0 | 0 0 0 0 |
+A{ q2 q3 q7 0 0 q0 } q6 0 0 0 q0
+q6 0 0 0 q0
+q2 0 0 0 q0 | 0 0 0 0 |
+q3 0 0 0 q0 | 0 0 0 0 |
+q7 0 0 0 q0
+NextScore
+subtitle=副歌结束
+R{ q2 q3 q7 0 0 q0 } A{ q5 0 0 0 q0 }
+0 0 0 0 | q1 q1 q1 0 0 q0 | 0 0 0 0 |
+A{ q2 q3 q7 0 0 q0 } q6 0 0 0 q0
+q6 0 0 0 q0
+q2 0 0 0 q0 | 0 0 0 0 |
+q3 0 0 0 q0 | 0 0 0 0 |
+q7 0 0 0 q0
+NextScore
+subtitle=副歌结束
+R{ q2 q3 q7 0 0 q0 } A{ q5 0 0 0 q0 }
+0 0 0 0 | q1 q1 q1 0 0 q0 | 0 0 0 0 |
+A{ q2 q3 q7 0 0 q0 } q6 0 0 0 q0
+q6 0 0 0 q0
+q2 0 0 0 q0 | 0 0 0 0 |
+q3 0 0 0 q0 | 0 0 0 0 |
+q7 0 0 0 q0
+NextScore
+subtitle=副歌结束
+R{ q2 q3 q7 0 0 q0 } A{ q5 0 0 0 q0 }
+0 0 0 0 | q1 q1 q1 0 0 q0 | 0 0 0 0 |
+A{ q2 q3 q7 0 0 q0 } q6 0 0 0 q0
+q6 0 0 0 q0
+q2 0 0 0 q0 | 0 0 0 0 |
+q3 0 0 0 q0 | 0 0 0 0 |
+q7 0 0 0 q0
+NextScore
+subtitle=副歌结束
+R{ q2 q3 q7 0 0 q0 } A{ q5 0 0 0 q0 }
+0 0 0 0 | q1 q1 q1 0 0 q0 | 0 0 0 0 |
+A{ q2 q3 q7 0 0 q0 } q6 0 0 0 q0
+q6 0 0 0 q0
+q2 0 0 0 q0 | 0 0 0 0 |
+q3 0 0 0 q0 | 0 0 0 0 |
+q7 0 0 0 q0
+NextScore
+subtitle=副歌结束
+R{ q2 q3 q7 0 0 q0 } A{ q5 0 0 0 q0 }
+0 0 0 0 | q1 q1 q1 0 0 q0 | 0 0 0 0 |
+A{ q2 q3 q7 0 0 q0 } q6 0 0 0 q0
+q6 0 0 0 q0
+q2 0 0 0 q0 | 0 0 0 0 |
+q3 0 0 0 q0 | 0 0 0 0 |
+q7 0 0 0 q0
+NextScore
+subtitle=副歌结束
+R{ q2 q3 q7 0 0 q0 } A{ q5 0 0 0 q0 }
+0 0 0 0 | q1 q1 q1 0 0 q0 | 0 0 0 0 |
+A{ q2 q3 q7 0 0 q0 } q6 0 0 0 q0
+q6 0 0 0 q0
+q2 0 0 0 q0 | 0 0 0 0 |
+q3 0 0 0 q0 | 0 0 0 0 |
+q7 0 0 0 q0
+NextScore
+subtitle=副歌结束
+R{ q2 q3 q7 0 0 q0 } A{ q5 0 0 0 q0 }
+0 0 0 0 | q1 q1 q1 0 0 q0 | 0 0 0 0 |
+A{ q2 q3 q7 0 0 q0 } q6 0 0 0 q0
+q6 0 0 0 q0
+q2 0 0 0 q0 | 0 0 0 0 |
+q3 0 0 0 q0 | 0 0 0 0 |
+q7 0 0 0 q0
+NextScore
+subtitle=副歌结束
+R{ q2 q3 q7 0 0 q0 } A{ q5 0 0 0 q0 }
+0 0 0 0 | q1 q1 q1 0 0 q0 | 0 0 0 0 |
+A{ q2 q3 q7 0 0 q0 } q6 0 0 0 q0
+q6 0 0 0 q0
+q2 0 0 0 q0 | 0 0 0 0 |
+q3 0 0 0 q0 | 0 0 0 0 |
+q7 0 0 0 q0
+NextScore
+subtitle=副歌结束
+R{ q2 q3 q7 0 0 q0 } A{ q5 0 0 0 q0 }
+0 0 0 0 | q1 q1 q1 0 0 q0 | 0 0 0 0 |
+A{ q2 q3 q7 0 0 q0 } q6 0 0 0 q0
+q6 0 0 0 q0
+q2 0 0 0 q0 | 0 0 0 0 |
+q3 0 0 0 q0 | 0 0 0 0 |
+q7 0 0 0 q0
+NextScore
+subtitle=副歌结束
+R{ q2 q3 q7 0 0 q0 } A{ q5 0 0 0 q0 }
+0 0 0 0 | q1 q1 q1 0 0 q0 | 0 0 0 0 |
+A{ q2 q3 q7 0 0 q0 } q6 0 0 0 q0
+q6 0 0 0 q0
+q2 0 0 0 q0 | 0 0 0 0 |
+q3 0 0 0 q0 | 0 0 0 0 |
+q7 0 0 0 q0
+NextScore
+subtitle=副歌结束
+R{ q2 q3 q7 0 0 q0 } A{ q5 0 0 0 q0 }
+0 0 0 0 | q1 q1 q1 0 0 q0 | 0 0 0 0 |
+A{ q2 q3 q7 0 0 q0 } q6 0 0 0 q0
+q6 0 0 0 q0
+q2 0 0 0 q0 | 0 0 0 0 |
+q3 0 0 0 q0 | 0 0 0 0 |
+q7 0 0 0 q0
+NextScore
+subtitle=副歌结束
+R{ q2 q3 q7 0 0 q0 } A{ q5 0 0 0 q0 }
+0 0 0 0 | q1 q1 q1 0 0 q0 | 0 0 0 0 |
+A{ q2 q3 q7 0 0 q0 } q6 0 0 0 q0
+q6 0 0 0 q0
+q2 0 0 0 q0 | 0 0 0 0 |
+q3 0 0 0 q0 | 0 0 0 0 |
+q7 0 0 0 q0
+NextScore
+subtitle=副歌结束
+R{ q2 q3 q7 0 0 q0 } A{ q5 0 0 0 q0 }
+0 0 0 0 | q1 q1 q1 0 0 q0 | 0 0 0 0 |
+A{ q2 q3 q7 0 0 q0 } q6 0 0 0 q0
+q6 0 0 0 q0
+q2 0 0 0 q0 | 0 0 0 0 |
+q3 0 0 0 q0 | 0 0 0 0 |
+q7 0 0 0 q0
+NextScore
+subtitle=副歌结束
+R{ q2 q3 q7 0 0 q0 } A{ q5 0 0 0 q0 }
+0 0 0 0 | q1 q1 q1 0 0 q0 | 0 0 0 0 |
+A{ q2 q3 q7 0 0 q0 } q6 0 0 0 q0
+q6 0 0 0 q0
+q2 0 0 0 q0 | 0 0 0 0 |
+q3 0 0 0 q0 | 0 0 0 0 |
+q7 0 0 0 q0
+NextScore
+subtitle=副歌结束
+R{ q2 q3 q7 0 0 q0 } A{ q5 0 0 0 q0 }
+0 0 0 0 | q1 q1 q1 0 0 q0 | 0 0 0 0 |
+A{ q2 q3 q7 0 0 q0 } q6 0 0 0 q0
+q6 0 0 0 q0
+q2 0 0 0 q0 | 0 0 0 0 |
+q3 0 0 0 q0 | 0 0 0 0 |
+q7 0 0 0 q0
+NextScore
+subtitle=副歌结束
+R{ q2 q3 q7 0 0 q0 } A{ q5 0 0 0 q0 }
+0 0 0 0 | q1 q1 q1 0 0 q0 | 0 0 0 0 |
+A{ q2 q3 q7 0 0 q0 } q6 0 0 0 q0
+q6 0 0 0 q0
+q2 0 0 0 q0 | 0 0 0 0 |
+q3 0 0 0 q0 | 0 0 0 0 |
+q7 0 0 0 q0
+NextScore
+subtitle=副歌结束
+R{ q2 q3 q7 0 0 q0 } A{ q5 0 0 0 q0 }
+0 0 0 0 | q1 q1 q1 0 0 q0 | 0 0 0 0 |
+A{ q2 q3 q7 0 0 q0 } q6 0 0 0 q0
+q6 0 0 0 q0
+q2 0 0 0 q0 | 0 0 0 0 |
+q3 0 0 0 q0 | 0 0 0 0 |
+q7 0 0 0 q0
+NextScore
+subtitle=副歌结束
+R{ q2 q3 q7 0 0 q0 } A{ q5 0 0 0 q0 }
+0 0 0 0 | q1 q1 q1 0 0 q0 | 0 0 0 0 |
+A{ q2 q3 q7 0 0 q0 } q6 0 0 0 q0
+q6 0 0 0 q0
+q2 0 0 0 q0 | 0 0 0 0 |
+q3 0 0 0 q0 | 0 0 0 0 |
+q7 0 0 0 q0
+NextScore
+subtitle=副歌结束
+R{ q2 q3 q7 0 0 q0 } A{ q5 0 0 0 q0 }
+0 0 0 0 | q1 q1 q1 0 0 q0 | 0 0 0 0 |
+A{ q2 q3 q7 0 0 q0 } q6 0 0 0 q0
+q6 0 0 0 q0
+q2 0 0 0 q0 | 0 0 0 0 |
+q3 0 0 0 q0 | 0 0 0 0 |
+q7 0 0 0 q0
+NextScore
+subtitle=副歌结束
+R{ q2 q3 q7 0 0 q0 } A{ q5 0 0 0 q0 }
+0 0 0 0 | q1 q1 q1 0 0 q0 | 0 0 0 0 |
+A{ q2 q3 q7 0 0 q0 } q6 0 0 0 q0
+q6 0 0 0 q0
+q2 0 0 0 q0 | 0 0 0 0 |
+q3 0 0 0 q0 | 0 0 0 0 |
+q7 0 0 0 q0
+NextScore
+subtitle=副歌结束
+R{ q2 q3 q7 0 0 q0 } A{ q5 0 0 0 q0 }
+0 0 0 0 | q1 q1 q1 0 0 q0 | 0 0 0 0 |
+A{ q2 q3 q7 0 0 q0 } q6 0 0 0 q0
+q6 0 0 0 q0
+q2 0 0 0 q0 | 0 0 0 0 |
+q3 0 0 0 q0 | 0 0 0 0 |
+q7 0 0 0 q0
+NextScore
+subtitle=副歌结束
+R{ q2 q3 q7 0 0 q0 } A{ q5 0 0 0 q0 }
+0 0 0 0 | q1 q1 q1 0 0 q0 | 0 0 0 0 |
+A{ q2 q3 q7 0 0 q0 } q6 0 0 0 q0
+q6 0 0 0 q0
+q2 0 0 0 q0 | 0 0 0 0 |
+q3 0 0 0 q0 | 0 0 0 0 |
+q7 0 0 0 q0
+NextScore
+subtitle=副歌结束
+R{ q2 q3 q7 0 0 q0 } A{ q5 0 0 0 q0 }
+0 0 0 0 | q1 q1 q1 0 0 q0 | 0 0 0 0 |
+A{ q2 q3 q7 0 0 q0 } q6 0 0 0 q0
+q6 0 0 0 q0
+q2 0 0 0 q0 | 0 0 0 0 |
+q3 0 0 0 q0 | 0 0 0 0 |
+q7 0 0 0 q0
+NextScore
+subtitle=副歌结束
+R{ q2 q3 q7 0 0 q0 } A{ q5 0 0 0 q0 }
+0 0 0 0 | q1 q1 q1 0 0 q0 | 0 0 0 0 |
+A{ q2 q3 q7 0 0 q0 } q6 0 0 0 q0
+q6 0 0 0 q0
+q2 0 0 0 q0 | 0 0 0 0 |
+q3 0 0 0 q0 | 0 0 0 0 |
+q7 0 0 0 q0
+NextScore
+subtitle=副歌结束
+R{ q2 q3 q7 0 0 q0 } A{ q5 0 0 0 q0 }
+0 0 0 0 | q1 q1 q1 0 0 q0 | 0 0 0 0 |
+A{ q2 q3 q7 0 0 q0 } q6 0 0 0 q0
+q6 0 0 0 q0
+q2 0 0 0 q0 | 0 0 0 0 |
+q3 0 0 0 q0 | 0 0 0 0 |
+q7 0 0 0 q0
+NextScore
+subtitle=副歌结束
+R{ q2 q3 q7 0 0 q0 } A{ q5 0 0 0 q0 }
+0 0 0 0 | q1 q1 q1 0 0 q0 | 0 0 0 0 |
+A{ q2 q3 q7 0 0 q0 } q6 0 0 0 q0
+q6 0 0 0 q0
+q2 0 0 0 q0 | 0 0 0 0 |
+q3 0 0 0 q0 | 0 0 0 0 |
+q7 0 0 0 q0
+NextScore
+subtitle=副歌结束
+R{ q2 q3 q7 0 0 q0 } A{ q5 0 0 0 q0 }
+0 0 0 0 | q1 q1 q1 0 0 q0 | 0 0 0 0 |
+A{ q2 q3 q7 0 0 q0 } q6 0 0 0 q0
+q6 0 0 0 q0
+q2 0 0 0 q0 | 0 0 0 0 |
+q3 0 0 0 q0 | 0 0 0 0 |
+q7 0 0 0 q0
+NextScore
+subtitle=副歌结束
+R{ q2 q3 q7 0 0 q0 } A{ q5 0 0 0 q0 }
+0 0 0 0 | q1 q1 q1 0 0 q0 | 0 0 0 0 |
+A{ q2 q3 q7 0 0 q0 } q6 0 0 0 q0
+q6 0 0 0 q0
+q2 0 0 0 q0 | 0 0 0 0 |
+q3 0 0 0 q0 | 0 0 0 0 |
+q7 0 0 0 q0
+NextScore
+subtitle=副歌结束
+R{ q2 q3 q7 0 0 q0 } A{ q5 0 0 0 q0 }
+0 0 0 0 | q1 q1 q1 0 0 q0 | 0 0 0 0 |
+A{ q2 q3 q7 0 0 q0 } q6 0 0 0 q0
+q6 0 0 0 q0
+q2 0 0 0 q0 | 0 0 0 0 |
+q3 0 0 0 q0 | 0 0 0 0 |
+q7 0 0 0 q0
+NextScore
+subtitle=副歌结束
+R{ q2 q3 q7 0 0 q0 } A{ q5 0 0 0 q0 }
+0 0 0 0 | q1 q1 q1 0 0 q0 | 0 0 0 0 |
+A{ q2 q3 q7 0 0 q0 } q6 0 0 0 q0
+q6 0 0 0 q0
+q2 0 0 0 q0 | 0 0 0 0 |
+q3 0 0 0 q0 | 0 0 0 0 |
+q7 0 0 0 q0
+NextScore
+subtitle=副歌结束
+R{ q2 q3 q7 0 0 q0 } A{ q5 0 0 0 q0 }
+0 0 0 0 | q1 q1 q1 0 0 q0 | 0 0 0 0 |
+A{ q2 q3 q7 0 0 q0 } q6 0 0 0 q0
+q6 0 0 0 q0
+q2 0 0 0 q0 | 0 0 0 0 |
+q3 0 0 0 q0 | 0 0 0 0 |
+q7 0 0 0 q0
+NextScore
+subtitle=副歌结束
+R{ q2 q3 q7 0 0 q0 } A{ q5 0 0 0 q0 }
+0 0 0 0 | q1 q1 q1 0 0 q0 | 0 0 0 0 |
+A{ q2 q3 q7 0 0 q0 } q6 0 0 0 q0
+q6 0 0 0 q0
+q2 0 0 0 q0 | 0 0 0 0 |
+q3 0 0 0 q0 | 0 0 0 0 |
+q7 0 0 0 q0
+NextScore
+subtitle=副歌结束
+R{ q2 q3 q7 0 0 q0 } A{ q5 0 0 0 q0 }
+0 0 0 0 | q1 q1 q1 0 0 q0 | 0 0 0 0 |
+A{ q2 q3 q7 0 0 q0 } q6 0 0 0 q0
+q6 0 0 0 q0
+q2 0 0 0 q0 | 0 0 0 0 |
+q3 0 0 0 q0 | 0 0 0 0 |
+q7 0 0 0 q0
+NextScore
+subtitle=副歌结束
+R{ q2 q3 q7 0 0 q0 } A{ q5 0 0 0 q0 }
+0 0 0 0 | q1 q1 q1 0 0 q0 | 0 0 0 0 |
+A{ q2 q3 q7 0 0 q0 } q6 0 0 0 q0
+q6 0 0 0 q0
+q2 0 0 0 q0 | 0 0 0 0 |
+q3 0 0 0 q0 | 0 0 0 0 |
+q7 0 0 0 q0
+NextScore
+subtitle=副歌结束
+R{ q2 q3 q7 0 0 q0 } A{ q5 0 0 0 q0 }
+0 0 0 0 | q1 q1 q1 0 0 q0 | 0 0 0 0 |
+A{ q2 q3 q7 0 0 q0 } q6 0 0 0 q0
+q6 0 0 0 q0
+q2 0 0 0 q0 | 0 0 0 0 |
+q3 0 0 0 q0 | 0 0 0 0 |
+q7 0 0 0 q0
+NextScore
+subtitle=副歌结束
+R{ q2 q3 q7 0 0 q0 } A{ q5 0 0 0 q0 }
+0 0 0 0 | q1 q1 q1 0 0 q0 | 0 0 0 0 |
+A{ q2 q3 q7 0 0 q0 } q6 0 0 0 q0
+q6 0 0 0 q0
+q2 0 0 0 q0 | 0 0 0 0 |
+q3 0 0 0 q0 | 0 0 0 0 |
+q7 0 0 0 q0
+NextScore
+subtitle=副歌结束
+R{ q2 q3 q7 0 0 q0 } A{ q5 0 0 0 q0 }
+0 0 0 0 | q1 q1 q1 0 0 q0 | 0 0 0 0 |
+A{ q2 q3 q7 0 0 q0 } q6 0 0 0 q0
+q6 0 0 0 q0
+q2 0 0 0 q0 | 0 0 0 0 |
+q3 0 0 0 q0 | 0 0 0 0 |
+q7 0 0 0 q0
+NextScore
+subtitle=副歌结束
+R{ q2 q3 q7 0 0 q0 } A{ q5 0 0 0 q0 }
+0 0 0 0 | q1 q1 q1 0 0 q0 | 0 0 0 0 |
+A{ q2 q3 q7 0 0 q0 } q6 0 0 0 q0
+q6 0 0 0 q0
+q2 0 0 0 q0 | 0 0 0 0 |
+q3 0 0 0 q0 | 0 0 0 0 |
+q7 0 0 0 q0
+NextScore
+subtitle=副歌结束
+R{ q2 q3 q7 0 0 q0 } A{ q5 0 0 0 q0 }
+0 0 0 0 | q1 q1 q1 0 0 q0 | 0 0 0 0 |
+A{ q2 q3 q7 0 0 q0 } q6 0 0 0 q0
+q6 0 0 0 q0
+q2 0 0 0 q0 | 0 0 0 0 |
+q3 0 0 0 q0 | 0 0 0 0 |
+q7 0 0 0 q0
+NextScore
+subtitle=副歌结束
+R{ q2 q3 q7 0 0 q0 } A{ q5 0 0 0 q0 }
+0 0 0 0 | q1 q1 q1 0 0 q0 | 0 0 0 0 |
+A{ q2 q3 q7 0 0 q0 } q6 0 0 0 q0
+q6 0 0 0 q0
+q2 0 0 0 q0 | 0 0 0 0 |
+q3 0 0 0 q0 | 0 0 0 0 |
+q7 0 0 0 q0
+NextScore
+subtitle=副歌结束
+R{ q2 q3 q7 0 0 q0 } A{ q5 0 0 0 q0 }
+0 0 0 0 | q1 q1 q1 0 0 q0 | 0 0 0 0 |
+A{ q2 q3 q7 0 0 q0 } q6 0 0 0 q0
+q6 0 0 0 q0
+q2 0 0 0 q0 | 0 0 0 0 |
+q3 0 0 0 q0 | 0 0 0 0 |
+q7 0 0 0 q0
+NextScore
+subtitle=副歌结束
+R{ q2 q3 q7 0 0 q0 } A{ q5 0 0 0 q0 }
+0 0 0 0 | q1 q1 q1 0 0 q0 | 0 0 0 0 |
+A{ q2 q3 q7 0 0 q0 } q6 0 0 0 q0
+q6 0 0 0 q0
+q2 0 0 0 q0 | 0 0 0 0 |
+q3 0 0 0 q0 | 0 0 0 0 |
+q7 0 0 0 q0
+NextScore
+subtitle=副歌结束
+R{ q2 q3 q7 0 0 q0 } A{ q5 0 0 0 q0 }
+0 0 0 0 | q1 q1 q1 0 0 q0 | 0 0 0 0 |
+A{ q2 q3 q7 0 0 q0 } q6 0 0 0 q0
+q6 0 0 0 q0
+q2 0 0 0 q0 | 0 0 0 0 |
+q3 0 0 0 q0 | 0 0 0 0 |
+q7 0 0 0 q0
+NextScore
+subtitle=副歌结束
+R{ q2 q3 q7 0 0 q0 } A{ q5 0 0 0 q0 }
+0 0 0 0 | q1 q1 q1 0 0 q0 | 0 0 0 0 |
+A{ q2 q3 q7 0 0 q0 } q6 0 0 0 q0
+q6 0 0 0 q0
+q2 0 0 0 q0 | 0 0 0 0 |
+q3 0 0 0 q0 | 0 0 0 0 |
+q7 0 0 0 q0
+NextScore
+subtitle=副歌结束
+R{ q2 q3 q7 0 0 q0 } A{ q5 0 0 0 q0 }
+0 0 0 0 | q1 q1 q1 0 0 q0 | 0 0 0 0 |
+A{ q2 q3 q7 0 0 q0 } q6 0 0 0 q0
+q6 0 0 0 q0
+q2 0 0 0 q0 | 0 0 0 0 |
+q3 0 0 0 q0 | 0 0 0 0 |
+q7 0 0 0 q0
+NextScore
+subtitle=副歌结束
+R{ q2 q3 q7 0 0 q0 } A{ q5 0 0 0 q0 }
+0 0 0 0 | q1 q1 q1 0 0 q0 | 0 0 0 0 |
+A{ q2 q3 q7 0 0 q0 } q6 0 0 0 q0
+q6 0 0 0 q0
+q2 0 0 0 q0 | 0 0 0 0 |
+q3 0 0 0 q0 | 0 0 0 0 |
+q7 0 0 0 q0
+NextScore
+subtitle=副歌结束
+R{ q2 q3 q7 0 0 q0 } A{ q5 0 0 0 q0 }
+0 0 0 0 | q1 q1 q1 0 0 q0 | 0 0 0 0 |
+A{ q2 q3 q7 0 0 q0 } q6 0 0 0 q0
+q6 0 0 0 q0
+q2 0 0 0 q0 | 0 0 0 0 |
+q3 0 0 0 q0 | 0 0 0 0 |
+q7 0 0 0 q0
+NextScore
+subtitle=副歌结束
+R{ q2 q3 q7 0 0 q0 } A{ q5 0 0 0 q0 }
+0 0 0 0 | q1 q1 q1 0 0 q0 | 0 0 0 0 |
+A{ q2 q3 q7 0 0 q0 } q6 0 0 0 q0
+q6 0 0 0 q0
+q2 0 0 0 q0 | 0 0 0 0 |
+q3 0 0 0 q0 | 0 0 0 0 |
+q7 0 0 0 q0
+NextScore
+subtitle=副歌结束
+R{ q2 q3 q7 0 0 q0 } A{ q5 0 0 0 q0 }
+0 0 0 0 | q1 q1 q1 0 0 q0 | 0 0 0 0 |
+A{ q2 q3 q7 0 0 q0 } q6 0 0 0 q0
+q6 0 0 0 q0
+q2 0 0 0 q0 | 0 0 0 0 |
+q3 0 0 0 q0 | 0 0 0 0 |
+q7 0 0 0 q0
+NextScore
+subtitle=副歌结束
+R{ q2 q3 q7 0 0 q0 } A{ q5 0 0 0 q0 }
+0 0 0 0 | q1 q1 q1 0 0 q0 | 0 0 0 0 |
+A{ q2 q3 q7 0 0 q0 } q6 0 0 0 q0
+q6 0 0 0 q0
+q2 0 0 0 q0 | 0 0 0 0 |
+q3 0 0 0 q0 | 0 0 0 0 |
+q7 0 0 0 q0
+NextScore
+subtitle=副歌结束
+R{ q2 q3 q7 0 0 q0 } A{ q5 0 0 0 q0 }
+0 0 0 0 | q1 q1 q1 0 0 q0 | 0 0 0 0 |
+A{ q2 q3 q7 0 0 q0 } q6 0 0 0 q0
+q6 0 0 0 q0
+q2 0 0 0 q0 | 0 0 0 0 |
+q3 0 0 0 q0 | 0 0 0 0 |
+q7 0 0 0 q0
+NextScore
+subtitle=副歌结束
+R{ q2 q3 q7 0 0 q0 } A{ q5 0 0 0 q0 }
+0 0 0 0 | q1 q1 q1 0 0 q0 | 0 0 0 0 |
+A{ q2 q3 q7 0 0 q0 } q6 0 0 0 q0
+q6 0 0 0 q0
+q2 0 0 0 q0 | 0 0 0 0 |
+q3 0 0 0 q0 | 0 0 0 0 |
+q7 0 0 0 q0
+NextScore
+subtitle=副歌结束
+R{ q2 q3 q7 0 0 q0 } A{ q5 0 0 0 q0 }
+0 0 0 0 | q1 q1 q1 0 0 q0 | 0 0 0 0 |
+A{ q2 q3 q7 0 0 q0 } q6 0 0 0 q0
+q6 0 0 0 q0
+q2 0 0 0 q0 | 0 0 0 0 |
+q3 0 0 0 q0 | 0 0 0 0 |
+q7 0 0 0 q0
+NextScore
+subtitle=副歌结束
+R{ q2 q3 q7 0 0 q0 } A{ q5 0 0 0 q0 }
+0 0 0 0 | q1 q1 q1 0 0 q0 | 0 0 0 0 |
+A{ q2 q3 q7 0 0 q0 } q6 0 0 0 q0
+q6 0 0 0 q0
+q2 0 0 0 q0 | 0 0 0 0 |
+q3 0 0 0 q0 | 0 0 0 0 |
+q7 0 0 0 q0
+NextScore
+subtitle=副歌结束
+R{ q2 q3 q7 0 0 q0 } A{ q5 0 0 0 q0 }
+0 0 0 0 | q1 q1 q1 0 0 q0 | 0 0 0 0 |
+A{ q2 q3 q7 0 0 q0 } q6 0 0 0 q0
+q6 0 0 0 q0
+q2 0 0 0 q0 | 0 0 0 0 |
+q3 0 0 0 q0 | 0 0 0 0 |
+q7 0 0 0 q0
+NextScore
+subtitle=副歌结束
+R{ q2 q3 q7 0 0 q0 } A{ q5 0 0 0 q0 }
+0 0 0 0 | q1 q1 q1 0 0 q0 | 0 0 0 0 |
+A{ q2 q3 q7 0 0 q0 } q6 0 0 0 q0
+q6 0 0 0 q0
+q2 0 0 0 q0 | 0 0 0 0 |
+q3 0 0 0 q0 | 0 0 0 0 |
+q7 0 0 0 q0
+NextScore
+subtitle=副歌结束
+R{ q2 q3 q7 0 0 q0 } A{ q5 0 0 0 q0 }
+0 0 0 0 | q1 q1 q1 0 0 q0 | 0 0 0 0 |
+A{ q2 q3 q7 0 0 q0 } q6 0 0 0 q0
+q6 0 0 0 q0
+q2 0 0 0 q0 | 0 0 0 0 |
+q3 0 0 0 q0 | 0 0 0 0 |
+q7 0 0 0 q0
+NextScore
+subtitle=副歌结束
+R{ q2 q3 q7 0 0 q0 } A{ q5 0 0 0 q0 }
+0 0 0 0 | q1 q1 q1 0 0 q0 | 0 0 0 0 |
+A{ q2 q3 q7 0 0 q0 } q6 0 0 0 q0
+q6 0 0 0 q0
+q2 0 0 0 q0 | 0 0 0 0 |
+%END

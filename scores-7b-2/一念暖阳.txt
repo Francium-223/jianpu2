@@ -1,0 +1,12 @@
+title=一念暖阳
+type=work
+%TODO:revise
+usertag=to_be_revised
+copyright=歌谱简谱网,版权归原作者及原网站
+%--
+4/4
+0 q2 0 0 q0 | 0 0 0 0 |
+3 5 q7 0 q0 | 6 - 6 0 | 1 - q1' 0 q0 | 0 0 0 0 |
+1 2 3 0 | 0 0 0 0 |
+|
+%END

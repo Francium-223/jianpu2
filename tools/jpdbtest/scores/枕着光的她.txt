@@ -1,0 +1,21 @@
+%枕着光的她.txt
+%TODO:revise
+MBID=
+title=枕着光的她
+type=work
+tag=to_be_revised
+usertag=to_be_revised
+tagroute=
+alias=枕着光的她-合唱 天使合唱团
+copyright=歌谱简谱网,版权归原作者及原网站
+%--
+4/4
+5 - q6 d3 0 s0. | 0 0 0 0 |
+q2 - 0 0 q0 | 0 0 0 0 |
+1' 0 0 0 | 0 0 0 0 |
+1 0 0 0
+0 0 0 0 | q7 0 0 0 q0 | 0 0 0 0 |
+q2 - 0 0 q0 | 0 0 0 0 |
+0 0 0 0 | q7 0 0 0 q0 | 0 0 0 0 |
+q2 - 0 0 q0 | 0 0 0 0 |
+%END

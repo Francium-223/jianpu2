@@ -1,0 +1,12 @@
+title=苹果香
+type=work
+alias=苹果香&nbsp;
+%TODO:revise
+usertag=to_be_revised
+MBID=aaa6fbad-50f5-40c7-9d50-1c7b968d55c4
+copyright=歌谱简谱网,版权归原作者及原网站
+%--
+4/4
+3 - q6 0 q0 | s2 q7 0 0 0 s0 | d1' d2' d1 0 - 0 q0 d0 | d5 d6 d7 - 0 0 q0 d0 | 0 0 0 0 |
+b6 b7 b1' - | b5 b6 b7 - | b6 b7 b1' - |
+%END

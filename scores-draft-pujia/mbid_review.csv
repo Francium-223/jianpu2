@@ -1,1 +1,96 @@
 ﻿song,title,artist,mbid,type,confidence,matched
+一字诗.txt,一字诗,,,work,,
+一闪一闪亮晶晶.txt,一闪一闪亮晶晶,,,work,,"[[""recording"", {""id"": ""ec1280fa-b043-4815-9aaa-e89b7884817a"", ""title"": ""一閃一閃亮晶晶"", ""artists"": [""Waa Wei""], ""score"": 100}], [""recording"", {""id"": ""13b2a959-decc-445a-a374-e4910f21908a"", ""title"": ""一閃一閃亮晶晶"", ""artists"": [""讚美之泉""], ""score"": 100}], [""recording"", {""id"": ""bfd8092e-f80a-4a1d-9253-07c58d0b91aa"", ""title"": ""一閃一閃亮晶晶 (創意教室)"", ""artists"": [""讚美之泉""], ""score"": 66}]]"
+七步诗.txt,七步诗,,b0b07058-e04c-47dc-a748-4b65a100d9e7,recording,medium,"{""title"": ""七步诗"", ""artists"": [""刘欢""]}"
+七色光之歌.txt,七色光之歌,,2eaa623e-8608-4dae-99fe-fcf67e93ecb5,recording,medium,"{""title"": ""七色光之歌"", ""artists"": [""新月合唱团""]}"
+三字经.txt,三字经,,5c6935fe-f841-4445-8a9b-63b49f5b33ca,recording,medium,"{""title"": ""三字经"", ""artists"": [""朝简"", ""窦唯""]}"
+上学歌.txt,上学歌,,e97940b2-599e-4c92-acfd-f9fa80cb254f,recording,medium,"{""title"": ""上学歌"", ""artists"": [""蔡闰羽""]}"
+九儿.txt,九儿,,50400fc8-c893-4a71-b4c8-c6076fd2cadf,recording,medium,"{""title"": ""九儿"", ""artists"": [""萨顶顶""]}"
+乡间的小路.txt,乡间的小路,,4c2c85e7-b7a1-49ac-87a1-645f081f748e,work,medium,"{""title"": ""鄉間的小路"", ""artists"": []}"
+儿歌.txt,儿歌,,b67c82be-8a36-4aca-b8b6-ac79636dd5f3,work,medium,"{""title"": ""兒歌"", ""artists"": []}"
+元日.txt,元日,,0b9ec2fb-a00d-410f-9b9a-d9e3bf460c14,recording,medium,"{""title"": ""元日"", ""artists"": [""岩田恭明""]}"
+兰花草.txt,兰花草,,bbe83163-ffdd-49dc-bb76-667f2f779f30,work,medium,"{""title"": ""蘭花草"", ""artists"": []}"
+出塞.txt,出塞,,addc6e0a-70ba-48a1-aa13-5dc1df7900a0,work,medium,"{""title"": ""出塞曲"", ""artists"": []}"
+别看我只是只羊.txt,别看我只是只羊,,,work,,
+卖报歌.txt,卖报歌,,5bf98c64-bd4c-48a4-a7a8-55d8ad833b6f,recording,medium,"{""title"": ""卖报歌"", ""artists"": [""蔡闰羽""]}"
+叶儿船.txt,叶儿船,,,work,,
+听妈妈讲那过去的事情.txt,听妈妈讲那过去的事情,,60b85a87-7b72-48d6-a363-ec640a31a6e7,work,medium,"{""title"": ""听妈妈讲那过去的事情"", ""artists"": []}"
+咏鹅.txt,咏鹅,,,work,,
+嘀哩嘀哩.txt,嘀哩嘀哩,,23351ef2-f036-48ce-96cf-e904af6b9104,recording,medium,"{""title"": ""嘀哩嘀哩"", ""artists"": [""新月合唱团""]}"
+增广贤文.txt,增广贤文,,,work,,
+声律启蒙.txt,声律启蒙,,,work,,
+外婆的澎湖湾.txt,外婆的澎湖湾,,7431dd14-20a7-4320-8ea6-363c0ddba101,work,medium,"{""title"": ""外婆的澎湖灣"", ""artists"": []}"
+多情的月光.txt,多情的月光,,,work,,
+大风车.txt,大风车,,bcfc3429-78eb-4e20-9c1a-f6f69bffd861,recording,medium,"{""title"": ""大风车"", ""artists"": [""乔乐扬""]}"
+女儿歌.txt,女儿歌,,,work,,
+妈妈的吻.txt,妈妈的吻,,,work,,
+学习雷锋好榜样.txt,学习雷锋好榜样,,0149edbc-f6fb-42b1-b59a-3437440b2120,recording,medium,"{""title"": ""学习雷锋好榜样"", ""artists"": [""王怡然""]}"
+宝贝宝贝.txt,宝贝宝贝,,,work,,
+寻胡隐君.txt,寻胡隐君,,,work,,
+小儿语.txt,小儿语,,,work,,
+小兔子乖乖.txt,小兔子乖乖,,4220256e-ca4a-4442-9ecd-609f998b04ce,recording,medium,"{""title"": ""小兔子乖乖"", ""artists"": [""王赫煊"", ""张壹迪"", ""王怡然""]}"
+小小少年.txt,小小少年,,4d55aa7f-f250-4ca4-8dcd-2e6c940a224b,recording,medium,"{""title"": ""小小少年"", ""artists"": [""李沫洁""]}"
+小小雨点.txt,小小雨点,,,work,,
+小星星.txt,小星星,,e85e2616-b8a4-4dd5-b95c-1870f304f65c,recording,medium,"{""title"": ""小星星"", ""artists"": [""張芯瑜""]}"
+小毛驴.txt,小毛驴,,,work,,
+小燕子.txt,小燕子,,811ecf6f-ce03-4e17-8c56-045fe6d425f8,recording,medium,"{""title"": ""小燕子"", ""artists"": [""章中锦""]}"
+小白船.txt,小白船,,,work,,
+小红帽.txt,小红帽,,a099c3db-18e0-4f19-831b-69f7867609b2,work,medium,"{""title"": ""小红帽的一天"", ""artists"": []}"
+小草.txt,小草,,,work,,
+小螺号.txt,小螺号,,59bc463a-5f61-492a-a656-e921ece33403,recording,medium,"{""title"": ""小螺号"", ""artists"": [""李志""]}"
+小螺号（少儿歌曲）.txt,小螺号（少儿歌曲）,,,work,,
+弟子规.txt,弟子规,,,work,,
+悯农.txt,悯农,,,work,,
+我们是共产主义接班人.txt,我们是共产主义接班人,,853620ef-9935-4704-b86f-51b5e458ed30,recording,medium,"{""title"": ""我们是共产主义接班人"", ""artists"": [""[unknown]""]}"
+我们是春天.txt,我们是春天,,ee9fc8d6-2b30-4d1a-b40f-365ec97131f4,recording,medium,"{""title"": ""我们是春天的鲜花"", ""artists"": [""李易瞳""]}"
+我是一个粉刷匠.txt,我是一个粉刷匠,,,work,,
+我爱北京天安门.txt,我爱北京天安门,,5dde3fbc-fd59-4484-8df5-5d0fa30f27a9,work,medium,"{""title"": ""我爱北京天安门"", ""artists"": []}"
+我的好妈妈.txt,我的好妈妈,,,work,,
+找朋友.txt,找朋友,,4d5ee112-af25-4f11-9106-95c899046c8f,recording,medium,"{""title"": ""找朋友"", ""artists"": [""洛可可""]}"
+拔萝卜.txt,拔萝卜,,6f4ef775-fae7-4715-a320-2f798890702f,recording,medium,"{""title"": ""拔萝卜"", ""artists"": [""[unknown]""]}"
+摇篮曲.txt,摇篮曲,,3d9d8415-631d-498e-8fed-84f3e1bff356,work,medium,"{""title"": ""摇篮曲"", ""artists"": []}"
+数鸭子.txt,数鸭子,,1a176fda-c649-4855-9498-4615c938afc1,recording,medium,"{""title"": ""数鸭子"", ""artists"": [""李志""]}"
+新年好.txt,新年好,,9c9e8d36-98aa-45e6-b967-5aa0eed39fe6,work,medium,"{""title"": ""新年好"", ""artists"": []}"
+明日歌.txt,明日歌,,3e73d409-55c9-4603-86a9-8ef63e7d2991,recording,medium,"{""title"": ""為明日歌唱"", ""artists"": [""Candy Shu""]}"
+明月逐人归.txt,明月逐人归,,,work,,
+春天在哪里.txt,春天在哪里,,,work,,
+春晓.txt,春晓,,d834e405-9bad-4d1f-ad64-4dfbcc5db676,recording,medium,"{""title"": ""春晓"", ""artists"": [""李秋彤""]}"
+晓窗.txt,晓窗,,,work,,
+村居.txt,村居,,4da3ebcb-a3aa-4e12-9777-0c3d8c460aff,recording,medium,"{""title"": ""幸福村居"", ""artists"": [""春天""]}"
+校园的早晨.txt,校园的早晨,,462617e1-3af0-43e7-b731-b36ac4dd9b19,recording,medium,"{""title"": ""校园的早晨"", ""artists"": [""邓韵""]}"
+格言联壁.txt,格言联壁,,,work,,
+歌声与微笑.txt,歌声与微笑,,b979352d-0340-4bdb-8a4f-e63f9db3193f,recording,medium,"{""title"": ""歌声与微笑"", ""artists"": [""李志""]}"
+每当我走过老师窗前.txt,每当我走过老师窗前,,63afc6e7-959c-4299-a7cd-d6bfed57135d,recording,medium,"{""title"": ""每当我走过老师窗前"", ""artists"": [""[unknown]""]}"
+江南.txt,江南,,9e497ee4-67ab-4e9e-8c64-d95a06d2f89a,work,medium,"{""title"": ""江南"", ""artists"": []}"
+洋娃娃和小熊跳舞.txt,洋娃娃和小熊跳舞,,2aa52e70-bf87-4633-b079-7f4034a9a8b2,recording,medium,"{""title"": ""洋娃娃和小熊跳舞"", ""artists"": [""The Columbine Shoots""]}"
+清明.txt,清明,,96601a09-6de4-4551-8ba2-aeeced9cad39,work,medium,"{""title"": ""清明"", ""artists"": []}"
+游子吟.txt,游子吟,,e4c568bf-4940-4afe-b011-b3931dfc00b8,recording,medium,"{""title"": ""遊子吟"", ""artists"": [""譚寧""]}"
+烟雨.txt,烟雨,,,work,,"[[""work"", {""id"": ""be339bd9-82d0-4c75-b133-229badde9e57"", ""title"": ""煙雨淒迷"", ""artists"": [], ""score"": 100}], [""work"", {""id"": ""d4f21c65-9ff8-4b42-9107-caf08f4d9b51"", ""title"": ""寂寞煙雨天"", ""artists"": [], ""score"": 87}], [""work"", {""id"": ""35210af1-34d3-42e5-b071-7f923e908bb0"", ""title"": ""風花煙雨間"", ""artists"": [], ""score"": 85}]]"
+熊猫咪咪（少儿歌曲）.txt,熊猫咪咪（少儿歌曲）,,,work,,
+牧羊童.txt,牧羊童,,,work,,
+生日歌.txt,生日歌,,d4edf0bf-800b-4531-b998-67244d141768,work,medium,"{""title"": ""生日歌"", ""artists"": []}"
+登鹳雀楼.txt,登鹳雀楼,,9058a86f-dbe4-44d1-80b9-b63fcd02444a,recording,medium,"{""title"": ""登鸛雀樓"", ""artists"": [""巨大的轟鳴""]}"
+百家姓.txt,百家姓,,81a30c59-77fb-4efd-b53b-fc03180f11e1,recording,medium,"{""title"": ""百家姓"", ""artists"": [""四喜丸子""]}"
+相思.txt,相思,,8138c4f1-e901-4ce2-83df-10439c8aead0,work,medium,"{""title"": ""相思"", ""artists"": []}"
+祝你生日快乐.txt,祝你生日快乐,,e949ff3b-97b9-45d8-8195-62d823976e00,recording,medium,"{""title"": ""祝你生日快樂"", ""artists"": [""讚美之泉""]}"
+秋千（少儿歌曲）.txt,秋千（少儿歌曲）,,,work,,
+童年的小摇车（少儿歌曲）.txt,童年的小摇车（少儿歌曲）,,,work,,
+童年（少儿歌曲.txt,童年（少儿歌曲,,,work,,
+红星歌.txt,红星歌,,e1a7ba21-5aa7-4d1f-a1e1-94ad844db4bc,work,medium,"{""title"": ""红星歌"", ""artists"": []}"
+红领巾之歌.txt,红领巾之歌,,7b81221f-d05a-46e9-a72f-7b933d004e61,recording,medium,"{""title"": ""红领巾之歌"", ""artists"": [""李秋彤""]}"
+红鼻子驯鹿鲁道夫.txt,红鼻子驯鹿鲁道夫,,,work,,
+蜗牛与黄鹂鸟.txt,蜗牛与黄鹂鸟,,,work,,
+让我们荡起双桨.txt,让我们荡起双桨,,c643a0e1-a169-4844-9727-27d9ebf61ade,work,medium,"{""title"": ""让我们荡起双桨"", ""artists"": []}"
+论语.txt,论语,,,work,,"[[""recording"", {""id"": ""e578d37a-76e7-4895-ab07-d95dc4e77263"", ""title"": ""He Said He Said〜論語学而第一〜"", ""artists"": [""岡本定義""], ""score"": 100}]]"
+读唐诗.txt,读唐诗,,11708522-ece9-4c8d-a0f6-a537dfc82eab,recording,medium,"{""title"": ""读唐诗"", ""artists"": [""彭樱淇""]}"
+谷建芬新学堂儿歌系列：千字文.txt,谷建芬新学堂儿歌系列：千字文,,,work,,
+谷建芬新学堂儿歌系列：长相思.txt,谷建芬新学堂儿歌系列：长相思,,,work,,
+赋得古原草送别.txt,赋得古原草送别,,,work,,
+路灯下的小姑娘.txt,路灯下的小姑娘,,87881a06-23d2-4db9-99dc-f4016d95c6bf,work,medium,"{""title"": ""路灯下的小姑娘"", ""artists"": []}"
+道德经.txt,道德经,,b4327c63-49d2-4ddd-83cc-661e2a378341,work,medium,"{""title"": ""道德经"", ""artists"": []}"
+采蘑菇的小姑娘.txt,采蘑菇的小姑娘,,185f804f-5290-44e1-9d41-a4cde2bd51ff,recording,medium,"{""title"": ""采蘑菇的小姑娘"", ""artists"": [""李志""]}"
+铃儿响叮当.txt,铃儿响叮当,,c1422d20-ddef-4568-b9d3-a6be1f74284d,recording,medium,"{""title"": ""铃儿响叮当"", ""artists"": [""邓云天""]}"
+长歌行.txt,长歌行,,,work,,"[[""recording"", {""id"": ""049f2b46-2f1f-4a0b-8589-b99211b90cf5"", ""title"": ""如若歸來 (電視劇《長歌行》深情主題曲)"", ""artists"": [""萨顶顶""], ""score"": 100}]]"
+静夜思.txt,静夜思,,425a1f0b-038b-44e6-9fa3-2e2d2b7769d4,recording,medium,"{""title"": ""静夜思"", ""artists"": [""菅原雪山""]}"
+马兰谣.txt,马兰谣,,fbdf24e2-97a2-4aff-ab4c-e08cdad950c3,recording,medium,"{""title"": ""马兰谣"", ""artists"": [""[unknown]""]}"
+鲁冰花.txt,鲁冰花,,55cc730b-1528-4b3a-94f3-da0c9fd0fe79,recording,medium,"{""title"": ""魯冰花"", ""artists"": [""庾澄慶""]}"

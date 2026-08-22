@@ -1,0 +1,18 @@
+%鲁冰花.txt
+%TODO:revise
+MBID=8cfd30f3-a4b2-4379-950e-687a53620067
+title=鲁冰花
+type=work
+tag=to_be_revised
+usertag=to_be_revised
+tagroute=
+alias=鲁冰花简谱儿歌_歌颂母爱的经典
+copyright=简谱之家,版权归原作者及原网站
+%--
+4/4
+2 q3 - 0 q0 | q6 - 5 - q0 | 7 q1 q1 0 0 |
+2' q0. 1' 7 s0 | 5 0 0 0
+1 3 q0. 1' s0 | 7 5 0 0
+
+
+%END

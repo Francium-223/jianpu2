@@ -1,0 +1,16 @@
+title=种星星的人合唱谱
+type=work
+%TODO:revise
+usertag=to_be_revised
+copyright=歌谱简谱网,版权归原作者及原网站
+%--
+4/4
+1' 0 0 0
+2 - q3 0 q0 | d6 0 0 0 q0. d0 | 0 0 0 0 |
+1' 5 0 0
+subtitle=副歌层
+NextScore
+1' 0 0 0
+2 - q3 0 q0 | d6 0 0 0 q0. d0 | 0 0 0 0 |
+2' 0 0 0
+%END

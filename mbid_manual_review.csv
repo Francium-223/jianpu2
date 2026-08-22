@@ -1,0 +1,238 @@
+﻿dir,title,artist,mbid,confidence,candidates,status
+scores-7b,上海人,朱国鑫词曲,,,无候选,待人工
+scores-7b,中秋情,邹希梅,,,无候选,待人工
+scores-7b,八角树,马晓宏,,,无候选,待人工
+scores-7b,太湖水,蒋立德,,,无候选,待人工
+scores-7b,学厨艺,朱国鑫词曲,,,无候选,待人工
+scores-7b,学工歌,朱国鑫词曲,,,无候选,待人工
+scores-7b,学电脑,朱国鑫词曲,,,无候选,待人工
+scores-7b,宜昌队,蒋蒋,,,无候选,待人工
+scores-7b,寄明月,SING女团,cb4cfd91-8872-4b36-935a-aed440db75ac,已有,,已填
+scores-7b,小上海,朱国鑫词曲,,,无候选,待人工
+scores-7b,小重山,winky诗 云之泣,,,无候选,待人工
+scores-7b,少年游,孙艺桐,2e5702a8-3933-4b4e-8c19-0a496b612cd7,medium,,已填
+scores-7b,当兵乐,杨会林,,,无候选,待人工
+scores-7b,忘情酒,戴尚辉,9efb6647-b28a-41d0-a926-28328bf09677,已有,,已填
+scores-7b,意难平,银临,c1610610-e0b2-410b-ae87-6d4ee760010b,suggest-contains(100),【插曲】《意難平》,建议
+scores-7b,我的梦,张靓颖,6871714c-8d39-4517-80c0-81b23abab774,已有,,已填
+scores-7b,推车歌,焦阳,,,无候选,待人工
+scores-7b,木叶情,杨文,,,无候选,待人工
+scores-7b,歌友情,,,,无候选,待人工
+scores-7b,步步高,,d4b8cc47-0f07-4b07-9f69-89321f1a038c,medium,,已填
+scores-7b,男儿泉,武书明,,,无候选,待人工
+scores-7b,胭脂妆,树屋女孩,,,无候选,待人工
+scores-7b,舀河浜,朱国鑫词曲,,,无候选,待人工
+scores-7b,苍穹唤,林鹿儿,,,无候选,待人工
+scores-7b,苕乡情,朱朝永 陈春阳,,,无候选,待人工
+scores-7b,苹果香,狼戈,e8e87147-31e9-4e6a-b6fe-d5566efb234d,已有,,已填
+scores-7b,菜园子,崔宸杰,,,无候选,待人工
+scores-7b,陆北大,朱国鑫词曲,,,无候选,待人工
+scores-7b,青原赋,李萍,,,无候选,待人工
+scores-7b-2,一念暖阳,刘琼、通城罗杰,,,无候选,待人工
+scores-7b-2,云台蝴蝶,,,,无候选,待人工
+scores-7b-2,人间共鸣,李健,3078d9e6-aca9-4548-8451-f3d930599ad0,已有,,已填
+scores-7b-2,今天真好,罗娇,,,无候选,待人工
+scores-7b-2,今生不再,黎明,8fdb6ae5-71f2-4bbe-af53-c72848777108,已有,,已填
+scores-7b-2,和平鸽哨,薛建成,,,无候选,待人工
+scores-7b-2,回家过年,词曲：熊达明,,,无候选,待人工
+scores-7b-2,大美乡村,毛红波,,,无候选,待人工
+scores-7b-2,天峰山情,蒋立德,,,无候选,待人工
+scores-7b-2,太行之歌,乌延永安,,,无候选,待人工
+scores-7b-2,学校之歌,白云前,,,无候选,待人工
+scores-7b-2,宾至房山,赵国刚,,,无候选,待人工
+scores-7b-2,对月思乡,,,,无候选,待人工
+scores-7b-2,小小的暖,,,,无候选,待人工
+scores-7b-2,尖兵战歌,孟庆宇作曲,,,无候选,待人工
+scores-7b-2,思绪飞扬,蒋立德,,,无候选,待人工
+scores-7b-2,我的老师,蔡献华,,"near(contains,100)",“My teacher used to tell me...” / “我的老师告诉我”,待人工
+scores-7b-2,新年祝福,蒋立德,,,无候选,待人工
+scores-7b-2,有缘的人,蒋立德,,,无候选,待人工
+scores-7b-2,梦中女神,蒋立德,,,无候选,待人工
+scores-7b-2,激情岁月,蒋立德,,,无候选,待人工
+scores-7b-2,目瑙纵歌,管乐小合奏总谱,,,无候选,待人工
+scores-7b-2,童年的家,明月听松,,,无候选,待人工
+scores-7b-2,腊梅花开,蒋立德,,,无候选,待人工
+scores-7b-2,被你感动,董春英,,,无候选,待人工
+scores-7b-2,铁血战歌,杨会林,,,无候选,待人工
+scores-7b-2,阳光校园,林紫华,,,无候选,待人工
+scores-7b-2,青春之火,蒋立德,,,无候选,待人工
+scores-7b-3,中华你我他,杨会林,,,无候选,待人工
+scores-7b-3,亲人子弟兵,乌延永安,,,无候选,待人工
+scores-7b-3,人生咏叹调,蒋立德,,,无候选,待人工
+scores-7b-3,共进新朝代,郑振华-华鸣音乐,,,无候选,待人工
+scores-7b-3,天边的牧歌,,,,无候选,待人工
+scores-7b-3,彝寨山茶红,蒋立德,,,无候选,待人工
+scores-7b-3,情系苏宿园,,,,无候选,待人工
+scores-7b-3,我是有钱人,任贤齐,5cf62b94-faae-431a-88f0-60a3305fcd3b,medium,,已填
+scores-7b-3,我爱我们家,,,,无候选,待人工
+scores-7b-3,战位有我在,,,,无候选,待人工
+scores-7b-3,把幸福托起,,,,无候选,待人工
+scores-7b-3,春日肆意游,少儿,,,无候选,待人工
+scores-7b-3,月亮的歌声,,,,无候选,待人工
+scores-7b-3,梦通新时代,王丽达,,,无候选,待人工
+scores-7b-3,正在想你哟,田信国,,,无候选,待人工
+scores-7b-3,江城子桑农,桑农苏轼,,,无候选,待人工
+scores-7b-3,火火中国白,,,,无候选,待人工
+scores-7b-3,牙刷小卫士,浅浅,,,无候选,待人工
+scores-7b-3,美丽的哨卡,杨会林,,,无候选,待人工
+scores-7b-3,赣南有座城,作词石顺义、作曲孟卫东、演唱曲丹,,,无候选,待人工
+scores-7b-3,远方的故乡,吐嘎,16ab322f-708d-42b2-b9e2-f8ca08a10ba1,已有,,已填
+scores-7b-3,金色葵花海,蒋立德,,,无候选,待人工
+scores-7b-3,雨中百合花,蒋立德,,,无候选,待人工
+scores-7b-3,风华十五栽,词曲：熊达明,,,无候选,待人工
+scores-7b-3,风沙胡杨林,蒋立德,,,无候选,待人工
+scores-7b-3,黑暗的沉思,齐秦,,,无候选,待人工
+scores-7b-4,See You Again SATB混声合唱谱,,,,无候选,待人工
+scores-7b-4,一荤一素二声部合唱谱,,,,无候选,待人工
+scores-7b-4,丰收中国年【混声合唱】了,朱 海 词 子 山 曲 弦声编配,,,无候选,待人工
+scores-7b-4,丰收中国年（混声合唱）,朱 海 词 子 山 曲 弦声编配,,,无候选,待人工
+scores-7b-4,儿时二部合唱,,,,无候选,待人工
+scores-7b-4,光芒二部合唱,,,,无候选,待人工
+scores-7b-4,再唱洪湖水（混声合唱）,,,,无候选,待人工
+scores-7b-4,南屏晚钟 合唱,陈蝶衣 王福龄,,,无候选,待人工
+scores-7b-4,南湖的船党的摇篮合唱谱,,,,无候选,待人工
+scores-7b-4,城市之光（ 、 合唱）（美声通俗）,徐霞 李健,,,无候选,待人工
+scores-7b-4,天河热土 二声部合唱谱,,,,无候选,待人工
+scores-7b-4,好想爱这个世界啊 三声部合唱,,,,无候选,待人工
+scores-7b-4,小孩子大梦想二部合唱谱,,,,无候选,待人工
+scores-7b-4,我们是运河的流水（女声合唱）,,,,无候选,待人工
+scores-7b-4,打起手鼓唱起歌（混声合唱）,,,,无候选,待人工
+scores-7b-4,明天女声合唱谱,,,,无候选,待人工
+scores-7b-4,枕着光的她,,,,无候选,待人工
+scores-7b-4,枕着光的她合唱,,,,无候选,待人工
+scores-7b-4,海阔天空 混声四部合唱谱,,,,无候选,待人工
+scores-7b-4,爱就一个字二部合唱谱,,,,无候选,待人工
+scores-7b-4,璀璨冒险人二声部合唱,,,,无候选,待人工
+scores-7b-4,盼星星盼月亮(合唱版),徐子崴 罗姣,,,无候选,待人工
+scores-7b-4,种星星的人合唱谱,,,,无候选,待人工
+scores-7b-4,美丽草原我的家－无伴奏合唱,薄子新改编,,,无候选,待人工
+scores-7b-4,老师我想你（合唱版）,王莹,,,无候选,待人工
+scores-7b-4,花开忘忧合唱 珠海童年树合唱团,,,,无候选,待人工
+scores-7b-4,花开种花家合唱,,,,无候选,待人工
+scores-7b-4,西伯来奴隶合唱,,,,无候选,待人工
+scores-7b-4,锦瑟混声四部合唱谱,,,,无候选,待人工
+scores-7b-5,AMANI(粤语),Beyond,c337becf-89ff-4d67-b456-34283fe00a79,medium,,已填
+scores-7b-5,ASK,陈慧琳,d0eb33c8-e45e-3c33-9ebe-710056286b08,已有,,已填
+scores-7b-5,Angel,陶喆,75023ccc-0e51-3746-8d31-04b9f7c45309,已有,,已填
+scores-7b-5,Auld lang syne 往日的时光（苏格兰、中英文）,,,,无候选,待人工
+scores-7b-5,Colorful Days,朴树,5b78cd43-0b06-426e-afdc-8eb96eb98bd2,已有,,已填
+scores-7b-5,Come On,Energy,6b3bbd5a-0b4e-365e-bde1-d3eceaad9d5e,已有,,已填
+scores-7b-5,Flying To The Moon（英文儿童歌）,,,,无候选,待人工
+scores-7b-5,Happy Birthday,黄鹤翔,e17ccd51-0b15-4917-9a05-64406614f11c,已有,,已填
+scores-7b-5,Here We are,朱孝天,316fbe80-4f60-4df9-a712-2793d8afecbc,已有,,已填
+scores-7b-5,Hey Hah,可米小子,6f39fcea-b851-4446-a377-5bd4292cbca8,medium,,已填
+scores-7b-5,Hey!Lover,何润东,01eae3fe-e774-3139-bc3d-a68d780d8074,已有,,已填
+scores-7b-5,How Do You Do？（英文儿童歌）,,,,无候选,待人工
+scores-7b-5,I Like Chopin 我爱肖邦（意、英文歌）,,,,无候选,待人工
+scores-7b-5,Leave,孙燕姿,243522d6-0870-49b9-9a2f-bfcb44c7188d,high,,已填
+scores-7b-5,Love Is Bule 蓝色的爱（美、中英文）,,,,无候选,待人工
+scores-7b-5,Make a Wish,周渝民,3e474240-c312-4f02-a749-c982504161e5,已有,,已填
+scores-7b-5,Mr.Cool,古天乐,72a8f7ab-eaba-4d74-a47c-addffb499a8e,已有,,已填
+scores-7b-5,My heart will go on（《铁达尼号》主题歌、英文歌）,,,,无候选,待人工
+scores-7b-5,New Boy,朴树,c5c1d8e9-59a5-4551-a41b-439f0fdcf95c,已有,,已填
+scores-7b-5,Piano,范逸臣,446ca0fd-cd20-4562-939f-228346ab159e,已有,,已填
+scores-7b-5,Show Up,容祖儿,8dc17d98-92fe-46dc-b9ec-9228a41567a7,已有,,已填
+scores-7b-5,Sing Sing Together（英文儿童歌）,,,,无候选,待人工
+scores-7b-5,Sophia,齐秦,ca6fbaff-ba96-4f6f-9f3e-d306f38df7da,已有,,已填
+scores-7b-5,Super Star,S.H.E,e3b9d1d8-1cfe-3709-a37a-3207fa645dbb,已有,,已填
+scores-7b-5,Ten Little Babies（英文儿童歌）,,,,无候选,待人工
+scores-7b-5,The Basic Song（英文儿童歌）,,,,无候选,待人工
+scores-7b-5,The Moment,孙燕姿,26bf8c38-e251-4683-a36f-da569e44048a,已有,,已填
+scores-7b-5,This is,林晓培,87b8ae28-c854-40bc-a78b-e62c22df940a,已有,,已填
+scores-7b-5,Wake UP,林晓培,0c06b12a-a812-49b0-9ad9-a719854f96c0,已有,,已填
+scores-7b-5,Yesterday Once More 昨日重现（中英文）,,,,无候选,待人工
+scores-7b-pujia,一字诗,银河少年艺术团,,,无候选,待人工
+scores-7b-pujia,一闪一闪亮晶晶,,13b2a959-decc-445a-a374-e4910f21908a,suggest-exact(100),一閃一閃亮晶晶,建议
+scores-7b-pujia,七步诗,小海龟演唱组,b0b07058-e04c-47dc-a748-4b65a100d9e7,已有,,已填
+scores-7b-pujia,七色光之歌,,2eaa623e-8608-4dae-99fe-fcf67e93ecb5,已有,,已填
+scores-7b-pujia,三字经,金帆合唱团,5c6935fe-f841-4445-8a9b-63b49f5b33ca,已有,,已填
+scores-7b-pujia,上学歌,,e97940b2-599e-4c92-acfd-f9fa80cb254f,已有,,已填
+scores-7b-pujia,九儿,胡莎莎,660537a3-0cff-4614-881e-156f77fa2acb,已有,,已填
+scores-7b-pujia,乡间的小路,卓依婷,4c2c85e7-b7a1-49ac-87a1-645f081f748e,已有,,已填
+scores-7b-pujia,儿歌,,b67c82be-8a36-4aca-b8b6-ac79636dd5f3,已有,,已填
+scores-7b-pujia,元日,银河少年艺术团,0eaad172-21f8-4435-b1e6-fbfdd3400d8e,已有,,已填
+scores-7b-pujia,兰花草,谢玲玲,ddb4a948-0ec1-410c-ada1-306828be28bf,已有,,已填
+scores-7b-pujia,出塞,小海龟演唱组,addc6e0a-70ba-48a1-aa13-5dc1df7900a0,已有,,已填
+scores-7b-pujia,别看我只是只羊,,,,无候选,待人工
+scores-7b-pujia,卖报歌,,5bf98c64-bd4c-48a4-a7a8-55d8ad833b6f,已有,,已填
+scores-7b-pujia,叶儿船,演唱,,,无候选,待人工
+scores-7b-pujia,听妈妈讲那过去的事情,,60b85a87-7b72-48d6-a363-ec640a31a6e7,已有,,已填
+scores-7b-pujia,咏鹅,银河少年艺术团,,,无候选,待人工
+scores-7b-pujia,嘀哩嘀哩,,23351ef2-f036-48ce-96cf-e904af6b9104,已有,,已填
+scores-7b-pujia,增广贤文,小海龟演唱组,,,无候选,待人工
+scores-7b-pujia,声律启蒙,小海龟演唱组,,,无候选,待人工
+scores-7b-pujia,外婆的澎湖湾,卓依婷,7431dd14-20a7-4320-8ea6-363c0ddba101,已有,,已填
+scores-7b-pujia,多情的月光,正月十五,,,无候选,待人工
+scores-7b-pujia,大风车,,bcfc3429-78eb-4e20-9c1a-f6f69bffd861,已有,,已填
+scores-7b-pujia,女儿歌,冯健雪,e6aa36d2-2b8a-4d6a-a65c-7fed318307ef,已有,,已填
+scores-7b-pujia,妈妈的吻,蓓蕾组合,13bea870-204a-401b-879c-276a2cd01e5c,已有,,已填
+scores-7b-pujia,学习雷锋好榜样,,3d780683-f269-4d2a-b529-2a3bd7add728,已有,,已填
+scores-7b-pujia,宝贝宝贝,,,,无候选,待人工
+scores-7b-pujia,寻胡隐君,小海龟演唱组,,,无候选,待人工
+scores-7b-pujia,小儿语,小海龟演唱组,,,无候选,待人工
+scores-7b-pujia,小兔子乖乖,,4220256e-ca4a-4442-9ecd-609f998b04ce,已有,,已填
+scores-7b-pujia,小小少年,,9b777ea6-7391-4f9c-8b03-253790c1a5f4,medium,,已填
+scores-7b-pujia,小小雨点,少儿,,,无候选,待人工
+scores-7b-pujia,小星星,,637ef43a-f709-4226-b4e0-f6dfb8af4769,已有,,已填
+scores-7b-pujia,小毛驴,,c619a16a-8999-4e06-ba60-5e36af0164ba,已有,,已填
+scores-7b-pujia,小燕子,,d964c98e-9caf-42cb-8020-7e8035128596,medium,,已填
+scores-7b-pujia,小白船,,968974c4-a003-4b0c-b59e-f77c2091ab76,已有,,已填
+scores-7b-pujia,小红帽,,a099c3db-18e0-4f19-831b-69f7867609b2,medium,,已填
+scores-7b-pujia,小草,杨烁,fd8db6a4-86ca-495b-91ff-93b219edfc97,已有,,已填
+scores-7b-pujia,小螺号,,80b44d27-f90d-42f3-a186-122d32044d84,已有,,已填
+scores-7b-pujia,小螺号（少儿歌曲）,程琳,,,无候选,待人工
+scores-7b-pujia,弟子规,金帆合唱团,,,无候选,待人工
+scores-7b-pujia,悯农,央银河少年艺术团,,"near(contains,100)",憫農 Toiling Farmers,待人工
+scores-7b-pujia,我们是共产主义接班人,,4fb5033a-a2e8-41fc-b602-64250c4130af,已有,,已填
+scores-7b-pujia,我们是春天,少儿合唱,ee9fc8d6-2b30-4d1a-b40f-365ec97131f4,已有,,已填
+scores-7b-pujia,我是一个粉刷匠,,,,无候选,待人工
+scores-7b-pujia,我爱北京天安门,金铭与少儿,5dde3fbc-fd59-4484-8df5-5d0fa30f27a9,medium,,已填
+scores-7b-pujia,我的好妈妈,,,,无候选,待人工
+scores-7b-pujia,找朋友,,079e200a-80c4-4e0d-8e02-b44bf42a3b51,已有,,已填
+scores-7b-pujia,拔萝卜,,6f4ef775-fae7-4715-a320-2f798890702f,已有,,已填
+scores-7b-pujia,摇篮曲,舒伯特,3d9d8415-631d-498e-8fed-84f3e1bff356,已有,,已填
+scores-7b-pujia,数鸭子,,1a176fda-c649-4855-9498-4615c938afc1,已有,,已填
+scores-7b-pujia,新年好,,9c9e8d36-98aa-45e6-b967-5aa0eed39fe6,已有,,已填
+scores-7b-pujia,明日歌,银河少年艺术团,3e73d409-55c9-4603-86a9-8ef63e7d2991,已有,,已填
+scores-7b-pujia,明月逐人归,贰婶,,,无候选,待人工
+scores-7b-pujia,春天在哪里,,,,无候选,待人工
+scores-7b-pujia,春晓,戴梓伊,48550795-83e3-4b1a-b3ff-05000d9b8c24,已有,,已填
+scores-7b-pujia,晓窗,小海龟演唱组,,,无候选,待人工
+scores-7b-pujia,村居,小海龟演唱组,4da3ebcb-a3aa-4e12-9777-0c3d8c460aff,已有,,已填
+scores-7b-pujia,校园的早晨,王洁实,462617e1-3af0-43e7-b731-b36ac4dd9b19,已有,,已填
+scores-7b-pujia,格言联壁,银河少年艺术团,,,无候选,待人工
+scores-7b-pujia,歌声与微笑,,3d2f5853-2e12-4489-adc8-9d8cfa63b915,已有,,已填
+scores-7b-pujia,每当我走过老师窗前,,63afc6e7-959c-4299-a7cd-d6bfed57135d,已有,,已填
+scores-7b-pujia,江南,银河少年艺术团,0358fa61-f69d-4de0-a686-6c7649305ea5,已有,,已填
+scores-7b-pujia,洋娃娃和小熊跳舞,,2aa52e70-bf87-4633-b079-7f4034a9a8b2,已有,,已填
+scores-7b-pujia,清明,小海龟演唱组,96601a09-6de4-4551-8ba2-aeeced9cad39,已有,,已填
+scores-7b-pujia,游子吟,小海龟演唱组,66166b14-6875-4da6-8101-d608d4aacdbc,medium,,已填
+scores-7b-pujia,烟雨,小曲儿,,"near(contains,100)",煙雨淒迷,待人工
+scores-7b-pujia,熊猫咪咪（少儿歌曲）,程琳,,,无候选,待人工
+scores-7b-pujia,牧羊童,,,,无候选,待人工
+scores-7b-pujia,生日歌,,d4edf0bf-800b-4531-b998-67244d141768,已有,,已填
+scores-7b-pujia,登鹳雀楼,小海龟演唱组,9058a86f-dbe4-44d1-80b9-b63fcd02444a,已有,,已填
+scores-7b-pujia,百家姓,小海龟演唱组,0c626ad2-be41-4170-8b92-de508ba068cc,已有,,已填
+scores-7b-pujia,相思,银河少年艺术团,8138c4f1-e901-4ce2-83df-10439c8aead0,已有,,已填
+scores-7b-pujia,祝你生日快乐,,09e2e1ec-dc2c-4832-86ba-0ad11509fb8b,已有,,已填
+scores-7b-pujia,秋千（少儿歌曲）,程琳,,,无候选,待人工
+scores-7b-pujia,童年的小摇车（少儿歌曲）,程琳,,,无候选,待人工
+scores-7b-pujia,童年（少儿歌曲,张艾嘉,,,无候选,待人工
+scores-7b-pujia,红星歌,传唱红星歌,e1a7ba21-5aa7-4d1f-a1e1-94ad844db4bc,已有,,已填
+scores-7b-pujia,红领巾之歌,,7b81221f-d05a-46e9-a72f-7b933d004e61,已有,,已填
+scores-7b-pujia,红鼻子驯鹿鲁道夫,,,,无候选,待人工
+scores-7b-pujia,蜗牛与黄鹂鸟,,056f6290-7de0-4eff-9d12-069abaa54621,已有,,已填
+scores-7b-pujia,让我们荡起双桨,少儿,c643a0e1-a169-4844-9727-27d9ebf61ade,已有,,已填
+scores-7b-pujia,论语,小海龟演唱组,,,He Said He Said〜論語学而第一〜(100),待人工
+scores-7b-pujia,读唐诗,金帆合唱团,11708522-ece9-4c8d-a0f6-a537dfc82eab,已有,,已填
+scores-7b-pujia,谷建芬新学堂儿歌系列：千字文,演唱,,,无候选,待人工
+scores-7b-pujia,谷建芬新学堂儿歌系列：长相思,银河少年艺术团,,,无候选,待人工
+scores-7b-pujia,赋得古原草送别,小海龟演唱组,,,无候选,待人工
+scores-7b-pujia,路灯下的小姑娘,邓洁仪,87881a06-23d2-4db9-99dc-f4016d95c6bf,已有,,已填
+scores-7b-pujia,道德经,小海龟演唱组,b4327c63-49d2-4ddd-83cc-661e2a378341,已有,,已填
+scores-7b-pujia,采蘑菇的小姑娘,,66fecdf4-7c94-4dc4-8517-603bdd08c75e,已有,,已填
+scores-7b-pujia,铃儿响叮当,,c1422d20-ddef-4568-b9d3-a6be1f74284d,已有,,已填
+scores-7b-pujia,长歌行,银河少年艺术团,,,如若歸來 (電視劇《長歌行》深情主題曲)(100),待人工
+scores-7b-pujia,静夜思,小海龟演唱组,425a1f0b-038b-44e6-9fa3-2e2d2b7769d4,已有,,已填
+scores-7b-pujia,马兰谣,,fbdf24e2-97a2-4aff-ab4c-e08cdad950c3,medium,,已填
+scores-7b-pujia,鲁冰花,歌颂母爱的经典,8cfd30f3-a4b2-4379-950e-687a53620067,已有,,已填

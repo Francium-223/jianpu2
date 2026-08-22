@@ -1,0 +1,19 @@
+%菜园子.txt
+%TODO:revise
+MBID=
+title=菜园子
+type=work
+tag=to_be_revised
+usertag=to_be_revised
+tagroute=
+copyright=歌谱简谱网,版权归原作者及原网站
+%--
+4/4
+6 - 0 0 | q2 q3 0 0 0 | 0 0 0 0 |
+5 0 0 0 | - 0 0 0 | 0 0 0 0 |
+7 1' - 2' 0 1 0 0 | - 0 0 0 | 0 0 0 0 |
+subtitle=副歌
+6 - 0 0 | q2 q3 0 0 0 | 0 0 0 0 |
+5 0 0 0 | - 0 0 0 | 0 0 0 0 |
+7 1' - 2' 0 1 0 0 | - 0 0 0 | 0 0 0 0 |
+%END

@@ -1,0 +1,15 @@
+%舀河浜.txt
+%TODO:revise
+MBID=
+title=舀河浜
+type=work
+tag=to_be_revised
+usertag=to_be_revised
+tagroute=
+copyright=歌谱简谱网,版权归原作者及原网站
+%--
+2/4
+3 - 5 6 | - 0 | 0 0 |
+1 7
+3 - 5 0 | 6 0 | 0 0 |
+%END

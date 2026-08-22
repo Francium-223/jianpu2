@@ -1,0 +1,19 @@
+%宝贝宝贝.txt
+%TODO:revise
+MBID=
+title=宝贝宝贝
+type=work
+tag=to_be_revised
+usertag=to_be_revised
+tagroute=
+alias=宝贝宝贝简谱_儿歌_你就是我的宝贝啊
+copyright=简谱之家,版权归原作者及原网站
+%--
+4/4
+1' - 0 0 | q2 q0 0 0 0 | 0 0 0 0 |
+q3 - 7 q6 q5 q0 | 0 0 0 0 |
+1' 1 - 0 | q2 q0 0 0 0 | 0 0 0 0 |
+q1' q2' q1 0 0 q0 | 0 0 0 0 |
+q1 1 q1 2 q1 q0 | 3 0 0 0 | 0 0 0 0 |
+q1 4 q1 5 q1 q0 | 6 0 0 0
+%END

@@ -1,0 +1,15 @@
+%苍穹唤.txt
+%TODO:revise
+MBID=
+title=苍穹唤
+type=work
+tag=to_be_revised
+usertag=to_be_revised
+tagroute=
+copyright=歌谱简谱网,版权归原作者及原网站
+%--
+4/4
+0 q6 q3 5 0 | - 0 0 0 | 0 0 0 0 |
+q2 1' 1' 1' q0 6 0 0 0 | - 0 0 0 | 0 0 0 0 |
+1 - 0 0 | 0 0 0 0 | 0 0 0 0 |
+%END

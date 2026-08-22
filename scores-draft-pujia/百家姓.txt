@@ -3,6 +3,7 @@ type=work
 alias=百家姓简谱(歌词)_小海龟演唱组演唱_桃李醉春风记谱
 %TODO:revise
 usertag=to_be_revised
+MBID=81a30c59-77fb-4efd-b53b-fc03180f11e1
 %--
 4 - - 0. 5 - 1 2
 3 5 6 | 2 - | 1 4 0 | 7. | 5- | - 6 | - 5.- | 6 | 2-. 1 - 2. - 2.. 3..

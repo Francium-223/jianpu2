@@ -1,0 +1,21 @@
+%出塞.txt
+%TODO:revise
+MBID=addc6e0a-70ba-48a1-aa13-5dc1df7900a0
+title=出塞
+type=work
+tag=to_be_revised
+usertag=to_be_revised
+tagroute=
+alias=出塞简谱(歌词)_小海龟演唱组演唱_桃李醉春风记谱
+copyright=简谱之家,版权归原作者及原网站
+%--
+1' 4 4 0
+6 7 q2 0 q0 | 0 0 0 0 |
+q3 - 0 0 q0 | 0 0 0 0 |
+q0 0 0 0 q0
+R{ }
+1' 0 0 0
+1 1' 4 4
+6 - q5 0 q0 | 0 0 0 0 |
+q1' - 0 0 q0 | 0 0 0 0 |
+%END

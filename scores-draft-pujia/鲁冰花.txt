@@ -3,6 +3,7 @@ type=work
 alias=鲁冰花简谱儿歌_歌颂母爱的经典
 %TODO:revise
 usertag=to_be_revised
+MBID=55cc730b-1528-4b3a-94f3-da0c9fd0fe79
 %--
 1 - 2 0 3 4 5 6 7 - - - - - - - - - - '1- - - - - - - - - - - - - - - - -
 '1 6 5 - '1 2 3 | 1

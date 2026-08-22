@@ -128,7 +128,7 @@ def ollama_chat(host, model, prompt, images_b64, timeout=120):
         "model": model,
         "stream": False,
         "messages": [{"role": "user", "content": prompt, "images": images_b64}],
-        "options": {"temperature": 0.1, "repeat_penalty": 1.3},
+        "options": {"temperature": 0.1, "repeat_penalty": 1.3, "num_ctx": 8192},
     }
     data = json.dumps(payload).encode("utf-8")
     req = urllib.request.Request(host.rstrip("/") + "/api/chat", data=data, headers={
@@ -317,10 +317,17 @@ def extract_controls(text):
         s = ln.strip()
         if s.startswith("#KEY"):
             key = s[4:].strip() or None
+            if key and key.lower() in ("none", "无", "-"):
+                key = None
         elif s.startswith("#TIME"):
             time_sig = s[5:].strip() or None
+            if time_sig:
+                m = re.search(r"\d+/\d+", time_sig)   # 容忍 D2/4 等粘连写法
+                time_sig = m.group(0) if m else None
         elif s.startswith("#TEMPO"):
             tempo = s[6:].strip() or None
+            if tempo and tempo.lower() in ("none", "无", "-"):
+                tempo = None
         else:
             body_lines.append(ln)
     return key, time_sig, tempo, "\n".join(body_lines).strip()
@@ -357,20 +364,236 @@ def minor_tonic_fix(body, key):
 
 
 def ensure_nextscore(body):
-    """jianpu-db 分段规范: 第二个 subtitle= 之前自动补 NextScore (模型常漏)。"""
+    """jianpu-db 分段规范: 第二个 subtitle= 之前自动补 NextScore (模型常漏)。
+    模型常把 NextScore 与 subtitle= 写在同一行: 拆开并放到 subtitle= 之前。"""
     lines = body.splitlines()
     out = []
     seen_subtitle = False
     for ln in lines:
-        if ln.strip().startswith("subtitle="):
-            if seen_subtitle and (not out or out[-1].strip() != "NextScore"):
+        s = ln.strip()
+        if s.startswith("subtitle="):
+            if "NextScore" in s:
+                if seen_subtitle and (not out or out[-1].strip() != "NextScore"):
+                    out.append("NextScore")
+                s = s.replace("NextScore", "").strip()
+                if not s:
+                    continue
+            elif seen_subtitle and (not out or out[-1].strip() != "NextScore"):
                 out.append("NextScore")
             seen_subtitle = True
-        out.append(ln)
+        out.append(ln if s == ln.strip() else s)
     return "\n".join(out)
 
 
-def build_score_file(mbid, title, stype, transcriber, usertag, alias, body):
+def bar_beats(tok):
+    """一个简谱 token 占几拍: 数字=1拍, q/s/d/h 前缀 = 1/2,1/4,1/8,1/16 拍,
+    每 '-' +1拍, 附点逐次减半累加 (5.. = 1.75); 行首延续线 '-' 算1拍, barline 算0。"""
+    if tok == "|":
+        return 0.0
+    if tok in ("-", "."):
+        return 1.0   # jianpu-ly 把单独的 . 当延长线
+    s = tok
+    while s and s[0] in "#b',":      # 升降号/八度记号可在时值前缀前后 (q,5 / ,q5)
+        s = s[1:]
+    dur = ""
+    if s and s[0] in "qsdh":
+        dur, s = s[0], s[1:]
+    while s and s[0] in "#b',":
+        s = s[1:]
+    m = re.match(r"^([0-7])([.,'\-]*)$", s)
+    if not m:
+        return 0.0
+    b = {"q": 0.5, "s": 0.25, "d": 0.125, "h": 0.0625}.get(dur, 1.0)
+    extra = b
+    for ch in m.group(2):
+        if ch == "-":
+            b += 1.0
+        elif ch == ".":
+            extra /= 2
+            b += extra
+    return b
+
+
+def rest_pads(missing):
+    """生成补齐 missing 拍 (1/64 精度) 的休止 token 列表。
+    1拍=0, 1/2=q0, 1/4=s0, 1/8=d0, 1/16=h0, 任意余数按二进制组合。"""
+    n16 = round(missing * 16)          # 以 1/16 拍为最小单位
+    pads = ["0"] * (n16 // 16)
+    r = n16 % 16
+    for val, tok in ((8, "q0"), (4, "s0"), (2, "d0"), (1, "h0")):
+        while r >= val:
+            pads.append(tok)
+            r -= val
+    return pads
+
+
+def fix_bar_segment(seg, bpb):
+    """把一个小节 (无 barline 的 token 列表) 补齐到 bpb 拍; 超拍时按 bpb 自动重分小节
+    (保留全部音符, 模型的小节线常不可靠)。返回小节列表 (每个是 token 列表)。"""
+    used = sum(bar_beats(t) for t in seg)
+    if used > bpb + 0.001:
+        bars, cur, acc = [], [], 0.0
+        for t in seg:
+            b = bar_beats(t)
+            if cur and acc + b > bpb + 0.001:
+                bars.append(cur)
+                cur, acc = [], 0.0
+            cur.append(t)
+            acc += b
+        if cur:
+            bars.append(cur)
+        out = []
+        for bar in bars:
+            u = sum(bar_beats(t) for t in bar)
+            if u > bpb + 0.001:
+                # 小节线/时值导致无法整齐切分: 保留不越界的前缀, 其余丢弃, 补休止
+                keep, acc2 = [], 0.0
+                for t in bar:
+                    b = bar_beats(t)
+                    if keep and acc2 + b > bpb + 0.001:
+                        break
+                    keep.append(t)
+                    acc2 += b
+                bar = keep + rest_pads(bpb - acc2)
+            elif u < bpb - 0.001:
+                bar = bar + rest_pads(bpb - u)
+            out.append(bar)
+        return out
+    if used < bpb - 0.001:
+        return [seg + rest_pads(bpb - used)]
+    return [seg]
+
+
+def auto_bar(toks, bpb):
+    """无 barline 的行: 按 bpb 拍自动分小节并补全。返回小节列表。"""
+    bars, cur, acc = [], [], 0.0
+    for t in toks:
+        b = bar_beats(t)
+        if cur and acc + b > bpb + 0.001:
+            bars.append(cur)
+            cur, acc = [], 0.0
+        cur.append(t)
+        acc += b
+    if cur:
+        bars.append(cur)
+    out = []
+    for bar in bars:
+        out.extend(fix_bar_segment(bar, bpb))
+    return out
+
+
+def fix_repeat_line(ln, bpb):
+    """处理含 R{}/A{} 的行:
+    - 空块: R{ } 保留 (作为 A{ 的锚), 空 A{ } 丢弃; 孤立 } 丢弃; 未闭合块丢开括号保留音符
+    - A{ 前没有 R{ 时整行压平为普通音符行 (jianpu-ly 会崩)
+    - 纯块行: 各块内容按 bpb 补全小节后保留括号 (jianpu-ly 跨块累计 barPos)"""
+    toks = ln.split()
+    blocks, cur, opener = [], [], None
+    prefix, has_outside_notes = [], False
+    struct_re = re.compile(r"^(?:subtitle=.*|NextScore|KeepLength|%.*)$")
+    for t in toks:
+        if re.match(r"^(?:R\d*|A)\{$", t):
+            if opener is not None:          # 异常嵌套: 压平
+                prefix.extend(cur)
+                has_outside_notes = True
+            opener, cur = t, []
+        elif t == "}" and opener is not None:
+            if cur or opener.startswith("R"):
+                blocks.append((opener, cur))
+            opener, cur = None, []
+        elif opener is not None:
+            cur.append(t)
+        elif t == "}":
+            continue                        # 孤立 } 丢弃
+        elif struct_re.match(t) or t == "|":
+            prefix.append(t)
+        else:
+            has_outside_notes = True
+            prefix.append(t)
+    if opener is not None:                  # 未闭合: 丢开括号保留音符
+        prefix.extend(x for x in cur if x != "|")
+        has_outside_notes = True
+    struct = [t for t in prefix if struct_re.match(t)]
+    # A{ 前没有同行的 R{ → 压平 (jianpu-ly 的 A{ 需要 R{ 撑场)
+    seen_r = any(op.startswith("R") for op, _ in blocks)
+    bad_a = any(op.startswith("A") and not seen_r for op, _ in blocks)
+    if bad_a or (not blocks and any(x not in struct and x != "|" for x in prefix)):
+        has_outside_notes = True
+    if not blocks:
+        notes = [t for t in prefix if t != "|" and not struct_re.match(t)]
+        bars = auto_bar(notes, bpb) if notes else []
+        if not bars:
+            return " ".join(struct)
+        return " ".join(struct + " | ".join(" ".join(b) for b in bars).split())
+    if has_outside_notes or bad_a:
+        notes = [t for t in prefix if t != "|" and not struct_re.match(t)]
+        for _, content in blocks:
+            notes.extend(x for x in content if x != "|")
+        bars = auto_bar(notes, bpb) if notes else []
+        if not bars:
+            return " ".join(struct)
+        return " ".join(struct + " | ".join(" ".join(b) for b in bars).split())
+    rebuilt = []
+    for opener_tok, content in blocks:
+        inner = [x for x in content if x != "|"]
+        rebuilt.append(opener_tok)
+        bars = auto_bar(inner, bpb) if inner else []
+        if bars:
+            rebuilt.extend(" | ".join(" ".join(b) for b in bars).split())
+        rebuilt.append("}")
+    return " ".join(prefix + rebuilt)
+
+
+def fix_bars(body, time_sig=None):
+    """小节规范化, 保证 jianpu-ly 不报 bar 错误:
+    - 每个小节都补休止到整拍 (jianpu-ly 跨行累计 barPos, 中段小节也会影响末尾校验)
+    - 无 barline 的行按拍号自动分小节
+    - 超拍小节截断过界音符 (草稿容错, 反正要人工修订)"""
+    bpb = 4.0
+    m = re.match(r"^(\d+)/(\d+)$", (time_sig or "").strip())
+    if m:
+        bpb = int(m.group(1)) * 4.0 / int(m.group(2))   # 换算成四分音符拍数
+    out = []
+    for ln in body.splitlines():
+        toks = ln.split()
+        if not toks or "{" in ln or "}" in ln:
+            if "{" in ln or "}" in ln:
+                out.append(fix_repeat_line(ln, bpb))   # R{}/A{} 行: 块内补全小节
+            else:
+                out.append(ln)
+            continue
+        if not any(re.search(r"[0-7]", t) or t == "-" for t in toks):
+            out.append(ln)
+            continue
+        head = ""
+        if re.match(r"^\d+/\d+$", toks[0]):   # 行内拍号 (防御): 摘出来原样放回
+            head, toks = toks[0] + " ", toks[1:]
+        if not toks:
+            out.append(ln)
+            continue
+        toks = normalize_note_tokens(toks)    # 防御: 拆粘连延音线等
+        if "|" not in toks:
+            out.append(head + " | ".join(" ".join(b) for b in auto_bar(toks, bpb)))
+            continue
+        # 按 barline 切段, 逐段补全
+        segs, cur = [], []
+        for t in toks:
+            if t == "|":
+                segs.append(cur)
+                cur = []
+            else:
+                cur.append(t)
+        segs.append(cur)
+        rebuilt = []
+        for seg in segs:
+            bars = fix_bar_segment(seg, bpb)
+            rebuilt.append(" | ".join(" ".join(b) for b in bars))
+            rebuilt.append("|")
+        out.append((head + " ".join(rebuilt)).strip())
+    return "\n".join(out)
+
+
+def build_score_file(mbid, title, stype, transcriber, usertag, alias, body, copyright_=""):
     """组装 jianpu-db 格式曲谱文件文本。"""
     lines = []
     if mbid:
@@ -383,6 +606,8 @@ def build_score_file(mbid, title, stype, transcriber, usertag, alias, body):
         lines.append(f"alias={alias}")
     if transcriber:
         lines.append(f"transcriber={transcriber}")
+    if copyright_:
+        lines.append(f"copyright={copyright_}")
     lines.append("%--")
     lines.append(body.strip())
     if not lines[-1].lower().endswith("%end"):
@@ -394,7 +619,8 @@ def build_score_file(mbid, title, stype, transcriber, usertag, alias, body):
 
 def song_units(input_dir):
     """收集待转换单元: 每个含 song.json 的子目录, 或目录下单个图片。
-    返回 [(title, artist, src, images, strips)]。"""
+    返回 [(title, artist, src, images, strips)]。NO_STRIPS 时忽略切片 (整图模式)。"""
+    global NO_STRIPS
     units = []
     if os.path.isfile(input_dir):
         units.append((os.path.splitext(os.path.basename(input_dir))[0],
@@ -410,6 +636,8 @@ def song_units(input_dir):
             all_files = sorted(os.listdir(p))
             strips = [os.path.join(p, f) for f in all_files if "_strip_" in f
                       and f.lower().endswith((".jpg", ".jpeg", ".png"))]
+            if NO_STRIPS:
+                strips = []
             images = [os.path.join(p, f) for f in all_files
                       if f.lower().endswith((".jpg", ".jpeg", ".png", ".webp", ".gif"))
                       and "_strip_" not in f]
@@ -453,7 +681,8 @@ def restart_ollama_server():
     注意: 沙箱内子进程不能用管道捕获输出 (EPERM), 用 DEVNULL 重定向。
     """
     try:
-        script = ("Stop-Process -Name 'ollama app','ollama','llama-server' -Force -ErrorAction SilentlyContinue; "
+        script = ("[Environment]::SetEnvironmentVariable('OLLAMA_FLASH_ATTENTION','1','User'); "
+                  "Stop-Process -Name 'ollama app','ollama','llama-server' -Force -ErrorAction SilentlyContinue; "
                   "Start-Sleep 4; "
                   "explorer.exe \"$env:LOCALAPPDATA\\Programs\\Ollama\\ollama app.exe\"; "
                   "Start-Sleep 18")
@@ -486,7 +715,103 @@ def is_junk(text):
     return not NOTE_LINE_RE.search(text)
 
 
-NOTE_TOKEN_RE = re.compile(r"[0-7iI][.,'\-]*|[\-|]")
+NOTE_TOKEN_RE = re.compile(r"[#b',]*[qsdhQ]?[0-9iI][.,'\-]*|[\-|]")
+
+
+def normalize_note_tokens(toks):
+    """统一简谱 token 写法 (jianpu-db 规范): 高八度撇号在数字后 (1'), 低八度逗号在数字前 (,6);
+    唱名 i/I 是模型对高音 1 的常见误读, 统一为 1'; 8/9 是 jianpu-ly 内置的高音 1/2 写法;
+    保留 #/b 升降号与 q/s/d/h 时值前缀; 把粘连的延音线拆开 (2-→2 -),
+    因为 jianpu-ly 把 2- 当和弦(1拍) 而语料规范是独立 - token。"""
+    out = []
+    for tok in toks:
+        acc = ""
+        if tok and tok[0] in "#b":
+            acc, tok = tok[0], tok[1:]
+        dur = ""
+        if tok and tok[0] in "qsdhQ":
+            dur, tok = tok[0].lower(), tok[1:]
+        if tok and tok[0] in "iI":
+            tok = "1'" + tok[1:]
+        m = re.match(r"^([',]*)([89])(.*)$", tok)   # 8→1', 9→2'
+        if m:
+            tok = m.group(1) + {"8": "1'", "9": "2'"}[m.group(2)] + m.group(3)
+        m = re.match(r"^([1-7])(,+)([.\-]*'*)$", tok)      # 6, → ,6
+        if m:
+            tok = m.group(2) + m.group(1) + m.group(3).rstrip("'")
+        m = re.match(r"^('+)([1-7])([.\-]*'*)$", tok)      # '1 → 1' (尾部撇号是噪声)
+        if m:
+            tok = m.group(2) + m.group(1) + m.group(3).rstrip("'")
+        out.extend(split_dashes(acc + dur + tok))
+    return out
+
+
+def split_dashes(tok):
+    """2- → ['2', '-']; q2- → ['q2','-']; 2-- → ['2','-','-']; 2.- → ['2.','-']; 其余原样。"""
+    if tok == "-" or "-" not in tok:
+        return [tok]
+    m = re.match(r"^([qsdh]?[#b',]*[0-7iI][.,']*)(-+)(.*)$", tok)
+    if not m:
+        return [tok]
+    lead, dashes, rest = m.group(1), m.group(2), m.group(3)
+    out = [lead] + ["-"] * len(dashes)
+    if rest:
+        out.append(rest)
+    return out
+STRUCT_RE = re.compile(r"^\s*(?:subtitle=|NextScore|KeepLength|R\d*\s*\{|A\s*\{|%|#|\\bar)")
+STRUCT_TOK_RE = re.compile(r"^(?:subtitle=.*|NextScore|KeepLength|R\d*\{|A\{|\}|\||\\bar.*|%.*)$")
+NOTE_LIKE_RE = re.compile(r"^[#b',]*[qsdhQ]?[0-9iI][.,'\-]*$")
+
+
+def clean_struct_line(s):
+    """结构行清洗: 保留合法结构 token 与音符 token, 丢弃省略号/编号注释等噪声;
+    A{| 拆成 A{ |; 括号不平衡时丢弃全部 R{/A{/} (模型的重复结构几乎总是残缺)。"""
+    toks = []
+    for t in s.split():
+        if t in ("|}", "}|"):                        # |} 粘连体拆开
+            toks.append("|")
+            toks.append("}")
+            continue
+        if re.match(r"^(?:R\d*|A)\{\|", t):        # A{| → A{ |
+            toks.append(t[:t.index("{") + 1])
+            toks.append("|")
+            continue
+        if STRUCT_TOK_RE.match(t):
+            toks.append(t)
+        elif NOTE_LIKE_RE.match(t):
+            toks.extend(normalize_note_tokens([t]))
+    opens = sum(1 for t in toks if "{" in t)
+    closes = sum(1 for t in toks if t == "}")
+    if opens > closes:
+        # 括号不平衡: 丢弃全部 R{/A{/}, 保留里面的音符 (模型结构残缺)
+        toks = [t for t in toks if "{" not in t and t != "}"]
+    return " ".join(toks)
+
+# --no-strips 开关: 整图单次模式 (适合 7b 等强模型)
+NO_STRIPS = False
+
+
+def clean_body(text):
+    """整图单次模式的后处理: 保留结构行, 从混合行抽取音符 token, 剔除歌词。"""
+    lines = []
+    for ln in text.splitlines():
+        s = ln.strip()
+        if not s:
+            continue
+        if STRUCT_RE.match(s):
+            # 结构行保留, 但剔除省略号等占位垃圾 (R{ ... } → R{ })
+            cleaned = clean_struct_line(s)
+            if cleaned:
+                lines.append(cleaned)
+            continue
+        toks = NOTE_TOKEN_RE.findall(s)
+        if not toks or all(t in "|-" for t in toks):
+            continue
+        line = " ".join(normalize_note_tokens(toks))
+        if len(toks) > 64:
+            line = " ".join(normalize_note_tokens(toks[:64]))
+        lines.append(line)
+    return "\n".join(lines)
 
 
 def clean_note_lines(text):
@@ -502,13 +827,10 @@ def clean_note_lines(text):
         # 纯单字符噪声行 (如 "| | |"、长横线循环) 丢弃
         if all(t in "|-" for t in toks):
             continue
-        line = " ".join(toks)
-        # 唱名 i/I 是简谱高音 1 的误读写法, 统一为 '1 (高八度, 撇号在数字前)
-        line = re.sub(r"\bi\b", "'1", line)
-        line = re.sub(r"\bI\b", "'1", line)
+        line = " ".join(normalize_note_tokens(toks))
         # 截断超长行 (模型循环产物), 保留前 64 个 token
         if len(toks) > 64:
-            line = " ".join(toks[:64])
+            line = " ".join(normalize_note_tokens(toks[:64]))
         lines.append(line)
     return lines
 
@@ -596,12 +918,32 @@ def _process_one_impl(title, artist, images, strips, out_dir, args, base,
         for im in images:
             with open(im, "rb") as f:
                 images_b64.append(base64.b64encode(f.read()).decode("ascii"))
-        ok, content = ollama_chat(args.host, args.model, PROMPT, images_b64)
-        if not ok:
+        raw = ""
+        last_err = ""
+        for attempt in range(2):
+            ok, content = ollama_chat(args.host, args.model, PROMPT, images_b64, timeout=180)
+            if not ok:
+                last_err = content
+                # 上下文不足/内存分配/超时: 重启服务器 (带上 FLASH_ATTENTION) 后重试一次
+                if attempt == 0 and re.search(r"exceeds the available context|failed to allocate|timed out", content) \
+                        and restart_ollama_server():
+                    continue
+                raw = ""
+                break
+            raw = strip_fences(content)
+            body0 = extract_controls(raw)[3]
+            if NOTE_LINE_RE.search(body0):   # 正文里有音符数字 → 成功
+                break
+            # 只有歌词/结构行: 可能是模型退化, 重启后重试一次
+            last_err = "模型输出无音符 (可能只有歌词)"
+            if attempt == 0 and restart_ollama_server():
+                continue
+            raw = ""
+            break
+        if not raw:
             with open(err_path, "w", encoding="utf-8") as f:
-                f.write(f"OLLAMA ERROR: {content}\n")
-            return ("error", base, content, None)
-        raw = strip_fences(content)
+                f.write(f"OLLAMA ERROR: {last_err}\n")
+            return ("error", base, last_err, None)
         per_strip = None
         detail = f"images={len(images)}"
     if not raw.strip():
@@ -614,7 +956,7 @@ def _process_one_impl(title, artist, images, strips, out_dir, args, base,
                 for im in images:
                     with open(im, "rb") as f:
                         images_b64.append(base64.b64encode(f.read()).decode("ascii"))
-                ok, content = ollama_chat(args.host, args.model, PROMPT, images_b64)
+                ok, content = ollama_chat(args.host, args.model, PROMPT, images_b64, timeout=180)
                 raw = strip_fences(content) if ok else ""
     if not raw.strip():
         with open(err_path, "w", encoding="utf-8") as f:
@@ -628,14 +970,47 @@ def _process_one_impl(title, artist, images, strips, out_dir, args, base,
                 f.write(f"### {name}\n{out}\n")
 
     key, time_sig, tempo, body = extract_controls(raw)
+    if not strips:  # 整图单次模式: 剔除歌词/混合行 (切片模式已做过 token 抽取)
+        body = clean_body(body)
     body = minor_tonic_fix(body, key)
     body = ensure_nextscore(body)
-    head = []
+    body = fix_bars(body, time_sig)
+    # 清理结尾/空段落: 去掉尾部 NextScore, 以及 NextScore 分隔出的无音符段落
+    # (如"前奏"只有 subtitle 没有音符 — 会形成空 score 报错)
+    while True:
+        body = body.rstrip()
+        if re.search(r"NextScore\s*$", body):
+            body = re.sub(r"NextScore\s*$", "", body).rstrip()
+            continue
+        parts = re.split(r"(?m)^\s*NextScore\s*$", body)
+        kept, changed = [], False
+        for p in parts:
+            if not p.strip():
+                continue
+            p_nosig = re.sub(r"(?m)^\s*(?:subtitle=.*|\d+/\d+.*|%.*|NextScore\s*)$", "", p)
+            if NOTE_LINE_RE.search(p_nosig):
+                kept.append(p)
+            else:
+                changed = True
+        if not changed:
+            break
+        body = "\nNextScore\n".join(kept).rstrip()
     if time_sig:
-        head.append(time_sig)
+        # 每个 NextScore 分段都补拍号 (jianpu-ly 每个 score 独立处理, 缺省 4/4)
+        segs = re.split(r"(?m)^\s*NextScore\s*$", body)
+        fixed = []
+        for s in segs:
+            if not s.strip():
+                fixed.append(s)
+                continue
+            first = s.lstrip().splitlines()[0].strip()
+            if re.match(r"^\d+/\d+$", first):
+                fixed.append(s)
+            else:
+                fixed.append(time_sig + "\n" + s)
+        body = "\nNextScore\n".join(fixed).strip()
     if tempo:
-        head.append(tempo)
-    body = "\n".join(head + [body]).strip()
+        body = tempo + "\n" + body
 
     mbid, mtype, conf, matched = "", None, None, None
     if args.mbid:
@@ -651,7 +1026,7 @@ def _process_one_impl(title, artist, images, strips, out_dir, args, base,
     score_type = mtype or args.type
 
     score = build_score_file(mbid, ctitle, score_type, args.transcriber,
-                             args.tags, title, body)
+                             args.tags, title, body, getattr(args, "copyright", ""))
     with open(txt_path, "w", encoding="utf-8") as f:
         f.write(score)
 
@@ -682,6 +1057,7 @@ def _process_one_impl(title, artist, images, strips, out_dir, args, base,
 
 def mbid_only_run(out_dir, args):
     """只补 MBID 模式: 读取已有 .txt, 查 MusicBrainz 并写入 MBID= 行, 不重跑识别。
+    已带 MBID= 的行跳过 (避免覆盖人工填录); 支持 --artist-map 或 --input 提取歌手。
     同时清理 alias 里的 &nbsp; 残留。"""
     start_progress_reporter()
     rows = []
@@ -690,6 +1066,25 @@ def mbid_only_run(out_dir, args):
         if name.endswith(".txt"):
             files.append(os.path.join(out_dir, name))
     total = len(files)
+    artist_map = {}
+    if args.artist_map:
+        with open(args.artist_map, encoding="utf-8") as f:
+            artist_map = json.load(f)
+    elif args.input and os.path.isdir(args.input):
+        # 从爬虫目录自动提取 清洗后标题 → 歌手
+        for name in sorted(os.listdir(args.input)):
+            p = os.path.join(args.input, name)
+            j = os.path.join(p, "song.json")
+            if os.path.isdir(p) and os.path.exists(j):
+                try:
+                    with open(j, encoding="utf-8") as f:
+                        meta = json.load(f)
+                    t = meta.get("title") or name
+                    a = meta.get("artist") or guess_artist(t)
+                    if a:
+                        artist_map.setdefault(clean_title(t), a)
+                except Exception:
+                    pass
     try:
         for i, path in enumerate(files, 1):
             set_progress(f"MBID 补录 {i}/{total}: {os.path.basename(path)}")
@@ -698,12 +1093,24 @@ def mbid_only_run(out_dir, args):
             m = re.search(r"(?m)^title=(.*)$", text)
             if m:
                 title = m.group(1).strip()
+            artist = artist_map.get(title, "")
             # 清理 alias 残留 &nbsp;
             text = re.sub(r"(?m)^(alias=.*?)&nbsp;+", r"\1", text)
             mbid, kind, conf, matched = "", None, None, None
-            if title:
-                mbid, kind, conf, matched = musicbrainz_lookup(title, "")
-            if mbid:
+            if re.search(r"(?m)^MBID=", text):
+                mm = re.search(r"(?m)^MBID=([0-9a-f-]{36})", text)
+                if mm:
+                    mbid = mm.group(1)
+                    conf = "已有"
+                    kind = "work"
+            elif args.mbid_map:
+                mbid, mtype = mbid_file_lookup(args.mbid_map, title)
+                if mbid:
+                    conf = "mbid-file"
+                    kind = mtype or "work"
+            elif title:
+                mbid, kind, conf, matched = musicbrainz_lookup(title, artist)
+            if mbid and conf != "已有":
                 if re.search(r"(?m)^MBID=", text):
                     text = re.sub(r"(?m)^MBID=.*$", f"MBID={mbid}", text, count=1)
                 else:
@@ -712,11 +1119,12 @@ def mbid_only_run(out_dir, args):
                     pos = idx if idx >= 0 else 0
                     text = text[:pos] + f"MBID={mbid}\n" + text[pos:]
                 open(path, "w", encoding="utf-8").write(text)
-            rows.append([os.path.basename(path), title, "", mbid or "",
+            rows.append([os.path.basename(path), title, artist, mbid or "",
                          "recording" if kind == "recording" else "work",
                          conf or "", json.dumps(matched, ensure_ascii=False) if matched else ""])
-            print(f"[{'填' if mbid else '缺'}] {os.path.basename(path)}  conf={conf or '-'}")
-            time.sleep(1.1)  # MusicBrainz 限速
+            print(f"[{'已有' if conf == '已有' else '填' if mbid else '缺'}] {os.path.basename(path)}  conf={conf or '-'}")
+            if not mbid:
+                time.sleep(1.1)  # MusicBrainz 限速
     finally:
         stop_progress_reporter()
     with open(os.path.join(out_dir, "mbid_review.csv"), "w", encoding="utf-8-sig", newline="") as f:
@@ -733,21 +1141,33 @@ def main():
     ap.add_argument("--out", default="scores-out", help="输出目录 (默认 scores-out)")
     ap.add_argument("--model", default="qwen2.5vl:7b", help="Ollama 模型 (默认 qwen2.5vl:7b)")
     ap.add_argument("--host", default="http://127.0.0.1:11434", help="Ollama 服务地址")
+    ap.add_argument("--no-strips", action="store_true",
+                    help="整图单次转写模式 (忽略切片, 适合 qwen2.5vl:7b 等强模型)")
     ap.add_argument("--dry-run", action="store_true", help="不调用模型, 只列出要转换的歌曲")
     ap.add_argument("--delay", type=float, default=0.0, help="每首歌之间的间隔秒数")
     ap.add_argument("--transcriber", default="", help="转写者 (不填则不写 transcriber= 行)")
+    ap.add_argument("--copyright", default="", help="版权声明 (写入 copyright= 行, 如: 谱源: xxx, 版权归原作者)")
     ap.add_argument("--tags", default="", help="usertag, 逗号分隔 (如: 儿歌,华语)")
     ap.add_argument("--type", default="work", choices=["work", "recording"], help="MusicBrainz 类型 (默认 work)")
     ap.add_argument("--mbid", default="", help="手动指定 MBID")
     ap.add_argument("--mbid-file", default="", help="MBID 映射文件 (json): 标题→uuid 或 标题→{\"mbid\":..,\"type\":..}")
     ap.add_argument("--mbid-only", action="store_true",
                     help="只补录 MBID 模式: 给现有 .txt 查 MBID 并写入, 不重跑识别")
+    ap.add_argument("--artist-map", default="",
+                    help="标题→歌手 映射 json (mbid-only 用); 或用 --input 指定图片目录自动提取")
     ap.add_argument("--lookup-mbid", action="store_true",
                     help="按标题+歌手尝试 MusicBrainz 查询 MBID (分级置信度, 慢: 每首最多4次请求)")
     ap.add_argument("--clean-title", action="store_true", default=True,
                     help="清洗爬虫标题为通用曲名 (默认开, 用 --no-clean-title 关闭)")
     ap.add_argument("--no-clean-title", dest="clean_title", action="store_false")
     a = ap.parse_args()
+    global NO_STRIPS
+    NO_STRIPS = a.no_strips
+
+    a.mbid_map = {}
+    if a.mbid_file:
+        with open(a.mbid_file, encoding="utf-8") as f:
+            a.mbid_map = json.load(f)
 
     if a.mbid_only:
         mbid_only_run(a.out, a)
@@ -756,10 +1176,6 @@ def main():
         ap.error("--input 必填 (或使用 --mbid-only)")
 
     os.makedirs(a.out, exist_ok=True)
-    a.mbid_map = {}
-    if a.mbid_file:
-        with open(a.mbid_file, encoding="utf-8") as f:
-            a.mbid_map = json.load(f)
     units = song_units(a.input)
     if not units:
         print(f"在 {a.input} 里没有找到歌曲(需要 song.json 子目录或图片文件)", file=sys.stderr)

@@ -1,0 +1,16 @@
+%Make a Wish.txt
+%TODO:revise
+MBID=3e474240-c312-4f02-a749-c982504161e5
+title=Make a Wish
+type=work
+tag=to_be_revised
+usertag=to_be_revised
+tagroute=
+copyright=歌谱简谱网,版权归原作者及原网站
+%--
+4/4
+3 1' q6 d3 b2 s0. | 7 5 0 0 | 0 0 0 0 |
+q3 1' 6 - q0 | - 0 1 7 | 1' 2 3 - | 0 0 0 0 |
+5 3 4 0 | 5. 3 0 q0 | 0 0 0 0 |
+- - 0 1 | 7 1' 2 3 | - 0 0 0 | 0 0 0 0 |
+%END

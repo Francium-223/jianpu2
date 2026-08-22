@@ -1,0 +1,15 @@
+%大美乡村.txt
+%TODO:revise
+MBID=
+title=大美乡村
+type=work
+tag=to_be_revised
+usertag=to_be_revised
+tagroute=
+copyright=歌谱简谱网,版权归原作者及原网站
+%--
+2/4
+0 0 | q5 - q0 |
+q3 q1' q1' q0 | 0 0 |
+|
+%END

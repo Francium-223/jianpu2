@@ -1,0 +1,12 @@
+#KEY none  
+#TIME 4/4  
+
+( i5-3 q62 q7 | 
+i5-3 q62 q7 |
+q1 ~ ( q1 - ) |
+
+( q0 q6 q7 q8 | 
+q9 q7 q6 q5 |
+q4 q3 q2 q1 |
+
+R{ ... }

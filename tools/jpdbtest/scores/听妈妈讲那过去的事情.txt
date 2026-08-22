@@ -1,0 +1,21 @@
+%听妈妈讲那过去的事情.txt
+%TODO:revise
+MBID=60b85a87-7b72-48d6-a363-ec640a31a6e7
+title=听妈妈讲那过去的事情
+type=work
+tag=to_be_revised
+usertag=to_be_revised
+tagroute=
+alias=听妈妈讲那过去的事情简谱_儿歌_我们坐在高高的谷堆旁边,听妈妈讲那过去的事情
+copyright=简谱之家,版权归原作者及原网站
+%--
+2/4
+6 0 | q5 - q0 | 0 0 |
+q3 0 q0
+q1. 0 s0 | 0 0 |
+1' 0
+subtitle=过去的事情。
+q7 - q0
+q6. 0 s0
+q5. 0 s0
+%END

@@ -1,0 +1,15 @@
+title=步步高
+type=work
+alias=步步高&nbsp;
+%TODO:revise
+usertag=to_be_revised
+MBID=defcb658-311b-4b11-a652-636354f2d518
+copyright=歌谱简谱网,版权归原作者及原网站
+%--
+2/4
+subtitle=快乐的小快板
+0 q3 q0 | 0 0 |
+q5 q7 0 | 0 0 |
+q1 - q0 | 0 0 |
+R{ } A{ q6 q1' 0 }
+%END

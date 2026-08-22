@@ -1,0 +1,18 @@
+%青原赋.txt
+%TODO:revise
+MBID=
+title=青原赋
+type=work
+tag=to_be_revised
+usertag=to_be_revised
+tagroute=
+copyright=歌谱简谱网,版权归原作者及原网站
+%--
+1' 4 4 0
+2 0 0 0 | q3 - 0 - q0 5 0 0 0 | q6 q7 1 0 0 | q3 0 0 0 q0 |
+
+ 0 0 0 0 | q6 0 0 0 q0 | q6 0 0 0 q0 |
+subtitle=青原赋
+1' 4 4 0
+2 0 0 0 | q3 - 0 - q0 5 0 0 0 | q6 q7 1 0 0 | q3 0 0 0 q0 |
+%END

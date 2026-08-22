@@ -1,0 +1,15 @@
+%学习雷锋好榜样.txt
+%TODO:revise
+MBID=3d780683-f269-4d2a-b529-2a3bd7add728
+title=学习雷锋好榜样
+type=work
+tag=to_be_revised
+usertag=to_be_revised
+tagroute=
+alias=学习雷锋好榜样简谱_儿歌_为歌颂雷锋,弘扬雷锋精神而创作的歌曲
+copyright=简谱之家,版权归原作者及原网站
+%--
+4/4
+5 - 0 0 | 3 - 0 0 | 2 - 0 0 | 0 0 0 0 | 0 0 0 0 | 0 0 0 0 | 0 0 0 0 | 0 0 0 0 | 1 0 0 0 | 0 0 0 0 |
+R{ }
+%END

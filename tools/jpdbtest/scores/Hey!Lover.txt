@@ -1,0 +1,15 @@
+%Hey!Lover.txt
+%TODO:revise
+MBID=01eae3fe-e774-3139-bc3d-a68d780d8074
+title=Hey!Lover
+type=work
+tag=to_be_revised
+usertag=to_be_revised
+tagroute=
+copyright=歌谱简谱网,版权归原作者及原网站
+%--
+4/4
+0 5 0 0 | 3 q2 q7 q6 q1 - |
+3 s1' d2' q2 q1 - q0 d0 | 0 0 0 0 |
+q2 q1 q1 q1 q1 q1 q1 q1 | q1 q1 q1 q1 q1 q1 q1 q1 | q1 q1 0 0 0 | 0 0 0 0 |
+%END

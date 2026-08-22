@@ -1,0 +1,20 @@
+%路灯下的小姑娘.txt
+%TODO:revise
+MBID=87881a06-23d2-4db9-99dc-f4016d95c6bf
+title=路灯下的小姑娘
+type=work
+tag=to_be_revised
+usertag=to_be_revised
+tagroute=
+alias=路灯下的小姑娘简谱(歌词)_邓洁仪演唱_岭南印象曲谱
+copyright=简谱之家,版权归原作者及原网站
+%--
+4/4
+3 1' 0 0 | 6 q2 0 0 q0 | 0 0 0 0 |
+0 q5 - 0 q0 | 0 0 0 0 |
+0 q7 - 0 q0 | 0 0 0 0 |
+0 1' 1' 0 | 0 0 0 0 |
+1 0 0 0
+1' 0 0 0
+0 0 0 0 | q2 0 0 0 q0 |
+%END

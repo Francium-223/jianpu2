@@ -1,0 +1,18 @@
+%铃儿响叮当.txt
+%TODO:revise
+MBID=c1422d20-ddef-4568-b9d3-a6be1f74284d
+title=铃儿响叮当
+type=work
+tag=to_be_revised
+usertag=to_be_revised
+tagroute=
+alias=铃儿响叮当简谱_儿歌_Jingle_Bells_Jingle_Bells
+copyright=简谱之家,版权归原作者及原网站
+%--
+4/4
+3 - - 0 | q5 q2 q7 - 0 q0 | 0 0 0 0 |
+q6 q6 q1 0 q1' 0 | 0 0 0 0 |
+q2' q1' q7 q6 0 0 | 0 0 0 0 |
+q5 q2 q7. 0 0 s0
+q5 q2 0 0 0
+%END

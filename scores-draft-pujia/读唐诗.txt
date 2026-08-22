@@ -3,6 +3,7 @@ type=work
 alias=读唐诗简谱(歌词)_金帆合唱团演唱_桃李醉春风记谱
 %TODO:revise
 usertag=to_be_revised
+MBID=11708522-ece9-4c8d-a0f6-a537dfc82eab
 %--
 2/4
 4 2 - - - - - - - - - -

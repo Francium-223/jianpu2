@@ -1,0 +1,18 @@
+%胭脂妆.txt
+%TODO:revise
+MBID=
+title=胭脂妆
+type=work
+tag=to_be_revised
+usertag=to_be_revised
+tagroute=
+copyright=歌谱简谱网,版权归原作者及原网站
+%--
+4/4
+3 2 - 6 1 2 0 0 | 0 0 0 0 |
+3 0 0 0 | 0 0 0 0 |
+R{ } A{ | }
+subtitle=副歌
+3 5 0 0 | 0 0 0 0 |
+3 5 0 0 | 0 0 0 0 |
+%END

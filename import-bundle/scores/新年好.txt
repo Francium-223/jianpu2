@@ -1,0 +1,23 @@
+title=新年好
+type=work
+alias=新年好简谱_儿歌_一份真诚的祝福，祝您新年快乐
+%TODO:revise
+usertag=to_be_revised
+MBID=9c9e8d36-98aa-45e6-b967-5aa0eed39fe6
+copyright=简谱之家,版权归原作者及原网站
+%--
+1' 3 4 0
+subtitle=新年好
+2 - 0 0 | q6 q5 q7 0 0 q0 | s1 q0 s1' 0 0 0 | 2' 0 0 0 | 0 0 0 0 |
+2 - 0 0 | q6 q5 q7 0 0 q0 | s1 q0 s1' 0 0 0 | d2' 0 0 0 q0. d0 | 0 0 0 0 |
+1' 3 4 0
+NextScore
+subtitle=Happy
+2 - 0 0 | q6 q5 q7 0 0 q0 | s1 q0 0 0 0 s0 | 0 0 0 0 | 0 0 0 0 |
+2 - 0 0 | q6 q5 q7 0 0 q0 | s1 q0 d2' 0 0 0 d0 | 0 0 0 0 |
+1' 4 4 0
+NextScore
+subtitle=新年好
+3 - 0 0 | q1' q7 q2' 0 0 q0 | s1 q0 0 0 0 s0 | 0 0 0 0 | 0 0 0 0 |
+2 - 0 0 | q6 q5 q7 0 0 q0 | s1 q0 d2' 0 0 0 d0 | 0 0 0 0 |
+%END

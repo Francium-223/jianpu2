@@ -3,6 +3,7 @@ type=work
 alias=红领巾之歌简谱(歌词)_儿歌_岭南印象曲谱
 %TODO:revise
 usertag=to_be_revised
+MBID=7b81221f-d05a-46e9-a72f-7b933d004e61
 %--
 2 4 - 1 7, 0,- -
 5 3 6 '1 | - '1 |

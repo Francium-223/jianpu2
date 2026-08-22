@@ -1,0 +1,17 @@
+title=小毛驴
+type=work
+alias=小毛驴简谱_儿歌_我有一只顽皮的小毛驴
+%TODO:revise
+usertag=to_be_revised
+MBID=c619a16a-8999-4e06-ba60-5e36af0164ba
+copyright=简谱之家,版权归原作者及原网站
+%--
+4/4
+2 q3 0 0 q0 | 0 0 0 0 |
+q6 q5 0 0 0 | 0 0 0 0 |
+s7 1' 0 0 q0. | 0 0 0 0 |
+1 - 0 0 | 0 0 0 0 | 0 0 0 0 |
+q1' q2' 0 0 0 | 0 0 0 0 |
+1' - 0 0 | 0 0 0 0 |
+|
+%END

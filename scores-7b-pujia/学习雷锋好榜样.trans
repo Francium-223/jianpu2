@@ -1,0 +1,5 @@
+#KEY none  
+#TIME 4/4  
+
+(5 - |3-|2-||) R{ (X X XX XXXXX ||)} A{(XXX XXXXXXXX XXXXXXXXXXXX)|} B{|1~0|}
+R{ (6 ~~~~ |5~~~~~ |7~~~~~~~~ ) }

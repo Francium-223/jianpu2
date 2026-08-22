@@ -1,0 +1,19 @@
+%红鼻子驯鹿鲁道夫.txt
+%TODO:revise
+MBID=
+title=红鼻子驯鹿鲁道夫
+type=work
+tag=to_be_revised
+usertag=to_be_revised
+tagroute=
+alias=红鼻子驯鹿鲁道夫简谱_经典圣诞歌曲,我们的圣诞节
+copyright=简谱之家,版权归原作者及原网站
+%--
+4/4
+2 q5 - 0 q0
+3 s6 d7 1' 2' q0 d0 | 0 1 b2 3' | 'd4 0 0 0 q0. d0
+R{ } A{ }
+subtitle=副歌
+2 q5 - 0 q0
+3 s6 d7 1' 2' q0 d0 | 0 1 b2 3' | 'd4 0 0 0 q0. d0
+%END

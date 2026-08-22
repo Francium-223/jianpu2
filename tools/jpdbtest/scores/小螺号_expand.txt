@@ -1,0 +1,20 @@
+%小螺号.txt
+%TODO:revise
+MBID=80b44d27-f90d-42f3-a186-122d32044d84
+title=小螺号
+type=work
+tag=to_be_revised
+usertag=to_be_revised
+tagroute=
+alias=小螺号简谱_儿歌_让我们回到了纯真的童年
+copyright=简谱之家,版权归原作者及原网站
+%--
+2/4
+6 - | - 0 | q3 q3 0 | - - | - 6 | - - | q3 q3 0 | - - | - 0 |
+1. q0
+6 - | - 0 | 2 - | 4 - | 5 - | 7 0 |
+6 - | - 0 | s3 s3 0 q0 | - - | - 0 |
+1. q0
+2 - | 4 - | 5 - | 7 0
+6 - | - 0 | - q3 q0 | 1' - | 2' 0 |
+%END

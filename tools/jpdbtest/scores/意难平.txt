@@ -1,0 +1,15 @@
+%意难平.txt
+%TODO:revise
+MBID=c1610610-e0b2-410b-ae87-6d4ee760010b
+title=意难平
+type=work
+tag=to_be_revised
+usertag=to_be_revised
+tagroute=
+copyright=歌谱简谱网,版权归原作者及原网站
+%--
+4/4
+0 - 0 0 | 3 - 2 0 | 6 - 5 0 | 7 1' 1' q1. s0 | 'q1. 0 0 0 s0 | 0 0 0 0 |
+3 - 2 0 | 6 - 5 0 | 7 1' 1' q1. s0 | 0 0 0 0 |
+3 - 2 0 | 6 - 5 0 | 1' q1. 1''. q1. | q1. 0 0 0 s0 | 0 0 0 0 |
+%END

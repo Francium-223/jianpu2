@@ -1,0 +1,11 @@
+title=菜园子
+type=work
+alias=菜园子&nbsp;&nbsp;
+%TODO:revise
+usertag=to_be_revised
+copyright=歌谱简谱网,版权归原作者及原网站
+%--
+4/4
+6 - 0 0 | 2 q3 - 0 q0 | 0 0 0 0 |
+7 b5 - 0 | - - - - | - - - - | - - - - | - - - - | - - - - | - - - - |
+%END

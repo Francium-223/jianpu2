@@ -1,0 +1,18 @@
+%悯农.txt
+%TODO:revise
+MBID=
+title=悯农
+type=work
+tag=to_be_revised
+usertag=to_be_revised
+tagroute=
+alias=悯农简谱(歌词)_中央银河少年艺术团演唱_桃李醉春风记谱
+copyright=简谱之家,版权归原作者及原网站
+%--
+3 1' 7 1' | 7 1' 7 0 | 0 0 0 0 |
+6 0 0 0 | 0 0 0 0 |
+1' - - 0 | 0 0 0 0 |
+5 #4 0 0 | 0 0 0 0 |
+1 2 0 0
+R{ }
+%END

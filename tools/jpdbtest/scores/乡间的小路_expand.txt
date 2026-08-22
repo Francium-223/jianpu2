@@ -1,0 +1,17 @@
+%乡间的小路.txt
+%TODO:revise
+MBID=4c2c85e7-b7a1-49ac-87a1-645f081f748e
+title=乡间的小路
+type=work
+tag=to_be_revised
+usertag=to_be_revised
+tagroute=
+alias=乡间的小路简谱(歌词)_卓依婷演唱_岭南印象曲谱
+copyright=简谱之家,版权归原作者及原网站
+%--
+2/4
+3 0 | 0 0 |
+6 5 | 0 0 |
+7 - | 0 0 |
+0 0 | 1 0 |
+%END

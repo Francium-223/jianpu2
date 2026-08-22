@@ -1,0 +1,11 @@
+title=木叶情
+type=work
+alias=木叶情&nbsp;&nbsp;
+%TODO:revise
+usertag=to_be_revised
+copyright=歌谱简谱网,版权归原作者及原网站
+%--
+4/4
+0 q2 - 0 q0 | 0 0 0 0 |
+q3 0 0 0 q0 | 0 0 0 0 |
+%END

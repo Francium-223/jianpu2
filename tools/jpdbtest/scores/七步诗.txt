@@ -1,0 +1,20 @@
+%七步诗.txt
+%TODO:revise
+MBID=b0b07058-e04c-47dc-a748-4b65a100d9e7
+title=七步诗
+type=work
+tag=to_be_revised
+usertag=to_be_revised
+tagroute=
+alias=七步诗简谱(歌词)_小海龟演唱组演唱_桃李醉春风记谱
+copyright=简谱之家,版权归原作者及原网站
+%--
+6 0 0 0
+subtitle=intro
+3 q5 0 - q0 | 0 0 0 0 |
+q7 - 2 - q6 | - 4 - 0 | 0 0 0 0 |
+R{ 1 q5 1' - q0 } A{ 2' - 0 0 }
+NextScore
+subtitle=verse
+3. 0 0 q0 | 0 0 0 0 |
+%END

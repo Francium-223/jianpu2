@@ -1,0 +1,23 @@
+%Angel.txt
+%TODO:revise
+MBID=75023ccc-0e51-3746-8d31-04b9f7c45309
+title=Angel
+type=work
+tag=to_be_revised
+usertag=to_be_revised
+tagroute=
+copyright=歌谱简谱网,版权归原作者及原网站
+%--
+4/4
+subtitle=Angel
+0 q2 0 0 q0 | 0 0 0 0 |
+q3 - 0 0 q0 | 0 0 0 0 |
+q5 0 0 0 q0
+1 q6 0 0 q0 | 0 0 0 0 |
+s7 s1' 0 0 0 q0 | 0 0 0 0 |
+0 0 0 0 | 0 0 0 0 |
+0 0 0 0 | 0 0 0 0 |
+0 q2 0 0 q0 | 0 0 0 0 |
+q3 - 0 0 q0 | 0 0 0 0 |
+q5 0 0 0 q0 | 0 0 0 0 |
+%END

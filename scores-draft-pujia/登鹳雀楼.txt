@@ -3,6 +3,7 @@ type=work
 alias=登鹳雀楼简谱(歌词)_小海龟演唱组演唱_桃李醉春风记谱
 %TODO:revise
 usertag=to_be_revised
+MBID=9058a86f-dbe4-44d1-80b9-b63fcd02444a
 %--
 3 4 - 1 2 - - - - - - - -
 3 4 | 5 6 | - 1 2 7 | - '1 | - '1 |

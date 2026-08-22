@@ -3,6 +3,7 @@ type=work
 alias=祝你生日快乐简谱_儿歌_其实一开始唱的并不是祝你生日快乐
 %TODO:revise
 usertag=to_be_revised
+MBID=e949ff3b-97b9-45d8-8195-62d823976e00
 %--
 3/4
 1 0 0

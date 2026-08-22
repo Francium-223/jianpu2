@@ -3,6 +3,7 @@ type=work
 alias=江南简谱(歌词)_银河少年艺术团演唱_桃李醉春风记谱
 %TODO:revise
 usertag=to_be_revised
+MBID=9e497ee4-67ab-4e9e-8c64-d95a06d2f89a
 %--
 2/4
 4 2 6- 7 3- 5 1- 0. - - - -

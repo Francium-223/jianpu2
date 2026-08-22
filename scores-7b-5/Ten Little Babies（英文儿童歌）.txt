@@ -1,0 +1,12 @@
+title=Ten Little Babies（英文儿童歌）
+type=work
+%TODO:revise
+usertag=to_be_revised
+copyright=歌谱简谱网,版权归原作者及原网站
+%--
+4/4
+subtitle=Ten
+q2 q3 s6 d7 q1 - q1 q0 d0 | - 0 0 0 | 0 0 0 0 |
+s5 q1' q2' q1 0 q1 q0. | 1 q1 2 q1 3 | q1 4 q1 5 q1 q0 | 6 q1 7 q1 1' | q1 2' q2 0 q2 q0 | 1 q2 2 q2 3 | q2 4 q2 5 q2 q0 | 6 q2 7 q2 1' | 0 0 0 0 |
+q2 - 1' - q0 | 0 0 0 0 |
+%END

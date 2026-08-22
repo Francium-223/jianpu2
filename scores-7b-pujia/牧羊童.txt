@@ -1,0 +1,12 @@
+title=牧羊童
+type=work
+alias=牧羊童简谱_儿歌_一首草原之歌洗涤你的心灵
+%TODO:revise
+usertag=to_be_revised
+copyright=简谱之家,版权归原作者及原网站
+%--
+4/4
+6 7 q2 q3 0 | 0 0 0 0 |
+5 q4 q3 0 0 | 0 0 0 0 |
+6 - 0 0 | 0 0 0 0 |
+%END

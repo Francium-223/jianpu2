@@ -1,0 +1,14 @@
+%校园的早晨.txt
+%TODO:revise
+MBID=462617e1-3af0-43e7-b731-b36ac4dd9b19
+title=校园的早晨
+type=work
+tag=to_be_revised
+usertag=to_be_revised
+tagroute=
+alias=校园的早晨简谱(歌词)_谢莉斯/王洁实演唱_岭南印象曲谱
+copyright=简谱之家,版权归原作者及原网站
+%--
+4/4
+5 6 7 6 | q2 3 q2 3 0 | 0 3 1 - | 0 0 0 0 |
+%END

@@ -1,0 +1,11 @@
+#KEY none  
+#TIME D2/4  
+
+| 5 - | q3 q7 q6 | s8 | d9 | a10 |
+
+subtitle=红领巾之歌
+
+R{ 
+q1 q1 q1 q1 q1 q1 q1 q1 q1 q1 |
+q1 q1 q1 q2 q4 q2 q5 q- - |
+q3 67 87 d9 | a10 | }

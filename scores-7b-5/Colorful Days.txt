@@ -1,0 +1,16 @@
+title=Colorful Days
+type=work
+%TODO:revise
+usertag=to_be_revised
+MBID=5b78cd43-0b06-426e-afdc-8eb96eb98bd2
+copyright=歌谱简谱网,版权归原作者及原网站
+%--
+4/4
+0 5 6 7 | q3 q2 0 0 0 | - - - - | - 0 0 0 |
+1 2 3 q3 q2 | - - 0 0 |
+2 3 4 q3 q2 | 0 5 6 7 | q3 q2 0 0 0 | 0 0 0 0 |
+0 5 6 7 | q3 q2 0 0 0 | 0 5 6 7 | q3 q2 0 0 0 | 0 0 0 0 |
+0 5 6 7 | q3 q2 - 0 0
+1 2 3 q3 q2 | - - 0 0 |
+2 3 4 q3 q2 | - 0 0 0 |
+%END

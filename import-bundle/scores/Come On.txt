@@ -1,0 +1,13 @@
+title=Come On
+type=work
+%TODO:revise
+usertag=to_be_revised
+MBID=6b3bbd5a-0b4e-365e-bde1-d3eceaad9d5e
+copyright=歌谱简谱网,版权归原作者及原网站
+%--
+4/4
+0 q2 0 0 q0 | 0 0 0 0 |
+q3 q7 s6 q5 q1' 0 q0. | 0 0 0 0 |
+s1 q7 q1' 0 0 q0. | 0 0 0 0 |
+R{ } A{ | | }
+%END

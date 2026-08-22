@@ -3,6 +3,7 @@ type=work
 alias=每当我走过老师窗前简谱_儿歌_对老师崇敬热爱之情的歌曲
 %TODO:revise
 usertag=to_be_revised
+MBID=63afc6e7-959c-4299-a7cd-d6bfed57135d
 %--
 2/4
 5 4 | - 2 | 3 6 1 | | 7 | - | | 0 -

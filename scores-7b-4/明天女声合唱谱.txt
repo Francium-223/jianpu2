@@ -1,0 +1,11 @@
+title=明天女声合唱谱
+type=work
+%TODO:revise
+usertag=to_be_revised
+copyright=歌谱简谱网,版权归原作者及原网站
+%--
+2/4
+1' 0 | q3 q2 0 | 1' - | - 0 | 1' - | 1' 5 | - 0 |
+1' - | 1' 0 | q1' - q2 | 1' - | - q1' q0 | - - |
+1 1' | q1' 5 q0 | 3 0 | - 0 | 0. q0 | 2 - | 6. q0 | - 0 | 7. q0 |
+%END

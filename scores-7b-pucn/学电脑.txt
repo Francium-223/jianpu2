@@ -1,0 +1,14 @@
+title=学电脑
+type=work
+alias=学电脑&nbsp;&nbsp;
+%TODO:revise
+usertag=to_be_revised
+copyright=歌谱简谱网,版权归原作者及原网站
+%--
+2/4
+3 - | 5 - | 0 0 |
+6 0
+7 0 | 0 0 |
+3 - | 0 0 |
+1 0 | 0 0 | 0 0 |
+%END

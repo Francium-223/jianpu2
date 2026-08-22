@@ -1,0 +1,12 @@
+title=See You Again SATB混声合唱谱
+type=work
+%TODO:revise
+usertag=to_be_revised
+copyright=歌谱简谱网,版权归原作者及原网站
+%--
+4/4
+3 q2 q7 q6 q5 q1' q2' | q1 0 q1 1 q1 q0 | 2 q1 3 0 q0
+R{ } A{ | }
+subtitle=opt.
+q2 q7 q6 q5 q1' q2' q1 q0 | 0 q1 1 q1 2 | q1 3 0 0 q0
+%END

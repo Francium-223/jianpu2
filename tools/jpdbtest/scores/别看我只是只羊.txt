@@ -1,0 +1,25 @@
+%别看我只是只羊.txt
+%TODO:revise
+MBID=
+title=别看我只是只羊
+type=work
+tag=to_be_revised
+usertag=to_be_revised
+tagroute=
+alias=别看我只是只羊简谱_动画_喜羊羊与灰太狼_主题曲
+copyright=简谱之家,版权归原作者及原网站
+%--
+4/4
+0 3 q2 q6 0 | 0 0 0 0 |
+q5 q7 - 0 0 | 0 0 0 0 |
+0 1' 0 0 | 0 0 0 0 |
+subtitle=副歌层
+1 2 q2 q6 0 | 0 0 0 0 |
+q5 q7 0 0 0 | 0 0 0 0 |
+R{ }
+| |
+NextScore
+subtitle=Rap
+1 2 q2 q6 0 | 0 0 0 0 |
+q4 q3 q2 q6 0 0 | 0 0 0 0 |
+%END

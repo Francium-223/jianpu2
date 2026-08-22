@@ -1,0 +1,17 @@
+%一荤一素二声部合唱谱.txt
+%TODO:revise
+MBID=
+title=一荤一素二声部合唱谱
+type=work
+tag=to_be_revised
+usertag=to_be_revised
+tagroute=
+copyright=歌谱简谱网,版权归原作者及原网站
+%--
+4/4
+3 6 q5 1' q0 | 2 0 0 0 | 0 0 0 0 |
+q6 q7 q1' q2' 0 0 | 0 0 0 0 |
+1 0 - 1 | 1 - 1 2 | - 1 3 0 | 0 0 0 0 |
+1 4 - 1 | 5 - 1 6 | - 1 7 0 | 0 0 0 0 |
+1 1' - 1 | 2' - 2 0 | 0 0 0 0 |
+%END

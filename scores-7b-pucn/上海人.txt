@@ -1,0 +1,12 @@
+title=上海人
+type=work
+alias=上海人&nbsp;
+%TODO:revise
+usertag=to_be_revised
+MBID=52e53731-79b9-4aa2-a657-2dff4cc0ccd7
+copyright=歌谱简谱网,版权归原作者及原网站
+%--
+4/4
+1. 2 3 q0 | - 6 6 7 | 7 7 6 7 | 1 2 0 0 | - 0 0 0 | 0 0 0 0 |
+3. - 0 q0 | 0 0 0 0 | 0 0 0 0 |
+%END

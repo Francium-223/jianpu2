@@ -1,0 +1,24 @@
+%New Boy.txt
+%TODO:revise
+MBID=c5c1d8e9-59a5-4551-a41b-439f0fdcf95c
+title=New Boy
+type=work
+tag=to_be_revised
+usertag=to_be_revised
+tagroute=
+copyright=歌谱简谱网,版权归原作者及原网站
+%--
+4/4
+0 - q2 q3 0 | 0 0 0 0 |
+q6 7 5 5 q0 | 3 2 0 0 | 3 3 0 0 |
+3 0 0 0
+3 0 0 0
+3 0 0 0
+3 0 0 0
+3 0 0 0
+3 0 0 0
+3 0 0 0
+- q2 q1 0 0 | 0 0 0 0 |
+q6 7 5 4 q0 | 0 0 0 0 | 0 0 0 0 |
+0 - 0 0 | 0 0 0 0 |
+%END

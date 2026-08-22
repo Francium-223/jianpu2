@@ -1,0 +1,16 @@
+%I Like Chopin 我爱肖邦（意、英文歌）.txt
+%TODO:revise
+MBID=
+title=I Like Chopin 我爱肖邦（意、英文歌）
+type=work
+tag=to_be_revised
+usertag=to_be_revised
+tagroute=
+copyright=歌谱简谱网,版权归原作者及原网站
+%--
+4/4
+2 - q3 s6 d7 q5 q4 d0 | q1' q2' q1 0 q1 1 | q1 2 q1 3 q1 q0 | 4 q1 5 q1 6 | q1 7 q1 1' q1 q0 | 2' q2 0 q2 1 | q2 2 q2 3 q2 q0 | 4 0 0 0
+q2 3 - - q0 | - - - - | - - - - | - - - - | - 0 0 0
+
+
+%END

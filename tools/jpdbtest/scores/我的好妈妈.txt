@@ -1,0 +1,16 @@
+%我的好妈妈.txt
+%TODO:revise
+MBID=
+title=我的好妈妈
+type=work
+tag=to_be_revised
+usertag=to_be_revised
+tagroute=
+alias=我的好妈妈简谱_儿歌_和宝贝一起学首儿歌吧!
+copyright=简谱之家,版权归原作者及原网站
+%--
+2/4
+3 - | 5 q0 q0 | 0 0 |
+q6 q7 0 | 0 0 |
+R{ } A{ }
+%END

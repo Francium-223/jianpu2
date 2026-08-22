@@ -1,0 +1,15 @@
+%My heart will go on（《铁达尼号》主题歌、英文歌）.txt
+%TODO:revise
+MBID=
+title=My heart will go on（《铁达尼号》主题歌、英文歌）
+type=work
+tag=to_be_revised
+usertag=to_be_revised
+tagroute=
+copyright=歌谱简谱网,版权归原作者及原网站
+%--
+4/4
+subtitle=Love
+1' 1' s1' 1' q0. | 1' 0 0 0
+1 - q2 q3 q5 q6 | q7 q1' q2' q0 q1 q2 q3 q4 | q5 q6 q7 q1' q2' q0 q1 q2 | q3 q4 q5 q6 q7 q1' q2' q0 | q1 q2 q3 q4 q5 q6 q7 q1' | q2' q0 q1 q2 q3 q4 q5 q6 | q7 q1' q2' q0 q1 q2 q3 q4 | q5 q6 q7 q1' q2' q0 q1 q2 | q3 q4 0 0 0
+%END

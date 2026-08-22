@@ -1,0 +1,14 @@
+%城市之光（ 、 合唱）（美声通俗）.txt
+%TODO:revise
+MBID=
+title=城市之光（ 、 合唱）（美声通俗）
+type=work
+tag=to_be_revised
+usertag=to_be_revised
+tagroute=
+copyright=歌谱简谱网,版权归原作者及原网站
+%--
+6/8
+3 2 0 | q4 q4 0 0 | 5 - - | - 0 0 | - 0 0 | 0 0 0 |
+6. 7 q0 | 1'' 2 0 | 1' - 0 | 1'. 0 q0 | 3 3 3 | 2 3 2 | 1 0 0 | 0 0 0 |
+%END

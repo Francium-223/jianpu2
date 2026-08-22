@@ -1,0 +1,17 @@
+#KEY none  
+#TIME 4/4  
+
+subtitle=前奏
+
+(3 q5 - | 
+q6 ~ qi - |
+qi s7 d'2 - |
+
+R{ (1 q5 - | 
+q6 ~ qi - |) } 
+
+subtitle=A段落一
+
+(9 q5. - | 
+d' 8 - |  
+s4 g f e |

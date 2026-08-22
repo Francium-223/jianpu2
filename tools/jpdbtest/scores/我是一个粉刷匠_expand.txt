@@ -1,0 +1,20 @@
+%我是一个粉刷匠.txt
+%TODO:revise
+MBID=
+title=我是一个粉刷匠
+type=work
+tag=to_be_revised
+usertag=to_be_revised
+tagroute=
+alias=我是一个粉刷匠简谱_儿歌_我要把那新房子,刷得更漂亮
+copyright=简谱之家,版权归原作者及原网站
+%--
+2/4
+5 - | 3 0 | - 0 | 0 0 |
+q7 q6 0 | 0 0 |
+q1' q2' 0 | 0 0 |
+subtitle=刷屋顶又刷墙
+1 - | - 0 |
+q7 q6 0 | 0 0 |
+q1' q2' 0 | 0 0 |
+%END

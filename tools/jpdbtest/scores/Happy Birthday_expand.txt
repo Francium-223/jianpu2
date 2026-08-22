@@ -1,0 +1,22 @@
+%Happy Birthday.txt
+%TODO:revise
+MBID=e17ccd51-0b15-4917-9a05-64406614f11c
+title=Happy Birthday
+type=work
+tag=to_be_revised
+usertag=to_be_revised
+tagroute=
+copyright=歌谱简谱网,版权归原作者及原网站
+%--
+1' 4 4 0
+0 q2 1' 1' q0 | - 7 6' 0 | 0 0 0 0 |
+q3 1' - - q0 | - - 0 0 | 0 0 0 0 |
+0 q1' 1' 1 q0 | 7 6' 0 0 | 0 0 0 0 |
+q1' 5 - - q0 | 0 0 0 0 |
+1' 1' 1' 0
+0 0 0 0 | 1' 1' 1' 1' | 1' 1' 1' 7 | 6 0 0 0 | 1' 1' 1' 1' | 1' 6 7 0 | q1' 1' 1' - q0 | 0 0 0 0 |
+- 6 - - | - - - -
+3 3' 4 0 | 0 0 0 0 |
+q2. 1 1' 1' s0 | 0 0 0 0 |
+q1' 5 0 0 q0
+%END

@@ -1,0 +1,17 @@
+%赋得古原草送别.txt
+%TODO:revise
+MBID=
+title=赋得古原草送别
+type=work
+tag=to_be_revised
+usertag=to_be_revised
+tagroute=
+alias=赋得古原草送别简谱(歌词)_小海龟演唱组演唱_桃李醉春风记谱
+copyright=简谱之家,版权归原作者及原网站
+%--
+6 0 0 0
+subtitle=intro
+4 - 2 3 | q5 q7 0 0 0 | s0 0 0 0 q0. | d1 - 0 0 q0. d0 | - 0 0 0 |
+1' - 1' 7 | q5 q7 0 0 0 | s0 0 0 0 q0. | d1 - 0 0 q0. d0 | - 0 0 0 |
+1' q1' q1' q1' q1' q1' q1' | q1' q1' q1' q1' q1' q1' q1' q1' | q1' q1' q1' q1' q1' q1' q1' q1' | q1' q1' 0 0 0 | q5 q7 0 0 0 | s0 0 0 0 q0. | d1 - 0 0 q0. d0 | - 0 0 0 |
+%END

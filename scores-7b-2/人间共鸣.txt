@@ -1,0 +1,17 @@
+title=人间共鸣
+type=work
+%TODO:revise
+usertag=to_be_revised
+MBID=3078d9e6-aca9-4548-8451-f3d930599ad0
+copyright=歌谱简谱网,版权归原作者及原网站
+%--
+4/4
+6 - 0 0 | 0 0 0 0 |
+0 3 5 0 | 0 0 0 0 |
+0 0 0 0 | 2 - 0 0 | 0 0 0 0 |
+1. 0 0 q0
+6 7 1' q2. s0
+1' - 0 0
+6 1' 0 0 | 0 0 0 0 |
+q2. 0 0 0 s0
+%END

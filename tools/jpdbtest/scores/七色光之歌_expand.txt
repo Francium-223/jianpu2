@@ -1,0 +1,18 @@
+%七色光之歌.txt
+%TODO:revise
+MBID=2eaa623e-8608-4dae-99fe-fcf67e93ecb5
+title=七色光之歌
+type=work
+tag=to_be_revised
+usertag=to_be_revised
+tagroute=
+alias=七色光之歌简谱_儿歌_七色光之歌,给我们带来七彩的梦
+copyright=简谱之家,版权归原作者及原网站
+%--
+2/4
+3 5 | q5 0 q0 | 0 0 |
+1 - | 0 0 | 0 0 |
+6 6 | q6 0 q0 | 0 0 |
+
+
+%END

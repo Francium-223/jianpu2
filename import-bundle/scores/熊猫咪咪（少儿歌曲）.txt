@@ -1,0 +1,10 @@
+title=熊猫咪咪（少儿歌曲）
+type=work
+alias=熊猫咪咪（少儿歌曲）简谱(歌词)_程琳演唱_岭南印象曲谱
+%TODO:revise
+usertag=to_be_revised
+copyright=简谱之家,版权归原作者及原网站
+%--
+6 2 q3 5 q0 | - - 0 0 | 0 0 0 0 |
+0 0 0 0 | 6 2 q3 4 q0 | - - 0 0 |
+%END

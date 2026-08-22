@@ -1,0 +1,22 @@
+%推车歌.txt
+%TODO:revise
+MBID=
+title=推车歌
+type=work
+tag=to_be_revised
+usertag=to_be_revised
+tagroute=
+copyright=歌谱简谱网,版权归原作者及原网站
+%--
+4/4
+6 - 5 - | 0 0 0 0 |
+2 q3 0 0 q0 | 0 0 0 0 |
+q7 s1' d1 0 0 0 d0 | 0 0 0 0 |
+s2' q1 0 q1 0 q1 s0 | 0 0 0 0 | 0 0 0 0 |
+q1 0 q1 0 q1 q0 | 0 q1 0 0 q0 | 0 0 0 0 |
+q1 0 q1 0 q1 q0 | 0 q1 0 0 q0 | 0 0 0 0 |
+q4 - 0 0 q0 | 0 0 0 0 |
+2 5 0 0 | 0 0 0 0 |
+6 - 7 - | 0 0 0 0 |
+6 - 1' s3 q0. | 0 0 0 0 |
+%END

@@ -1,0 +1,21 @@
+title=数鸭子
+type=work
+alias=数鸭子简谱_儿歌_别考个鸭蛋抱回家
+%TODO:revise
+usertag=to_be_revised
+MBID=1a176fda-c649-4855-9498-4615c938afc1
+copyright=简谱之家,版权归原作者及原网站
+%--
+4/4
+subtitle=前奏
+3 q5 - 0 q0 | 0 0 0 0 |
+q6 q1' - 0 0 | 0 0 0 0 |
+q1' s7 2' - 0 s0 | 0 0 0 0 |
+q5 0 0 0 q0 | 0 0 0 0 |
+q6 q1' - 0 0 | 0 0 0 0 |
+NextScore
+subtitle=A段落一
+2' q5. - 0 s0 | 0 0 0 0 |
+1' - 0 0 | 0 0 0 0 |
+s4 0 0 0 q0. | 0 0 0 0 |
+%END

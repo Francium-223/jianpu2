@@ -1,0 +1,16 @@
+%光芒二部合唱.txt
+%TODO:revise
+MBID=
+title=光芒二部合唱
+type=work
+tag=to_be_revised
+usertag=to_be_revised
+tagroute=
+copyright=歌谱简谱网,版权归原作者及原网站
+%--
+4/4
+subtitle=光芒
+3 5 2 7 | 1 6 1' 0 | 0 0 0 0 | 0 0 0 0 | 0 0 0 0 | 0 0 0 0 | 0 0 5 5 | 0 0 0 0 |
+0 0 0 0 | 0 0 0 0 | 0 0 0 0 | 0 0 0 0 | 0 0 - 0 | 0 0 0 0 |
+1' 2' 2 7 | 1 4. 3 q0
+%END

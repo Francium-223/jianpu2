@@ -1,0 +1,19 @@
+%嘀哩嘀哩.txt
+%TODO:revise
+MBID=23351ef2-f036-48ce-96cf-e904af6b9104
+title=嘀哩嘀哩
+type=work
+tag=to_be_revised
+usertag=to_be_revised
+tagroute=
+alias=嘀哩嘀哩简谱_儿歌_春天在哪里,春天就在这首_嘀哩嘀哩_中
+copyright=简谱之家,版权归原作者及原网站
+%--
+2/4
+5 6 | q3 q7 0 | 0 0 |
+0 0 | 0 0 |
+|
+0 0 | 0 0 |
+5 6 | 0 0 | 0 0 |
+q1 q1 0 | q1 q1 0 | 0 0 |
+%END

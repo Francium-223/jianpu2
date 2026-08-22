@@ -1,0 +1,14 @@
+title=晓窗
+type=work
+alias=晓窗简谱(歌词)_小海龟演唱组演唱_桃李醉春风记谱
+%TODO:revise
+usertag=to_be_revised
+copyright=简谱之家,版权归原作者及原网站
+%--
+4/4
+2 1' - 0 | 0 0 0 0 |
+6 0 0 0 | 0 0 0 0 |
+1 5 0 0 | 0 0 0 0 |
+3 - 0 0
+R{ }
+%END

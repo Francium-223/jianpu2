@@ -1,0 +1,15 @@
+%小上海.txt
+%TODO:revise
+MBID=
+title=小上海
+type=work
+tag=to_be_revised
+usertag=to_be_revised
+tagroute=
+copyright=歌谱简谱网,版权归原作者及原网站
+%--
+4/4
+5 - 2 0 | 3 6 0 0 | 7 1' - 0 |
+1 2 3 0 | 0 0 0 0 | 3 0 0 0 | - 0 0 0 | - 0 0 0 | 0 0 0 0 |
+6 2 0 0 | 5 - 1' 0 | 0 0 0 0 | 7 4 - 0 |
+%END

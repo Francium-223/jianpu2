@@ -1,0 +1,20 @@
+%AMANI(粤语).txt
+%TODO:revise
+MBID=c337becf-89ff-4d67-b456-34283fe00a79
+title=AMANI(粤语)
+type=work
+tag=to_be_revised
+usertag=to_be_revised
+tagroute=
+copyright=歌谱简谱网,版权归原作者及原网站
+%--
+4/4
+3 - - 0 | q2 q7 q6 q5 0 0 | 0 0 0 0 |
+q1' q1 0 q2' q1' 0 | 0 0 0 0 |
+3 0 0 0 | q7 q6 q5 0 0 q0 | 0 0 0 0 |
+q1' q1 0 q2' q1' 0 | 0 0 0 0 |
+3 - 0 0 | - 0 0 0 | q2 q7 q6 q5 0 0 | 0 0 0 0 |
+q1' q1 0 q2' q1' 0 | 0 0 0 0 |
+3 0 0 0 | q4 q3 q2 q1 0 0 | 0 0 0 0 |
+q2 q3 q2 q1 0 0
+%END

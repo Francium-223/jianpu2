@@ -1,0 +1,15 @@
+%ASK.txt
+%TODO:revise
+MBID=d0eb33c8-e45e-3c33-9ebe-710056286b08
+title=ASK
+type=work
+tag=to_be_revised
+usertag=to_be_revised
+tagroute=
+copyright=歌谱简谱网,版权归原作者及原网站
+%--
+4/4
+0 3 - 2 | - 6 - 7 | 0 0 0 0 |
+5 - 1' - | 2' 0 0 0 | q1 - q1 - - | 0 0 0 0 |
+|
+%END

@@ -1,0 +1,169 @@
+%锦瑟混声四部合唱谱.txt
+%TODO:revise
+MBID=
+title=锦瑟混声四部合唱谱
+type=work
+tag=to_be_revised
+usertag=to_be_revised
+tagroute=
+copyright=歌谱简谱网,版权归原作者及原网站
+%--
+4/4
+subtitle=锦瑟
+2 3 0 0 | 0 0 0 0 |
+
+NextScore
+
+subtitle=锦瑟无端五十弦
+2 3 0 0 | 0 0 0 0 |
+
+NextScore
+
+subtitle=一弦一柱思华
+2 3 0 0 | 0 0 0 0 |
+
+NextScore
+
+subtitle=锦瑟无端五十弦
+2 3 0 0 | 0 0 0 0 |
+
+NextScore
+
+subtitle=一弦一柱思华
+2 3 0 0 | 0 0 0 0 |
+
+NextScore
+
+subtitle=锦瑟无端五十弦
+2 3 0 0 | 0 0 0 0 |
+
+NextScore
+
+subtitle=一弦一柱思华
+2 3 0 0 | 0 0 0 0 |
+
+NextScore
+
+subtitle=锦瑟无端五十弦
+2 3 0 0 | 0 0 0 0 |
+
+NextScore
+
+subtitle=一弦一柱思华
+2 3 0 0 | 0 0 0 0 |
+
+NextScore
+
+subtitle=锦瑟无端五十弦
+2 3 0 0 | 0 0 0 0 |
+
+NextScore
+
+subtitle=一弦一柱思华
+2 3 0 0 | 0 0 0 0 |
+
+NextScore
+
+subtitle=锦瑟无端五十弦
+2 3 0 0 | 0 0 0 0 |
+
+NextScore
+
+subtitle=一弦一柱思华
+2 3 0 0 | 0 0 0 0 |
+
+NextScore
+
+subtitle=锦瑟无端五十弦
+2 3 0 0 | 0 0 0 0 |
+
+NextScore
+
+subtitle=一弦一柱思华
+2 3 0 0 | 0 0 0 0 |
+
+NextScore
+
+subtitle=锦瑟无端五十弦
+2 3 0 0 | 0 0 0 0 |
+
+NextScore
+
+subtitle=一弦一柱思华
+2 3 0 0 | 0 0 0 0 |
+
+NextScore
+
+subtitle=锦瑟无端五十弦
+2 3 0 0 | 0 0 0 0 |
+
+NextScore
+
+subtitle=一弦一柱思华
+2 3 0 0 | 0 0 0 0 |
+
+NextScore
+
+subtitle=锦瑟无端五十弦
+2 3 0 0 | 0 0 0 0 |
+
+NextScore
+
+subtitle=一弦一柱思华
+2 3 0 0 | 0 0 0 0 |
+
+NextScore
+
+subtitle=锦瑟无端五十弦
+2 3 0 0 | 0 0 0 0 |
+
+NextScore
+
+subtitle=一弦一柱思华
+2 3 0 0 | 0 0 0 0 |
+
+NextScore
+
+subtitle=锦瑟无端五十弦
+2 3 0 0 | 0 0 0 0 |
+
+NextScore
+
+subtitle=一弦一柱思华
+2 3 0 0 | 0 0 0 0 |
+
+NextScore
+
+subtitle=锦瑟无端五十弦
+2 3 0 0 | 0 0 0 0 |
+
+NextScore
+
+subtitle=一弦一柱思华
+2 3 0 0 | 0 0 0 0 |
+
+NextScore
+
+subtitle=锦瑟无端五十弦
+2 3 0 0 | 0 0 0 0 |
+
+NextScore
+
+subtitle=一弦一柱思华
+2 3 0 0 | 0 0 0 0 |
+
+NextScore
+
+subtitle=锦瑟无端五十弦
+2 3 0 0 | 0 0 0 0 |
+
+NextScore
+
+subtitle=一弦一柱思华
+2 3 0 0 | 0 0 0 0 |
+
+NextScore
+
+subtitle=锦瑟无端五十弦
+2 3 0 0 | 0 0 0 0 |
+%END

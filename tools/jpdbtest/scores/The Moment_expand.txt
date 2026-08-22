@@ -1,0 +1,20 @@
+%The Moment.txt
+%TODO:revise
+MBID=26bf8c38-e251-4683-a36f-da569e44048a
+title=The Moment
+type=work
+tag=to_be_revised
+usertag=to_be_revised
+tagroute=
+copyright=歌谱简谱网,版权归原作者及原网站
+%--
+6/8
+5 q4 0 q0 | 0 0 0 |
+7 q2 q3 0 | 0 0 0 |
+q0 2 - q0 | 0 0 0 |
+1. 5 q4 | 0 0 0 |
+7 q2 q3 0 | 0 0 0 |
+1' 0 0
+
+
+%END

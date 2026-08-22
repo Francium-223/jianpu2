@@ -1,0 +1,17 @@
+%小白船.txt
+%TODO:revise
+MBID=968974c4-a003-4b0c-b59e-f77c2091ab76
+title=小白船
+type=work
+tag=to_be_revised
+usertag=to_be_revised
+tagroute=
+alias=小白船简谱_儿歌_朝鲜童谣一代人童年的回忆
+copyright=简谱之家,版权归原作者及原网站
+%--
+4/4
+1' - 0 0 | q5 - 0 0 q0 | s3 - s2 - q6 - | 7 0 0 0 | q1 - 0 0 q0 | q5 - q3 - q2 q0 | - q1 - q5 - | q2 - q1 - 0 | 0 0 0 0 |
+q5 - q6 - q3 q0 | - q2 - q1 - | q5 - q4 q3 q2 q1 q0 | 0 0 0 0 |
+1' - 0 0 | s5 - s0 0 0 q0 | s3 s2 s7 - 1' 0 s0 | s1 - 0 0 q0. | q5 s3 s2 1 0 0 | 0 0 0 0 |
+q6 - q3 - q2 q0 | - q1 - q5 q2 q1 | 0 0 0 0 |
+%END

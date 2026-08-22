@@ -1,0 +1,19 @@
+title=激情岁月
+type=work
+%TODO:revise
+usertag=to_be_revised
+copyright=歌谱简谱网,版权归原作者及原网站
+%--
+6 - 7 - | 1' - 2' - | 0 - 3 4 | - 5 - 2 | - 3 0 0 | - 0 0 0 | 0 0 0 0 |
+R{ } A{ | | } R{ }
+1' q1 q1 q1 q1 q1 q1 | q1 q1 q1 q1 q1 0 q0
+q1. q1. 0 0 q0
+q1 s1 d1 0 q2 - q0 d0 | 3 q4 0 0 q0 | 0 0 0 0 |
+R{ } A{ | | } R{ }
+6' - - 0
+7' 0 0 0
+1'' 0 0 0
+2'' 0 0 0
+0 0 0 0
+3 0 0 0
+%END

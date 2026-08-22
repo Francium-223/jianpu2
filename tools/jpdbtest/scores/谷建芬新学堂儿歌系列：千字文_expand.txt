@@ -1,0 +1,21 @@
+%谷建芬新学堂儿歌系列：千字文.txt
+%TODO:revise
+MBID=
+title=谷建芬新学堂儿歌系列：千字文
+type=work
+tag=to_be_revised
+usertag=to_be_revised
+tagroute=
+alias=谷建芬新学堂儿歌系列：千字文简谱(歌词)_演唱_桃李醉春风记谱
+copyright=简谱之家,版权归原作者及原网站
+%--
+4/4
+2 - 0 0 | 0 0 0 0 |
+5 #4 0 0 | 0 0 0 0 |
+5 ,0 0 0 | 0 0 0 0 |
+1 7 0 0 | 0 0 0 0 |
+1 - 0 0 | 0 0 0 0 | 0 0 0 0 |
+1. 6 0 q0 | 0 0 0 0 |
+|
+subtitle=千字文
+%END

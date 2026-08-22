@@ -1,0 +1,18 @@
+%红领巾之歌.txt
+%TODO:revise
+MBID=7b81221f-d05a-46e9-a72f-7b933d004e61
+title=红领巾之歌
+type=work
+tag=to_be_revised
+usertag=to_be_revised
+tagroute=
+alias=红领巾之歌简谱(歌词)_儿歌_岭南印象曲谱
+copyright=简谱之家,版权归原作者及原网站
+%--
+2/4
+0 0 | 5 - | q3 q7 q6 q0 | s1' 0 q0. | d2' 0 q0. d0 | 1 0 | 0 0 |
+subtitle=红领巾之歌
+q1 q1 q1 q1 | q1 q1 q1 q1 | q1 q1 0 | 0 0 |
+q1 q1 q1 q2 | q4 q2 q5 q0 | - - | 0 0 |
+q3 6 q0 | 7 1' | 7 d2' q0. d0 | 1 0 | 0 0 |
+%END

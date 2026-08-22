@@ -3,6 +3,7 @@ type=work
 alias=静夜思简谱(歌词)_小海龟演唱组演唱_桃李醉春风记谱
 %TODO:revise
 usertag=to_be_revised
+MBID=425a1f0b-038b-44e6-9fa3-2e2d2b7769d4
 %--
 2/4
 2 4 - 1 0 3. 5 6- 7 - - - - - - - - - '1- - - - - - - - - - - - - - - - - - '1

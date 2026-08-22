@@ -1,0 +1,32 @@
+#KEY G  
+TIME 3/4  
+
+subtitle=新年好
+
+R{ 
+2 - | q6 q5 q7 | s1q0 s8 | d'9 d'dd | 
+} A{
+2-| q6 q5 q7 | s1q0 s8 | dd9dd | 
+}
+
+#KEY D  
+TIME 3/4  
+
+subtitle=Happy New Year
+
+R{ 
+2 - . | q6 q5 q7 | s1q0 d'g | g'ddgg | 
+} A{
+2-| q6 q5 q7 | s1q0 dd9dd | 
+}
+
+#KEY none  
+TIME 4/4  
+
+subtitle=新年好
+
+R{ 
+3 - . | q8 q7 q9 | s1q0 d'g | g'ddgg | 
+} A{
+2-| q6 q5 q7 | s1q0 dd9dd | 
+}

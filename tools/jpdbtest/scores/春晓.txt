@@ -1,0 +1,19 @@
+%春晓.txt
+%TODO:revise
+MBID=48550795-83e3-4b1a-b3ff-05000d9b8c24
+title=春晓
+type=work
+tag=to_be_revised
+usertag=to_be_revised
+tagroute=
+alias=春晓简谱(歌词)_戴梓伊演唱_桃李醉春风记谱
+copyright=简谱之家,版权归原作者及原网站
+%--
+4/4
+5 3 6 - | - 0 0 0 | 0 0 0 0 |
+2 - - - | 0 0 0 0 |
+5 5 6 - | 0 0 0 0 |
+1 2. 0 q0 | 0 0 0 0 |
+subtitle=春眠不觉晓
+5 3 7 - | - 0. 0 q0 | 0 0 0 0 |
+%END

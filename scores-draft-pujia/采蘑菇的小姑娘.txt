@@ -3,6 +3,7 @@ type=work
 alias=采蘑菇的小姑娘简谱_多一些淘气，多一些乐趣，多一些自在
 %TODO:revise
 usertag=to_be_revised
+MBID=185f804f-5290-44e1-9d41-a4cde2bd51ff
 %--
 4 3 - 1 6 0
 2 3 | 4 - | | - |

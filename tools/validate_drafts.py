@@ -12,6 +12,8 @@ VENDOR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "vendor"
 DIRS = sys.argv[1:] or [
     "scores-draft", "scores-draft2", "scores-draft3", "scores-draft4",
     "scores-draft5", "scores-draft-pucn", "scores-draft-pujia",
+    "scores-7b", "scores-7b-2", "scores-7b-3", "scores-7b-4", "scores-7b-5",
+    "scores-7b-pucn", "scores-7b-pujia",
 ]
 
 env = dict(os.environ)

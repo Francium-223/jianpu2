@@ -1,0 +1,11 @@
+title=Hey Hah
+type=work
+%TODO:revise
+usertag=to_be_revised
+MBID=6f39fcea-b851-4446-a377-5bd4292cbca8
+copyright=歌谱简谱网,版权归原作者及原网站
+%--
+4/4
+subtitle=Hey
+- 1' - 1' | - - - d1' q0. d0 | - - - - | 7 - 0 0
+%END

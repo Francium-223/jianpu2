@@ -3,6 +3,7 @@ type=work
 alias=铃儿响叮当简谱_儿歌_Jingle_Bells_Jingle_Bells
 %TODO:revise
 usertag=to_be_revised
+MBID=c1422d20-ddef-4568-b9d3-a6be1f74284d
 %--
 4 5 6 3 2 1 7
 5 4 | 3 2 | 6 - 1 7 0

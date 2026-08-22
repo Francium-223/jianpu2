@@ -3,6 +3,7 @@ type=work
 alias=马兰谣吉他谱_儿歌_这里是我的家，这里是我的爱
 %TODO:revise
 usertag=to_be_revised
+MBID=fbdf24e2-97a2-4aff-ab4c-e08cdad950c3
 %--
 4 2
 4 6 5

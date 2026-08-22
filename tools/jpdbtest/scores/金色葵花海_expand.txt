@@ -1,0 +1,16 @@
+%金色葵花海.txt
+%TODO:revise
+MBID=
+title=金色葵花海
+type=work
+tag=to_be_revised
+usertag=to_be_revised
+tagroute=
+copyright=歌谱简谱网,版权归原作者及原网站
+%--
+4/4
+3 6 5 2 | 0 0 0 0 |
+q7 q2 - 0 0 | 0 0 0 0 |
+1 - 1 1 | - 0 0 0 | 0 0 0 0 |
+0 0 0 0 | 0 0 0 0 | 0 0 0 0
+%END
