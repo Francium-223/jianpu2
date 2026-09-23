@@ -13,7 +13,10 @@ import subprocess
 import sys
 import time
 
-os.chdir(r"D:\Documents_D\jianpu2")
+import os as _os
+# 2026-09-24: 原来硬编码 Windows 路径 D:\Documents_D\jianpu2, 换机器必崩。
+# 与其它 tools 一致: 自己 chdir 到仓库根(jianpu2/)。
+_os.chdir(_os.path.dirname(_os.path.dirname(_os.path.abspath(__file__))))
 sys.stdout.reconfigure(encoding="utf-8")
 PY = sys.executable
 PER = int(sys.argv[1]) if len(sys.argv) > 1 and sys.argv[1].isdigit() else 4

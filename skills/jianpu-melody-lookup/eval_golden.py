@@ -28,11 +28,26 @@ import gate  # noqa: E402  **自检门**
 ZW = dict.fromkeys(map(ord, "\u200b-\u200f\u202a-\u202e\u2060\ufeff"), None)
 
 
-def norm(s):
-    s = (s or "").translate(ZW)
+def _norm_once(s):
+    s = s.translate(ZW)
     s = re.sub(r"[（(【\[《][^）)】\]》]*[）)】\]》]", "", s)
     s = re.sub(r"(简谱|歌谱|五线谱|正谱|完整版|弹唱|吉他谱|钢琴谱|歌曲类)", "", s)
     return re.sub(r"[\s\-_·、,，。.]+", "", s).casefold()
+
+
+def norm(s):
+    """曲名规范化(去括号补充说明 -> 去站点后缀 -> 去空白标点 -> casefold)。
+
+    ⚠ 2026-09-24 补: 有些曲谱的标题**整个都在括号里**(《偿还》《NeW BOY》等 28 首) ——
+    第一条正则会把这个括号组整段删掉, 规范化结果变成空串, 于是这些歌**永远匹配不上**
+    (实测: 覆盖率分析里它们只能当"空名字"被排除)。空串时退一步: 只删括号字符, 保留正文。
+    (网页的「按曲名找」用的是子串匹配, 不受影响 —— 实测搜「偿还」能搜到《偿还》。)
+    """
+    t = (s or "")
+    out = _norm_once(t)
+    if not out:
+        out = _norm_once(re.sub(r"[（(【\[《）)】\]》]", "", t))
+    return out
 
 
 def same(a, b):
