@@ -71,3 +71,59 @@ def query(raw):
 def show(notes):
     """[(音级,变音,八度)] -> 可读串(如 `6 3 7 #5`)"""
     return " ".join(("#" if a == 1 else "b" if a == -1 else "") + str(d) for d, a, _o in notes)
+
+# ---------------- 时值 / 小节线恢复(唯一实现) ----------------
+# 为什么放这里: 拍值表一度在 score.py 里又写了一份(第五个"复制口径"), 而它同时被
+# 前端、评测、小节线恢复共用 —— 只能有一份。
+BEAT = {"h": 2.0, "": 1.0, "q": 0.5, "s": 0.25, "d": 0.125}
+DEFAULT_BEATS_PER_BAR = 4.0
+
+
+def beat(tok):
+    """一个 token 占几拍。h=2, 无前缀=1(四分), q=.5, s=.25, d=.125; 附点 x1.5。
+    未知前缀按最短算(宁可多落线, 不要漏)。"""
+    m = re.match(r"^([qsdh]*)", tok or "")
+    v = BEAT.get(m.group(1) if m else "", None)
+    if v is None:
+        v = 0.0625
+    return v * 1.5 if (tok or "").endswith(".") else v
+
+
+def beats_per_bar_from(text, default=DEFAULT_BEATS_PER_BAR):
+    """从谱面文本里找拍号(独立成行的 `n/d`), 返回每小节拍数。找不到用默认 4/4。"""
+    m = re.search(r"(?m)^\s*(\d+)\s*/\s*(\d+)\s*$", text or "")
+    if not m:
+        return default
+    try:
+        return int(m.group(1)) * 4.0 / int(m.group(2))
+    except ZeroDivisionError:
+        return default
+
+
+def recover_bars(sections, beats_per_bar, keep_explicit=True):
+    """按拍号+时值恢复小节线。
+
+    sections: [{'score': '音符 token 串'}, ...]  —— 已展开(时值显式)
+    返回 [音符下标], 语义: 第 i 个音符**之前**有一条小节线。
+    源里已有的 `|` 当强小节线(累加器强制归零), 处理弱起/不规则小节。
+    """
+    bars, n, acc = [], 0, 0.0
+    for sec in sections or []:
+        for t in (sec.get("score") or "").split():
+            if t == "|":
+                if keep_explicit:
+                    bars.append(n)
+                acc = 0.0
+                continue
+            if t == "-":
+                acc += 1.0
+                continue
+            p = parse_token(t)
+            if not p or p[0] is None:
+                continue                      # 休止/念白: 保守不计时
+            acc += beat(t)
+            n += 1
+            if acc >= beats_per_bar - 1e-9:
+                bars.append(n)
+                acc = 0.0
+    return bars
