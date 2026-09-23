@@ -398,8 +398,24 @@ def recognize(crops, out_dir):
     from PIL import Image as PILImage
     import outlines
     from outlines.inputs import Chat, Image as OImage
-    MODEL = "models/Qwen2.5-VL-3B-Instruct"
-    LORA = "models/jianpu-atom"
+    # 2026-09-24 修: 模型目录原来写死成相对路径("models/…"), 只会按 **cwd** 找 ->
+    #   * 新机器上 LoRA 适配器在工作区根 `../models/`(1.1GB, 从 06_模型_adapters.tar 解出来的),
+    #     而 `jianpu2/models/` 根本不存在 -> 找不到;
+    #   * 而且写的是 `models/jianpu-atom`, 实际装的是 `models/jianpu-lora-v15`(脚本头部注释也写 v15)。
+    # 现在: 环境变量 > jianpu2/models > 工作区根 models/, 名字也对齐(可用 JIANPU_LORA 覆盖)。
+    def _model_dir(name):
+        cands = []
+        if os.environ.get("JIANPU_MODELS"):
+            cands.append(os.path.join(os.environ["JIANPU_MODELS"], name))
+        cands += [os.path.join(ROOT, "models", name),
+                  os.path.join(os.path.dirname(ROOT), "models", name)]
+        for c in cands:
+            if os.path.isdir(c):
+                return c
+        return cands[-1]                      # 都没有: 指个最有希望的, 让报错信息有用
+
+    MODEL = os.environ.get("JIANPU_VLM") or _model_dir("Qwen2.5-VL-3B-Instruct")
+    LORA = os.environ.get("JIANPU_LORA") or _model_dir("jianpu-lora-v15")
     PROMPT = "这个简谱音符是什么？只输出一个音符 token, 不要解释。"
     # 最窄白名单: 训练数据实际出现的合法音符 token(有限枚举), 不含8/9/sqqq等垃圾
     NOTE_REGEX = open(os.path.join(ROOT, "train-work", "whitelist.txt"), encoding="utf-8").read().strip()
