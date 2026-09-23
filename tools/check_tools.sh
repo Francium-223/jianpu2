@@ -105,6 +105,23 @@ if [ -f tools/check_jptok_parity.py ]; then
   fi
 fi
 
+# 功能自测: 补标签的提案路径**别漏掉"usertag= 空且没挂 todo"的歌**(2026-09-24 修的 bug:
+# 原来那种歌被整批跳过, 于是 qupu123 栏目能映射成分类的 31 首从没被提议过)
+if [ -f tools/propose_tags.py ]; then
+  echo
+  echo "=== 功能: 补标签提案不漏歌(隔离副本) ==="
+  T5="$(mktemp -d)"; mkdir -p "$T5/scores"
+  printf '{"qupu123-1": {"url": "https://www.qupu123.com/puyou/shangchuan/p1.html", "t": "x"}}' > "$T5/source_pages.json"
+  printf '%%自检曲.txt\ntitle=自检曲\ntag=\nusertag=\ntagroute=\nstatus=ocr\nsource=qupu123-1\n%%--\n4/4\nsubtitle=score\n1 2 3 4 5 6 7 1'\'' 2'\'' 3'\'' 4'\'' 5'\'' 6'\'' 7'\''\n%%END\n' > "$T5/scores/自检曲.txt"
+  out="$(JIANPU_DB="$T5" python3 tools/propose_tags.py --out "$T5/prop.tsv" 2>&1)"
+  if [ -f "$T5/prop.tsv" ] && grep -q 'qupu123-1' "$T5/prop.tsv" && grep -q '谱友上传\|puyou' "$T5/prop.tsv"; then
+    echo "  ✓ usertag= 空且无 todo 的歌也进了提案"
+  else
+    echo "  !! 该歌没进提案(过滤 bug 又回来了?)"; echo "$out" | tail -3; fail=1
+  fi
+  rm -rf "$T5"
+fi
+
 # 功能自测: 隔离跑时**不许写进真工作台**(2026-09-24 实测踩过: 隔离跑 audit_corpus_quality
 # 把 _analysis/quality_proposal.tsv 覆盖成了 1 行表头; 现在 safeout.default_out 会写进那个 DB 目录)
 if [ -f tools/safeout.py ]; then

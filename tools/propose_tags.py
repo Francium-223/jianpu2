@@ -180,9 +180,13 @@ def main():
         path = os.path.join(SCORES, fn)
         txt, head = read_head(path)
         ut = re.search(r"(?m)^usertag=(.*)$", head)
+        # 2026-09-24 修: 这里原来是
+        #     `if "todo=add tags" not in head and not (ut is None): continue`
+        # —— 意思是"只处理挂了 todo 的、或者连 usertag 行都没有的"。可语料里大量曲谱是
+        # `usertag=`(存在但空)且**没有** todo 标记, 于是它们被**整批跳过**: 实测 qupu123
+        # 那批"栏目能映射成分类"的歌(如 /puyou/、/tongsu/)从没被提议过。
+        # 上面"usertag 非空就跳过"已经足够表达本意(有标签的不用再补), 这一条只会漏。
         if ut and ut.group(1).strip():
-            continue                                   # 已经有标签, 不动
-        if "todo=add tags" not in head and not (ut is None):
             continue
         src = re.search(r"(?m)^source=(\S+)", head)
         src = src.group(1) if src else ""
