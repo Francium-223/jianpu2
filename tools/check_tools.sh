@@ -20,6 +20,12 @@ for t in $TOOLS; do
     echo "!! 失败"; echo "$out" | tail -3 | sed 's/^/      /'; fail=1
   fi
 done
+# 解析副作用自检(别让"读一份谱"改掉仓库: by_* 污染、tags.json 的 cwd 依赖)
+if [ -f tools/check_sideeffects.py ]; then
+  echo
+  echo "=== 解析副作用自检 ==="
+  python3 tools/check_sideeffects.py || fail=1
+fi
 echo
-[ "$fail" = 0 ] && echo "工具链冒烟自检 通过" || echo "工具链冒烟自检 失败"
+[ "$fail" = 0 ] && echo "工具链自检 通过(冒烟 + 副作用)" || echo "工具链自检 失败"
 exit $fail
