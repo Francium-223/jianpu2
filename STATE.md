@@ -30,6 +30,7 @@
 | tools/quarantine_short_scores.py | 隔离**旋律音 < 5**(检索下限)的垃圾曲谱, `--min` 可调 |
 | tools/refine_titles_from_pages.py | 给 `todo=refine the filename` 的曲从原谱页提议官方曲名(`--offline` 用缓存, `--apply` 落地) |
 | tools/coverage_gap.py | **榜单覆盖缺口量化**(只读): 复用 eval 的 norm/same 口径, 把每个榜单条目判成 命中/命中但太短/别名命中/模糊候选/真缺口, 出 TSV; 实测与 eval_golden 的覆盖率逐项一致 |
+| tools/audit_melody_clones.py | **旋律克隆审计**(只读): 音高序列 K 窗口建索引 + 最长公共子串 -> 找同曲异名/重复转写/可借标签/残名未命名; 267 对, 分类出提案 TSV |
 | tools/slice_systems.py | 把简谱扫描件按**谱表**切开并放大(自动找音符行) -> 给人眼/VLM 复核用; 顺带兼容"GIF 字节却叫 .jpg"的站点图 |
 | tools/verify_crawl_matches.py | **定向爬的核对**: 爬回来的页面标题 vs 目标曲名(同一份 norm/same), 再按标题后缀判是不是器乐改编 -> 防止把《前尘如梦》当《前尘》塞进转写队列 |
 | tools/corpus_fingerprint.py | **批量写回的安全网**: 给全部 `scores/*.txt` 存指纹(元数据键集合/值/正文 sha1/音高音数), 批量工具跑完 `--check` 一次 -> 键集合变了或文件消失就退非 0(能立刻抓到 `todo=` 被写成 `dtodo=` 这类事故) |
