@@ -68,8 +68,16 @@ def check(path):
 
 def main():
     args = sys.argv[1:]
-    files = args or sorted(glob.glob(os.path.join(HERE, "*.py")) +
-                           glob.glob(os.path.join(DB, "*.py")))
+    if args:
+        files = args
+    else:
+        patterns = [os.path.join(HERE, "*.py"),                     # jianpu2/tools
+                    os.path.join(DB, "*.py"),                       # jianpu-db
+                    os.path.join(ROOT, "skills", "*", "*.py"),      # skill: jptok/lookup/eval_*
+                    os.path.join(ROOT, "skills", "*", "selfcheck", "*.py"),
+                    os.path.join(os.path.dirname(ROOT), "jianpu-web", "app", "*.py"),
+                    os.path.join(os.path.dirname(ROOT), "jianpu-web", "tools", "*.py")]
+        files = sorted({f for pat in patterns for f in glob.glob(pat)})
     bad = 0
     skipped = 0
     for f in files:
