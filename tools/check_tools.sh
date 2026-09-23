@@ -4,6 +4,7 @@
 # 改了它们(比如把 jptok 变成硬依赖)很容易把整个工具链 import 崩, 而平时没人跑。
 #
 #     bash tools/check_tools.sh
+#     JIANPU_QUICK=1 bash tools/check_tools.sh   # 跳过最慢的"口径一致"那一步
 set -u
 HERE="$(cd "$(dirname "$0")" && pwd)"
 cd "$HERE/.."
@@ -68,6 +69,18 @@ if [ -f tools/refine_titles_from_pages.py ]; then
   rm -rf "$T2"
 fi
 
+# 口径一致性: jptok(唯一实现) 与 score.py 里的兜底 _FallbackJptok 必须逐项一致
+# (2026-09-23 这两份一起漂过, 36 首受损 -> 现在用全语料 723 万 token 把它锁住; 约 1-2 分钟)
+if [ -f tools/check_jptok_parity.py ]; then
+  echo
+  if [ "${JIANPU_QUICK:-0}" = "1" ]; then
+    echo "=== 口径: jptok 与兜底逐项一致性 === (JIANPU_QUICK=1, 跳过; 它要 2-3 分钟)"
+  else
+    echo "=== 口径: jptok 与兜底逐项一致性 === (全语料, 约 2-3 分钟)"
+    python3 tools/check_jptok_parity.py | tail -3 || fail=1
+  fi
+fi
+
 # 解析副作用自检(别让"读一份谱"改掉仓库: by_* 污染、tags.json 的 cwd 依赖)
 if [ -f tools/check_sideeffects.py ]; then
   echo
@@ -75,5 +88,11 @@ if [ -f tools/check_sideeffects.py ]; then
   python3 tools/check_sideeffects.py || fail=1
 fi
 echo
-[ "$fail" = 0 ] && echo "工具链自检 通过(冒烟 --help + 静态未定义名 + 功能写回 + 解析副作用)" || echo "工具链自检 失败(见上面 !! 处)"
+if [ "${JIANPU_QUICK:-0}" = "1" ]; then
+  PARITY_NOTE="(口径一致那步被 JIANPU_QUICK 跳过)"
+else
+  PARITY_NOTE="+ 两份口径一致"
+fi
+[ "$fail" = 0 ] && echo "工具链自检 通过(冒烟 --help + 静态未定义名 + 功能写回 + 解析副作用 $PARITY_NOTE)" \
+                || echo "工具链自检 失败(见上面 !! 处)"
 exit $fail
