@@ -26,6 +26,9 @@
 | tools/propose_tags.py | **按原谱站栏目提议/落盘分类标签**(映射表从既有数据反推; 低置信度只提案); `--emit-template` 导出人工补标签清单, `--from-tsv` 写回 |
 | tools/harvest_artists.py | 从原谱站页面抽**歌手**(jianpucn 标题尾段 / jianpujia `…_<歌手>演唱_…`); 抓取结果缓存可断点续跑, `--reparse` 离线重跑规则, `--apply` 落盘 |
 | tools/audit_arrangements.py | 审计**被纯度门挡下的改编/器乐谱**(锦囊 §8-5): 数量/图在哪/是否新曲, 出可审清单 |
+| tools/audit_corpus_quality.py | **语料体检**: A 明确垃圾(单音占比>=90% / 音符占 token<25%) 隔离、B 同源逐字相同的重复 去重、C 拿不准的只出提案; 移动不删, 可逆 |
+| tools/quarantine_short_scores.py | 隔离**旋律音 < 5**(检索下限)的垃圾曲谱, `--min` 可调 |
+| tools/refine_titles_from_pages.py | 给 `todo=refine the filename` 的曲从原谱页提议官方曲名(`--offline` 用缓存, `--apply` 落地) |
 
 ## 三、爬虫
 
