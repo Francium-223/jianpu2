@@ -1,0 +1,29 @@
+# 图片与中间产物 —— 它们在 04_扫描件_images.tar / 05_扫描件_images-prep_*.tar 归档里,
+# 代码库只留"可复现的脚本与文本"(见 00_锦囊_先读我.md)。
+images/
+images-prep/
+models/
+
+# 训练数据 / 批量输出(体积大, 本地保留; 需要时用 tools/ 里的脚本重跑)
+train-work/
+train-data-*/
+batch-out*/
+hit-out/
+rank-out/
+jianpu-db-out/
+scores-7b*/
+scores-draft*/
+scores-out/
+import-bundle/
+tools/_tmp/
+
+# Python
+__pycache__/
+*.pyc
+
+# 临时调试产物
+_*.ly
+_*.mid
+
+# 技能目录里的语料索引(12MB, 由 jianpu-db/data.jsonl 同步而来)
+skills/*/data.jsonl
