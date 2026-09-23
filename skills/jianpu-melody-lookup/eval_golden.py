@@ -35,6 +35,16 @@ def _norm_once(s):
     return re.sub(r"[\s\-_·、,，。.]+", "", s).casefold()
 
 
+def _lcs_ratio(a, b):
+    """两条音高序列的最长公共子串 / 较短者长度 —— 用来判"这两份谱是不是同一首的旋律"。"""
+    import difflib
+    if not a or not b:
+        return 0.0
+    n = difflib.SequenceMatcher(None, a, b, autojunk=False).find_longest_match(
+        0, len(a), 0, len(b)).size
+    return n / max(1, min(len(a), len(b)))
+
+
 def norm(s):
     """曲名规范化(去括号补充说明 -> 去站点后缀 -> 去空白标点 -> casefold)。
 
@@ -134,6 +144,7 @@ def main():
         for k in [int(x) for x in a.errs.split(",")]:
             t1 = t3 = t5 = n = 0
             lt1 = lt3 = lt5 = ln_ = 0
+            vt1 = vt3 = vt5 = vn_ = 0          # 旋律核实过的多版本(见下面注释)
             for w in covered:
                 vers = [v for v in hits[w] if len(v[1]) >= L]
                 if not vers:
@@ -179,12 +190,30 @@ def main():
                             lt3 += 1
                         if any(same(x[1], w) for x in sc2[:5]):
                             lt5 += 1
+                        # **旋律核实过的多版本**才算真多版本(2026-09-24 加):
+                        # `group_of` 只按曲名归组, 于是《海阔天空》《光辉岁月》《家》《爱》这种
+                        # 通用曲名会把**不同的歌**算成"同一首的多个版本" —— 实测榜单里被判多版本的
+                        # 标题, cma 4/4、cn_pop 12/13、kugou 17/19 都是"同名不同曲"(旋律最像才 5%-29%)。
+                        # 那些题"留一"后不可能命中(被留掉的不是这首歌), 会把留一指标压低且失去意义。
+                        # 这里只把"与查询源**旋律确实相似**(LCS >= 60% 短者)"的版本计入。
+                        sim_ok = [v for v in vers
+                                  if v[0] is r0 or _lcs_ratio(v[1], p0) >= 0.6]
+                        if len(sim_ok) >= 2:
+                            vn_ += 1
+                            if sc2 and same(sc2[0][1], w):
+                                vt1 += 1
+                            if any(same(x[1], w) for x in sc2[:3]):
+                                vt3 += 1
+                            if any(same(x[1], w) for x in sc2[:5]):
+                                vt5 += 1
             if not n:
                 continue
             print(f"L={L:<3} 错音={k}  查询 {n:>4d}  |  **金曲定位**: "
                   f"Top1 {t1/n*100:>5.1f}%  Top3 {t3/n*100:>5.1f}%  Top5 {t5/n*100:>5.1f}%"
                   + (f"  |  多版本留一({ln_} 查询): Top1 {lt1/ln_*100:>5.1f}%  "
-                     f"Top3 {lt3/ln_*100:>5.1f}%  Top5 {lt5/ln_*100:>5.1f}%" if ln_ else ""))
+                     f"Top3 {lt3/ln_*100:>5.1f}%  Top5 {lt5/ln_*100:>5.1f}%" if ln_ else "")
+                  + (f"  |  其中**旋律核实**过的多版本({vn_} 查询): Top1 {vt1/vn_*100:>5.1f}%  "
+                     f"Top3 {vt3/vn_*100:>5.1f}%  Top5 {vt5/vn_*100:>5.1f}%" if vn_ else ""))
 
 
     if a.dump_queries and dumped:

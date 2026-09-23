@@ -46,6 +46,77 @@ def song_seq(r):
     return "".join(out)
 
 
+def same_title_report(rows, a):
+    """同名组内两两比旋律 —— 目的是把"**同名但其实是两首歌**"挑出来。
+
+    为什么值得单做: `group_of(title)` 只按**曲名**归组(检索的"按曲名找"、榜单的"多版本留一"
+    分母都靠它)。可语料里有大量**通用曲名**：《爱》6 个版本、《家》5 个、《谁》6 个 ——
+    它们大概率是**不同的歌恰好同名**, 而不是"同一首的多个版本"。这样归组会把 A 歌的版本
+    算成 B 歌的多版本, 榜单的"多版本留一"分母与"按曲名找"的结果都会被带偏。
+    """
+    from eval_golden import norm                     # 同一份曲名口径
+    groups = collections.defaultdict(list)
+    for r in rows:
+        seq = song_seq(r)
+        if len(seq) < 11:
+            continue
+        title = r.get("title") or ""
+        groups[norm(title)].append({"title": title, "seq": seq,
+                                    "file": (r.get("file") or [""])[0] if isinstance(r.get("file"), list) else r.get("file")})
+
+    def lcs(x, y):
+        return difflib.SequenceMatcher(None, x, y, autojunk=False).find_longest_match(0, len(x), 0, len(y)).size
+
+    out = ["曲名组\t版本数\t疑似不同曲的对\t最像的一对(相似度)\t最不像的一对(相似度)\t文件列表"]
+    mixed, allsame, alldiff = 0, 0, 0
+    detail = []
+    for key, vs in groups.items():
+        if len(vs) < 2:
+            continue
+        best = (-1, None, None)
+        worst = (2, None, None)
+        diff_pairs = 0
+        for i in range(len(vs)):
+            for j in range(i + 1, len(vs)):
+                A, B = vs[i], vs[j]
+                n = lcs(A["seq"], B["seq"])
+                cov = n / max(1, min(len(A["seq"]), len(B["seq"])))
+                if cov > best[0]:
+                    best = (cov, A, B)
+                if cov < worst[0]:
+                    worst = (cov, A, B)
+                if cov < 0.35:
+                    diff_pairs += 1
+        if diff_pairs == 0:
+            allsame += 1
+        elif diff_pairs == len(vs) * (len(vs) - 1) // 2:
+            alldiff += 1
+        else:
+            mixed += 1
+        if diff_pairs:
+            detail.append((diff_pairs, worst[0], vs, best[0]))
+            out.append("\t".join([
+                vs[0]["title"], str(len(vs)), str(diff_pairs),
+                f"{best[1]['title'][:14]}({best[0]:.0%})",
+                f"{worst[1]['title'][:14]}({worst[0]:.0%})",
+                " | ".join(f"{v['file']}" for v in vs)]))
+
+    print(f"同名组(>=2 个版本) {sum(1 for v in groups.values() if len(v) > 1)} 个:")
+    print(f"  **所有两两都像**(确实是同一首的多版本): {allsame}")
+    print(f"  **所有两两都不像**(更像是不同的歌恰好同名): {alldiff}")
+    print(f"  混合(部分像部分不像): {mixed}")
+    detail.sort(key=lambda x: (-x[0], x[1]))
+    print("\n差异最大的组(前 20):")
+    for diff_pairs, w, vs, b in detail[:20]:
+        print(f"  「{vs[0]['title'][:18]}」{len(vs)} 个版本, {diff_pairs} 对不像 "
+              f"(最像 {b:.0%} / 最不像 {w:.0%})")
+    out_path = a.out or os.path.join(os.path.dirname(ROOT), "_analysis", "同名不同曲提案.tsv")
+    os.makedirs(os.path.dirname(out_path), exist_ok=True)
+    io.open(out_path, "w", encoding="utf-8", newline="\n").write("\n".join(out) + "\n")
+    print(f"\n明细 -> {out_path}")
+    return 0
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--data", default=os.path.join(DB, "data.jsonl"))
@@ -53,9 +124,13 @@ def main():
     ap.add_argument("--min-lcs", type=int, default=24, help="最短公共子串(低于此不算克隆)")
     ap.add_argument("--min-cov", type=float, default=0.30, help="LCS 占较短那首的比例下限")
     ap.add_argument("--out", default="")
+    ap.add_argument("--same-title", action="store_true",
+                    help="换一件事做: 只看**同名**的歌两两之间旋律像不像, 找「同名不同曲」")
     a = ap.parse_args()
 
     rows = [json.loads(l) for l in io.open(a.data, encoding="utf-8") if l.strip()]
+    if a.same_title:
+        return same_title_report(rows, a)
     songs = []
     for r in rows:
         seq = song_seq(r)
