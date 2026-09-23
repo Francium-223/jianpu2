@@ -33,6 +33,7 @@
 | tools/safeout.py | **默认输出路径的护栏**: `default_out(DB, name)` —— DB 是工作区的 jianpu-db 就写 `_analysis/`，隔离跑就写进那个 DB 目录（实测踩过"隔离跑把真工作台提案覆盖成 1 行表头"） |
 | tools/check_transcribe_ready.py | **转写环境"差什么"清单**: 基座 VLM / LoRA 适配器 / 网格检测器 / 白名单 / Python 依赖 / CUDA / 内存 / 磁盘 —— 逐项 ✓✗ 并给出补法(2026-09-24 用它纠正了"models/ 空"的误判) |
 | tools/check_jptok_parity.py | **两份 token 口径的等价性测试**: 用 ast 从 score.py 抽出兜底 `_FallbackJptok`, 拿全语料(723 万 token)比 `is_note/parse_token/duration_letter/beat` 与 `beats_per_bar_from/recover_bars` -> 任何一处不一致就退非 0(2026-09-23 两份一起漂过, 36 首受损) |
+| —（自检门第 7 条）| `selfcheck.py` 现在核对**白名单不变量**: `data.jsonl` 里不许有 `status=midi`(多轨转储)/无 status/空谱 —— 对应 `parse_scores.py` 里那句"待整理已跳过 499" |
 | tools/audit_meter.py | **拍号体检(否定结果)**: 实测"总拍数比拍号"不可辨识(弱起)、"逐小节验"没有对象(全语料仅 3 首含 `\|`) -> 降级为描述统计; 列出那 3 个含 `\|` 的异常文件 |
 | tools/audit_melody_clones.py | **旋律克隆审计**(只读): 音高序列 K 窗口建索引 + 最长公共子串 -> 找同曲异名/重复转写/可借标签/残名未命名; 267 对, 分类出提案 TSV |
 | tools/slice_systems.py | 把简谱扫描件按**谱表**切开并放大(自动找音符行) -> 给人眼/VLM 复核用; 顺带兼容"GIF 字节却叫 .jpg"的站点图 |

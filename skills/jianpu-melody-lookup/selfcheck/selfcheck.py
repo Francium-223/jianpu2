@@ -138,6 +138,35 @@ def check(data_path=None):
     else:
         rep.append(f"  (找不到 {db}/linkurl.py, 跳过收录页用例)")
 
+    # ⑦ 白名单核对: data.jsonl 里**不许**混进 status=midi 或没有 status 的谱(2026-09-24 加)
+    #    为什么值得单列: parse_scores 只收 status ∈ {ok, ocr}; 而 `scores/` 里还躺着
+    #      273 个 status=midi(MIDI 硬转; 中位数 11242 音、最大 175392 音, 合计 474 万音
+    #      = 现有语料的 3.6 倍 —— 全是多轨转储, 收进来会毁掉检索) 与 225 个没有 status 的空壳
+    #      (东方曲目的元数据占位, 0 个音符)。这一条把"它们绝不能进数据集"钉成不变量,
+    #      以后谁改了白名单会立刻红。
+    try:
+        import json as _json
+        n_midi = n_nostatus = n_notes0 = 0
+        for ln in io.open(os.path.join(db, "data.jsonl"), encoding="utf-8"):
+            if not ln.strip():
+                continue
+            r = _json.loads(ln)
+            st = r.get("status")
+            st = st if isinstance(st, list) else [st]
+            if any((x or "") == "midi" for x in st):
+                n_midi += 1
+            if all(not (x or "").strip() for x in st):
+                n_nostatus += 1
+            if not (r.get("n_notes") or 0) and not any(
+                    (sec.get("score") or "").split() for sec in (r.get("sections") or [])):
+                n_notes0 += 1
+        good = (n_midi == 0 and n_nostatus == 0 and n_notes0 == 0)
+        ok &= good
+        rep.append(f"{'OK ' if good else '**FAIL**'} 数据集里没有 midi 硬转/无 status/空谱"
+                   f"(midi {n_midi}, 无 status {n_nostatus}, 空谱 {n_notes0})")
+    except Exception as e:
+        rep.append(f"  (白名单用例跳过: {type(e).__name__}: {e})")
+
     return ok, rep
 
 
