@@ -801,7 +801,7 @@ def clean_body(text):
         if STRUCT_RE.match(s):
             # 结构行保留, 但剔除省略号等占位垃圾 (R{ ... } → R{ })
             cleaned = clean_struct_line(s)
-            if cleaned:
+            if cleaned and not all(t in "|-" for t in cleaned.split()):
                 lines.append(cleaned)
             continue
         toks = NOTE_TOKEN_RE.findall(s)
@@ -975,13 +975,17 @@ def _process_one_impl(title, artist, images, strips, out_dir, args, base,
     body = minor_tonic_fix(body, key)
     body = ensure_nextscore(body)
     body = fix_bars(body, time_sig)
-    # 清理结尾/空段落: 去掉尾部 NextScore, 以及 NextScore 分隔出的无音符段落
+    # 清理结尾/空段落: 去掉尾部 NextScore、无音符段落、以及尾部空重复标记/孤立小节线
     # (如"前奏"只有 subtitle 没有音符 — 会形成空 score 报错)
     while True:
         body = body.rstrip()
         if re.search(r"NextScore\s*$", body):
             body = re.sub(r"NextScore\s*$", "", body).rstrip()
             continue
+        lines = body.splitlines()
+        while lines and re.match(r"^\s*(?:R\d*\s*\{\s*\}|A\s*\{\s*\}|\|+)\s*$", lines[-1]):
+            lines.pop()
+        body = "\n".join(lines).rstrip()
         parts = re.split(r"(?m)^\s*NextScore\s*$", body)
         kept, changed = [], False
         for p in parts:

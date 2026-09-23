@@ -1,0 +1,28 @@
+%小螺号简谱_儿歌_让我们回到了纯真的童年__jianpujia-7469.txt
+MBID=00000000-0000-0000-0000-000000000001
+title=测试
+type=work
+tag=
+usertag=
+tagroute=
+%--
+% 原图: D:\Documents_D\jianpu2\images-prep\test-jianpujia\小螺号简谱_儿歌_让我们回到了纯真的童年__jianpujia-7469\001.jpg
+
+OctavesAfter
+1=F
+2/4
+subtitle=小 螺 号
+( s6 s6 s6 q6 ) q6 s3 s5 | s6. s3 d3 q3. q3 s3 s2 | s6. s2 s2 q2 s2 s1 s6, | q1. s3 s5 q8 | x - |
+L: 付 林 词 曲
+q6,. 3 3/// | q6, s3 q3 c3 | s6 q3 q3 q3 h3[ q5 q3 ] q2 | c3 - | q6, q2 2/// | q6, s2 s2 c2 |
+L: 1 2 3 小 螺 号 滴 滴 滴 吹 海 鸥 听 了 展 翅 飞 小 螺 号
+s6, s2 s1 q6, | c1 - | q6, q3 3 | q6, s3 s3 c3 | q6, q5 q5 s3 s5 | ( q6./// q5 ) s6 s5 s3 |
+L: 滴 滴 滴 滴 吹 浪 花 听 了 笑 微 微 小 螺 号 滴 滴 滴 吹 声 声 唤 船
+q6 q2 2, | q6, s2 s2 c2 | s3 s3 s2 q3. s2 q1 s6, | c1 c1. | - 6 s6' s5 | ( s3 q2 ) q5, |
+L: 归 喵 喵 小 螺 号 滴 滴 滴 吹 阿 爸 听 了 快 快 回 哟 茫 茫 茫 的 海 滩 蓝 蓝 的 海 水
+5 - 5 s5 q6 s5 | s3 ( q2 q3, ) | 3 - | 2 s2 s3 s1 | s1 s6 1, | - - |
+L: 吹 起 了 螺 号 心 里 美 咚
+D.C.
+
+% 歌词(已剥离): 欢 快 地 sX sX
+%END

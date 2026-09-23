@@ -2,68 +2,11 @@ title=人生咏叹调
 type=work
 %TODO:revise
 usertag=to_be_revised
-copyright=歌谱简谱网,版权归原作者及原网站
+copyright=歌谱简谱网
 %--
 4/4
 7 - q2 s3 5' s0 | 1 - q2 s3 0 s0
 6 - q4 s7 d1' 1 d0 | - q4 s7 0 0 s0
-6 - q4 s7 d1' 1 d0 | - q4 s7 0 0 s0
-6 - q4 s7 d1' 1 d0 | - q4 s7 0 0 s0
-6 - q4 s7 d1' 1 d0 | - q4 s7 0 0 s0
-6 - q4 s7 d1' 1 d0 | - q4 s7 0 0 s0
-6 - q4 s7 d1' 1 d0 | - q4 s7 0 0 s0
-6 - q4 s7 d1' 1 d0 | - q4 s7 0 0 s0
-6 - q4 s7 d1' 1 d0 | - q4 s7 0 0 s0
-6 - q4 s7 d1' 1 d0 | - q4 s7 0 0 s0
-6 - q4 s7 d1' 1 d0 | - q4 s7 0 0 s0
-6 - q4 s7 d1' 1 d0 | - q4 s7 0 0 s0
-6 - q4 s7 d1' 1 d0 | - q4 s7 0 0 s0
-6 - q4 s7 d1' 1 d0 | - q4 s7 0 0 s0
-6 - q4 s7 d1' 1 d0 | - q4 s7 0 0 s0
-6 - q4 s7 d1' 1 d0 | - q4 s7 0 0 s0
-6 - q4 s7 d1' 1 d0 | - q4 s7 0 0 s0
-6 - q4 s7 d1' 1 d0 | - q4 s7 0 0 s0
-6 - q4 s7 d1' 1 d0 | - q4 s7 0 0 s0
-6 - q4 s7 d1' 1 d0 | - q4 s7 0 0 s0
-6 - q4 s7 d1' 1 d0 | - q4 s7 0 0 s0
-6 - q4 s7 d1' 1 d0 | - q4 s7 0 0 s0
-6 - q4 s7 d1' 1 d0 | - q4 s7 0 0 s0
-6 - q4 s7 d1' 1 d0 | - q4 s7 0 0 s0
-6 - q4 s7 d1' 1 d0 | - q4 s7 0 0 s0
-6 - q4 s7 d1' 1 d0 | - q4 s7 0 0 s0
-6 - q4 s7 d1' 1 d0 | - q4 s7 0 0 s0
-6 - q4 s7 d1' 1 d0 | - q4 s7 0 0 s0
-6 - q4 s7 d1' 1 d0 | - q4 s7 0 0 s0
-6 - q4 s7 d1' 1 d0 | - q4 s7 0 0 s0
-6 - q4 s7 d1' 1 d0 | - q4 s7 0 0 s0
-6 - q4 s7 d1' 1 d0 | - q4 s7 0 0 s0
-6 - q4 s7 d1' 1 d0 | - q4 s7 0 0 s0
-6 - q4 s7 d1' 1 d0 | - q4 s7 0 0 s0
-6 - q4 s7 d1' 1 d0 | - q4 s7 0 0 s0
-6 - q4 s7 d1' 1 d0 | - q4 s7 0 0 s0
-6 - q4 s7 d1' 1 d0 | - q4 s7 0 0 s0
-6 - q4 s7 d1' 1 d0 | - q4 s7 0 0 s0
-6 - q4 s7 d1' 1 d0 | - q4 s7 0 0 s0
-6 - q4 s7 d1' 1 d0 | - q4 s7 0 0 s0
-6 - q4 s7 d1' 1 d0 | - q4 s7 0 0 s0
-6 - q4 s7 d1' 1 d0 | - q4 s7 0 0 s0
-6 - q4 s7 d1' 1 d0 | - q4 s7 0 0 s0
-6 - q4 s7 d1' 1 d0 | - q4 s7 0 0 s0
-6 - q4 s7 d1' 1 d0 | - q4 s7 0 0 s0
-6 - q4 s7 d1' 1 d0 | - q4 s7 0 0 s0
-6 - q4 s7 d1' 1 d0 | - q4 s7 0 0 s0
-6 - q4 s7 d1' 1 d0 | - q4 s7 0 0 s0
-6 - q4 s7 d1' 1 d0 | - q4 s7 0 0 s0
-6 - q4 s7 d1' 1 d0 | - q4 s7 0 0 s0
-6 - q4 s7 d1' 1 d0 | - q4 s7 0 0 s0
-6 - q4 s7 d1' 1 d0 | - q4 s7 0 0 s0
-6 - q4 s7 d1' 1 d0 | - q4 s7 0 0 s0
-6 - q4 s7 d1' 1 d0 | - q4 s7 0 0 s0
-6 - q4 s7 d1' 1 d0 | - q4 s7 0 0 s0
-6 - q4 s7 d1' 1 d0 | - q4 s7 0 0 s0
-6 - q4 s7 d1' 1 d0 | - q4 s7 0 0 s0
-6 - q4 s7 d1' 1 d0 | - q4 s7 0 0 s0
-6 - q4 s7 d1' 1 d0 | - q4 s7 0 0 s0
-6 - q4 s7 d1' 1 d0 | - q4 s7 0 0 s0
+% 循环折叠: 重复块已保留 1 遍 (原 59 遍)
 6 - q4 s7 d1' 0 d0
 %END

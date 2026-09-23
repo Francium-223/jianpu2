@@ -2,10 +2,9 @@ title=大美乡村
 type=work
 %TODO:revise
 usertag=to_be_revised
-copyright=歌谱简谱网,版权归原作者及原网站
+copyright=歌谱简谱网
 %--
 2/4
 0 0 | q5 - q0 |
 q3 q1' q1' q0 | 0 0 |
-|
 %END

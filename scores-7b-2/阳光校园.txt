@@ -2,9 +2,9 @@ title=阳光校园
 type=work
 %TODO:revise
 usertag=to_be_revised
-copyright=歌谱简谱网,版权归原作者及原网站
+copyright=歌谱简谱网
 %--
 4/4
-0 q2 s3 'q1 - q0.
+0 q2 s3 'q1 - q0 s0
 s7 q2 q2 q2 q2 q2 q2 q2 s0 | q2 q2 q2 q2 q2 q2 q2 q2 | q2 q2 q2 q2 q2 q2 0
 %END

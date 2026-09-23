@@ -4,7 +4,7 @@ alias=寄明月&nbsp;
 %TODO:revise
 usertag=to_be_revised
 MBID=4c796a47-1f24-4c98-a47d-8a14736a8106
-copyright=歌谱简谱网,版权归原作者及原网站
+copyright=歌谱简谱网
 %--
 4/4
 2 3 - 0 | - 0 6 - | 0 0 0 0 |

@@ -1,0 +1,25 @@
+title=舀河浜
+type=work
+MBID=00000000-0000-0000-0000-000000000001
+copyright=简谱之家
+%TODO:revise
+usertag=to_be_revised
+%--
+OctavesAfter
+1=G
+2/4
+subtitle=舀 河 滨
+3 q3 q5 q6 q5 q3 | 1 - | ( q1 q1 ) q2 q3 s2 s7 |
+L: 小 行 板 热 情 、 愉 悦 地
+5, - | s5 ( s6, q7 ) 6 | ( s6,. s5 q6 ) q1 | q3. s3 q5 q6 s6 s5 |
+L: 面 盆 水 桶 全 带 上,
+q3 q3 1 | q7, s6, s7 q6, q5, | q1. s6, q1 s6, s5 |
+L: 太 阳 已 偏 西,
+( 3 - ) q5 q5 q6 q5 | ( q6 q5 ) 3 | 5 - |
+L: 逐 渐 浅, 鱼 儿 正 在 掀 小 浪. 浑 身 汗 水 湿
+q3 q5 q6 q5 | ( q3 q2 ) 7, | 6, - |
+L: 息, 固 坝 堵 漏 严 守 响, 咬 紧 牙 关
+q3 q5 q6 q5 | 5, 6, | ( 1 - ) |
+L: 裳, 防. 两 桶 鱼 虾
+1 0 |
+%END

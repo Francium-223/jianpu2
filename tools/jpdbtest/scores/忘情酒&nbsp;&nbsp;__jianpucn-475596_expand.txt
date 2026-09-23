@@ -1,0 +1,46 @@
+%忘情酒&nbsp;&nbsp;__jianpucn-475596.txt
+MBID=00000000-0000-0000-0000-000000000001
+title=测试
+type=work
+tag=
+usertag=
+tagroute=
+%--
+% 原图: D:\Documents_D\jianpu2\images-prep\test-jianpucn\忘情酒&nbsp;&nbsp;__jianpucn-475596\001.jpg
+
+OctavesAfter
+1=G
+4/4
+4=66
+--- 2025 ---
+- 0 0 0 q0 s'3 s'3 | ( q'6 q'6 s'6 s'1 ) s'3. '2. s2 s'3 |
+L: 词 曲 唱 : 戴 尚 辉
+q''5. ''5 s'5 s'3 s'5. ~ 6,. s6 s7 | s'1 s'1 s'1 s'1 s1 s6 s2 s2 d3 s,5 |
+L: B
+'3 - - q0 s3 s3 | q6 q6 s6 q1 s3 2, s2 s3 | q5 q5 s5 s3 s5 6, s6 s,7 |
+L: G
+s1 s1 s1 s1 q1 q6 q2 q2 s3 s5 | - - - |
+L: C
+1 ,7 6, 6, | q3 2 q1 2 - | q,5 5 q6 s7 s7 s7 s5 | 1 ( q7 q6 ) ,6 - |
+L: D
+2 ,1 2 - | q2 2 q3 ,6 - | q1 q1 q1 q,6 q6 5 q2 |
+L: Em
+3 - - - | 2, q1 2, q2 | q2 2 q3 q,6 - |
+L: Am
+q5 ,5 q,6 q,7 q,7 s,7 s5 | 1 ( q7 q6 ) ,6 - | 6 - - q0 s3 s3 |
+L: Em
+q6 q6 s6 q1 s3 | 2, s2 s3 | q5 s5 q5 s5 q3 q5. ,6 - | s1 s1 s1 q1 s1 s6 s6 s5 s5 s2 |
+L: D
+3 - q0 s3 s3 |
+q6 q6 s6 q1 s3 | 2, s2 q3 | q5 s5 q5 s5 q3 s5 | 6 - | q1 s1 q1 q1 q1 s6 s2 q2 d2 s,3 s,5 |
+L: Em
+q6 - - - | 6, - - - | 6,, - - - | s1 s1 q1 q1 s2 q2 s3, |
+L: C
+6 - - 0 q0 s,6 s,7 | q1 s2 s3. s2 s1 s7 | - - | q5, q6 ( 6' - - ) |
+L: D
+6, - - - | 6 - 0 q0 s6 s,7 | q1 s2 s3. s2 q1 s7 | - - | q5, q6' ( 6 - - ) |
+L: Em
+( ) 6 - - - |
+
+% 歌词(已剥离): 标题 忘 情 酒 戴 尚 辉 年 度 创 作 歌 曲 Em Em C C D G B Am Em C D Bm Em C D G B 电 吉 他
+%END

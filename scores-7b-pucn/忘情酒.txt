@@ -4,7 +4,7 @@ alias=忘情酒&nbsp;
 %TODO:revise
 usertag=to_be_revised
 MBID=9efb6647-b28a-41d0-a926-28328bf09677
-copyright=歌谱简谱网,版权归原作者及原网站
+copyright=歌谱简谱网
 %--
 1' 4 4 0
 0 q3 q2 0 0 | 0 0 0 0 |

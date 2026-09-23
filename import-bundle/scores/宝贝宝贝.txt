@@ -3,7 +3,7 @@ type=work
 alias=宝贝宝贝简谱_儿歌_你就是我的宝贝啊
 %TODO:revise
 usertag=to_be_revised
-copyright=简谱之家,版权归原作者及原网站
+copyright=简谱之家
 %--
 4/4
 1' - 0 0 | q2 q0 0 0 0 | 0 0 0 0 |

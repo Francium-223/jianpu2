@@ -4,19 +4,13 @@ alias=马兰谣吉他谱_儿歌_这里是我的家，这里是我的爱
 %TODO:revise
 usertag=to_be_revised
 MBID=fbdf24e2-97a2-4aff-ab4c-e08cdad950c3
-copyright=简谱之家,版权归原作者及原网站
+copyright=简谱之家
 %--
 1' 4 4 0
 6 - 2 3 | 5 7 6 0 | 0 0 0 0 |
 3 0 0 0 | 0 0 0 0 |
-subtitle=副歌1 0 0 0 0
-6 - 2 3 | 5 7 6 0 | 0 0 0 0 |
-3 0 0 0 | 0 0 0 0 |
-|
-
-NextScore
-
-subtitle=副歌2 0 0 0 0
+% 循环折叠: 重复块已保留 1 遍 (原 3 遍)
+subtitle=副歌
 6 - 2 3 | 5 7 6 0 | 0 0 0 0 |
 3 0 0 0 | 0 0 0 0 |
 %END

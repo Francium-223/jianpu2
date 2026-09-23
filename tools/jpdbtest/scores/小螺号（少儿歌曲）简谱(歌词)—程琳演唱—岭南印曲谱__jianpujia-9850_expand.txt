@@ -1,0 +1,34 @@
+%小螺号（少儿歌曲）简谱(歌词)—程琳演唱—岭南印曲谱__jianpujia-9850.txt
+MBID=00000000-0000-0000-0000-000000000001
+title=测试
+type=work
+tag=
+usertag=
+tagroute=
+%--
+% 原图: D:\Documents_D\jianpu2\images-prep\test-jianpujia\小螺号（少儿歌曲）简谱(歌词)—程琳演唱—岭南印曲谱__jianpujia-9850\001.jpg
+
+OctavesAfter
+1=F
+2/4
+subtitle=小 螺 号
+( )
+L: 欢 快 地
+( s6, q6 q6 ) q6 s3 s5 | s6, s3 s3 q3 s3 s2 | s6, s2 q2 q2 s1 s6, | q1 s3 q5 q1' | x - |
+L: 6, q3 3/// | q6, s3 s3 c3 | s6, q3 q3 q3. s3 ( q5 q3 ) s2 | c3 - | q6, q2 2/// |
+L: 1 2. 3 小 螺 号 滴 滴 滴 吹, 海 鸥 听 了 展 翅 飞。 小 螺 号
+q6,. s2 s2 c2 | s6 s2 s2 q2 s1 s6, | c1 - | s6, q3 3/// | q6, s3 s3 c3 | q6, q5 q5 s3 s5 |
+L: 滴 滴 滴 滴 吹, 浪 花 听 了 笑 微 微。 小 螺 号 滴 滴 滴 吹, 声 声 唤 船
+s6,. s5 | s6 s5 q3 | q6, q2 2/// | q6, q2 q2 c2 | s3 s3 q2 q3 s2. s1 s6, | c1 1 |
+L: 归 喽, 小 螺 号 滴 滴 滴 吹, 阿 爸 听 了 快 快 回 哟。 Fine
+6 s6'. s5 | s3 s2 6, | - - | 6 s6,. s5 | s3 q2 5, | - - | 5 s5 q6 d5 |
+L: 茫 茫 的 海 滩, 蓝 蓝 的 海 水, 螺 号 声
+3 q2 3[ q3 q1 ] | s1 s6, 1, | 1 - |
+L: 吹 起 了 螺 号, 心 里 美 咕。
+R*2
+D,C
+Segno
+DS
+
+% 歌词(已剥离): 根 据 程 琳 演 唱 音 频 记 谱 付 林 词 曲 岭 南 印 象 制 谱 sX sX
+%END

@@ -4,7 +4,7 @@ alias=小红帽简谱_儿歌_小红帽的故事
 %TODO:revise
 usertag=to_be_revised
 MBID=a099c3db-18e0-4f19-831b-69f7867609b2
-copyright=简谱之家,版权归原作者及原网站
+copyright=简谱之家
 %--
 2/4
 subtitle=小红帽

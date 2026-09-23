@@ -4,7 +4,7 @@ alias=儿歌吉他谱_张悬C调原版弹唱谱_图片谱高清版
 %TODO:revise
 usertag=to_be_revised
 MBID=b67c82be-8a36-4aca-b8b6-ac79636dd5f3
-copyright=简谱之家,版权归原作者及原网站
+copyright=简谱之家
 %--
 4/4
 0 q2 0 0 q0 | 0 0 0 0 |

@@ -2,7 +2,7 @@ title=男儿泉
 type=work
 %TODO:revise
 usertag=to_be_revised
-copyright=歌谱简谱网,版权归原作者及原网站
+copyright=歌谱简谱网
 %--
 4/4
 6 - q7 0 q0 | 1' 0 q3 0 q0 | ,2 q3 - 0 q0 | q1 q0 q3 0 0 q0 | - 1'. q7 q6 q0 | - 1'. 0 q0 | q1' 7. - 0 | - 1' 0 0 |

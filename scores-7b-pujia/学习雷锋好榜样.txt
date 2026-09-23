@@ -4,9 +4,8 @@ alias=学习雷锋好榜样简谱_儿歌_为歌颂雷锋，弘扬雷锋精神而
 %TODO:revise
 usertag=to_be_revised
 MBID=3d780683-f269-4d2a-b529-2a3bd7add728
-copyright=简谱之家,版权归原作者及原网站
+copyright=简谱之家
 %--
 4/4
 5 - 0 0 | 3 - 0 0 | 2 - 0 0 | 0 0 0 0 | 0 0 0 0 | 0 0 0 0 | 0 0 0 0 | 0 0 0 0 | 1 0 0 0 | 0 0 0 0 |
-R{ }
 %END

@@ -1,0 +1,32 @@
+%卖报歌简谱_儿歌_冲击你的儿时记忆__jianpujia-15680.txt
+MBID=00000000-0000-0000-0000-000000000001
+title=测试
+type=work
+tag=
+usertag=
+tagroute=
+%--
+% 原图: D:\Documents_D\jianpu2\images-prep\test-jianpujia\卖报歌简谱_儿歌_冲击你的儿时记忆__jianpujia-15680\001.jpg
+
+OctavesAfter
+1=F
+4/4
+subtitle=卖 报 歌
+1,, ( q5, s5 s6 ) 5 q5 s5 s6 | 5 q3 q5 q6 s5 q3 c2 | q3 s2 s3 c2 q1' s6 s1' c2' | c6 q6,. s5 q3 q2 q3 | s6, q1 q2 q3 q5 |
+L: 安 娥 作 词 聂 耳 作 曲
+q5 q3 q5 s3 q2 q1 q3 c2 | q3 q3 c2 q6, q1 c2 | c6 q6 q5. ( 3 6 ) c5 | ( q5. q3 ) s2 q3 c5 - | q5 q3 q2 q3 s5 q3. s2 s3 | ( q6, q1 2 q3 ) c1 -,, |
+L: 不 等 天 明 去 等 派 报 一 面 走 一 面 叫 今 天 的 新 闻
+( q6, q1 ) ~ q2 q3 c1 - | ( q6, q1 ) s2 s3 c1 - | ( q5 q3 q2 q3 ) q1 q3 c2 | q3 q3 c2 q6, q1 c2 | c6 q6 q5 ( 3 6 ) c5 | ( q5. q3 ) s2 q3 c5 |
+L: 大 风 大 雨 里 满 街 跑 走 不 好 滑 一 跤 满 满 身 的 泥 水
+q5 q3 q5 s3 q2 q1 q3 c2 | q3 q3 c2 q6, q1 c2 | c6 q6 q5 ( 3 6 ) c5 | ( q5 q3 ) s2 q3 c5. | q5 q3 q2 q3 c5. - | q5 q3 q2 q3 s5 q3 |
+L: 耐 饥 耐 寒 的 满 街 跑 吃 不 饱 睡 不 好 痛 苦 的 生 活
+s2 q3 | s6, q1. s2 q3 c1 - | q5 q3 q2 q3 c5. - | q5 q3 q2 q3 s5 q3 s2 q3 | q6, q1 s2 q3 c1 - | q5 q3 q2 q3 c5. |
+L: 真 正 好 七 个 铜 板 就 买 两 份 报
+( q5 q5 ) q5. q5 | q3 q5 q6 s5 q3 q2 q3 c5 | q5 q3 q5 s3 q2 q1 q3 c2 | q3 q3 c2 q6, q1 c2 | c6 q6 q5 ( 3 6 ) c5 | ( q5 q3 ) s2 q3 c5. |
+L: 真 正 好 七 个 铜 板 就 买 两 份 报
+( q5 q3 ) q2 q3 s5 q3 s2 q3 | q6, q1 s2 q3 c1 - | q5 q3 q2 q3 c5. - | q5 q3 q2 q3 s5 q3 s2 q3 |
+L: 惹 人 笑 饥 饿 寒 冷 只 有 我 知 道
+( q6 q5 ) ( 3 6 ) c5 | ( q5 q3 ) s2 q3 c5. | q5 q3 q2 q3 s5 q3 s2 q3 |
+
+% 歌词(已剥离): q
+%END

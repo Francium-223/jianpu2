@@ -1,0 +1,29 @@
+%数鸭子简谱_儿歌_别考个鸭蛋抱回家__jianpujia-15778.txt
+MBID=00000000-0000-0000-0000-000000000001
+title=测试
+type=work
+tag=
+usertag=
+tagroute=
+%--
+% 原图: D:\Documents_D\jianpu2\images-prep\test-jianpujia\数鸭子简谱_儿歌_别考个鸭蛋抱回家__jianpujia-15778\001.jpg
+
+OctavesAfter
+1=C
+4/4
+( )
+x ~ x x x | x x x x x 0 | x x x x x |
+L: ( 白 ) 门 前 大 桥 下, 游 过 一 群 鸭, 快 来 快 来 数 一 数,
+x x x x 0 h2/// | ( q1'' q5 q5 ) q3 6 q5 q3 | q2 1 q2 q3 1 q0 ) |
+L: 二 四 六 七 八.
+3 1 q3 q3 1 | q3 q3 q5 q6 5 0 | q6 q6 q6 q5 q4 q4 4 | q2 q3 q2 q1 2 q0 |
+L: 门 前 大 桥 下, 游 过 一 群 鸭, 快 来 快 来 数 一 数, 赶 鸭 老 爷 爷,
+3 q1 q0. 3 q1 q0 | q3 q3 q5 q6 6 0 | 1' q5 q5 6 3 | - ( q2 q1 ) ( q2 q3 ) 5 - |
+L: 二 四 六 七 八, 咕 嘎 咕 嘎 真 啊 真 多 啊, 还 会 说 笑 话, 小 孩 小 孩
+1'' q5 q5 6 3 | - ( q2 q1 ) 1 -/// | x x s#x x x | s#x x q#x x 0 | x x x q#x q#x x 0 |
+L: 快 来 快 来 数 一 数, 二 四 六 七 八. 多 少 鸭, 数 不 清 到 底 多 少 鸭, 数 不 清 到 底
+- x x x x x x | x x x x x 0 | x x x x x 0 |
+L: 别 考 个 鸭 蛋 抱 回 家, 别 考 个 鸭 蛋 多 少 鸭 。 ( 白 ) 门 前 大 桥 下,
+
+% 歌词(已剥离): 儿 童 歌 曲 中 速 活 泼 地 X q s s s q s q q q
+%END

@@ -1,0 +1,23 @@
+%找朋友简谱_儿歌_唱起爸爸妈妈们小时候的经典儿歌__jianpujia-15551.txt
+MBID=00000000-0000-0000-0000-000000000001
+title=测试
+type=work
+tag=
+usertag=
+tagroute=
+%--
+% 原图: D:\Documents_D\jianpu2\images-prep\test-jianpujia\找朋友简谱_儿歌_唱起爸爸妈妈们小时候的经典儿歌__jianpujia-15551\001.jpg
+
+OctavesAfter
+1=bE
+2/4
+subtitle=找朋友
+( q5 q5 s3 q3 ) | q5 q5 3 | q2 q4 s3 q2 | q1 q2 1 ) |
+L: 侠 名 词 曲 小 弦 制 谱
+q5 q6 q5 q6 | q5 q6 5 | q5 q1'' q7 q6 | q5 q5 3 |
+L: 找 啊 找 啊 找 朋 友 找 到 一 个 好 朋 友
+q5 q5 q3 q3 | q5 q5 3 | q2 q4 q3 q2 | q1 q2 1,, |
+L: 敬 个 礼 呀 握 握 手 你 是 我 的 好 朋 友
+Segno
+DS
+%END

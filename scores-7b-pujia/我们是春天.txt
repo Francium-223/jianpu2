@@ -4,7 +4,7 @@ alias=我们是春天简谱(歌词)—少儿合唱演唱—岭南印象曲谱
 %TODO:revise
 usertag=to_be_revised
 MBID=ee9fc8d6-2b30-4d1a-b40f-365ec97131f4
-copyright=简谱之家,版权归原作者及原网站
+copyright=简谱之家
 %--
 4/4
 1' 5 - 0 | - 2 - 3 | - q6 q7 0 0 | q1 - 0 - q0 |

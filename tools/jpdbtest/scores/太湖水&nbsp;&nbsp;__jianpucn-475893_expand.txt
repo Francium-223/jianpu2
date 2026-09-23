@@ -1,0 +1,41 @@
+%太湖水&nbsp;&nbsp;__jianpucn-475893.txt
+MBID=00000000-0000-0000-0000-000000000001
+title=测试
+type=work
+tag=
+usertag=
+tagroute=
+%--
+% 原图: D:\Documents_D\jianpu2\images-prep\test-jianpucn\太湖水&nbsp;&nbsp;__jianpucn-475893\001.jpg
+
+OctavesAfter
+1=E
+2/4
+subtitle=太湖水
+#2 s3 q2 ( 6 - ) s5 q6. s5 q6. d5 s6 s5 s6. s5 s6 s5 s6 g[5] s6 | s6 g[5&5] s6 g[5] s6 g[5] ~ 6 - |
+L: 作 曲 : 蒋 立 德
+3 s1 q3 2 - s3 q2 s1 q2. s3 s2 s1 q2. s3 s2 s1 q2 g[3] s2 g[3] s2 g[3] s2 | 2 - - - - |
+5 s5 q6 s7 s7' q6 s5 | 3 - | 3,. q3, 6 s3 q1 |
+L: ( 电 吹 管 独 奏 曲 )
+2 s3 q2. 2 - g[2'] | q3 q3, s2 q3 | 1 s7, q6, | 6, - |
+6, - | 2 q2 q6, | 2, q3 | q4 s4. q3 q1 | 2 - |
+q3 q3 s2 q3 | 2 s1 q7, | ( 6, - ) | 6, q6, |
+L: ( 《 太 湖 水 》 第 1 页 共 2 页
+q3 q3 s4 q3 | 2 6 | 3 - | 2 2 |
+q5, 7, | 6, - | 6, q3 | 6 s6 q5 |
+6 3 | 1' s7 q5 | 6 - | 5 s5 q6 |
+s7 s7, s6 s5 | g[5] 3 - | 3 - |
+q2 q3 2 | q2 q6, 2 | s5 q4 3 |
+L: ( 歌 谱 简 谱 网
+q3 q2 1 | s2 q3 7, | s7, q7 7, |
+L: ( w w w. j i a n p u. c n
+q6, q5 q6, | 6, - | 6 s6 q7 |
+q1'. s1'' s7 6 | q7 6 s5 q6 |
+3 q6 q7 | 1' q1'' q1'' |
+L: ( 《 太 湖 水 》
+q7 q6. s7 q6 | q5 q7 6 |
+q3 2 q3 | 5 q7 q6 |
+6 - | 6 - |
+
+% 歌词(已剥离): (电吹管独奏曲)
+%END

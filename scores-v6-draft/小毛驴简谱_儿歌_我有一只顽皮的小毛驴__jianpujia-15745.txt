@@ -1,0 +1,25 @@
+title=小毛驴简谱_儿歌_我有一只顽皮的小毛驴
+type=work
+MBID=00000000-0000-0000-0000-000000000001
+copyright=简谱之家
+%TODO:revise
+usertag=to_be_revised
+%--
+OctavesAfter
+1=C
+4/4
+4=99
+subtitle=小 毛 驴
+( s4 s4 s4 ) q4. q6 s3 s3 d3 | q3. q5 s2 s2 s2 s2 q2 s4 q3 q3 s4 q5 |
+L: 我 有 一 只 小 毛 驴 我 从 来 也 不 骑 ，
+s6 s6 s6 q6 q7 q1' s8 s1' s5 q3 s4 s4 s4 s3 s2 | 1'. d1 q1 q3 q5 q5 s5 q5 | q6 q6 q6 q1' 5 - |
+L: 有 一 天 我 心 血 来 潮
+q4 q4 q4 q6 s3 q3 s3 | q3 q3 q2 q2 q2 q5 s0 q5 |
+L: 骑 着 去 赶 集 ， 我 手 里 拿 着 小 皮 鞭 我 心 里 正 得 意 ，
+q1. s6 q5 s4 s6 q1'' s5 q3 | 5 q4 q2 s7,. s4 s6 q5 q3 s1 q3 |
+L: 不 知 怎 么 哗 啦 啦 啦 啦 我
+q6 q5 q4 s2' s1' q7 q1' q5 q1 | s7, q1 q2 s2 s3 s4 q5 s6 q5 s6 q7. |
+L: 摔 了 一 身 泥 。 摔 了 一 身 泥 。 D.S
+R*3
+q2 q2 q2 q3 q1 - |
+%END

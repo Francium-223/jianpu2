@@ -1,0 +1,34 @@
+%童年（少儿歌曲——台湾校园歌曲）简谱(歌词)—张艾嘉演唱—岭南印曲谱__jianpujia-9855.txt
+MBID=00000000-0000-0000-0000-000000000001
+title=测试
+type=work
+tag=
+usertag=
+tagroute=
+%--
+% 原图: D:\Documents_D\jianpu2\images-prep\test-jianpujia\童年（少儿歌曲——台湾校园歌曲）简谱(歌词)—张艾嘉演唱—岭南印曲谱__jianpujia-9855\001.jpg
+
+OctavesAfter
+1=G
+4/4
+subtitle=童 年
+( q5, s3, q5 ) s3 q5, q3 | s6 q6 s7, 6 q3, s6 s1 | 2 q3 2 s5, s6 s5, | 1 - - - |
+L: 稍 快 天 真 地
+q2 q3 s1 q6, d5 s3 s2 q1 h6,, h1 h2 h1 | ( 1 ) s3, q5 5' s5, q3 | q6 s6'. 1 6, q6' s6 s5, | 1 ~ q1 q1 1 q6, s6 s1 |
+L: 罗 大 佑 词 曲
+0 s3 s5 | ( 55 q3 s3 ) | q6 s6' q1 q6 s0 s6, s6 s5, | 1 s1, s1 q1 s6 s6 s1 | q2 q2 q2 q2 s2 q1. s3 q2 | 2 - - - |
+L: 岭 南 印 象 制 谱
+s5 5. q5 q5 q3 q2 | q1 1 s6, s6' q6 q1 s6, q1 | q2 q2 q2 q2 s2 q1 s3 q2 | 2 - - - |
+L: 操 场 边 的 秋 千 上 只 有 蝴 蝶 停 在 上 面,
+q5 5 5, q5, s6, s5, s2 s3 | 1 2[ q1 q2 q4 ] 31 1 - - - | - - - -/// 1 - - - |
+L: 诸 诸 葛 四 郎 和 魔 鬼 党 到 底 谁 抢 到 那 只 宝 剑,
+q3 3 q3. s3 q2 | 2 q1 1 q2 q1 s6 s5, | q5, 5, q5, s6, s5, s2 s3 | q1 1 s6, s6' s6, q1 s6 q1 |
+L: 总 是 要 等 到 考 试 以 后 才 知 道 该 念 的 书 都 没 有 念,
+s6 s6' s1 q6, s0 q6, s6, s5 | 1. q1 s1 q1 s6 s6, s1' | 2 - - - | q5 5 s5' s5 q5 s6 s5, s2 s3 |
+L: 没 有 人 知 道 为 什 么 太 阳 总 下 到 山 的 那 一 边,
+( 0 q3 q5, ) 5' q5, s3 | s6 s6' q1 6, q6, s6 s5, | 1 s1 q1 q1 s2 q1 s6 s5' | s5, q5, q5, s6 s5, s2 s3 |
+L: 水 彩 蜡 笔 和 万 花 简 画 不 出 天 边 那 一 条 彩 虹,
+R*2
+q2 q2 q2 q2 q1 s3 s2 | 2 - - - | q3 q3 q3 s3 q2 q2 | q1 q1 q1 s2 q1 s6 s5' | q5,. q5 q5, s6 s5 s2 s3 |
+L: 黑 板 上 老 师 的 粉 笔 还 在 拼 �
+%END

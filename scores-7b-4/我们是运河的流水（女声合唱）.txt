@@ -2,7 +2,7 @@ title=我们是运河的流水（女声合唱）
 type=work
 %TODO:revise
 usertag=to_be_revised
-copyright=歌谱简谱网,版权归原作者及原网站
+copyright=歌谱简谱网
 %--
 4/4
 subtitle=引子

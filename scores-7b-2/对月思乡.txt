@@ -2,7 +2,7 @@ title=对月思乡
 type=work
 %TODO:revise
 usertag=to_be_revised
-copyright=歌谱简谱网,版权归原作者及原网站
+copyright=歌谱简谱网
 %--
 4/4
 3 q2 s0 - - s0 | - - - - | - - 1. q0 | 5 0 0 0

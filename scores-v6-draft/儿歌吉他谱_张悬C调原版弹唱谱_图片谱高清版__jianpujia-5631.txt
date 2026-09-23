@@ -1,0 +1,25 @@
+title=儿歌吉他谱_张悬C调原版弹唱谱_图片谱高清版
+type=work
+MBID=00000000-0000-0000-0000-000000000001
+copyright=简谱之家
+%TODO:revise
+usertag=to_be_revised
+%--
+OctavesAfter
+1=C
+4/4
+subtitle=儿 歌
+'6
+( s'4 ) ( q'3 s5 ) s'2 | ( q'0 s0 ) s0. q0 | ( q0. q0 ) q0. q0 | q0. q0. q0. q0 |
+L: 变 调 夹 夹 1 品
+q0. q0. q0. q0 | ( q0 s'1 s7 ) q'1 6 5 | ( q0 q'4 q4 ) q1 q'1 q3 s3 q4 | ( q6 q5 q6 ) q5 s6 q2 s4 q4 |
+L: 微 信 / QQ : 4 2 2 0 5 1 2 8 7
+q0 q4 s4 s2 4 5 | q6 q5 s5 q4. ( q4 q5 ) 5 | q0 q4 s4 q1 q1 q3 s3 q4 |
+L: 微 博 : 西 安 简 单 吉他
+L: 淘 �博 店 铺 : 简 单 吉他
+L: 扫 码 观 看 更 多 视 频 哦
+L: 淘 �博 店 号 : 6 6 8 8 8 5
+L: 简 谱 大 全
+L: j i a n p u d q . c o m
+L: 成 功 没 那 么 严 重 做 自 己 反 而 比 较 心 安 理 得
+%END

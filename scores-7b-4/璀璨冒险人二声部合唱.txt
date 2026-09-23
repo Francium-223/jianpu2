@@ -2,15 +2,17 @@ title=璀璨冒险人二声部合唱
 type=work
 %TODO:revise
 usertag=to_be_revised
-copyright=歌谱简谱网,版权归原作者及原网站
+copyright=歌谱简谱网
 %--
 4/4
 subtitle=二声部合唱
 5 q7 q6 q2 0 q0 | 0 0 0 0 |
-|
 1' q1 q1 q1 q1 q1 q1 | q1 q1 0 0 0
 4 2' q1 q1 q7 q6 | q2 0 0 0 q0 | 0 0 0 0 |
+
 NextScore
+4/4
+
 subtitle=副歌
 5 q3 - - q0 | - 0 0 0 | 0 0 0 0 |
 %END

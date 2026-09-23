@@ -4,10 +4,9 @@ alias=我爱北京天安门简谱(歌词)_金铭与少儿演唱_岭南印象曲�
 %TODO:revise
 usertag=to_be_revised
 MBID=5dde3fbc-fd59-4484-8df5-5d0fa30f27a9
-copyright=简谱之家,版权归原作者及原网站
+copyright=简谱之家
 %--
 4/4
 0 5 0 0 | 1' - 1' 0 | - 1' 0 0 | - 6. - q0 | 3 2 1 0 |
 7. 7. 0 | - 0 0 0 |
-R{ }
 %END

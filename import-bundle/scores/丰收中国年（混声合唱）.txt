@@ -2,24 +2,36 @@ title=丰收中国年（混声合唱）
 type=work
 %TODO:revise
 usertag=to_be_revised
-copyright=歌谱简谱网,版权归原作者及原网站
+copyright=歌谱简谱网
 %--
 4/4
 subtitle=S
 0 q2 0 0 q0 | 0 0 0 0 |
 q5 - 0 0 q0
+
 NextScore
+4/4
+
 subtitle=A
 q7 - 0 0 q0 | 0 0 0 0 |
 q6 0 0 0 q0 | 0 0 0 0 |
+
 NextScore
+4/4
+
 subtitle=T
 q3 - 0 0 q0 | 0 0 0 0 |
 q1 0 0 0 q0 | 0 0 0 0 |
+
 NextScore
+4/4
+
 subtitle=B
 q1' 0 0 0 q0 | 0 0 0 0 |
+
 NextScore
+4/4
+
 subtitle=副歌段落名
 q2' 0 0 0 q0 | 0 0 0 0 |
 %END

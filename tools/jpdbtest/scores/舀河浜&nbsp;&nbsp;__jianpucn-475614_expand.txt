@@ -1,0 +1,29 @@
+%舀河浜&nbsp;&nbsp;__jianpucn-475614.txt
+MBID=00000000-0000-0000-0000-000000000001
+title=测试
+type=work
+tag=
+usertag=
+tagroute=
+%--
+% 原图: D:\Documents_D\jianpu2\images-prep\test-jianpucn\舀河浜&nbsp;&nbsp;__jianpucn-475614\001.jpg
+
+OctavesAfter
+1=G
+2/4
+subtitle=滔 河 浜
+3 q3 q5 q6 q5 q3 | 1 - | ( q1 q2 ) 3 q2 q7 | 5, - |
+L: 小 行 板 热 情 、 愉 悦 地
+s5 s6, s7 | 6 ( s6,. s5 q1 ) | q3 s3 q5 q6 s6 s5 |
+L: 面 盆 水 桶 全 带 上, 不 用 撒 鱼 网,
+q3 q3 1 | q7, s6, q7 q6 q5, | ( q1 s6, q1 ) q6 s5 |
+L: 太 阳 已 偏 西, 坝 外 河 水 暴 涨, 不 坝 内 河 水
+( q6 s5 ) 3 - | q5 q5 q6 q5 |
+L: 鱼 竿 钓 拦 河 筑 坝 叨 河 滨 手 酸 腰 痛 不
+( q6 q5 ) 3 | 5 - | q3 q5 q6 q5 |
+L: 逐 渐 浅 鱼 儿 正 在 掀 小 浪 浑 身 汗 水 湿 衣
+( q3 q2 ) 7, | 6, - | q3 q5 q6 q5 |
+L: 息 固 坝 塞 漏 严 守 响 响, 咬 紧 牙 关
+5, 6, | ( 1 - ) | 1 0 |
+L: 裳 坚 持 着 满 载 而 归 有 希 望 和 泥 鳅, 苦 中 取 乐 心 欢 畅.
+%END

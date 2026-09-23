@@ -1,0 +1,32 @@
+%寄明月&nbsp;&nbsp;__jianpucn-475792.txt
+MBID=00000000-0000-0000-0000-000000000001
+title=测试
+type=work
+tag=
+usertag=
+tagroute=
+%--
+% 原图: D:\Documents_D\jianpu2\images-prep\test-jianpucn\寄明月&nbsp;&nbsp;__jianpucn-475792\001.jpg
+
+OctavesAfter
+1=bE
+4/4
+4=63
+subtitle=无 人 区 玫 瑰
+s2 s3 q2 q1 q6, 2[ q2 q3 ] q2 s2 q1 s6 | s2 q3 q2 q1 q6, 2[ q2 q3 ] q2 s2 q1 s6, | s2 q3 q2 q1 q6, 2[ q2 q3 ] q2 q3 q2 q3 s2 q3 | q5 q3 3 - - |
+L: 演 唱: 一 颗 狼 星
+,,3 q3 q2 q3' s3 q5 q3' s3 q3 q2 q3 s5 s6 q5 q3 | q3 q2 q3' s3 q5 q3' ( q3 q3 q2 ) q3 s5 q6 q5 q2 | q2 s1 s2, ( q2 q3 q2 ) ~ q2 q2 q1 q2 s3 s5 s6 | ( q6 q3' ) 3 - - |
+L: 漾 动 是 谜 题 装 进 了 我 的 身 体 伤 心 是 迷 底 要 舍 得 才 能 有 取
+q4. q2' 2 s0 s2 q1 q2 s3 s2 q1 s2 | s3 s,6 s1 1 - - | q4,. s2' 2 s0 s2 s1 q2 s3 s2 q1 | q3 q4 q3 ( q3 q2 ) 3 - | 3 2 3 - |
+L: 真 谐
+s3 s,6 q1 6 s0 s3 q2 q3 s5 s3 q2 q3 | q3 q2 q3 6 s0 s3 q2 q3 s5 s3 q2 q3 | q3 q2 q3 7 s0 s3 s2 q3 s5 s3 s2 q3 | s3 q2 q3 s3 s2 s3 s4 ( 4 q1 ) 7, | q3 q2 q3 6 s0 s3 q2 q3 s5 s3 q2 q3 |
+L: 他 有 口 无 心 维 持 短 暂 的 和 平 压 抑 是 我 望 眼 欲 穿 的
+s3 q2 q3 6 s0 s3 s2 q3 s5 s6 q1'' q7 | s7 s7 s1'' q8 q6 q6 q6 q5 s5 q3 q2 q3 | s2 q1 q2 s2 s1 q4 q3 q1' | 7 6 - - | s3 s2 s3 6 - - |
+L: 一 个 你 心 意 是 我 焚 毁 一 切 只 为 留 住 你
+s3 s2 q3 q6 - - | q3 q2 q3 7 q1' | 6 - - -,, | q2 q1 q2 s2 s1 q4 3 q7 q1 | q6, - - - |
+L: 我 爱 着 你 种 一 片 玫 瑰 送 你 哆 对 不 起 玫 瑰 它 让 你 过 敏 因 为 爱 你 送 一 片 荆 萧 给 你
+R*2
+s3 s2 q3 6 - - | q3 q2 q3 7 q1' | 6 - - -,, | q2 q1 q2 s2 q1 q4 3 q7 q1 | q6
+
+% 歌词(已剥离): 间 音 路
+%END

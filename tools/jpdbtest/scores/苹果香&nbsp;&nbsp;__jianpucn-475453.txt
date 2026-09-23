@@ -1,0 +1,30 @@
+%苹果香&nbsp;&nbsp;__jianpucn-475453.txt
+MBID=00000000-0000-0000-0000-000000000001
+title=测试
+type=work
+tag=
+usertag=
+tagroute=
+%--
+% 原图: D:\Documents_D\jianpu2\images-prep\test-jianpucn\苹果香&nbsp;&nbsp;__jianpucn-475453\001.jpg
+
+OctavesAfter
+1=b2
+4/4
+KeepLength
+R*2
+( q1' 3, ) s1' q3 1' - | q7 3 q7 q3 7, - | q6 4 s6 q4. 6, - | q5 q2 s5 q2 5, - | 3, - s5 s6 s1 q2 |
+L: 狼 戈 演 唱
+2, - - s1 q8 | q2 s3 s6 5 5, - - | 2, - - - - | 6, - - - | s6 q6 s6 s6 s1 |
+L: 作 词 : 狼 戈
+s6 d5, h6 d5 | 3, | q3 3 s3 s5 | 6 6 - | q6 6 q3 2, s2 s2 s3 | ( q3 q2 q3 ) | q1 q1. s1/// s6 s5 d6 |
+L: 作 曲 : 狼 戈
+q5. 3, - | s5 s6 s6 q3. ( s5/// q6 q6, ) s6' s1 q6, | q5, q5 q6, | q2 2, s2 s5 q6 | 3,. s3 q3 | q5 6 q6 q6 6 q5 q1 |
+L: 红 嘴 雁 啊 飞 回 芦 苇 随 风 摆 河 对 面 的 莎 吾 烈 泰 今 天 在 不 在? 那 年 我 饮 马 来 到 了 你 的 白 艳 房 我 曾
+s1 s2 q2 q2 s0 | s6/// s7 s7 q6 | q5, q3 g[5] q6, - | q6, - ~ s2 s3 q3 | q3 q5. g[5] 6 - s6 s7 q6 |
+L: 看 到 你 弹 着 冬 布 拉 听 过 你 把 歌 唱 单 纯 的 相 逢 平 凡 的 晚 上 我 就 在 那 个 时 候 啊 傻 傻 的 等 到 了 天
+s5 s2 q5 | 3 - s1 q2 q2. s2 q2 | q1 q2 q2. q1 q6, q6' | ( q1' q2 q2 ) q2 s0 s1 s2 | g[2&2] 3 - q3 q3 s3 s5 | g[5] 6, q6 q7 s7 q6 |
+L: 亮 月 亮 作 证 你 钻 帽 上 的 羽 毛 亲 吻 着 晚 风 飘 啊 飘 喵 飘 到 了 我 的 心 上 。 六 星 街 里 还 传 来 巴 扬 琴 声 呜 哇 啊 阿 力 克 桑 德 拉 的 面 包 房 列 巴 出 炉 了 吗 ? 南 苑 函 香 是 否 尖 上 的
+q5 q5 q6 s7 | 6, 6 - ( q0 q6, ) s7, q1 | 3, s2 q3 2 q1 q7 | q6, s6 s7 s1 q3 6 - | q6, q6. q6 s6 s1 q7 |
+L: 红 嘴 雁 啊 �
+%END

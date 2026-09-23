@@ -1,0 +1,26 @@
+%摇篮曲简谱_舒伯特_渗透进灵魂的温暖吟唱,放松疲惫__jianpujia-15532.txt
+MBID=00000000-0000-0000-0000-000000000001
+title=测试
+type=work
+tag=
+usertag=
+tagroute=
+%--
+% 原图: D:\Documents_D\jianpu2\images-prep\test-jianpujia\摇篮曲简谱_舒伯特_渗透进灵魂的温暖吟唱,放松疲惫__jianpujia-15532\001.jpg
+
+OctavesAfter
+1=C
+4/4
+subtitle=Adagietto
+4=66
+KeepLength
+2'.. s8 s7 s1' s6 q9 s2'. s7 c2' | 2' s1' s7 s1' s6 s5 q7 c5 |
+c7 2' q6,. s7 1' | s5,,. s2, q#4, q2, g[7&7] q2, g[5&5] | s5, q2, g[7&7] s5, s2, g[#4,] s2, s4, s2, |
+R*3
+q7, q7. s6 s5 d4 s5 c6 c2 | c7 2' q6, s7 1' | q7 q7 s6 s7 s1'' s6 c5 - | q5, q2, q4, q2 g[6&4] q2 |
+L: 舒 伯 特 曲
+g[7&7] q2, q4 g[6] q2, q#4, q2, g[1&1] s#2, | s5, q2, s5, q2 g[1] q#4, s2 g[6&4] q2 | s5, q2 g[4&9] q2, q5, q2, |
+c2,, | c6. q6 q7, s6 c5 | 2' g[32] q1' q7 c6 c2 | c7 2' q6, s7 1' | q7 q7 s8 s7 s1' s6 c5. -/// |
+R*2
+s#4, q2, q4, q2, s5, q2, s5, q2 | s5,, q2 s#5, s2, s#3, s2 s#4 s2, | s5, q2. s5, q2 s#4, q2 g[6] s#2, | s5, q2 q#4, q2, s5, s2, ( ) ~ 2, |
+%END

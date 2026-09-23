@@ -1,0 +1,32 @@
+title=当兵乐
+type=work
+MBID=00000000-0000-0000-0000-000000000001
+copyright=简谱之家
+%TODO:revise
+usertag=to_be_revised
+%--
+OctavesAfter
+1=A
+4/4
+KeepLength
+subtitle=当兵乐
+4=130
+R*2
+( q5 s5 ) s6 q'1 q6 s5 s6 s5 | q'1 s'1 s2 '3 ''2 s'1 s'2 s1 q6 | q'1 s'1 s2 s3 s2 s3 s''5 s2 s'3 s'2 q'1 q6 q5 |
+L: 兴 奋 自 豪 地
+q'1 s'1 s2 q'1 q5 s'1 s'1 s0 | q5 q5 q6 q5 q3. 5, ( ) q6 | q'1 q'1 q6 q5 q3 5 - | q'1 s'1 ( '2 ) q'3 ''5 q'2 q'1 s6 s5 |
+L: 当 呀 嘛 当 兵 乐,
+q6 s6 q5 q6 q'1 5 - | q'1 s'1 s'2 ( q'1 q6 ) ( q'1. q6 ) | q5. s5 ( 3 ) q5 q6 '1 - | q6. q7 q6 q5 q6 q5. q3 |
+L: 当 呀 嘛 当 兵 乐,
+( q6. q5 ) s6 ( q6 q'1 ) ~ '2 - | q'3. s'3 '3 s'3 s'3 | q'2. s'2 '2 s'2 s'2 '2 | q'3 s'3 q'2. s'2 q'1 s'1 q6 s6 | q5. q5 q3. q5 q6 '1 - |
+L: 当 呀 嘛 当 兵 乐,
+q'3 s'3. '3 s'3 s'3 | q'2 s'2. '2 s'2 s'2 | q'3 s'3 q'2 s'1 ( q'2 q'1 ) | ( q'2 q'3 ) 6 - - - | q5. s5 q6 q'1 s6 s'2 |
+L: 多 少 人 渴 望
+( q'2 q'2 ) s5. s6 | ( q'1 q'1 ) s6 s'1. s'1 | ( q'1 q'1 ) s'2 s'1. s'2 | ( q'1 q'1 ) s'2 s'1. s'2 | ( q'1 q'1 ) s'2 s'1 |
+L: 从 呀 嘛 从 军 来,
+( q'1 q'1 ) s'2 s'1 | ( q'1 q'1 ) s'2 s'1 | ( q'1 q'1 ) s'2 s'1 | ( q'1 q'1 ) s'2 s'1 | ( q'1 q'1 ) s'2 s'1 |
+L: 有 幸 圆 梦 就 有 我.
+( q'1 q'1 ) s'2 s'1 | ( q'1 q'1 ) s'2 s'1 | ( q'1 q'1 ) s'2 s'1 | ( q'1 q'1 ) s'2 s'1 | ( q'1 q'1 ) s'2 s'1 |
+L: 唱 呀 嘛 唱 着 过.
+( q'1 q'1 ) s'2 s'1 | ( q'1 q'1 ) s'2 s'1 | ( q'1 q'1 ) s'2 s'1 | ( q'1 q'1 ) s'2 s'1 | ( q'1 q'1 ) s'2 s'1 |
+%END

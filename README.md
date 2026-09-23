@@ -124,7 +124,7 @@ type=work
 usertag=儿歌                     # --tags
 alias=小红帽简谱_儿歌_小红帽的故事 # 爬虫原始标题 (与 title 不同时)
 transcriber=你的ID                # --transcriber
-copyright=歌谱简谱网,版权归原作者及原网站  # --copyright (值须文件系统安全)
+copyright=歌谱简谱网          # --copyright (只写最有信息量的词, 须文件系统安全)
 %--
 4/4                              # 拍号
 4=90                             # 速度 (谱面有才写)

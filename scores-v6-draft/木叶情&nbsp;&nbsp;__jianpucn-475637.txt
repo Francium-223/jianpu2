@@ -1,0 +1,36 @@
+title=木叶情
+type=work
+MBID=00000000-0000-0000-0000-000000000001
+copyright=简谱之家
+%TODO:revise
+usertag=to_be_revised
+%--
+OctavesAfter
+1=D
+4/4
+( 0 0 ) q2' s3' s2' d3' | 3' - - s6 s3' s2' d3' |
+s2'. q3,. ( 3 - ) s2' s2' s3' | q5 3 - q5 q6. s6 q1' |
+L: （ 演 唱： 拉 雅 ）
+2' - q3. s3 q5 s6 q1' | 6. q3 1' s7 q6 |
+6 - q5. s5 s6 s6 q2 | s2 s3 1 q0 s7, s7, s3 q7 s6 s7 s6 |
+6 - | ( q3 s3' q6' ) ( q6, g[5] ) s5' q1 q2 q2 |
+q3. s3 s3' s5 q5. s3 h2 | 3 - ( q3' q6' ) q6, g[5,,] s5' s1 s2 q2 |
+L: 词 曲 : 杨 文
+s7 s7 s7, s6 q5, s5 s6, | 6, -/// | q3,, q6' s6 q3 s3' s2 |
+1 q0 | s7' q3 q3 s7 s6' | 6, - ( q3 s6 q6 s3 ) s3 s2 |
+L: 小 小 木 木 叶
+1 q0 | s3, s6 q6, s6, s1 q2 | q3. s3' s5 q5. s3 s2 |
+3 - | s3 q6 s6 q3. s3 s2 | 1 q0 | s7 s3 q3. s7' s6 |
+L: 含 在 我 口 里
+6, - | s3 q6 s6, g[3,] s3, q1 q2 q2 | q3 s6 s6 s5, g[5,6] q6, s1' s7 |
+L: 小 小 木 叶 响 在 记 忆 里
+q6 | s7 s3 q3. s7' s6 | 6, - | s3 q6 s6, g[3,] s3, q1 q2 q2 |
+L: 飘 飘 忽 忽 的 野 山 歌 旋 律
+s7 s7 s7 s6 q5, s5 g[5,6] q6, q6 s1' s7 | q6. | s7 s3 q3. s7' s6 |
+L: 山 塞 前 的 牛 蹄 印 袤 袤 炊 烟 飘 在 我 心 里
+6, - | s3 q6 s6 s3 s3 s2 | 1 q0 | s7 s3 q3. s7' s6 |
+L: 吊 脚 楼 里 欢 笑 响 在 记 忆 里 阿 妈 的 歌 谣
+6, - | s3 q6 s6, g[3,] s3, q1 q2 q2 | s7 s7 s7 s6 q5, s5 g[5,6] q6, q6 s1' s7 |
+L: 随 着 夜 风 起 星 空 下 我 们 数 着 梦 里 的 秘 密 忘 不
+q6 | s7 s3 s3. s7' s6 | 6, - |
+%END

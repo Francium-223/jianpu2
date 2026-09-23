@@ -4,7 +4,7 @@ alias=女儿歌简谱(歌词)_冯健雪演唱_岭南印象曲谱
 %TODO:revise
 usertag=to_be_revised
 MBID=e6aa36d2-2b8a-4d6a-a65c-7fed318307ef
-copyright=简谱之家,版权归原作者及原网站
+copyright=简谱之家
 %--
 4/4
 0 5 q6 0 q0 | 3 2 q7 0 q0 | 1' 1' - 0 | 1 2 1' 0 | - - 0 0 | - 0 0 0 |

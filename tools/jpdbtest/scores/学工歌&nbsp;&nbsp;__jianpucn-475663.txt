@@ -1,0 +1,40 @@
+%学工歌&nbsp;&nbsp;__jianpucn-475663.txt
+MBID=00000000-0000-0000-0000-000000000001
+title=测试
+type=work
+tag=
+usertag=
+tagroute=
+%--
+% 原图: D:\Documents_D\jianpu2\images-prep\test-jianpucn\学工歌&nbsp;&nbsp;__jianpucn-475663\001.jpg
+
+OctavesAfter
+1=F
+2/4
+subtitle=学 工 歌
+3 q5 s3 s2 s1 | 2 - |
+L: 进 行 曲 速 度 坚 定 有 力 地
+( q3 q5 ) ( 2 1 ) q3 q6 | 5, - |
+L: 朱 国 鑫 词 曲
+q2. s1 q2 q3 q5 | 3 - |
+s7,. s7 s6, s5 d6, s1 | q1 q1 ( 1 |
+L: 工 人 阶 级
+q2 q3 q1 q2 | q3. q5 | 5 - |
+L: 工 人 阶 级
+q1 s2 q1 | q6' q1. |
+L: 工 人 阶 级
+s7 s6, s7, | q6, q5, | q3. s2 ( 3 q2 q1 |
+L: 工 人 阶 级
+1 - | 1 0 |
+L: 工 人 阶 级
+5 q3 2 | q7, s6, s7, | q6, q5, |
+L: 深 受 三 座 大 山
+R*3
+q3 s2 q3 | q2 q1 | 1 - |
+L: 容 易 接 受 新 思 想,
+L: 上 下 捻 成 一 股 绳,
+L: 孤 立 一 小 摄, 与 农 民 感 情 最 深 厚,
+L: 力 量 大, 步 伐 一 致 写 春 秋。
+
+% 歌词(已剥离): 得 解 放, 推 动 变 革 努 力 奋 斗。 比 人 高, 义 无 反 顾 向 前 走。 来 熏 陶, 组 织 纪 律 高 人 一 筹。
+%END

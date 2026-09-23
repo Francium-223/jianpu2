@@ -2,10 +2,9 @@ title=Flying To The Moon（英文儿童歌）
 type=work
 %TODO:revise
 usertag=to_be_revised
-copyright=歌谱简谱网,版权归原作者及原网站
+copyright=歌谱简谱网
 %--
 4/4
 0 q2 s3 - 0 s0
 q6 b7 1' 2' q0 | 1 0 1 1
-|
 %END

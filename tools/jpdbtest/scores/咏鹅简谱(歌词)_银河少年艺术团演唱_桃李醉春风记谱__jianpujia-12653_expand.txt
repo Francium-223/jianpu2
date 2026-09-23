@@ -1,0 +1,35 @@
+%咏鹅简谱(歌词)_银河少年艺术团演唱_桃李醉春风记谱__jianpujia-12653.txt
+MBID=00000000-0000-0000-0000-000000000001
+title=测试
+type=work
+tag=
+usertag=
+tagroute=
+%--
+% 原图: D:\Documents_D\jianpu2\images-prep\test-jianpujia\咏鹅简谱(歌词)_银河少年艺术团演唱_桃李醉春风记谱__jianpujia-12653\001.jpg
+
+OctavesAfter
+1=bE
+24
+subtitle=咏 鹅
+( ( q3 s3 ) q5 s3 s3 ) q5 | q6 s6 q5 c6 | q6 s6 q5 q3 s5 | q3 s2 q1 6, | q2 s2 q3 s6, s6 q1 |
+L: 谷 建 芬 原 诗
+q2 s2 q1 q2 s2 s3 | q5 q3 q5 q7 | ( 6 - | 6 - )/// 6 q5 | 6 0 | q5 q6 q2 q#4 |
+L: 骆 鹉 鹉, 曲 项 向 天 歌
+3 0 | q2 q3 q2 q6, | 1 q1 q2 | 7 q7, q5 | 6, - | q6 q5 q6, |
+L: 拨 清 波
+q2 q1 c2 | q3 q2 q3 q5 | 5 q5 q3 | q5 q6 6 | 7 6, | 5 7 | ( 6 - ) 6 - |
+L: 鹉 鹉 鹉, 鹉 鹉 鹉, 曲 项 向 天 歌
+0,, | 6 2 - | 6 - | ( ) | x x x | x x x |
+L: 白 毛 浮 绿 水, 红 掌 拨 清
+x x x | x x x x x x | 2 1 2 | q3 q2 q3 q5 |
+L: 波
+5 q5 q3 | q5 q6 6 | 7 6, | 5 q7 | 6 - | - - |
+L: 鹉 鹉 鹉,
+6 0 |
+L: 鹉 鹉 鹉, 曲 项 向 天 歌. 白 毛 浮 绿 水, 红 掌 拨 清 波.
+DS.
+R*2
+
+% 歌词(已剥离): X qX qX sXXXX sxxxx sxxxx sxxx 波. 顿
+%END

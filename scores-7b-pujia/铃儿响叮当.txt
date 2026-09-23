@@ -4,7 +4,7 @@ alias=铃儿响叮当简谱_儿歌_Jingle_Bells_Jingle_Bells
 %TODO:revise
 usertag=to_be_revised
 MBID=c1422d20-ddef-4568-b9d3-a6be1f74284d
-copyright=简谱之家,版权归原作者及原网站
+copyright=简谱之家
 %--
 4/4
 3 - - 0 | q5 q2 q7 - 0 q0 | 0 0 0 0 |

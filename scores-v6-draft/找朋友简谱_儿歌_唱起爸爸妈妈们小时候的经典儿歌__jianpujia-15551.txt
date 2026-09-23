@@ -1,0 +1,19 @@
+title=找朋友简谱_儿歌_唱起爸爸妈妈们小时候的经典儿歌
+type=work
+MBID=00000000-0000-0000-0000-000000000001
+copyright=简谱之家
+%TODO:revise
+usertag=to_be_revised
+%--
+OctavesAfter
+1=bE
+2/4
+subtitle=找朋友
+( q5 q5 s3 q3 | q5 q5 ) 3 | q2 q4 s3 q2 |
+L: 找 啊 找 啊
+q1 q2 1 ) | q5 q6 s5 q6 | q5 q6 5 |
+L: 找 朋 友 ， 找 到 一 个 好 朋 友
+q5 q1' q7 q6 | q5 q5 3 | q5 q5 s3 s3 |
+L: 敬 个 礼 呀 ， 握 握 手 ， 你 是 我 的 好 朋 友
+q5 q5 3 | q2 q4 s3 s2 | q1 q2 1,, |
+%END

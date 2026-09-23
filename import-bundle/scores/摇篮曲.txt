@@ -4,7 +4,7 @@ alias=摇篮曲简谱_舒伯特_渗透进灵魂的温暖吟唱,放松疲惫
 %TODO:revise
 usertag=to_be_revised
 MBID=3d9d8415-631d-498e-8fed-84f3e1bff356
-copyright=简谱之家,版权归原作者及原网站
+copyright=简谱之家
 %--
 4/4
 subtitle=摇篮曲

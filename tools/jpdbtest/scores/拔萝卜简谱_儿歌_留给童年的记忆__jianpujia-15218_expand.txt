@@ -1,0 +1,32 @@
+%拔萝卜简谱_儿歌_留给童年的记忆__jianpujia-15218.txt
+MBID=00000000-0000-0000-0000-000000000001
+title=测试
+type=work
+tag=
+usertag=
+tagroute=
+%--
+% 原图: D:\Documents_D\jianpu2\images-prep\test-jianpujia\拔萝卜简谱_儿歌_留给童年的记忆__jianpujia-15218\001.jpg
+
+OctavesAfter
+1=F
+2/4
+subtitle=包恩珠词曲
+( s5, s6, ) 1 | q3 q2 1 |
+L: 拔 萝 胡
+R*3
+q5 q5 q5 s3 s2 | q1 q2 1 ) |
+L: 拔 萝 胡
+s5 q6, 1 | q3 q2 1 |
+L: 拔 萝 胡
+q5 q5 q5 q5 | q1 q2 1 |
+q5 q5 q5 q5 | q1 q2 1 |
+L: 嘿 呀 嘿 呀
+q5 q5 1 | q5 q5 1 |
+L: 老 太 婆, 快 快 来,
+( q5 q5 q5 q3 q2 | q1 q2 1,, ) |
+L: 小 姑 娘, 快 快 来,
+L: 小 花 猫, 快 快 来,
+L: 小 黄 狗, 快 快 来,
+L: 快 来 帮 我 们 拔 萝 胡.
+%END

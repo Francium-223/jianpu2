@@ -4,7 +4,7 @@ alias=七步诗简谱(歌词)_小海龟演唱组演唱_桃李醉春风记谱
 %TODO:revise
 usertag=to_be_revised
 MBID=b0b07058-e04c-47dc-a748-4b65a100d9e7
-copyright=简谱之家,版权归原作者及原网站
+copyright=简谱之家
 %--
 6 0 0 0
 subtitle=intro

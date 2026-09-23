@@ -4,7 +4,7 @@ alias=听妈妈讲那过去的事情简谱_儿歌_我们坐在高高的谷堆旁
 %TODO:revise
 usertag=to_be_revised
 MBID=60b85a87-7b72-48d6-a363-ec640a31a6e7
-copyright=简谱之家,版权归原作者及原网站
+copyright=简谱之家
 %--
 2/4
 6 0 | q5 - q0 | 0 0 |

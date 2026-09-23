@@ -1,0 +1,19 @@
+title=洋娃娃和小熊跳舞简谱_儿歌_我们一起来跳舞
+type=work
+MBID=00000000-0000-0000-0000-000000000001
+copyright=简谱之家
+%TODO:revise
+usertag=to_be_revised
+%--
+OctavesAfter
+1=D
+2/4
+4=96
+KeepLength
+subtitle=洋娃娃和小熊跳舞
+q1 q2 s3 q4 | q5 q5 s5 s4 s3 | q4 q4 s4 s3 s2 | q1 q3. c5 |
+L: 波 兰 民 歌
+q1 q2 s3 q4 | q5 q5 s5 s4 s3 | q4 q4 s4 s3 s2 | q1 q3 c1 |
+q6 q6 s6 s5 s4 | q5 q5 s5 s4 s3 | q4 q4 s4 s3 s2 | q1 q3 c5 |
+q6 q6 s6 s5 s4 | q5 q5 s5 s4 s3 | q4 q4 s4 s3 s2 | q1 q3 q1,, |
+%END

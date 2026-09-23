@@ -1,0 +1,41 @@
+title=陆北大
+type=work
+MBID=00000000-0000-0000-0000-000000000001
+copyright=简谱之家
+%TODO:revise
+usertag=to_be_revised
+%--
+OctavesAfter
+1=bE
+2/4
+KeepLength
+subtitle=陆 北 大
+3,. s6, q1 q2 | q3 6, |
+L: 中 速 深 情 地
+q3. s6, q1 q2 | q3 3, |
+L: 读 过 北 京 大 学,
+s6 ( s6 5 ) q1 s1 d6, | ( s3 3 q5 ) 7 6 |
+L: 小 名 陆 北 大,
+s6, q6, q1 q1 | s6, s6,, q3 q3 |
+L: 初 中 东 昌 三 中,
+q5. s3. q1 q2 | q3 1, |
+L: 营 业 员,
+( q7, s5, ) s7, s7, | - - |
+L: 积 极 社 交,
+6b 0 | ( s6, 1 1 ) 2 |
+L: 两 次 考 大 学,
+q1 q2 2 | 3 q6 6, |
+L: 每 天 坚 持
+R*3
+q3. s6 q6 q6 | q6 q7 5 |
+L: 爱 党 爱 国 家.
+3 - | q5. s3 s2 3 |
+L: 有 些 年,
+( 1, 2, ) s3 q2 s1 | 6, - |
+L: 五 十 岁,
+6 0 | ( q1' s3'' s2'' q8 ) |
+L: 总 支 书 记,
+6 - | 6 0 |
+L: 数 理 化。
+R*3
+%END

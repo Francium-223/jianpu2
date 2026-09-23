@@ -4,9 +4,8 @@ alias=小兔子乖乖简谱_儿歌_妈妈没回来_谁来也不开
 %TODO:revise
 usertag=to_be_revised
 MBID=4220256e-ca4a-4442-9ecd-609f998b04ce
-copyright=简谱之家,版权归原作者及原网站
+copyright=简谱之家
 %--
 4/4
 5 - 1' 6 | q3 q2 0 0 0 | 0 1' - 0 | - 1 1 0 | - 0 0 0 | 0 0 0 0 |
-|
 %END

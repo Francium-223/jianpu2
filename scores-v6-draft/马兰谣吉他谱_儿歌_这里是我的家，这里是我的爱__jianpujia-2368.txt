@@ -1,0 +1,24 @@
+title=马兰谣吉他谱_儿歌_这里是我的家，这里是我的爱
+type=work
+MBID=00000000-0000-0000-0000-000000000001
+copyright=简谱之家
+%TODO:revise
+usertag=to_be_revised
+%--
+OctavesAfter
+1=C
+4/4
+KeepLength
+subtitle=马兰谣
+R*4
+letterA
+x x x x x | x x x x x | x x x x x | x x x x x |
+L: 6 q6 q6 s1 q2 2 q2 0 | q2. s2 s3 q2 q1 2 6, | q6. s6 q6 q1 q6, s1 q2 2 | q2. ( q2 q3 ) q5 ( q1 q7 ) 6 - | q3 6 q3 q5 q6 6 | s6. s6 s6 q2 5 3 - |
+L: 青 山 一 排 排 呀 油 菜 花 遍 地 开 骑 着 那 牛 儿 慢 慢 走 夕 阳 头 上 戴
+q3 6 q5 q5 q6 | q5 q3 2 | q2. s2 q1 q2 q5 3 - | q2 q1 q2 q3 q5 | 5 0 | 7, s5 s6 |
+L: 天 上 的 云 儿 白 呀 水 里 的 鱼 儿 乖 牧 笛 吹 到 山 那 边 谁 在 把 手 拍 这 里 是 我 的 家 这 里 有 我 的 爱 爷 爷 说 过 的 故 事 我 会 记 下 来
+- - - | 6 - - - - | ( q9 q1 q2 ) q3 q5 | 5 0 | 7, s5 s6 |
+L: 这 里 是 我 的 家 这 里 有 我 的 爱 外 婆 唱 过 的 童 谣 会 把 它 唱 到 青 山 外
+Segno
+DS
+%END

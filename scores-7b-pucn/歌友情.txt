@@ -3,10 +3,9 @@ type=work
 alias=歌友情&nbsp;&nbsp;
 %TODO:revise
 usertag=to_be_revised
-copyright=歌谱简谱网,版权归原作者及原网站
+copyright=歌谱简谱网
 %--
 4/4
 2 0 0 0 | 5 3 0 0 | 0 0 0 0 |
 0 0 0 0 | 7 6 - 0 | 0 0 0 0 |
-R{ }
 %END

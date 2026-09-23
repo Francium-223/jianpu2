@@ -1,0 +1,28 @@
+title=明月逐人归简谱_五色石南叶_贰婶演唱_天之韵记谱
+type=work
+MBID=00000000-0000-0000-0000-000000000001
+copyright=简谱之家
+%TODO:revise
+usertag=to_be_revised
+%--
+OctavesAfter
+1=B
+4/4
+KeepLength
+subtitle=明 月 逐 人 归
+( q6 s7 q1' ) q2 | ( q3'. s6 ) - 1 q2' s1' s7 q6 | q7,. s3 3 q2 s6, s1 d2 s3 q6, s5 s3 s1 s6 |
+L: 演 唱: 五 色 石 南 叶 、 质 帚
+7, q7, s2 | 5 3 s6 s1, 2 7,, | 6, - 0 0 ) | q0 q3. q3 s2 s3 | - q3 q6 |
+L: Mystery 作 词
+q5 3 s3 s2 s1 | 2 0 q0 q3 s3 s2 s3 | - q3 q1' s7 s1' s7 | - 6 6 q0 s6 q5 |
+L: Sabrina 作 曲
+6 q1' q6 2' q0 s7 q6 | 5, 5 ( q5 q2 ) 3 q0 s2 s1 | q2 s1 s2 | - q1 2 q0 s1 s2 | q3 s2 s1 | - 2 s7'' s7 |
+L: 天 之 韵 记 谱
+q0 q3. q3 s2 s3 | - q3 q6 | q5. q3 s3 s2 s1 | 2 0 q0 q3 s3 s2 s3 | - s3 q1' q7 s1' s7 | q7 q6 6 q0 s6 s5 |
+L: 如 拂 坤 茫， 俯 仰 自 哐 与 道 俱 往，
+1 2
+6' q6. q3' q2' s3' | - q7 q1' s2' s5 s5 | 5 q9 s6 s7 | q1' s6 s6 s6 | q5 s1' s6 s7 s1'' | - - q0 s1' s2' |
+L: 明 月 旁 途 声 恋 十 年 心， 旧 曲 难 奏 响， 云 中 有 鹤 相 侍 振 翅 谁 复 访。 明 月
+- q3' q6. q0 s2' q1' | q7 q5. s5 | - 3 | q3' q6. q6 s3' s2' s2' | q2' s7 s1' | s2'' s7. s5 | s5 q5'' 5' s6 s3' |
+L: 3 欲 攒 登 高 九 州 望， 沔 滔 逐 衣 覆 流 光
+%END

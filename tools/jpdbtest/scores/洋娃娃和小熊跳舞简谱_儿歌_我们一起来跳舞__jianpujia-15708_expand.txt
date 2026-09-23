@@ -1,0 +1,24 @@
+%洋娃娃和小熊跳舞简谱_儿歌_我们一起来跳舞__jianpujia-15708.txt
+MBID=00000000-0000-0000-0000-000000000001
+title=测试
+type=work
+tag=
+usertag=
+tagroute=
+%--
+% 原图: D:\Documents_D\jianpu2\images-prep\test-jianpujia\洋娃娃和小熊跳舞简谱_儿歌_我们一起来跳舞__jianpujia-15708\001.jpg
+
+OctavesAfter
+1=D
+2/4
+4=96
+subtitle=洋娃娃和小熊跳舞
+q1 q2 s3 q4 | q5 q5 s5 s4 q3 | q4 q4 s4 s3 q2 | q1 q3. c5 |
+L: 波 兰 民 歌
+q1 q2. s3 q4 | q5 q5 s5 s4 q3 | q4 q4 s4 s3 q2 | q1 q3 c1 |
+q6 q6 s6 s5 s4 | q5 q5 s5 s4 q3 | q4 q4 s4 s3 q2 | q1 q3 c5 |
+L: 孙 世 彦 制 谱
+s6 q6 s6 s5 s4 | q5 q5 s5 s4 q3 | q4 q4 s4 s3 q2 | q1 q3 c1,, |
+Segno
+DS
+%END

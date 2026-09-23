@@ -4,7 +4,7 @@ alias=蜗牛与黄鹂鸟简谱_儿歌_阿黄阿黄鹂鸟不要笑
 %TODO:revise
 usertag=to_be_revised
 MBID=056f6290-7de0-4eff-9d12-069abaa54621
-copyright=简谱之家,版权归原作者及原网站
+copyright=简谱之家
 %--
 4/4
 5 - 3 0 | q6 - 0 0 q0 | 0 0 0 0 |

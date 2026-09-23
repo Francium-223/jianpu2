@@ -2,9 +2,9 @@ title=上海人
 type=work
 %TODO:revise
 usertag=to_be_revised
-copyright=歌谱简谱网,版权归原作者及原网站
+copyright=歌谱简谱网
 %--
 4/4
-1. 2 3 q0 - 6 6 7 7 7 6 7 1 2 0 0 | - 0 0 0 | 0 0 0 0 |
+1. 2 3 q0 | - 6 6 7 | 7 7 6 7 | 1 2 0 0 | - 0 0 0 | 0 0 0 0 |
 1. - 0 q0 | 0 0 0 0 | 0 0 0 0 |
 %END

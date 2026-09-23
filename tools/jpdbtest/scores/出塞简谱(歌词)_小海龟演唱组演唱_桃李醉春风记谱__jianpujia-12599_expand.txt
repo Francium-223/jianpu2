@@ -1,0 +1,33 @@
+%出塞简谱(歌词)_小海龟演唱组演唱_桃李醉春风记谱__jianpujia-12599.txt
+MBID=00000000-0000-0000-0000-000000000001
+title=测试
+type=work
+tag=
+usertag=
+tagroute=
+%--
+% 原图: D:\Documents_D\jianpu2\images-prep\test-jianpujia\出塞简谱(歌词)_小海龟演唱组演唱_桃李醉春风记谱__jianpujia-12599\001.jpg
+
+OctavesAfter
+1=bE
+4/4
+subtitle=出 塞
+( q6 q7 ) q6 q5 c3 q0 s3 q5 | q6 q7 s6 q5 c2 s0 s'1 s'2 | q'1 q7 q7 q6 c5 q3 q7 | c6 - - - |
+s,6 c3 ( ~ q3 q2 ) c3 q1 s,6 q1 | q,6 - - - - | s7 q7 s7 q7 q7. q0 s3 s2 | q3 - - - - |
+L: [ 唐 ] 王 昌 韶 原 诗
+q,6 c3 ( q3 q2 ) 3 g[3] q5 q3 | c2 - - - | q3 c7 s7 q6 c7 s3 s2 | g[2] c1 - - - |
+L: 谷 建 芬 作 曲
+q2 q2 q2 q3 c5 s7 s6 | q,6 - - - | s,6 c3 ( q3 q2 ) c3 s5 q3 s3 s3 s3 | q2 q2 q2 q3 s4 s4 q3 c4 |
+L: 桃 李 醉 春 风 记 谱
+q3 s3 s3 q3 s2 q2 q1 c3 - | s1 s1 s1 s1 s,6 c1 c,7 - | s'1 q'1 s7 q6 s''1 s'7 s7 s6 | ( s6 q7 q6 q5 ) s3 s5 c3 |
+L: 秦 时 明 月 汉 时 关
+( q'1 q8 q2 q2 ) s3 q3 q3 q2 s3 s3 q3 q2 s1 s1 q1 s,7 | q,6 q1 ( q1 q2 q2 ) q3 | ( q3 q1 q1 ) q2 ( q2 q3 q3 ) s5 | ( q5 q2 q2 q3 ) s3 s5 s6 s3 s5 |
+L: 秦 时 明 月 汉 时 关
+( q6 q3 q3 ) q6 q6 q3 | q6 q6 s3 q3 q3 q2 | q1 q1 q1 q,7 | q,6 q1 ( q1 q2 q2 ) q3 | ( q3 q1 q1 ) q2 ( q2 q3 q3 ) s5 | ( q6 q7 q6 q5 ) q3. s3 s5 |
+L: 秦 时 明 月 汉 时 未 还
+g[2,] ( q3 q3 q3 ) q7 q7 c6 - | s6 q6 q3 q6 s6 q3 | q6 q6 q3 q3 q3 q2 | q1 q1 q1 q,7 | q,6 q1 ( q1 q2 q2 ) q3 | q3 q1 q1 q2 ( q2 q3 q3 ) s5 |
+L: 万 里 长 征 人 未 还
+( q6 q6 q6 ) q5 s3 s3 s3 q2 | s3 s3 q3 q2 s1 s1 q1 s,7 | q,6 q1 ( q1 q2 q2 ) q3 | q3 q1 q1 q2 ( q2 q3 q3 ) s5 | ( q6 q7 q6 q5 ) q3. s3 s5 |
+L: 但 使 龙 城 飞 将 在
+c2. | ( q6 q7 ) s6 q5 c2 s0 s'1 s2 | q'1 q7 s7 q6 c5 s3 q7 | c6 - - - - | 6 0 0 0 |
+%END

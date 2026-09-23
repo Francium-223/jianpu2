@@ -1,0 +1,35 @@
+title=青原赋
+type=work
+MBID=00000000-0000-0000-0000-000000000001
+copyright=简谱之家
+%TODO:revise
+usertag=to_be_revised
+%--
+OctavesAfter
+1=4#4
+( q1 q2 | 3, q5, q2 s2 q3 s2 q1 ) | 6,. q6, q5 s6' s1 |
+L: 青 原 情 缘 地 ( 李 萍 演 唱 )
+2, q1' q3 q5 q3 q2 | 1. - - - ) | 5,, q3 q5' q5 q1 q7, q5 | q3, - - 0 |
+L: 烟 雨 湿 了 青 瓦 巷
+q6 q6' q6' q1, q7, q5' | 1 - - 0 | q6 q6' q6' q5 q1, q6, | 5 q2 1, 1 q6 q1 |
+L: 晚 风 推 开 雕 花 窗
+q2 1 q2 q1 q2 q1 q2 q3 | q3 q2 2 - q0 q5 | q3 q5, q1 q3 q2. s2 q1 |
+L: 半 溪 月 影 摇 碎
+5, - - | q6 q1, q1 q3 q2 5 | 5, 6, 5 q6 5 | 4 4 6 5 q4 q3 2 |
+L: 赣 江 浸 墨 三 百 里
+3 - q0 s5 q6' q1 | 4 3, q6' q1. s2 q1 q7, | 1 - q0 s5' s1 s2 q1 |
+L: 青 山 悬 笔 写 苍 茫
+5, 6, 5 s2 s3 q2 | q1 s2'. s6' 6, - s5 d6, h1 h6, | 4 5, 3 s1 s2 s1, s6, | 5, - - s5, s6' s1 s2 |
+L: 红 土 育 出 茶 芽 沁 春
+4, s2' s1 2, s1' s2 | q5 q3 q5 q6 1 s5, s6' s1 | 4 3, 2 7, | 1 - - - - |
+L: 啊 啊 啊
+( q0 q1 q5 ) s1 s5 s1 s5 | q6 s3 s5' s6' s1 5 s4 s3 s2 s1, s7 | 1, s5 q6 5 s2 s3 s5 |
+L: 赣 江 浸 墨 三 百 里
+1 s2 s3 s5 1 - ) | s5' s3 s5 q1, q7 q5, | 3, - q0 q0 | q6, q6' q6 q1, q7 q5 |
+L: 青 山 悬 笔 写 苍 茫
+3 - q0 0 | q6, q5' q6 q1 | q4 q3 q6' q1 q2 q2 q1 |
+L: 红 土 育 出 茶 芽 沁 春
+1 - - - | q6 q1' q1 q3 q2, q5 | 5, 6' q5' q6, q5 | 4 4 q6' q5 q4' q3 q2 |
+L: 啊 啊 啊
+3 q5, q5 q1, q3 q2 s2 q1 | 5, - - - | q6 q1
+%END

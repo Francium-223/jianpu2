@@ -4,7 +4,7 @@ alias=生日歌简谱_儿歌_祝自己生日快乐，天天好心情
 %TODO:revise
 usertag=to_be_revised
 MBID=d4edf0bf-800b-4531-b998-67244d141768
-copyright=简谱之家,版权归原作者及原网站
+copyright=简谱之家
 %--
 4/4
 subtitle=生日歌
@@ -12,7 +12,10 @@ subtitle=生日歌
 q3 0 0 0 q0 | 0 0 0 0 |
 - q2 0 0 q0 | 0 0 0 0 |
 q3 0 0 0 q0 | 0 0 0 0 |
+
 NextScore
+4/4
+
 subtitle=Happy
 1 0 0 0
 0 5 - 0

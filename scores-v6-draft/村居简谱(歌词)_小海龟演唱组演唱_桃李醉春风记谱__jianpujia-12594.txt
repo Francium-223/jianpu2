@@ -1,0 +1,26 @@
+title=村居简谱_小海龟演唱组演唱_桃李醉春风记谱
+type=work
+MBID=00000000-0000-0000-0000-000000000001
+copyright=简谱之家
+%TODO:revise
+usertag=to_be_revised
+%--
+OctavesAfter
+1=D
+4/4
+KeepLength
+subtitle=村 居
+( s'1 q5 q5 ) 3 s5 s3 s3 q1 s3 s1 s1 s,5 1 | s'1 s5 s5 3 s5 s3 s3 s1 s3 s1 s,5 1 | ,6. q1 s4 q6 s'1 q6 | 5 - - - |
+L: [ 清 ] 高 鼎 原 诗
+s5 q1 s1 q1 s1 d2 1 | q5 q2 q2 q2 s2 s3 2 | q3 ,3 q3 q4 q5 q5. s1 | q4 q3 q2 q1. q2 q2 | 5 - - - |
+L: 谷 建 芬 作 曲
+q5 q1 s1 q1 s1 d2 1 | q5 q2 q2 s2 s2 s3 2 | q3 ,3 q3 q4 s5 q5. s1 s5 | q6 q5 s4 q3. q2 q7,, | 1 - - - |
+L: 桃 李 醉 春 风 记 谱
+R*2
+6 s0 s6 q6 s'1 q6 s1 q6 | 5 q0 q5 q5 q6 q5 s1 q5 | 4 q0 s4 q4 s5 q4 s1 q4 | 3 q0 s3 q3 q4 q3 q1 q3 |
+L: 草 长 莺 飞 二 月 天， 拂 堤 杨 柳 醉 春 烟。 儿 童 散 学 归 来 早， 忙 趁 东 风 放 纸 鸢。
+2 s0 s2 q2 s3 q2 q1 q2 | 1 s7 q6 ,7 - | s'1 q6 s6 q6 s6 s'6 6 | q'1 q5 s5 q5 s5 s6 5 | q6 q5 q4 q3 s2 q3 s4/// q6 |
+L: 草 长 莺 飞 二 月 天， 拂 堆 杨 柳 醉 春 烟。 儿 童 散 学 归 来 早， 忙 趁 东 风 放 纸 鸢。
+5 q0 q5 q6 q7 | q''1 q''1 q'1 0/// | s5 q4 s4 q4 s4 s4 s5 | 4. q5 q3 q3 q3 s3 s3 | q4 q3 q2 q1 s,6 q1. ( q2 q4 |
+L: 啦 啦 啦 啦 啦 啦 啦 啦 啦 啦 啦 啦 啦 啦 啦 啦 啦 啦 啦 啦 啦 啦 啦 啦 啦 啦 啦 啦 啦 啦 啦 啦 啦 啦 啦 啦 啦 啦 啦 啦 啦 啦 啦 啦 啦 啦 啦 啦 啦 啦 啦 啦 啦 啦 啦 啦 啦 啦 啦 啦 啦 啦 啦 啦 啦 啦 啦 啦 啦 啦 啦 啦 啦 啦 啦 啦 啦 啦 啦 啦 啦 啦 啦 啦 啦 啦 啦 啦 啦 啦 啦 啦 啦 啦 啦 啦 啦 啦 啦 啦 啦 啦 啦 啦 啦 啦 啦 啦 啦 啦 啦 啦 啦 啦 啦 啦 啦 �
+%END

@@ -1,0 +1,42 @@
+# jianpu2 简谱转写生产线 —— 配置文件
+#
+# 迁移时**只需改这个文件**(或直接删掉, 用默认值也能跑 —— 所有路径默认相对仓库根)。
+# 仓库根 = 本文件所在目录, 由脚本自动发现, 不需要配置。
+
+[paths]
+images_dir = "images-prep"          # 原图目录(按源分子目录, 每目录一首)
+batch_out  = "batch-out"            # 转写结果 <目录名>.txt + .png
+work_dir   = "train-work"           # 中间产物(名单/统计/GT评测)
+scores_out = "jianpu-db-out/scores" # jianpu-db 格式曲谱(交付物)
+
+[model]
+# 留空则用 <仓库根>/models/Qwen3-VL-2B-Instruct
+# 也可用环境变量 QWEN_VL_MODEL 覆盖
+path = ""
+batch = 8                           # 一次前向几个块; 实测 24 vs 8 只快 14%
+dtype = "bfloat16"
+device = "cuda:0"
+
+[transcribe]
+max_h = 5000        # 超过这个高度的页跳过(海报/长图)
+max_w = 2000        # 宽于此的页缩到 2000px —— 所有尺寸阈值都是绝对像素, 必须归一化
+min_w = 950         # 窄于此的页放大到 1200px —— 前奏常用小一号字
+small_w = 1200      # 放大目标宽度
+x_recheck = true    # 对 'x'(念白) 块做二次复核, 消汉字歌词误判
+
+[purity]
+# 纯简谱门: "单行最长连续暗段 >= 55% 页宽"的行数 >= badline 判非纯
+# 五线谱/六线谱的谱线横跨整页; 简谱的圆滑线是弧, 连续段短
+enabled = true
+badline = 5
+note = "灰度阈值自适应 max(60, 页均值-25); 不要用'整行横向覆盖'做判据, 会被页面照片骗"
+
+[external]
+# jianpu-db 仓库位置(下游 parse_scores.py / data.jsonl 用)
+# 留空则用 <仓库根>/../jianpu-db, 也可用环境变量 JP_JIANPU_DB 覆盖
+jianpu_db = ""
+
+[crawl]
+# jianpu.cn(歌谱简谱网)爬虫
+min_songs_per_artist = 25   # 作品数下限 = "名人"代理指标(过滤冷门作者)
+max_artists = 40

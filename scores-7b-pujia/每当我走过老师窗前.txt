@@ -4,7 +4,7 @@ alias=每当我走过老师窗前简谱_儿歌_对老师崇敬热爱之情的歌
 %TODO:revise
 usertag=to_be_revised
 MBID=63afc6e7-959c-4299-a7cd-d6bfed57135d
-copyright=简谱之家,版权归原作者及原网站
+copyright=简谱之家
 %--
 1' 2 4 0
 1' 7 6 0 | 5 q3 0 0 q0 | 0 0 0 0 | 0 0 0 0 |

@@ -2,7 +2,7 @@ title=明天女声合唱谱
 type=work
 %TODO:revise
 usertag=to_be_revised
-copyright=歌谱简谱网,版权归原作者及原网站
+copyright=歌谱简谱网
 %--
 2/4
 1' 0 | q3 q2 0 | 1' - | - 0 | 1' - | 1' 5 | - 0 |

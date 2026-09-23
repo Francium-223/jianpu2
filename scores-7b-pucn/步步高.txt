@@ -4,7 +4,7 @@ alias=步步高&nbsp;
 %TODO:revise
 usertag=to_be_revised
 MBID=defcb658-311b-4b11-a652-636354f2d518
-copyright=歌谱简谱网,版权归原作者及原网站
+copyright=歌谱简谱网
 %--
 2/4
 subtitle=快乐的小快板

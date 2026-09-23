@@ -2,10 +2,10 @@ title=学电脑
 type=work
 %TODO:revise
 usertag=to_be_revised
-copyright=歌谱简谱网,版权归原作者及原网站
+copyright=歌谱简谱网
 %--
 2/4
-3 - 5 - | 0 0 |
-6 7 1' 0 | 0 0 |
-R{ } A{ | | }
+3 - | 5 - | 0 0 |
+6 7 | 1' 0 | 0 0 |
+R{ } A{ }
 %END

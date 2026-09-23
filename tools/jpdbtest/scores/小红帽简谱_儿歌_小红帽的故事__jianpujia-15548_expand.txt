@@ -1,0 +1,26 @@
+%小红帽简谱_儿歌_小红帽的故事__jianpujia-15548.txt
+MBID=00000000-0000-0000-0000-000000000001
+title=测试
+type=work
+tag=
+usertag=
+tagroute=
+%--
+% 原图: D:\Documents_D\jianpu2\images-prep\test-jianpujia\小红帽简谱_儿歌_小红帽的故事__jianpujia-15548\001.jpg
+
+OctavesAfter
+1=D
+2/4
+( q1 ~ 2 ) q3 q4 | 5 s3 q1 | 1' q6 q4 |
+L: 我 独 自 走 在 郊 外 的 小 路 上, 我 把 糕 点
+q5 q5 3 | q1 q2 q3 q4 | q5 q3 q2 q1 |
+L: 带 给 外 婆 尝 一 尝, 她 家 住 在 又 远 又
+2 3 | ( 2 5 ) | q1 q2 q3 q4 | 5 q3 q2 q1 |
+L: 傍 静 的 地 方, 我 要 当 心 附 近 否 有 大
+2 3 | 1 1 | 1' q6 q4 | q5 q5 1 | 1' q6 q4 |
+L: 1 1 2 3 4 | q5 q3 q2 q1 | 2 3 | 1 1 |
+L: 妈 妈 一 起 进 入 甜 蜜 梦 乡. 当 太 阳 下 山 岗,
+1'' q6 q4 | 5 3 | ( 1 2' ) q3 q4 | q5 q3 q2 q1 |
+L: 我 要 赶 回 家, 同 妈 妈 一 起 进
+2 3 | 1 1 |
+%END

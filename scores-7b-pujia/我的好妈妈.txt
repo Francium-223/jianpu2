@@ -3,7 +3,7 @@ type=work
 alias=我的好妈妈简谱_儿歌_和宝贝一起学首儿歌吧!
 %TODO:revise
 usertag=to_be_revised
-copyright=简谱之家,版权归原作者及原网站
+copyright=简谱之家
 %--
 2/4
 3 - | 5 q0 q0 | 0 0 |

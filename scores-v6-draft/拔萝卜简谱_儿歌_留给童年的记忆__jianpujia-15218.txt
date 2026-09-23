@@ -1,0 +1,20 @@
+title=拔萝卜简谱_儿歌_留给童年的记忆
+type=work
+MBID=00000000-0000-0000-0000-000000000001
+copyright=简谱之家
+%TODO:revise
+usertag=to_be_revised
+%--
+OctavesAfter
+1=F
+2/4
+( s5, s6, ) 1 | q3 q2 1 |
+L: 5 q5. q5 s3 s2 | q1 q2 1 ) |
+L: 5 s6 1 | q3 q2 1 |
+q5 q5. q5 q5 | q1 q2 1 |
+L: 拔 萝 胡 拔 萝 胡 嘿 呀 咿 呀 拔 萝 胡 嘿 呀 咿 呀 拔 不 动 老 太 婆 快 快 来 小 姑 娘 快 快 来 小 花 猫 快 快 来 小 黄 狗 快 快 来
+q5 q5 1 | q5 q5 1 | q5 q5 q5 s3 s2 | q1 q2 1,, |
+L: 快 来 帮 我 们 拔 萝 胡
+Segno
+DS
+%END

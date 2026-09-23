@@ -3,13 +3,13 @@ type=work
 alias=红鼻子驯鹿鲁道夫简谱_经典圣诞歌曲，我们的圣诞节
 %TODO:revise
 usertag=to_be_revised
-copyright=简谱之家,版权归原作者及原网站
+copyright=简谱之家
 %--
 4/4
 2 q5 - 0 q0
-3 s6 d7 1' 2' q0 d0 | 0 1 b2 3' | 'd4 0 0 0 q0. d0
+3 s6 d7 1' 2' q0 d0 | 0 1 b2 3' | 'd4 0 0 0 q0 s0 d0
 R{ } A{ }
 subtitle=副歌
 2 q5 - 0 q0
-3 s6 d7 1' 2' q0 d0 | 0 1 b2 3' | 'd4 0 0 0 q0. d0
+3 s6 d7 1' 2' q0 d0 | 0 1 b2 3' | 'd4 0 0 0 q0 s0 d0
 %END

@@ -3,26 +3,23 @@ type=work
 %TODO:revise
 usertag=to_be_revised
 MBID=ca6fbaff-ba96-4f6f-9f3e-d306f38df7da
-copyright=歌谱简谱网,版权归原作者及原网站
+copyright=歌谱简谱网
 %--
 4/4
 3 q6 - 0 q0 | 0 0 0 0 | 0 0 0 0 |
 q2 0 0 0 q0
-R{ | }
-A{ | }
+R{ }
+
 q1. 0 0 0 s0
-R{ | }
-A{ | }
+R{ }
+
 q5. 0 0 0 s0
-R{ | }
-A{ | }
+R{ }
+
 q7. 0 0 0 s0
 0 0 0 0
 q1' - 0 0 q0
 q2'. 0 0 0 s0
-|
 q6 - 0 0 q0
-|
 q3 q2 0 0 0
-|
 %END

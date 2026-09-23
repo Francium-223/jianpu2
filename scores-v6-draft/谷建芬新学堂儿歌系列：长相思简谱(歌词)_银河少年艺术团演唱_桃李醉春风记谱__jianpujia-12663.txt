@@ -1,0 +1,39 @@
+title=谷建芬新学堂儿歌系列：长相思简谱_银河少年艺术团演唱_桃李醉春风记谱
+type=work
+MBID=00000000-0000-0000-0000-000000000001
+copyright=简谱之家
+%TODO:revise
+usertag=to_be_revised
+%--
+OctavesAfter
+1=F
+4/4
+KeepLength
+( 5 q5 ) q6 5, q1 | 2 q2 q3 2 - |
+L: 谷 建 芬 新 学 堂 儿 歌 系 列
+5 q5 q6 5, q1 | 2 q2 q1 5, - |
+L: 谷 建 芬 作 曲
+q8 s1' s6 q5 s5 s6 s1' s8 q6 c5 | q6. q5. q6. q1'. s2' q1' s2' s4' |
+L: 桃 李 醉 春 风 记 谱
+( 5' - - - ) | 5 ( q5 q2 ) 5 ( 4 |
+L: 白 居 易 原 诗
+2 ~ ) s2. s6 5, - | s1' s1' q6 q5 s5 q6 s1' s8 q6 c5 |
+L: 汴 水 流， 汝 水 流，
+( q1 q6 ) 5, s1 q6 q5 | ( q2 q5. ) s5 d4 h3 c2 - |
+L: 流 到 瓜 州 古 渡 头。 流 到 瓜 州 古 渡 头， 吴 山 点 点 愁。
+q4. q5. s6 q6 s6 q6 c5 | q5 q4 q3 q2 c1 q0 |
+L: 思 悠 悠， 恨 悠 悠，
+q2 s2 q1 q6,. s2 s2 s1 q6 | s6 q1. s2 q4 c2 s2 s6 |
+L: 恨 到 归 时 方 始 休， 月 明 人 倚 楼。
+q5, - q#4, q5, s6, d7 h6 | q5, - -,, |
+L: 恋 到 归 时 方 始 休， 月 明 人 倚 楼。
+5, - - - | q2 s2 q1 q6, q2 s2 q1 q6, |
+L: 思 悠 悠， 恨 悠 悠，
+s6 q1. s2 q4. c6 s0 q2 | 5 - - - |
+L: 恋 到 归 时 方 始 休， 月 明 人 倚 楼。
+L: 欢 迎 光 临 《 中 国 曲 谱 网 》 : http://www.qupu123.com/space/6
+( 5 q6 q6 ) 5 q0 ) |
+L: 欢 迎 光 临 醉 春 风 记 谱 空 间 : http://user.qzone.qq.com/563264185
+Segno
+DS
+%END

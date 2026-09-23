@@ -1,0 +1,35 @@
+%上海人&nbsp;&nbsp;__jianpucn-475629.txt
+MBID=00000000-0000-0000-0000-000000000001
+title=测试
+type=work
+tag=
+usertag=
+tagroute=
+%--
+% 原图: D:\Documents_D\jianpu2\images-prep\test-jianpucn\上海人&nbsp;&nbsp;__jianpucn-475629\001.jpg
+
+OctavesAfter
+1=F
+2/4
+subtitle=行 板 谈 谐 地
+1, s2 q3 q3 | q3,. s1 q6, q6, | s7, s7, s7, q6, s7, s1 d2 |
+L: 上 海 人 是 一 个 别 名 表 示 一 种 赞 赏 常 常 用 在
+3 - | 3, s4 q5 q5 | q6 q6 q5 q7 q6 q6 |
+L: 名 副 其 实 上 海 人 一 点 不 假 不 夸 张 中 心 城 区
+q6. q5 q2 q2 | ( 4 3 ) | 2 - |
+L: 中 心 城 区 之 外 时 髦 姑 娘 身 张 里
+2 0 | 1, s2 q3 q3 | q3, s1 q6, q6, |
+L: 一 棵 好 苗 这 里 出 生 这 里 长
+q2, s7, q5, s5, | q5, s5, q6, q5 s6, |
+L: 五 官 端 正 皮 肤 白 暄 身 材 苗 条 文 明 礼 貌 举 止 大
+q6, s6, s7, q1 | 2 - |
+L: 工 作 学 习 到 外 区 好 学 上 进 作 为 人 们 学 习 榜
+q1 q1 s7, q6, | q5, q6, | 5, - |
+L: 方 从 不 居 住 中 心 区 外 区 土 生 土 长
+q5, s3, q5, s6, | ( q5, 3 ) 3 | s6 q7 |
+L: 样 能 歌 善 舞 会 朗 诵 多 才 多 艺 有 理 想
+6, s5 q4 q4 | q4 q3 2 | s7, s2 s7, s6, |
+L: 真 名 不 离 英 与 芳 气 质 与 那 上 海 人 相
+s5 s5 3 | 5 ~ ( q6 q7 ) | 1' - |
+L: 思 维 敏 捷 爱 清 洁 独 立 生 活 能 力 强 像
+%END

@@ -3,15 +3,17 @@ type=work
 alias=宜昌队&nbsp;&nbsp;
 %TODO:revise
 usertag=to_be_revised
-copyright=歌谱简谱网,版权归原作者及原网站
+copyright=歌谱简谱网
 %--
 4/4
 subtitle=主歌
 0 0 0 0 | 2 3 0 0 | q6 5 0 0 q0 | 0 0 0 0 |
-0 0 0 0 | 2 3 0 0 | q6 5 0 0 q0 | 0 0 0 0 |
-0 0 0 0 | 2 3 0 0 | q6 5 0 0 q0 | 0 0 0 0 |
+% 循环折叠: 重复块已保留 1 遍 (原 3 遍)
 0 0 0 0 | 1 - 4 0 | q6 5 0 0 q0 | 0 0 0 0 |
+
 NextScore
+4/4
+
 subtitle=副歌
 0 0 0 0 | 2 3 0 0 | q6 5 0 0 q0 | 0 0 0 0 |
 0 0 0 0 | 2 3 0 0 | q6 5 0 0 q0 | 0 0 0 0 |

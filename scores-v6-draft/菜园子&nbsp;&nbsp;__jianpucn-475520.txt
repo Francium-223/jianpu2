@@ -1,0 +1,32 @@
+title=菜园子
+type=work
+MBID=00000000-0000-0000-0000-000000000001
+copyright=简谱之家
+%TODO:revise
+usertag=to_be_revised
+%--
+OctavesAfter
+1=bA
+4/4
+KeepLength
+subtitle=菜 园 子
+6, 6, 1 6, | q2 q2 s2' s3. 2 - | 6, s6 s6 1 6, | q1 s6 1 6, - |
+L: 我 们 都 是 有 为 青 年 我 们 的 时 代 要 有 担 当 我 们 的 未 来
+2 q2 q2 6, | q3 q2 3 2 q1 q2 | 3 3 q5 6 q2 | g[2] 3 - - - | 3 3 2 s3 s2 |
+L: 充 满 阳 光 走 起 路 来 一 路 风 光 展 我 五 千 年 的 华 夏 风
+1 7, q1 q1. s7, s6 | g[5&6] 6 - - - | 0 0 0 0 | q6 q6 q3 q3 q2 q2. s2 q1 |
+L: 采 菜 园 子 都 是 我 中 国 的 地 盘 绝 不 允 许 他 国 贵 宾
+2 q3 s2 | - - | 3 2 2 s3 s2 | - q1. q1. q1 | q7, s6, 6 - |
+L: 来 扰 乱 人 与 人 之 间 都 要 互 相 尊 重 何 况 领 土 它 也 是
+( q6 q3 ) s2 s3 2 3 | q2 q3 s2 q3 6, - | s6 q3 s2 q3 2 3 |
+L: 不 容 侵 犯 中 国 的 地 盘 Chi-na Chi-na 做 主
+q2 s3 q2 s3 6, - | s6 q3 s2 q3 2 3 | q2 q3 s2 q3 6, - |
+L: 菜 园 子 都 是 我 中 国 的 地 盘
+s5 q5 s5 q3 s3 q3 s3 | 3 s2 s3 3 - | q6 q6 q6 q3 s3 q2 s2 s1 |
+L: 领 土 它 也 是 不 容 侵 犯 中 国 的 地 盘 Chi-na Chi-na
+2 q3 2, q2 s3 | ( q7, q6 ) q6 - - | 0 0 0 0,, |
+L: 人 与 人 之 间 都 要 互 相 尊 重 何 况
+( q6 q6 ) q6 q6 6 2 | 2 s3 q3. s2 s3 | 3 2 3 5 | 6 - - - ) |
+L: 做 主
+q6 q6 q6 q6 6 2 | 2 s3 s6 q6 - | q6 q6 s6 q6 6 q2 |
+%END

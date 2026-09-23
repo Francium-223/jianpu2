@@ -4,7 +4,7 @@ alias=清明简谱(歌词)_小海龟演唱组演唱_桃李醉春风记谱
 %TODO:revise
 usertag=to_be_revised
 MBID=96601a09-6de4-4551-8ba2-aeeced9cad39
-copyright=简谱之家,版权归原作者及原网站
+copyright=简谱之家
 %--
 4/4
 5 q2 0 0 q0 | 0 0 0 0 |

@@ -2,13 +2,12 @@ title=月亮的歌声
 type=work
 %TODO:revise
 usertag=to_be_revised
-copyright=歌谱简谱网,版权归原作者及原网站
+copyright=歌谱简谱网
 %--
 1' 2 4 0
 3 5 - - | q6 q7 q7 0 0 q0 | 0 0 0 0 |
 q1' q7 q7 0 0 q0 | q1 0 q2' q2' 0 q0 | 0 0 0 0 |
-q1' q7 q7 0 0 q0 | q1 0 q2' q2' 0 q0 | 0 0 0 0 |
-q1' q7 q7 0 0 q0 | q1 0 q2' q2' 0 q0 | 0 0 0 0 |
+% 循环折叠: 重复块已保留 1 遍 (原 3 遍)
 q1' q7 q7 0 0 q0 | q1 2 - - q0 | 0 0 0 0 |
 q6 q5 q3 0 0 q0 | 0 0 0 0 |
 %END

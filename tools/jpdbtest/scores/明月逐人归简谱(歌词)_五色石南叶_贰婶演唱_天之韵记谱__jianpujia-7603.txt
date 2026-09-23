@@ -1,0 +1,66 @@
+%明月逐人归简谱(歌词)_五色石南叶_贰婶演唱_天之韵记谱__jianpujia-7603.txt
+MBID=00000000-0000-0000-0000-000000000001
+title=测试
+type=work
+tag=
+usertag=
+tagroute=
+%--
+% 原图: D:\Documents_D\jianpu2\images-prep\test-jianpujia\明月逐人归简谱(歌词)_五色石南叶_贰婶演唱_天之韵记谱__jianpujia-7603\001.jpg
+
+OctavesAfter
+1=B
+4/4
+subtitle=明 月 逐 人 归
+( q6 s7 q1' ) 2, | q3'. q6 |
+- 1 q2' s1' s7 s6 | q7,. s3 |
+3. 5 s2, s6, s7 d1, | q5, s4 |
+L: 演 唱: 五 色 石 南 叶 、 贰 婷
+4 0 q6, s7 | q6, s5 |
+- s3 q1 s2 q3 | q3 q6 |
+q5 q3 s3 s2 s1 | 2. 0 |
+q0 q3 s3 s2 s3 | - q3 q1' |
+L: Mystery 作 词
+q7 s1''/// s7 | q7 6 6 q0 s6 s5 |
+L: Sabrina 作 曲
+6 q1'' ( q1' ) 6 2' q0 s7 q6 |
+5, 5, ( q5 q2 ) 3 q0 q2 q1 |
+q2 q1 q2 | - 1 2 q0 q1 q2 |
+L: 天 之 韵 记 谱
+q3. s2 q1 | - 2 s7, q7 |
+L: 如 拂 坤 茫
+q0 q3. q3 s2 s3 | - q3 q6 |
+q5 q3 s3 s2 s1 | 2 0 |
+q0 q3. s3 s2 s3 | - q3 q1' |
+L: 如 俯 仰 自 喋 与 道 俱 往,
+q7 q1'/// q7 | q7 q6 6 q0 s6 s5 |
+L: 著 手 为 春
+q0 q3. q3 q2 s3 | - q3 q1' |
+L: 丹 青 成 册 尚 琳 琅
+6 s0 s6 s5 | q0 q3. q3 s2 s3 |
+L: 林 深 逸 兴
+- q3 q6 | q0 q3 s3 s2 s3 |
+L: 苍 雁 留 木 拂 寒 浪
+- 2 q7 | q6 q6 s6 |
+L: 吐 论 所 珍
+- q6 q3' q9 | q6 q3' q2' s3' s2' |
+L: 松 风 古 调
+s2' q7 q8 | q2' s5 q5 q2' |
+L: 冷 淋 七 绝 弦 上
+q0 q6 q7 | q1' q6 s6 |
+L: 如 蒼 枯 芽
+q6 q5 s1' q6 s7 q1' | ( q1' q2' ) |
+L: 孤 高 清 致 曾 诈 芳
+- - q0 q1'' q2' | q3' s6 s6 |
+L: 何 3. 欲 攒
+q6 q3' q2' s3' s2' | q2' q7 q1' |
+L: 人 独 坐 幽 笹
+s2'' q7. s5 | q5 q5'' 5' q6 s3'' s3'' |
+L: 登 高 九 州 望
+q3' s6 s6 | q6 q3' s3' s2' s2' |
+L: 永 远 的 一 处
+q2' q7 q1' | 6 - - 0 |
+L: 云 中 有 鹤 相 侍 振
+( q6 7 ) 7 1' 7 3 |
+L:
+%END

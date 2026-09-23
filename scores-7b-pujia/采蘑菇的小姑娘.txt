@@ -4,11 +4,11 @@ alias=采蘑菇的小姑娘简谱_多一些淘气，多一些乐趣，多一些�
 %TODO:revise
 usertag=to_be_revised
 MBID=66fecdf4-7c94-4dc4-8517-603bdd08c75e
-copyright=简谱之家,版权归原作者及原网站
+copyright=简谱之家
 %--
 4/4
 3 - - - | 3 - - 0 | q2 1' 0 0 q0 |
 - - - 0 | - - - 1' | - 0 0 0 |
-6 d5 0 0 q0. d0 | 7 0 0 0 | 0 0 0 0 |
+6 d5 0 0 q0 s0 d0 | 7 0 0 0 | 0 0 0 0 |
 R{ } A{ }
 %END

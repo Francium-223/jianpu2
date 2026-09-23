@@ -3,7 +3,7 @@ type=work
 alias=声律启蒙简谱(歌词)_小海龟演唱组演唱_桃李醉春风记谱
 %TODO:revise
 usertag=to_be_revised
-copyright=简谱之家,版权归原作者及原网站
+copyright=简谱之家
 %--
 4/4
 5 - 0 0 | q2 - q3 - q6 q0 | - q7 0 0 q0 |

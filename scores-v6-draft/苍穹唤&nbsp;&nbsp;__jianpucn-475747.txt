@@ -1,0 +1,32 @@
+title=苍穹唤
+type=work
+MBID=00000000-0000-0000-0000-000000000001
+copyright=简谱之家
+%TODO:revise
+usertag=to_be_revised
+%--
+OctavesAfter
+1=F#
+4/4
+4=68
+KeepLength
+( q0 s0 ) q6' ( s3'' s5'' s3' | 3'. - ) s3' d5' h3 h5 h3 h5' |
+L: 林 鹿 儿 演 唱
+q5'. s3' s3 3' - - | 0 5 6 g[6,,] h1 h2 h1 | s2' s1' s6 b6. - - |
+L: 王 月 飞 词 曲
+- 0 0 0 | s5 s6 s1' q2' s3' s5 h2' 3' - | - ~ s6. s6' s3'' h3, h2, h2' s3, h6, h6 h1 h6 h5 |
+L: 竖 笔 令 打 谱
+6 ( q5 q3 ) q6' s1' q6' s5' s5 q3, | q3. q5./// 3 6, s1 2, s3 s5 | 3, q6 s5 3, 6' s1' q6 q1 q5 |
+L: 风 起 于 青 山 脚
+6 6 1' 6 4' 3, s3' s2 | 3' - | ( s6' s6' s3' s6' ) s5 s6 s5 s6 s1' s2'' s1' | 6, s2' s3' s6 s5 s6 s5 q6 s1'' s2'' s1' |
+L: 雪 落 在 指 尖 绕 一 声
+q1' s6 q6 q5. q6' s1' | q3 q5 q6. s5 s3 s5 | q6. s2' s3' s6 s5 q6 s5 q6 s1' s2'' s1' | q1' s1' s2 q1' q6 q6 5' |
+L: 您 远 眼 谱 语 告 天 地 听 我 心 跳 山 趴 的 鹰 飞 过 云 霄 大 地 的 脉
+- - | ( q6. s3' s3' ) s6 s5 s6 s5 q6 s1'' s2'' s1' | q1' s6 q6 q5. s6' s1' s6 s5 s6 s3' |
+L: 搏 如 此 骄 傲
+( q2' s3' q6 ) - | ( q6 q6 q6 q3' ) q6. s6 q6 q6 s3' q3, q6 | q6' s1' q6 q5 q6 s1' s6 s5 s3 |
+L: 万 古 的 歌 回 落 心 间 一 步 一 步 走 向 彼 岸 无 坠 天 地 我 心 如
+( q3. q5. ) 3, s5 s5 q6 | s1 s2' s2 | ( q2, 9 ) 3' - | s2, q0 0 q0 | s4, q6. s6 q5 6 |
+L: 焰 河 水 映 照 日 月 古 道 诉 说 时 光 每 一 脚 印 铺 满 希 望 灵 魂 在 天 地 俏 伴
+s6' s1' s6 s5 s6 | ( q6 q6 q6 ) s6 s6 s6 s2
+%END

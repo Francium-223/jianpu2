@@ -4,7 +4,7 @@ alias=我们是共产主义接班人简谱_儿歌_为着理想勇敢前进，我
 %TODO:revise
 usertag=to_be_revised
 MBID=4fb5033a-a2e8-41fc-b602-64250c4130af
-copyright=简谱之家,版权归原作者及原网站
+copyright=简谱之家
 %--
 2/4
 3 5 | 6 0 | q3 - q0 | 0 0 |

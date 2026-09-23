@@ -1,0 +1,36 @@
+%菜园子&nbsp;&nbsp;__jianpucn-475520.txt
+MBID=00000000-0000-0000-0000-000000000001
+title=测试
+type=work
+tag=
+usertag=
+tagroute=
+%--
+% 原图: D:\Documents_D\jianpu2\images-prep\test-jianpucn\菜园子&nbsp;&nbsp;__jianpucn-475520\001.jpg
+
+OctavesAfter
+1=bA
+4/4
+6, 6, 1 q6, | q2 q2 s2 q3 2 - | 6, q6 q6 1 q6, | q1 q6 1 ~ 6, - |
+L: 崔 宿 杰 词 曲
+2 q2 q2 6, | q3 q2 3 2 q1 q2 | 3 3 q5 6 q2 | g[2] 3 - - - | 3 3 2 q3 q2 |
+L: 我 们 都 是 有 为 青 年 我 们 的 时 代 要 有 担 当 我 们 的 未 来
+1 7, q1 q1 s7, q6' | g[5&6] 6, - - - | 0 0 0 0 | q6 q6 q3 q3 q2 q2 q2 q1 |
+L: 充 满 阳 光 走 起 路 来 一 路 风 光 展 我 五 千 年 的 华 夏 风
+2 q3 q2 | - - | q5 q5 q5 q3 q3 q3 q3 | 3 q2 q3 | - - | q6 q6 s3 q3 |
+L: 采 菜 园 子 都 是 我 中国 的 地 盘 绝 不 允 许 他 国 贵 宾 来 扰 乱 人 与 人 之 间 都 要 互 相 尊 重 何 况 领 土 它 也 是
+q2 2 2 s3 q2 | - q1 q1 q1 | q7, q6, | - - | ( q6, q3 q2 q3 ) 2 3 |
+L: 不 容 侵 犯 中 国 的 地 盘 Chi-na Chi-na 做 主 q2 q3 q2 q3 | 6, - |
+L: 菜 园 子 都 是 我 中国 的 地 盘 q6 q3 q2 q3 | 2 3 | q2 q3 q2 q3 | 6, - |
+L: 绝 不 允 许 他 国 贵 宾 来 扰 乱 人 与 人 之 间 都 要 互 相 尊 重 何 况
+q5 q5. q5 q3. q3 q3. s3 q3 | 3 q2 q3 | - | q6 q6 q6 q3. q3 q2 s2 q1 |
+L: 领 土 它 也 是 不 容 侵 犯 中 国 的 地 盘 Chi-na Chi-na
+2 q3, 2, | q2 q3 | s7, q6 q6 - - | 0 0 0 0,, | ( q6 q6 q6 q6 ) 6 q2 |
+L: 做 主
+2 q3 q3 | - - q1 q1 q1 | s7 q6 q6 - - | 0 0 0 0,, | ( q6 q6 q6 q6 ) 6 q2 |
+L: 中 国 的 地 盘
+2 q3 q6 | - - | q6 q6 q6 q6 6 q2 | 2 q3 q3. q2 q3 | 3 2 3 q5 |
+L: 何 况
+6 - - - | 0 0 0 0 | 2 q3 q6 | - - | q6 q6 q6 q6 6 q2 |
+L: 何 况
+%END

@@ -2,10 +2,10 @@ title=尖兵战歌
 type=work
 %TODO:revise
 usertag=to_be_revised
-copyright=歌谱简谱网,版权归原作者及原网站
+copyright=歌谱简谱网
 %--
 4/4
-6 - 7 0 | q2 - q3 0 0 | s1' - s2' 0 0 q0 | d5 - 1' 0 q0. d0 | 0 0 0 0 |
-q2 - q3 0 0 | s1' - s2' 0 0 q0 | d5 - 1' 0 q0. d0 | 0 0 0 0 |
-q2 - q3 0 0 | s1' - s2' 0 0 q0 | d5 - 1' 0 q0. d0 | 0 0 0 0 |
+6 - 7 0 | q2 - q3 0 0 | s1' - s2' 0 0 q0 | d5 - 1' 0 q0 s0 d0 | 0 0 0 0 |
+q2 - q3 0 0 | s1' - s2' 0 0 q0 | d5 - 1' 0 q0 s0 d0 | 0 0 0 0 |
+q2 - q3 0 0 | s1' - s2' 0 0 q0 | d5 - 1' 0 q0 s0 d0 | 0 0 0 0 |
 %END

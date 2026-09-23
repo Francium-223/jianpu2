@@ -1,0 +1,37 @@
+%学电脑&nbsp;&nbsp;__jianpucn-475615.txt
+MBID=00000000-0000-0000-0000-000000000001
+title=测试
+type=work
+tag=
+usertag=
+tagroute=
+%--
+% 原图: D:\Documents_D\jianpu2\images-prep\test-jianpucn\学电脑&nbsp;&nbsp;__jianpucn-475615\001.jpg
+
+OctavesAfter
+1=D
+2/4
+subtitle=学 电 脑
+3,. s4 q5 q5 | 5, ( q1 3 ) | 3 - |
+L: 行 进 速 度 自 信 地
+q5, s5 q4 q3 | 2 3 | 6, - |
+s6, s3 q2 s3 q4 | 5 - |
+L: 朱 国 鑫 词 曲
+q3, s4. 55 | q6, s6 q5 q4 |
+3 - | q4, s3 q2 q1 |
+L: 电 脑 操 作 不 复 杂,
+7 5, | 6, - |
+L: 先 易 后 难 稳 扎 稳 打,
+q6, s6, q5 s6, q7, | ( q1 2 ) 3 |
+L: 主 机 显 示 屏, 路 由 器 电 源 连 接 上,
+5 s5 3 q6 q6 | ( q5 q1'' ) 3'' |
+L: 手 机 拍 照 片 微 信 电 脑 上 传 下 达,
+3' - | q6. q6 q1' q5 |
+L: 选 一 家, 拼 音 字 母 打 字, 金 山 文 档 建 篇
+3, s5 q4 q3 | 2 3 | 1 - |
+L: 随 意 天 下 要 闻 尽 知 道, 眼 观 四 方 耳 闻 八
+1 0 |
+L: 章, 下 载 复 制 粘 贴 删 改 有 办 法。
+
+% 歌词(已剥离): 方, 爱 好 电 脑 趣 无 穷 多 潇 洒
+%END

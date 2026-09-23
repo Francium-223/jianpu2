@@ -2,7 +2,7 @@ title=春日肆意游
 type=work
 %TODO:revise
 usertag=to_be_revised
-copyright=歌谱简谱网,版权归原作者及原网站
+copyright=歌谱简谱网
 %--
 4/4
 1' 3 2 q5 q0 | 0 0 0 0 |

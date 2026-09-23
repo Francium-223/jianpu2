@@ -1,0 +1,37 @@
+title=忘情酒
+type=work
+MBID=00000000-0000-0000-0000-000000000001
+copyright=简谱之家
+%TODO:revise
+usertag=to_be_revised
+%--
+OctavesAfter
+1=G
+4/4
+4=66
+subtitle=戴尚辉2025年度创作歌曲
+KeepLength
+R*3
+0 0 0 q0 s'3 s'3 | q'6 q'6 s'6 s'1 s'3. '2. s2 s'3 |
+L: 抒 情 摇 滚
+q''5. ''5 s'5 s'3 s'5 6,. s6 s7 | s1 s8 d1 s1 s1 s1 s6 s2 s2 s3 s5' | q,6 - - - |
+L: 戴 尚 辉
+1. q,7 q6, q,6 | q3 2 q1 2 - | q,5 q5 q6, s7 s7 s7 s5 | 1 ( s7 q6 ) ~ ,6 - | 2, q1 2 - |
+L: G B C D Bm Em C D
+1. q,7 q6, q,6 | q3 2 q1 2 - | q5 q5 q6 s7 s7 s7 s5 | 1 ( s7 q6 ) q6 - | q2. q1 2. q2 |
+L: Em Am Am D Em Am
+q2 2 q3 q6 - | q1 q1 q1 q,6 s6 5 q2 | 3 - - - | 2, q1 2, q2 | q2 2 q3 q6, - |
+L: 断 了 爱 却 断 不 了 你 断 不 了 和 你 缠 绵 的 回 忆 爱 难 懂
+q5. ,5 q,6 s,7 s,7 s,7 s5 | 1. s7 ( q6. ) ,6 - | 6 - - q0 s3 s3 |
+L: 情 也 难 控 人 生 如 梦 往 事 如 风 举 起 杯 喝 忘 情 的 酒
+s6 q6 s6 s1 s3 | 2, s2 s3 | q5 s5 s5 s5 s3 s5 | ,6 - | s1 s1 s1 s1 s1 s6, s6 s5 s5 s2 |
+L: 忘 了 我 为 你 中 的 痴 情 盧 吼 喝 下
+3 - - q0 s3 s3 | q6 q6 s6 s1 s3 | 2, s2 s3 | q5. s5 q5 s5 q3 s5 | 6 - - |
+L: 这 杯 忘 情 的 酒 忘 了 你 给 我 所 有 的 伤 你 的 样 子 从 此 消 失 我 的 眼 中 喝 下
+q6 q6 s6 q1 s3 | 2, s2 s3 | q5 s5 q5 s5 q3 s5 | 6 - - | s1 s1 s1 q1 s1 s6, s2 q2 s2 s3 s,5 |
+L: 这 杯 忘 情 的 酒 忘 了 你 给 我 所 有 的 痛 你 的 样 子 从 此 消 失 我 的 心
+R*3
+716 - - - | ,,6 - - - | q1 q1 q1 q1 s1 s6, q2 s2 s3, | - - - q5 | q6 - - - |
+L: 中 中 你 的 样 子 从 此 消 失 我 的 心 中
+R*
+%END

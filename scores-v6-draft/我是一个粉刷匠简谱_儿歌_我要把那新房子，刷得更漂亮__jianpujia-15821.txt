@@ -1,0 +1,21 @@
+title=我是一个粉刷匠简谱_儿歌_我要把那新房子，刷得更漂亮
+type=work
+MBID=00000000-0000-0000-0000-000000000001
+copyright=简谱之家
+%TODO:revise
+usertag=to_be_revised
+%--
+OctavesAfter
+1=D
+2/4
+L: 温 和 地
+q5 q3 s5 q3 | s5 q3. 1 | q2 q4 q3 q2 |
+L: 我 是 一 个 粉 刷 匠， 粉 刷 本 领 强。
+5 - | q5 q3 s5 q3 | q5 q3 1 | q2 q4 s3 q2 |
+L: 我 要 把 那 新 房 子
+1 - | q2 q2 s4 q4 | q3 q1. 5 | q2 q4 s3 q2 |
+L: 刷 得 很 漂 亮。 刷 了 房 顶 又 刷 墙， 刷 子 飞 舞
+5 - | s5 q3 s5 q3 | q5 q3 1 | q2 q4 s3 q2 |
+L: 忙， 哎 呀 我 的 小 鼻 子， 变 呀 变 了 样。
+1 - |
+%END

@@ -2,13 +2,10 @@ title=陆北大
 type=work
 %TODO:revise
 usertag=to_be_revised
-copyright=歌谱简谱网,版权归原作者及原网站
+copyright=歌谱简谱网
 %--
 4/4
 3 - 6 - | 0 0 0 0 |
 7 5 0 0 | 0 0 0 0 |
 1 2. 0 q0
-R{ } A{ }
-R{ }
-A{ }
 %END

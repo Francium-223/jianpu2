@@ -1,0 +1,16 @@
+# jianpu2 简谱转写生产线 —— 依赖
+#
+# 关键: 必须用 Python 3.13(3.14 目前没有 torch 轮子)
+#   py -3.13 -m pip install -r requirements.txt
+#
+# GPU: 任意支持 bf16 的 NVIDIA 卡(实测 RTX 4070 Laptop 8GB 够跑 2B 模型);
+#      没卡也能跑, 但要把 pipeline.toml 的 device 改成 cpu(会慢很多)。
+
+torch>=2.4
+transformers>=4.57          # Qwen3-VL 需要较新版本
+accelerate>=1.0             # device_map / 低显存加载
+Pillow>=10.0
+numpy>=1.26
+requests>=2.31              # jianpu.cn 爬虫
+
+# 注: tomllib 是 Python 3.11+ 标准库, 无需安装(3.10 及以下需 pip install tomli)

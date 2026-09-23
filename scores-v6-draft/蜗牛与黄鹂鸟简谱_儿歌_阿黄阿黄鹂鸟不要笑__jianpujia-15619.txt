@@ -1,0 +1,19 @@
+title=蜗牛与黄鹂鸟简谱_儿歌_阿黄阿黄鹂鸟不要笑
+type=work
+MBID=00000000-0000-0000-0000-000000000001
+copyright=简谱之家
+%TODO:revise
+usertag=to_be_revised
+%--
+OctavesAfter
+1=E
+4/4
+s5 q5 q5 | q5 s3 s5 | q1 q6 5 | s5 q5 q5. s5 s3 s2 | s1 q3 2 | 2,. q3. s5 s5 |
+L: 阿 门 阿 前 一 棵 葡 萄 树 ， 阿 嫩 阿 嫩 绿 她 刚 发 芽 ，
+q3 s3 q2 q1 q1 | 2, q3, q1 s1 s6, | s5 q6. q5, | s5 s5 s5 q5 s3 s5 |
+L: 蜗 牛 背 着 那 重 重 的 壳 呀 ， 一 步 一 步 地 往 上 爬 。 阿 树 阿 上 两 只
+q1 q6 q5 | s5 s5 s5 q5 s3 s2 | q1 q3 2 | 2, q3, q5 q5 | q3 q3 q2 q1 q1 |
+L: 黄 鸟 鸟 ， 阿 喳 阿 喳 哈 哈 在 笑 它 ， 葡 萄 成 熟 还 早 得 很 哪 ， 现 在 上 来 干 什 么 ?
+L: 阿 黄 阿 黄 鸟 儿 不 要 笑 ， 等 我 爬 上 它 就 成 熟 了
+q1 q6. q5, q5 q6 | q1 q2. q1 q2 | 3 q2 | q1 - | 1 - |
+%END

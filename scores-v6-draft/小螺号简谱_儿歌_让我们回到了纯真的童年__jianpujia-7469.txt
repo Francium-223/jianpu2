@@ -1,0 +1,31 @@
+title=小螺号简谱_儿歌_让我们回到了纯真的童年
+type=work
+MBID=00000000-0000-0000-0000-000000000001
+copyright=简谱之家
+%TODO:revise
+usertag=to_be_revised
+%--
+OctavesAfter
+1=F
+2/4
+subtitle=小 螺 号
+( s6 s6 s6 q6 ) q6 s3 s5 | s6. h3 d3 q3 s3 h2 | s6. s2 s2 q2 s2 s1 s6 |
+L: 付 林 词 曲
+q1 s3 q5 q1' | x - ) | q6,. q3 3 | q6,. s3 q3 c3 |
+L: 螺 号 声
+s6 q3. s3 q3. ( s3 q5. s3 ) q2 | c3 - | s6, q2 2 |
+L: 1, 2, 3 小 螺 号 滴 滴 滴 吹 海 鸥 听 了 展 翅 飞
+s6, s2 s2 c2 | s6, s2 s2 q2 s2 s1 s6, | c1 - | q6, q3. q3 c3 |
+L: 小 螺 号 滴 滴 滴 吹 浪 花 听 了 笑 微 微
+q6, q5 q5 s3 | ( q6./// s5 ) s6 s5. q3 | q6, q2. 2, | q6, s2 s2 c2 |
+L: 声 声 唤 船
+s3 s3 s2 q3. s2. s1 s6, | c1. 1 | -/// c6. s6, s5 |
+L: 归 喵 小 螺 号 滴 滴 滴 吹 阿 爸 听 了 快 快 回 哟
+( s3 q2 ) q5, | - - c5. | 5 s5 q6 s5 | s3 s2 q3, |
+L: 茫 茫 的 海 滩 蓝 蓝 的 海 水
+3 - | c2. s2 s3 s1 | s1 s6 q1, | - - |
+L: 螺 号 声 吹 起 了 螺 号 心 里 美 咚
+Segno
+ToCoda
+DS
+%END

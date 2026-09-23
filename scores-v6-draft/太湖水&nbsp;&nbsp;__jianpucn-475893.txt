@@ -1,0 +1,28 @@
+title=太湖水
+type=work
+MBID=00000000-0000-0000-0000-000000000001
+copyright=简谱之家
+%TODO:revise
+usertag=to_be_revised
+%--
+OctavesAfter
+1=E
+2/4
+KeepLength
+subtitle=太湖水
+( )
+'2 s3 2 6 - q5 q6 s5 q6 d5 s6 d5 s6 h5 h6 g[5] s6 g[5] s6 g[5] s6 g[5] h6 | 6 - | 3 s1 s3 2 - |
+s3 q2 q1 q2 s3 s2 s1 s2. s3 s2 s1 s2 g[3] s2 g[3] g[2] g[3] s2 | 2 - - - - | 5 q5 q6 s7 s,7 s6 s5 | 3 - |
+L: ( 蒋 立 德 )
+3,. q3. 6 s3 q1. | 2 s3 q2. 2 - g[2'] | q3,. q,3 s2 q3. | 1 s,7 s6 | 6' - | 6,.. s,6 | 1 q1 s6 s3 |
+2 1 | 1 s6 q3 | 2 - | s3 q2 s1 s2 | ,7 s7 s5 | q6 - | 6, - | 6 q6 q3 | 6. s7 |
+q'1 s7 | 6 - | 7 q6 q7 | q6 q6. s5 s6 | g[5&2] 3 - | 2 s2 s,6 | 2. s3, | s4 s,4. s3 s1 |
+2 - | q3 q3 s2 q3 | 2 s1 s,7 | ( 6, - ) | q6, - | 3, s2 | 1 s6 s3 | 3 - |
+L: ( 《 太 湖 水 》 第 1 页 共 2 页 )
+2 q5. q7 | q,6 - | ,6. q3 | 6 q6 q5 | 6 3 | '1 s7 s5 | 6 - | 5 s5 q6 | q7 s,7 s6 s5 |
+L: ( 歌 谱 简 谱 网 )
+g[5] 3 - | 3 - | q2 q3. 2 | q2 s,6. 2 | s5 q4 3 | - q2 1 | s2 q3. q,7 | s7 s7 ,7 | s,6 s5. q,6 |
+L: ( www.jianpu.cn )
+- - | 6 s6 q7 | q'1 s''1 s7 q6 | s7 q6 s5 q6 | 3 q6 q7 | '1 s''1 | q7 q6 s7 q6 | q5 q7 6 | q3 2 q3 |
+5 q7 q6 | 6 - | 6 - | 6 - |
+%END

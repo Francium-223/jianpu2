@@ -3,7 +3,7 @@ type=work
 %TODO:revise
 usertag=to_be_revised
 MBID=316fbe80-4f60-4df9-a712-2793d8afecbc
-copyright=歌谱简谱网,版权归原作者及原网站
+copyright=歌谱简谱网
 %--
 2/4
 0 5 | 3 - | - 0 | 0 0 |
@@ -14,7 +14,10 @@ q1 3 q1 | 4 0 | 0 0 |
 q1 5 q1 | 6 0 | 0 0 |
 q1 7 q1 | 1' 0 | 0 0 |
 subtitle=副歌
+
 NextScore
+2/4
+
 q1 2' q2 | 0 0 | 0 0 |
 q2 1 q2 | 2 0 | 0 0 |
 %END

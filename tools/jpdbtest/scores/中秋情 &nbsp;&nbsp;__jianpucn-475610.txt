@@ -1,0 +1,53 @@
+%中秋情 &nbsp;&nbsp;__jianpucn-475610.txt
+MBID=00000000-0000-0000-0000-000000000001
+title=测试
+type=work
+tag=
+usertag=
+tagroute=
+%--
+% 原图: D:\Documents_D\jianpu2\images-prep\test-jianpucn\中秋情 &nbsp;&nbsp;__jianpucn-475610\001.jpg
+
+OctavesAfter
+1=bE
+4/4
+subtitle=中秋情
+( 1 , q2 q3 ) 5 - | 3 , q5 6 - |
+q1' q6 q5 q3 s5 q6, q2 q5 q3 q2 | 1 - - - - |
+s3 s2 1 - - | q2 q3 5 - - |
+q6 q5 q6 q5 q1' q6' s5 q6 | 5 - - - - |
+L: 中 秋 团 圆 地
+q2 q3 6 - - | q2 q3 q6, - - |
+L: 邹 希 梅 演 唱
+q2 q3 s2 q3 q1 | ( q6' q5, q6, ) | 1. - - - |
+L: 张 立 中 词
+q3 q5 5 - - | ( q6' q5 5 ) - - |
+L: 刘 昌 贵 曲
+q3 q5. s6 q1'' | q6' q5 s3 | 5 - 2 - - |
+L: 月 儿 圆
+( 6,. 1, ) s6 s5 d3 | 6 q0 q6 s3 | 2 3 s5 s6 | 1 q3. 6, s3 | q2 1 2 |
+L: 月 儿 圆
+q0 q5. s2 q7 | 1 - | 1 - - s1 s3 q5 |
+L: 心 儿 甜
+6, 1, s6 s5 s3 | 6 q0 q6 s3 | 2 3 s5 s6 | 1 q3 6, s3 | q2 1 2 |
+L: 心 儿 甜
+q0 q5 s2 q7 | 1 - | q5 q6. q1'' q5 s3 s5 | q6 q5 q1 | 6, q3 s5 q6 |
+L: 月 儿 圆
+5 - q5 q6 q1'' q5 s3 | q5 q6 s3 q5 q6 s3 q2 | q6. 5, s3 q5 2 - |
+L: 月 儿 圆
+3 s5 s6 | q1,, q1 q7 | q6 5, | 2, q3 | q3 q5 6 - |
+L: 月 儿 圆
+q1, q6 q5 | q3 q2 q5 | 6, q2 q5 q3 | 2 1 - - - |
+L: 月 儿 圆
+1 0 0 0 | ( 6 1' q6 ) q5 q3 | q2 s5 q6 q5 |
+L: 月 月 月
+q2 q5 q3' q2' | 2 ~ 1 - | 1 - - - |
+L: 月 月 月
+1 0 0 0 |
+( 6 1 6 ) q5 q3 q2 | q5 q6 q5 s2 q5 q3 |
+L: 祝 福 祖 国 大 发 展
+2 1 - | 1 - - - |
+( 0 0 0 )
+
+% 歌词(已剥离): 繁 荣 昌 盛 万 万 年 繁 荣 昌 盛 万 万 年
+%END

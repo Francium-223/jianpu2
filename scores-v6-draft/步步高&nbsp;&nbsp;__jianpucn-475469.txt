@@ -1,0 +1,109 @@
+title=步步高
+type=work
+MBID=00000000-0000-0000-0000-000000000001
+copyright=简谱之家
+%TODO:revise
+usertag=to_be_revised
+%--
+OctavesAfter
+1=G
+2/4
+KeepLength
+subtitle=快乐的小快板
+0 0 | 0 0 | 0 0 | 0 0 |
+L: 周 仲 康 编 配
+5#5' 3'' | ( s1' s7 s1' ) s2 q3'' q5 | q1,, 6 0 3[ q5 3 ] q1 1 |
+0 0 | x x x | q3 ( ) | q3 ( ) |
+L: 大 小 木 鱼
+( ) sX. qX,/// | qX,/// | qX,/// | - 0 | 0 x |
+L: 铃 钟
+q8. | s8. | s3. | ( q3. ) | - 0 | 0 q0 |
+L: 大 小 排 鼓
+s3. | s3. | s3. | ( q3. ) | - 0 | 0 q0 |
+L: 扬 琴
+0 0 | 0 0 | 0 0 | 0 0 | g[3'] 3' 1' 13 | s1' s7 s1' 2' q3' 5 | 5 3 3b9 3 |
+L: 琵 箏
+0 0 | 0 0 | 0 0 | 0 0 | 0 0 | 15 5, 1b1 5, | q6 0 s5 5 |
+L: 中 阮
+0 0 | 0 0 | 0 0 | 0 0 | 0 0 | 0 0 | 0 0 | 0 0 |
+L: 高 胡
+0 0 | 0 0 | 0 0 | 0 0 | 0 0 | 0 0 | 0 0 | 0 0 |
+L: 二 胡
+0 0 | 0 0 | 0 0 | 0 0 | 0 0 | 0 0 | 0 0 | 0 0 |
+L: 中 胡
+0 0 | 0 0 | 0 0 | 0 0 | 0 0 | 0 0 | 0 0 | 0 0 |
+L: 大 革 胡
+0 0 | 0 0 | 0 0 | 0 0 | 0 0 | 0 0 | 0 0 | 0 0 |
+L: 低 音 草 胡
+R*2
+KeepLength
+NextScore
+OctavesAfter
+1=G
+2/4
+KeepLength
+KeepLength
+KeepLength
+KeepLength
+KeepLength
+KeepLength
+KeepLength
+KeepLength
+KeepLength
+KeepLength
+KeepLength
+KeepLength
+KeepLength
+KeepLength
+KeepLength
+KeepLength
+KeepLength
+KeepLength
+KeepLength
+KeepLength
+KeepLength
+KeepLength
+KeepLength
+KeepLength
+KeepLength
+KeepLength
+KeepLength
+KeepLength
+KeepLength
+KeepLength
+KeepLength
+KeepLength
+KeepLength
+KeepLength
+KeepLength
+KeepLength
+KeepLength
+KeepLength
+KeepLength
+KeepLength
+KeepLength
+KeepLength
+KeepLength
+KeepLength
+KeepLength
+KeepLength
+KeepLength
+KeepLength
+KeepLength
+KeepLength
+KeepLength
+KeepLength
+KeepLength
+KeepLength
+KeepLength
+KeepLength
+KeepLength
+KeepLength
+KeepLength
+KeepLength
+KeepLength
+KeepLength
+KeepLength
+KeepLength
+KeepLength
+%END

@@ -2,12 +2,12 @@ title=江城子桑农
 type=work
 %TODO:revise
 usertag=to_be_revised
-copyright=歌谱简谱网,版权归原作者及原网站
+copyright=歌谱简谱网
 %--
 4/4
 6 - 3 0 | q2 - q7 0 0 | 0 0 0 0 |
 0 0 0 0 | s5 s5 0 0 0 q0 | 0 0 0 0 |
 1' 1' 1 0 | 0 0 0 0 |
 1 1 - 0 | - 1 0 0 | 0 0 0 0 |
-R{ } A{ | | }
+R{ } A{ }
 %END

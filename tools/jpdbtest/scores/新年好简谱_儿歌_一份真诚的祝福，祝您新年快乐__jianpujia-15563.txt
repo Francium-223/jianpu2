@@ -1,0 +1,31 @@
+%新年好简谱_儿歌_一份真诚的祝福，祝您新年快乐__jianpujia-15563.txt
+MBID=00000000-0000-0000-0000-000000000001
+title=测试
+type=work
+tag=
+usertag=
+tagroute=
+%--
+% 原图: D:\Documents_D\jianpu2\images-prep\test-jianpujia\新年好简谱_儿歌_一份真诚的祝福，祝您新年快乐__jianpujia-15563\001.jpg
+
+OctavesAfter
+1=G
+3/4
+subtitle=新 年 好
+R*2
+q1 q1 | 1 5, s3 s3 |
+L: 新 年 好 呀 , 新 年 好 呀
+3 1 q1 q3 | 5 5 q4 q3 |
+2 - q2 q3 | 4 4 q3 q2 |
+0 | 0 0 q1 q1 |
+L: 祝 贺 大 家 新 年 好 ! 我 们 唱 歌 , 我 们
+1 5, q3 q3 | 3 1 q1 q3 |
+5 5 q4 q3 | 2 - 0 |
+L: 新 年 好 呀 , 新 年 好 呀 , 祝 贺 大 家 新 年 好 !
+3 1 s1 s3 | 2 5, s7, s2 |
+1 - s1 s1 | 1 5, s3 s3,, |
+L: 跳 舞 , 祝 贺 大 家 新 年 好 ! 新 年 好 呀 , 新 年 好 ! 5, - - |
+L: 新 年 好 ! 新 年 好 ! 新 年 好 ! 1 - |
+
+% 歌词(已剥离): 中 板
+%END

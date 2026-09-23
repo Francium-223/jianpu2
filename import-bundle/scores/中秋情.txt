@@ -2,22 +2,10 @@ title=中秋情
 type=work
 %TODO:revise
 usertag=to_be_revised
-copyright=歌谱简谱网,版权归原作者及原网站
+copyright=歌谱简谱网
 %--
 4/4
 3 - q2 0 q0 | 0 0 0 0 |
 q6 q5 q7 0 0 q0 | 0 0 0 0 |
 q1' q1 0 q2' 0 q0 | 0 0 0 0 | 0 0 0 0 |
-R{ }
-|
-R{ }
-|
-R{ }
-|
-R{ }
-|
-R{ }
-|
-R{ }
-|
 %END

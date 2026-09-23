@@ -1,0 +1,16 @@
+%儿歌吉他谱_张悬C调原版弹唱谱_图片谱高清版__jianpujia-5631.txt
+MBID=00000000-0000-0000-0000-000000000001
+title=测试
+type=work
+tag=
+usertag=
+tagroute=
+%--
+% 原图: D:\Documents_D\jianpu2\images-prep\test-jianpujia\儿歌吉他谱_张悬C调原版弹唱谱_图片谱高清版__jianpujia-5631\001.jpg
+
+OctavesAfter
+1=C
+4/4
+subtitle=儿 歌
+'4./// q,6./// g[,,x,x] ~ g[,,x,x] g[,,x,x] g[,,x,x] g[,,x,x] g[,,x,x] g[,,x,x] g[,,x,x] g[,,x,x] g[,,x,x] g[,,x,x] g[,,x,x] g[,,x,x] g[,,x,x] g[,,x,x] g[,,x,x] g[,,x,x] g[,,x,x] g[,,x,x] g[,,x,x] g[,,x,x] g[,,x,x] g[,,x,x] g[,,x,x] g[,,x,x] g[,,x,x] g[,,x,x] g[,,x,x] g[,,x,x] g[,,x,x] g[,,x,x] g[,,x,x] g[,,x,x] g[,,x,x] g[,,x,x] g[,,x,x] g[,,x,x] g[,,x,x] g[,,x,x] g[,,x,x] g[,,x,x] g[,,x,x] g[,,x,x] g[,,x,x] g[,,x,x] g[,,x,x] g[,,x,x] g[,,x,x] g[,,x,x] g[,,x,x] g[,,x,x] g[,,x,x] g[,,x,x] g[,,x,x] g[,,x,x] g[,,x,x] g[,,x,x] g[,,x,x] g[,,x,x] g[,,x,x] g[,,x,x] g[,,x,x] g[,,x,x] g[,,x,x] g[,,x,x] g[,,x,x] g[,,x,x] g[,,x,x] g[,,x,x] g[,,x,x] g[,,x,x] g[,,x,x] g[,,x,x] g[,,x,x] g[,,x,x] g[,,x,x] g[,,x,x] g[,,x,x] g[,,x,x] g[,,x,x] g[,,x,x] g[,,x,x] g[,,x,x] g[,,x,x] g[,,x,x] g[,,x,x] g[,,x,x] g[,,x,x] g[,,x,x] g[,,x,x] g[,,x,x] g[,,x,x] g[,,x,x] g[,,x,x] g[,,x,x] g[,,x,x] g[,,x,x] g[,,x,x] g[,,x,x] g[,,x,x] g[,,x,x] g[,,x,x] g[,,x,x] g[,,x,x] g[,,x,x] g[,,x,x] g[,,x,x] g[,,x,x] g[,,x,x] g[,,x,x] g[,,x,x] g[,,x,x] g[,,x,x] g[,,x,x] g[,,x,x] g[,,x,x] g[,,x,x] g[,,x,x] g[,,x,x] g[,,x,x] g[,,x,x] g[,,x,x] g[,,x,x] g[,,x,x] g[,,x,x] g[,,x,x] g[,,x,x] g[,,x,x] g[,,x,x] g[,,x,x] g[,,x,x] g[,,x,x] g[,,x,x] g[,,x,x] g[,,x,x] g[,,x,x] g[,,x,x] g[,,x,x] g[,,x,x] g[,,x,x] g[,,x,x] g[,,x,x] g[,,x,x] g[,,x,x] g[,,x,x] g[,,
+%END

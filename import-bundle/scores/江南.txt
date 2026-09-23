@@ -4,7 +4,7 @@ alias=江南简谱(歌词)_银河少年艺术团演唱_桃李醉春风记谱
 %TODO:revise
 usertag=to_be_revised
 MBID=0358fa61-f69d-4de0-a686-6c7649305ea5
-copyright=简谱之家,版权归原作者及原网站
+copyright=简谱之家
 %--
 4/4
 2 1' 2 1' | - 0 0 0 | 0 0 0 0 |

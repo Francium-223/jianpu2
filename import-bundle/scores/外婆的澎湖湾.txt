@@ -4,7 +4,7 @@ alias=外婆的澎湖湾简谱_卓依婷_澎湖湾的情怀
 %TODO:revise
 usertag=to_be_revised
 MBID=7431dd14-20a7-4320-8ea6-363c0ddba101
-copyright=简谱之家,版权归原作者及原网站
+copyright=简谱之家
 %--
 4/4
 5 0 0 0 | 1' - 0 0 | 0 0 0 0 |
@@ -15,5 +15,4 @@ copyright=简谱之家,版权归原作者及原网站
 1' 1' - q2 q3
 1' 1' 1' - | q1 q2 q4 0 0 q0
 1' - 0 0 | 0 0 0 0 |
-R{ }
 %END
