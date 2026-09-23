@@ -7,21 +7,40 @@
      "33565653253 在 th10_06 位置 0 完全一致" 的**假命中**。
 两次都是"改完没验证就宣布完成"。这里把验证固化成函数, 供脚本启动时调用。
 
+⚠ 2026-09-23 晚 **定案翻转**(新机器复核, 见 _analysis/待办4_根因报告.md):
+   上面第 ② 条的判断是**反的**。真相是:
+     * 源文件 `jianpu-db/scores/th10_06.txt` 第 1 小节 = `3 3 5 6 5 6 5 3 2`
+       —— 与用户 2026-09-23 人耳确认的完全一致;
+     * "逐字符抠数字"读出来的 **377 个音顺序是对的**; jptok 当时只认前缀时值,
+       把 `6c.`/`5s`/`3q`/`,6q` 这类后缀 token **静默丢掉** -> 只剩 231 个音,
+       顺序被打乱成 `3 3 5 6 3 2 5 5 6`, 命中因此"消失";
+     * 于是用例 ①(锁死 231)与用例 ③(禁止 33565653253 命中)保护的其实是 bug,
+       全库 36 首(0.5%)索引里被丢掉最多 91% 的音。
+   现在: jptok 前后时值都认; 用例 ③ 翻转为"**必须**在 th10_06 位置 0 命中";
+   并新增用例 ④(结构性不变量) —— 它才是这类事故的真正检测器。
+
 用例(全部人工核对过):
   * `63731232`   应在 神々が恋した幻想郷 / th10_06 里 0 错命中
-  * `33565653253` **不应**有 0 错命中(它不在库里; 之前的"命中"是解析器造的)
-  * 解析器口径: `4/4`、`q3`、`5s`、`6c.` 里的字母/拍号**不得**被当成音符
-    (th10_06 的真实音符数是 231, 不是 377)
+  * `33565653253` **必须**在 th10_06 位置 0 命中(第 1 小节; 用户人耳确认)
+  * 解析器口径: `4/4`、`q3`、`5s`、`6c.`、`3q`、`1=C` 里的字母/拍号/调号**不得**被当成音符;
+    th10_06 的真实音符数是 **377**(不是 231 —— 231 是丢音后的残值)
+  * 结构性: 任何一首, `score` 文本里的音高数字顺序必须与 jptok 解出的旋律**逐字相同**
+    (即"不许有任何音符被解析器静默丢掉")
 """
 import io
 import json
 import os
+import re
+import urllib.parse
 import sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, os.path.dirname(HERE))          # jptok 在上一层
 sys.stdout.reconfigure(encoding="utf-8")
 import jptok  # noqa: E402
+
+# 调号 `1=C` / `1=Bb`: 不是音符, 但会（且只会有这一个）出现在 score 里
+KEY_SIG = re.compile(r"^[1-7]\s*=\s*[A-Ga-g][#b♯♭]?$")
 
 
 def load(data_path):
@@ -30,6 +49,16 @@ def load(data_path):
 
 def pitch_of(score):
     return "".join(str(d) for d, _a, _o in jptok.seq(score or ""))
+
+
+def digits_of(score):
+    """score 文本里"人读谱会读到的音高数字"(排除调号里的数字)。"""
+    out = []
+    for t in (score or "").split():
+        if KEY_SIG.match(t):
+            continue
+        out.append("".join(c for c in t if c in "1234567"))
+    return "".join(out)
 
 
 def check(data_path=None):
@@ -42,13 +71,15 @@ def check(data_path=None):
     rows = load(data_path)
     rep.append(f"数据 {len(rows)} 首")
 
-    # ① 解析器口径: th10_06 音符数必须是 231(不是被膨胀后的 377)
+    # ① 解析器口径: th10_06 音符数必须是 415(源谱音符数; 少一个数就是某一类 token 又被静默丢了)
+    #    231 = 后缀时值(`6c.`/`5s`/`3q`)被丢; 377 = `c` 前缀时值(`c6.`/`c3`)又被旧白名单丢掉。
     th = [r for r in rows if r["file"][0] == "th10_06.txt"]
     if th:
         n = len(pitch_of(th[0].get("score")))
-        good = (n == 231)
+        good = (n == 415)
         ok &= good
-        rep.append(f"{'OK ' if good else '**FAIL**'} th10_06 音符数 = {n} (期望 231; 377 说明把时值/拍号当成了音符)")
+        rep.append(f"{'OK ' if good else '**FAIL**'} th10_06 音符数 = {n} (期望 415; 231=后缀时值被丢, "
+                   f"377=`c` 前缀时值又被白名单丢, 后者会把第 1 小节读成 `3 3 5 6 3 2 5 5 6`)")
     else:
         rep.append("  (th10_06.txt 不在数据里, 跳过该用例)")
 
@@ -57,11 +88,55 @@ def check(data_path=None):
     ok &= hit
     rep.append(f"{'OK ' if hit else '**FAIL**'} 63731232 应 0 错命中(神々が恋した幻想郷)")
 
-    # ③ 33565653253 不应有 0 错命中(之前那次"完全一致"是解析器造的)
-    bad = [r["file"][0] for r in rows if "33565653253" in pitch_of(r.get("score"))]
+    # ③ 33565653253 **必须**在 th10_06 位置 0 命中 —— 它就是第 1 小节, 用户人耳确认过。
+    #    (2026-09-23 之前这里是"不许命中"; 那个断言来自"231 才是真音符数"的误判, 见文件头)
+    where = [r["file"][0] for r in rows if pitch_of(r.get("score")).find("33565653253") == 0]
+    good = ("th10_06.txt" in where)
+    ok &= good
+    rep.append(f"{'OK ' if good else '**FAIL**'} 33565653253 应在 th10_06 位置 0 命中, 实际位置 0 的: {where[:3]}")
+
+    # ④ 结构性不变量: 每首谱, score 里的音高数字顺序 == jptok 解出的旋律
+    #    (这一条会在**任何**"白名单不认某种 token -> 静默丢音"时立刻失败)
+    bad = [(r["file"][0], len(digits_of(r.get("score"))), len(pitch_of(r.get("score"))))
+           for r in rows if digits_of(r.get("score")) != pitch_of(r.get("score"))]
     good = (len(bad) == 0)
     ok &= good
-    rep.append(f"{'OK ' if good else '**FAIL**'} 33565653253 不应有 0 错命中, 实际 {bad[:3]}")
+    rep.append(f"{'OK ' if good else '**FAIL**'} 无音符被静默丢弃(数字数==旋律数)"
+               + (f", 异常 {len(bad)} 首: {bad[:3]}" if bad else f", {len(rows)} 首全对"))
+
+    # ⑤ 小节线必须给休止计拍 —— th10_06 开头是「2.5 拍休止 + 三个八分音符弱起」:
+    #    [c0 q0 q3 q3 q5] 正好 4 拍, 所以第一条线必须在**第 3 个音符之前**(c6.)。
+    #    若休止不计时(老写法), 线会落到第 4 个音符之前 -> 用户实测一眼看出
+    #    `c0 q0 q3 q3 | q5 …` 不对。这条用例把那个 bug 钉住。
+    if th:
+        bs = sorted(set(int(x) for x in (th[0].get("bars") or [])))
+        good = bool(bs) and bs[0] == 3 and all(a < b for a, b in zip(bs, bs[1:]))
+        ok &= good
+        rep.append(f"{'OK ' if good else '**FAIL**'} th10_06 第一条小节线在第 {bs[0] if bs else '?'} 个音符之前"
+                   f" (期望 3; 4 = 休止没计拍, 小节线会整体前漂)")
+
+    # ⑥ 收录页必须是**具体页面**: 语料里不许出现搜索 URL。
+    #    口径的唯一实现在 jianpu-db/linkurl.py(写入时就拒收); 这一条是事后兜底 ——
+    #    万一有人绕过工具手改文件, 检索/前端会立刻暴露出来。
+    db = os.path.normpath(os.path.join(HERE, "..", "..", "..", "..", "jianpu-db"))
+    if os.path.isfile(os.path.join(db, "linkurl.py")):
+        sys.path.insert(0, db)
+        import linkurl
+        badu = []
+        for r in rows:
+            for u in (r.get("link") or []):
+                try:
+                    if linkurl.looks_like_search(urllib.parse.urlsplit(u)):
+                        badu.append((r["file"][0], u))
+                except Exception:
+                    badu.append((r["file"][0], u))
+        good = not badu
+        ok &= good
+        n = sum(len(r.get("link") or []) for r in rows)
+        rep.append(f"{'OK ' if good else '**FAIL**'} 收录页里没有搜索 URL(共 {n} 条人工补的链接)"
+                   + (f", 违规 {badu[:3]}" if badu else ""))
+    else:
+        rep.append(f"  (找不到 {db}/linkurl.py, 跳过收录页用例)")
 
     return ok, rep
 
