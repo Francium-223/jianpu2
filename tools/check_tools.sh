@@ -12,6 +12,7 @@ fail=0
 TOOLS="add_link propose_tags harvest_artists refine_titles_from_pages audit_corpus_quality
        quarantine_short_scores audit_arrangements verify_source_urls corpus_fingerprint
        coverage_gap verify_crawl_matches slice_systems audit_melody_clones
+       check_transcribe_ready
        make_score mbz_lookup transcribe batch_pipeline"
 for t in $TOOLS; do
   [ -f "tools/$t.py" ] || continue
