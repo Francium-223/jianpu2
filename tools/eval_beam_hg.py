@@ -1,3 +1,4 @@
+import re
 # -*- coding: utf-8 -*-
 """对比 spring 每个数字块的 Qwen beam头 vs geo beam, 以及 GT 期望 beam。
 判断 该用头 还是 geo。按GT逐位对齐后统计。"beam头对/geo对"。"""

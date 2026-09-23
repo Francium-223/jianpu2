@@ -96,7 +96,14 @@ def main():
         la, lb = len(A["seq"]), len(B["seq"])
         if same(norm(ta), norm(tb)):
             return "同名多版本", "预期内(榜单的多版本留一就是这种); 不用动"
-        if n >= 0.9 * min(la, lb):
+        if n >= 0.9 * min(la, lb):          # 短的那首几乎被完全包含 -> 同一首的两个文件
+            # 借标签**必须**建立在"同一首"上: 只有这一类才允许建议借标签(2026-09-24 修正:
+            # 原来把 30% 覆盖率的重合也算"可借", 结果把《泼水歌》的"儿歌"借给了《大白鹅》、
+            # 把《红树林之歌》的歌手借给了《红树林》—— 那些只是**共享乐句的不同歌**)。
+            if not A["tags"] and B["tags"]:
+                return "标签-可借", f"同一首的另一个转写已有标签, 可借: {'/'.join(B['tags'][:3])}"
+            if not B["tags"] and A["tags"]:
+                return "标签-可借", f"同一首的另一个转写已有标签, 可借: {'/'.join(A['tags'][:3])}"
             if ta.startswith("未命名") or tb.startswith("未命名"):
                 other = tb if ta.startswith("未命名") else ta
                 return "标题-未命名", f"按对侧曲名起名(疑似同一首的两个转写): {other[:20]}"
@@ -105,9 +112,9 @@ def main():
                 return "标题-残名", f"残名/截断, 对侧更完整: {other[:20]}"
             return "重复-异名", "疑似同一份转写挂了两个名字 -> 人工判: 合并/隔离其一"
         if not A["tags"] and B["tags"]:
-            return "标签-可借", f"此首无标签, 对侧标签: {'/'.join(B['tags'][:3])}"
+            return "共用曲调/改编", f"只部分重合(不是同一首的充分证据); 若确认同曲再考虑借标签: {'/'.join(B['tags'][:3])}"
         if not B["tags"] and A["tags"]:
-            return "标签-可借", f"此首无标签, 对侧标签: {'/'.join(A['tags'][:3])}"
+            return "共用曲调/改编", f"只部分重合(不是同一首的充分证据); 若确认同曲再考虑借标签: {'/'.join(A['tags'][:3])}"
         return "共用曲调/改编", "只部分重合: 可能是改编/片段/共用同一曲调, 人工看一眼"
 
     out = ["类别\t文件A\t曲名A\t标签A\t文件B\t曲名B\t标签B\t公共音数\t覆盖率(较短)\t长度A\t长度B\t建议"]

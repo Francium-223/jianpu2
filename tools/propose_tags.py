@@ -71,9 +71,88 @@ def read_head(path):
 def add_tag(path, tag, clear_todo=True):
     """把 usertag 写进曲谱 —— **实现只有一份**: jianpu-db/linkurl.py:add_usertag
     (行尾保持、只动元数据区、大小写不敏感去重; clear_todo 时删掉 `todo=add tags`)。"""
+    # 写进曲谱的**唯一实现**在 jianpu-db/linkurl.py; JIANPU_DB 指错时报清楚, 别丢个
+    # "No module named 'linkurl'" 让人猜(实测: 指到只有 scores/ 的副本目录时就是这样)。
+    if not os.path.isfile(os.path.join(DB, "linkurl.py")):
+        raise RuntimeError(f"找不到 {DB}/linkurl.py —— JIANPU_DB 指对了吗?")
     sys.path.insert(0, DB)
     import linkurl
     return linkurl.add_usertag(path, tag, clear_todo=clear_todo)
+
+def apply_tsv(path):
+    """读人填好的 TSV(第一列 `file` + **最后一列** `human_tag`)并写进曲谱。
+
+    2026-09-24: 这个函数被上一次重构误删了(那次把 add_tag 改成委托 jianpu-db/linkurl.add_usertag,
+    却把 apply_tsv 一起删掉, 而 `--from-tsv` 的调用还在) -> 用户填完表格跑 `--from-tsv` 直接
+    `NameError: apply_tsv is not defined`。现在补回来, 并且**不再自己写文件**: 逐条走 add_tag
+    -> linkurl.add_usertag(唯一实现)。
+
+    列的口径与 `--emit-template` 导出的一致: file / title / site / source_url / suggested_tag / human_tag。
+    """
+    n_add = n_ex = n_skip = n_bad = n_missing = 0
+    for line in io.open(path, encoding="utf-8"):
+        line = line.rstrip("\n")
+        if not line.strip() or line.startswith("file\t"):
+            continue
+        parts = line.split("\t")
+        if len(parts) < 2:
+            continue
+        fn, tags = parts[0].strip(), parts[-1].strip()
+        if not fn or not tags:                    # human_tag 空着 = 人还没填, 跳过
+            n_skip += 1
+            continue
+        p = os.path.join(SCORES, fn)
+        if not os.path.isfile(p):
+            print("  ! 没有这个文件: %s" % fn)
+            n_missing += 1
+            continue
+        for tag in [x.strip() for x in re.split(r"[,，、;；]+", tags) if x.strip()]:
+            try:
+                r = add_tag(p, tag)
+                n_add += (r == "added")
+                n_ex += (r == "exists")
+            except Exception as e:                # 标签不合法/文件坏了: 报出来继续, 不半途而废
+                print("  ! %s: %s" % (fn, e))
+                n_bad += 1
+    print("从 TSV 写入: 新增 %d 条, 已存在 %d 条, 空 human_tag 跳过 %d 行, "
+          "文件不存在 %d 行, 出错 %d 条" % (n_add, n_ex, n_skip, n_missing, n_bad))
+    if n_add:
+        print("记得跑 parse_scores.py 重建索引(或等 refresh), 再 git commit。")
+    return n_add
+
+
+def emit_template(path, sp):
+    """给"人工补标签"用的清单: 一首一行, 带原谱页链接与自动建议, 最后一列留给人填。
+
+    用法: 打开 TSV(表格软件) -> 在 `human_tag` 列填标签(多个用逗号) ->
+          python3 jianpu2/tools/propose_tags.py --from-tsv <该文件>
+
+    2026-09-24: 与 apply_tsv 一起被上次重构误删(调用还在) -> `--emit-template` 直接 NameError。
+    现在补回来; 列口径与 apply_tsv 一致(file 在第一列、human_tag 在最后一列)。
+    """
+    n = 0
+    with io.open(path, "w", encoding="utf-8", newline="\n") as g:
+        g.write("file\ttitle\tsite\tsource_url\tsuggested_tag\thuman_tag\n")
+        for fn in sorted(os.listdir(SCORES)):
+            if not fn.endswith(".txt") or fn.endswith(("_expand.txt", "_buf.txt")):
+                continue
+            txt = io.open(os.path.join(SCORES, fn), encoding="utf-8", errors="replace").read()
+            head = txt.split("%--", 1)[0]
+            ut = re.search(r"(?m)^usertag=(.*)$", head)
+            if ut and ut.group(1).strip():
+                continue                               # 已经有标签的不用填
+            tt = re.search(r"(?m)^title=(.*)$", head)
+            src = re.search(r"(?m)^source=(\S+)", head)
+            src = src.group(1) if src else ""
+            site = src.split("-")[0] if src else ""
+            url = (sp.get(src) or {}).get("url", "")
+            seg = section_of(url) if url and site == "qupu123" else ""
+            sug = SECTION_TAG.get(seg, (WEAK.get(seg, ""), 0))[0] if seg else ""
+            g.write("\t".join([fn, (tt.group(1).strip() if tt else fn), site, url, sug, ""]) + "\n")
+            n += 1
+    print("待补清单写出: %s (%d 首; 在 human_tag 列填标签后用 --from-tsv 写回)" % (path, n))
+    return n
+
 
 def main():
     ap = argparse.ArgumentParser()

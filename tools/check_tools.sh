@@ -21,6 +21,35 @@ for t in $TOOLS; do
     echo "!! 失败"; echo "$out" | tail -3 | sed 's/^/      /'; fail=1
   fi
 done
+# 静态检查: "调用了但没定义"的名字 —— 专抓"重构删了函数、调用还留着"
+# (2026-09-24 实测: propose_tags.py 的 apply_tsv/emit_template 就是这么没的, 而 --help 走不到那行)
+if [ -f tools/check_undefined.py ]; then
+  echo
+  echo "=== 静态: 未定义名检查 ==="
+  python3 tools/check_undefined.py | tail -3 || fail=1
+fi
+
+# 功能自测: 在**隔离副本**里真的写一次标签(apply_tsv 路径), 必须写成功 + 幂等 + 不碰真语料
+if [ -f tools/propose_tags.py ]; then
+  echo
+  echo "=== 功能: 补标签 TSV 写回(隔离副本) ==="
+  T="$(mktemp -d)"
+  DB0="${JIANPU_DB:-$(cd .. && pwd)/jianpu-db}"
+  mkdir -p "$T/scores"
+  cp "$DB0"/scores/th10_06.txt "$T/scores/" 2>/dev/null || cp "$(ls "$DB0"/scores/*.txt | head -1)" "$T/scores/"
+  cp "$DB0"/linkurl.py "$DB0"/schema.py "$DB0"/score.py "$DB0"/tags.json "$T/" 2>/dev/null
+  SAMPLE="$(ls "$T/scores" | head -1)"
+  printf 'file\ttitle\tsite\tsource_url\tsuggested_tag\thuman_tag\n%s\tx\tq\t\t\t自检标签甲,自检标签乙\n' "$SAMPLE" > "$T/in.tsv"
+  out1="$(JIANPU_DB="$T" python3 tools/propose_tags.py --from-tsv "$T/in.tsv" 2>&1)"
+  out2="$(JIANPU_DB="$T" python3 tools/propose_tags.py --from-tsv "$T/in.tsv" 2>&1)"
+  if grep -q '自检标签甲' "$T/scores/$SAMPLE" && echo "$out1" | grep -q '新增 2 条' && echo "$out2" | grep -q '已存在 2 条'; then
+    echo "  ✓ 标签写回成功且幂等 ($(echo "$out1" | grep -m1 '从 TSV 写入'))"
+  else
+    echo "  !! 标签写回有问题"; echo "     第一次: $out1"; echo "     第二次: $out2"; fail=1
+  fi
+  rm -rf "$T"
+fi
+
 # 解析副作用自检(别让"读一份谱"改掉仓库: by_* 污染、tags.json 的 cwd 依赖)
 if [ -f tools/check_sideeffects.py ]; then
   echo
