@@ -57,12 +57,22 @@ def main():
     a = ap.parse_args()
 
     targets = load_targets(a.list)
-    # 日志: 歌名 -> slug(可能多轮, 取最后一个)
-    slug = {}
+    # 日志: 歌名 -> slug。**同一首可能有多轮**(首轮 + --redo), 而且两轮的 slug 会重号
+    # (`mp001` 在旧爬里是《未来的主人翁》、在新爬里是《万里长城永不倒》) —— 所以要
+    # 逐个 slug 看目录**存不存在**, 取第一个真存在的(2026-09-24 修: 之前只取最后一个,
+    # 拿旧图目录配新日志, 结果整批判成"不同歌")。
+    slug, all_slugs = {}, {}
     for ln in io.open(a.log, encoding="utf-8"):
         c = ln.rstrip("\n").split("\t")
         if len(c) >= 4 and c[0]:
-            slug[c[0]] = c[3]
+            all_slugs.setdefault(c[0], []).append(c[3])
+    for t, slugs in all_slugs.items():
+        for s0 in slugs:
+            if os.path.isdir(os.path.join(a.img, f"qupu123-{s0}")):
+                slug[t] = s0
+                break
+        else:
+            slug[t] = slugs[-1]
     if not targets:
         targets = {t: t for t in slug}
 
