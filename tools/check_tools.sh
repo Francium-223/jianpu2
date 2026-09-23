@@ -51,6 +51,29 @@ if [ -f tools/propose_tags.py ]; then
   rm -rf "$T"
 fi
 
+# 功能自测: 补收录页写盘(add_link)在隔离副本里: 写进去 + 幂等 + 搜索页被拒 + 不碰真语料
+if [ -f tools/add_link.py ]; then
+  echo
+  echo "=== 功能: 补收录页写回(隔离副本) ==="
+  T3="$(mktemp -d)"
+  DB0="${JIANPU_DB:-$(cd .. && pwd)/jianpu-db}"
+  mkdir -p "$T3/scores"
+  cp "$DB0"/linkurl.py "$DB0"/schema.py "$T3/" 2>/dev/null
+  S3="th10_06.txt"; [ -f "$DB0/scores/$S3" ] || S3="$(ls "$DB0"/scores/*.txt | head -1 | xargs basename)"
+  cp "$DB0/scores/$S3" "$T3/scores/"
+  printf '%s\thttps://www.qupu123.com/tongsu/erziyixia/p215000.html\n' "$S3" > "$T3/in.tsv"
+  o1="$(JIANPU_DB="$T3" python3 tools/add_link.py --from-tsv "$T3/in.tsv" --no-refresh 2>&1)"
+  o2="$(JIANPU_DB="$T3" python3 tools/add_link.py --from-tsv "$T3/in.tsv" --no-refresh 2>&1)"
+  o3="$(JIANPU_DB="$T3" python3 tools/add_link.py "$S3" 'https://www.qupu123.com/search?q=x' --dry 2>&1)"
+  if grep -q '^link=https://www.qupu123.com/tongsu/erziyixia/p215000.html' "$T3/scores/$S3" \
+     && echo "$o2" | grep -q '已存在' && echo "$o3" | grep -q '搜索页'; then
+    echo "  ✓ 写入成功 + 幂等 + 搜索页被拒"
+  else
+    echo "  !! 补收录页写回有问题"; echo "     写入: $(echo "$o1" | tail -1)"; echo "     幂等: $(echo "$o2" | tail -1)"; echo "     拒搜索页: $(echo "$o3" | tail -1)"; fail=1
+  fi
+  rm -rf "$T3"
+fi
+
 # 功能自测: 标题提案工具在隔离副本里跑 --offline(不联网、不写语料), 必须出提案且不炸
 if [ -f tools/refine_titles_from_pages.py ]; then
   echo

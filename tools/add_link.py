@@ -36,7 +36,7 @@ sys.stdout.reconfigure(encoding="utf-8")
 try:
     import linkurl
 except Exception as e:                                          # pragma: no cover
-    sys.exit(f"找不到 {DB}/linkurl.py(用 JIANPU_DB 指一下语料目录): {e}")
+    sys.exit(f"找不到 {DB}/linkurl.py —— JIANPU_DB 指对了吗?(写进曲谱的唯一实现在那里)")
 
 
 def all_scores():
