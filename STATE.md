@@ -23,6 +23,9 @@
 | tools/verify_source_urls.py | **原谱站确切页**: `source=<站>-<id>` → 那一页的真实 URL, **逐条抓取核对页面标题**, 写 `jianpu-db/source_pages.json` |
 | tools/add_link.py | **人工补收录页**(命令行): 把某站的具体页面写进 `scores/<file>.txt` 的 `link=`; 支持 `--show` / `--from-tsv` 批量 / `--dry` |
 | ../jianpu-web/tools/refresh.sh | 重建索引链: `parse_scores.py` → `build_web_data.py`(网页「＋ 补收录页」保存后由服务端在后台调用) |
+| tools/propose_tags.py | **按原谱站栏目提议/落盘分类标签**(映射表从既有数据反推; 低置信度只提案); `--emit-template` 导出人工补标签清单, `--from-tsv` 写回 |
+| tools/harvest_artists.py | 从原谱站页面抽**歌手**(jianpucn 标题尾段 / jianpujia `…_<歌手>演唱_…`); 抓取结果缓存可断点续跑, `--reparse` 离线重跑规则, `--apply` 落盘 |
+| tools/audit_arrangements.py | 审计**被纯度门挡下的改编/器乐谱**(锦囊 §8-5): 数量/图在哪/是否新曲, 出可审清单 |
 
 ## 三、爬虫
 

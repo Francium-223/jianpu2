@@ -24,6 +24,7 @@
 """
 import argparse
 import collections
+import io
 import json
 import os
 import re
@@ -67,7 +68,7 @@ def read_head(path):
     return t, (t.split("%--", 1)[0] if "%--" in t else t)
 
 
-def add_tag(path, tag):
+def add_tag(path, tag, clear_todo=True):
     """把 usertag 加进曲谱的元数据区; 并在打上标签后去掉 `todo=add tags`。
     返回 'added' / 'exists'。行尾保持原样。
 
@@ -88,26 +89,96 @@ def add_tag(path, tag):
                 break
     ui = next((i for i in range(end) if lines[i].startswith("usertag=")), None)
     have = ([x.strip() for x in lines[ui][8:].split(",") if x.strip()] if ui is not None else [])
-    if tag in have:
+    # 去重要**大小写不敏感**: 实测 `BEYOND` 与 `Beyond` 会被当成两个标签(同一歌手两种写法)
+    if any(t.casefold() == tag.casefold() for t in have):
         return "exists"
     if ui is None:
         lines.insert(end, "usertag=" + tag)
     else:
         lines[ui] = "usertag=" + ",".join(have + [tag])
-    # 打完标签就把 todo=add tags 去掉(这条 todo 的字面意思就是"该加标签了")
-    lines = [l for l in lines if l.strip() != "todo=add tags"]
+    # 默认把 todo=add tags 去掉(这条 todo 的字面意思就是"该加标签了");
+    # 但**只补了歌手**时不要去掉 —— 那首仍然缺分类, todo 留着才诚实。
+    if clear_todo:
+        lines = [l for l in lines if l.strip() != "todo=add tags"]
     open(path, "wb").write((nl.join(lines) + nl).encode("utf-8"))
     return "added"
+
+
+def emit_template(path, sp):
+    """给"人工补标签"用的清单: 一首一行, 带原谱页链接与自动建议, 最后一列留给人填。
+
+    用法: 打开 TSV(表格软件) -> 在 `human_tag` 列填标签(多个用逗号) -> 
+          python3 jianpu2/tools/propose_tags.py --from-tsv <该文件>
+    """
+    n = 0
+    with io.open(path, "w", encoding="utf-8", newline="\n") as g:
+        g.write("file\ttitle\tsite\tsource_url\tsuggested_tag\thuman_tag\n")
+        for fn in sorted(os.listdir(SCORES)):
+            if not fn.endswith(".txt") or fn.endswith(("_expand.txt", "_buf.txt")):
+                continue
+            t = io.open(os.path.join(SCORES, fn), encoding="utf-8", errors="replace").read()
+            head = t.split("%--", 1)[0]
+            ut = re.search(r"(?m)^usertag=(.*)$", head)
+            if ut and ut.group(1).strip():
+                continue
+            tt = re.search(r"(?m)^title=(.*)$", head)
+            src = re.search(r"(?m)^source=(\S+)", head)
+            src = src.group(1) if src else ""
+            site = src.split("-")[0] if src else ""
+            url = (sp.get(src) or {}).get("url", "")
+            seg = section_of(url) if url and site == "qupu123" else ""
+            sug = SECTION_TAG.get(seg, (WEAK.get(seg, ""), 0))[0] if seg else ""
+            g.write("\t".join([fn, (tt.group(1).strip() if tt else fn), site, url, sug, ""]) + "\n")
+            n += 1
+    print("待补清单写出: %s (%d 首; 在 human_tag 列填标签后用 --from-tsv 写回)" % (path, n))
+
+
+def apply_tsv(path):
+    """读人填好的 TSV(file + human_tag), 写进曲谱。"""
+    n_add = n_ex = n_skip = 0
+    for i, line in enumerate(io.open(path, encoding="utf-8")):
+        line = line.rstrip("\n")
+        if not line.strip() or i == 0 or line.startswith("file\t"):
+            continue
+        parts = line.split("\t")
+        if len(parts) < 2:
+            continue
+        fn, tags = parts[0].strip(), parts[-1].strip()
+        if not fn or not tags:
+            n_skip += 1
+            continue
+        p = os.path.join(SCORES, fn)
+        if not os.path.isfile(p):
+            print("  ! 没有这个文件: %s" % fn)
+            continue
+        for tag in [x.strip() for x in re.split(r"[,，、;；]+", tags) if x.strip()]:
+            try:
+                r = add_tag(p, tag)
+                n_add += (r == "added")
+                n_ex += (r == "exists")
+            except Exception as e:
+                print("  ! %s: %s" % (fn, e))
+    print("从 TSV 写入: 新增 %d 条, 已存在 %d 条, 跳过空行 %d 条" % (n_add, n_ex, n_skip))
+    print("记得跑 parse_scores.py 重建索引。")
 
 
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--apply", action="store_true", help="真的写进 scores/*.txt")
     ap.add_argument("--also-weak", action="store_true", help="连低置信度的也一起写")
+    ap.add_argument("--emit-template", nargs="?", const=os.path.join(WS, "_analysis", "tag_todo.tsv"),
+                    help="导出人工补标签清单(TSV)")
+    ap.add_argument("--from-tsv", help="读人填好的 TSV 并写进曲谱")
     ap.add_argument("--out", default=os.path.join(WS, "_analysis", "tag_proposal.tsv"))
     a = ap.parse_args()
 
     sp = load_sources()
+    if a.emit_template:
+        emit_template(a.emit_template, sp)
+        return 0
+    if a.from_tsv:
+        apply_tsv(a.from_tsv)
+        return 0
     rows, stats = [], collections.Counter()
     files = sorted(f for f in os.listdir(SCORES)
                    if f.endswith(".txt") and not f.endswith(("_expand.txt", "_buf.txt")))
