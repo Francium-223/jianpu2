@@ -28,6 +28,8 @@ import os
 import re
 import ssl
 import sys
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from safeout import default_out    # noqa: E402  隔离跑别写进真工作台
 import threading
 import time
 import urllib.parse
@@ -40,7 +42,7 @@ WS = os.path.dirname(ROOT)
 DB = os.environ.get("JIANPU_DB") or os.path.join(WS, "jianpu-db")
 SCORES = os.path.join(DB, "scores")
 CACHE = os.path.join(ROOT, "train-work", "title_cache")
-OUT = os.path.join(WS, "_analysis", "title_proposal.tsv")
+OUT = default_out(DB, "title_proposal.tsv")
 sys.stdout.reconfigure(encoding="utf-8")
 _lock = threading.Lock()
 

@@ -105,6 +105,27 @@ if [ -f tools/check_jptok_parity.py ]; then
   fi
 fi
 
+# 功能自测: 隔离跑时**不许写进真工作台**(2026-09-24 实测踩过: 隔离跑 audit_corpus_quality
+# 把 _analysis/quality_proposal.tsv 覆盖成了 1 行表头; 现在 safeout.default_out 会写进那个 DB 目录)
+if [ -f tools/safeout.py ]; then
+  echo
+  echo "=== 功能: 隔离跑不许污染工作台 ==="
+  T4="$(mktemp -d)"; mkdir -p "$T4/scores"
+  DB0="${JIANPU_DB:-$(cd .. && pwd)/jianpu-db}"
+  cp "$DB0"/source_pages.json "$DB0"/tags.json "$DB0"/linkurl.py "$DB0"/schema.py "$DB0"/score.py "$DB0"/parse_scores.py "$T4/" 2>/dev/null
+  cp "$DB0"/scores/th10_06.txt "$T4/scores/" 2>/dev/null || cp "$(ls "$DB0"/scores/*.txt | head -1)" "$T4/scores/"
+  before="$(md5sum ../_analysis/quality_proposal.tsv 2>/dev/null | cut -d' ' -f1)"
+  ( cd "$T4" && JIANPU_JTOK="$DB0/../jianpu2/skills/jianpu-melody-lookup" python3 parse_scores.py >/dev/null 2>&1 )
+  JIANPU_DB="$T4" python3 tools/audit_corpus_quality.py >/dev/null 2>&1
+  after="$(md5sum ../_analysis/quality_proposal.tsv 2>/dev/null | cut -d' ' -f1)"
+  if [ "$before" = "$after" ] && [ -f "$T4/quality_proposal.tsv" ]; then
+    echo "  ✓ 隔离跑的输出落在隔离目录里, 真工作台未被改动"
+  else
+    echo "  !! 隔离跑动了真工作台(before=$before after=$after)"; fail=1
+  fi
+  rm -rf "$T4"
+fi
+
 # 解析副作用自检(别让"读一份谱"改掉仓库: by_* 污染、tags.json 的 cwd 依赖)
 if [ -f tools/check_sideeffects.py ]; then
   echo

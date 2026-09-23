@@ -31,6 +31,8 @@ import os
 import re
 import shutil
 import sys
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from safeout import default_out    # noqa: E402  隔离跑别写进真工作台
 import time
 
 HERE = os.path.dirname(os.path.abspath(__file__))
@@ -39,7 +41,7 @@ WS = os.path.dirname(ROOT)
 DB = os.environ.get("JIANPU_DB") or os.path.join(WS, "jianpu-db")
 SCORES = os.path.join(DB, "scores")
 SUSPECT = os.path.join(DB, "scores-suspect")
-OUT = os.path.join(WS, "_analysis", "quality_proposal.tsv")
+OUT = default_out(DB, "quality_proposal.tsv")
 sys.path.insert(0, os.path.join(ROOT, "skills", "jianpu-melody-lookup"))
 import jptok  # noqa: E402
 sys.stdout.reconfigure(encoding="utf-8")

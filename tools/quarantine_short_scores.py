@@ -54,12 +54,22 @@ def main():
     os.makedirs(DEST, exist_ok=True)
     moved = 0
     for n, fn, title, src in hits:
+        got = 0
         for suffix in ("", "_expand", "_buf"):
             for ext in (".txt", ".json"):
                 p = os.path.join(SCORES, fn[:-4] + suffix + ext)
                 if os.path.isfile(p):
                     shutil.move(p, os.path.join(DEST, os.path.basename(p)))
-        moved += 1
+                    got += 1
+        # 2026-09-24 修: 原来这里无条件 `moved += 1`, 于是**重复跑**会一直报"已隔离 N 首"
+        # (data.jsonl 是上次解析的快照, 那些文件其实早就移走了), 而且会**每次都重写 README**
+        # -> 明明什么都没动, 仓库里却多出一个 README 改动(与 gzip 时间戳同一类噪声)。
+        # 现在只数**真的移动了**的文件。
+        moved += 1 if got else 0
+    if not moved:
+        print("\n没有需要移动的: scores/ 里已经找不到这些文件了"
+              "(大概率上次已隔离; 先跑 parse_scores.py 重建 data.jsonl 再确认)")
+        return 0
     with open(os.path.join(DEST, "README.md"), "w", encoding="utf-8", newline="\n") as g:
         g.write("# scores-suspect —— 被隔离的曲谱(只移不删)\n\n"
                 "`%s` 由 `jianpu2/tools/quarantine_short_scores.py` 移入: **旋律音 < %d 个**,\n"

@@ -29,6 +29,8 @@ import json
 import os
 import re
 import sys
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from safeout import default_out    # noqa: E402  隔离跑别写进真工作台
 import urllib.parse
 import urllib.request
 
@@ -158,10 +160,10 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--apply", action="store_true", help="真的写进 scores/*.txt")
     ap.add_argument("--also-weak", action="store_true", help="连低置信度的也一起写")
-    ap.add_argument("--emit-template", nargs="?", const=os.path.join(WS, "_analysis", "tag_todo.tsv"),
+    ap.add_argument("--emit-template", nargs="?", const=default_out(DB, "tag_todo.tsv"),
                     help="导出人工补标签清单(TSV)")
     ap.add_argument("--from-tsv", help="读人填好的 TSV 并写进曲谱")
-    ap.add_argument("--out", default=os.path.join(WS, "_analysis", "tag_proposal.tsv"))
+    ap.add_argument("--out", default=default_out(DB, "tag_proposal.tsv"))
     a = ap.parse_args()
 
     sp = load_sources()
