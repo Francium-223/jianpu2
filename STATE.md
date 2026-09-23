@@ -29,6 +29,7 @@
 | tools/audit_corpus_quality.py | **语料体检**: A 明确垃圾(单音占比>=90% / 音符占 token<25%) 隔离、B 同源逐字相同的重复 去重、C 拿不准的只出提案; 移动不删, 可逆 |
 | tools/quarantine_short_scores.py | 隔离**旋律音 < 5**(检索下限)的垃圾曲谱, `--min` 可调 |
 | tools/refine_titles_from_pages.py | 给 `todo=refine the filename` 的曲从原谱页提议官方曲名(`--offline` 用缓存, `--apply` 落地) |
+| tools/corpus_fingerprint.py | **批量写回的安全网**: 给全部 `scores/*.txt` 存指纹(元数据键集合/值/正文 sha1/音高音数), 批量工具跑完 `--check` 一次 -> 键集合变了或文件消失就退非 0(能立刻抓到 `todo=` 被写成 `dtodo=` 这类事故) |
 
 ## 三、爬虫
 
