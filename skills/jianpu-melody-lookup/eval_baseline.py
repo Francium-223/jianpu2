@@ -21,6 +21,7 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
 from lookup import group_of, pitch_and_oct  # noqa: E402
 from eval_golden import norm, same  # noqa: E402
+import gate  # noqa: E402  **自检门**
 
 
 def lev(a, b):
@@ -49,6 +50,7 @@ def main():
     ap.add_argument("--n", type=int, default=262, help="每口径抽查多少首歌(0=全部)")
     ap.add_argument("--seed", type=int, default=20260923)
     a = ap.parse_args()
+    gate.gate(a.data)          # **自检门**
     rnd = random.Random(a.seed)
 
     rows = [json.loads(l) for l in open(a.data, encoding="utf-8") if l.strip()]

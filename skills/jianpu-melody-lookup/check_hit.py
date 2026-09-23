@@ -12,6 +12,9 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
 sys.stdout.reconfigure(encoding="utf-8")
 import jptok  # noqa: E402
+import gate   # noqa: E402
+
+gate.gate(os.path.join(HERE, "data.jsonl"))
 
 pat = sys.argv[1] if len(sys.argv) > 1 else "U.N"
 Q = jptok.query(sys.argv[2] if len(sys.argv) > 2 else "63731232")

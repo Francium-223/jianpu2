@@ -1,9 +1,15 @@
 ---
 name: jianpu-melody-lookup
-description: 给一段简谱旋律（唱名数字串，如 `55532235 3211612655`），在 7331 份中文简谱库里找出它最可能是哪首歌。适用于"这是哪首歌""哼一句查歌""识别这段旋律"这类请求。纯离线，不需要联网或 API key。
+description: 给一段简谱旋律（唱名数字串，如 `55532235 3211612655`），在 7385 份中文简谱库里找出它最可能是哪首歌。适用于"这是哪首歌""哼一句查歌""识别这段旋律"这类请求。纯离线，不需要联网或 API key。
 ---
 
 # 简谱旋律查歌
+
+> **自检门**：所有检索/评测脚本启动时先跑 `selfcheck`（已知答案用例）。不过就 `exit 3`，
+> 不出结果。原因见 `selfcheck/selfcheck.py` 文件头：口径错一次就会**凭空造出"完全一致"的假命中**。
+>
+> **唯一 token 口径**：`jptok.py`。解析音符只许调它（`parse_token` / `seq` / `query` / `beat` /
+> `recover_bars`），脚本里**不许再自带** token 正则 —— 白名单分叉曾经让全库带 `#` 的音整段消失。
 
 ## 什么时候用
 
@@ -63,7 +69,13 @@ python lookup.py 512233 --json                     # 给程序读
 | 文件 | 作用 |
 |---|---|
 | `lookup.py` | 查询入口，自包含（只依赖 `data.jsonl` + numpy） |
-| `data.jsonl` | 数据集本体：7331 首（= HuggingFace `Caesium-132/chinese-jianpu-corpus`） |
+| `lookup_acc.py` | **升降号感知**的查询（发送从严、接收从宽：输 `5` 能中 `#5`，输 `#5` 更精确） |
+| `lookup_norm.py` | 归一化口径的查询（不计升降号，只比音级） |
+| `jptok.py` | **唯一** token 解析/时值/小节线实现 |
+| `gate.py` / `selfcheck/` | 自检门：已知答案用例 |
+| `show_hit.py` / `check_hit.py` | 把库里命中那一段原样摊开（带记号） |
+| `show_song.py` | 把一首谱**按小节**分段打出来（`show_song.py 神々`），便于人工圈定是哪一段 |
+| `data.jsonl` | 数据集本体：7385 首（= HuggingFace `Caesium-132/chinese-jianpu-corpus`） |
 | `eval_golden.py` | 金曲清单指标 |
 | `eval_metric.py` | 随机留一指标（含两种口径的定义） |
 

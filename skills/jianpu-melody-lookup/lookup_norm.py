@@ -25,21 +25,27 @@ import sys
 import numpy as np
 
 HERE = os.path.dirname(os.path.abspath(__file__))
+if HERE not in sys.path:
+    sys.path.insert(0, HERE)
+import jptok                      # **唯一口径**: token 解析/时值/小节线都从它来
+import gate                       # **自检门**
 ZW = dict.fromkeys(map(ord, "\u200b-\u200f\u202a-\u202e\u2060\ufeff"), None)
 BAD = re.compile(r"吉他|钢琴|双谱|器乐|非洲|尤克里里|古筝|琵琶|二胡|笛|萨克斯|总谱|合唱")
 TAIL = re.compile(r"(?:[-_（(]?\s*(?:简谱|歌曲类|歌谱|五线谱|正谱|完整版|弹唱|吉他谱|钢琴谱)\s*[)）]?)+$")
 # 数字前可带升降号, 数字后可带八度与附点
-NOTE = re.compile(r"([#b♯♭]?)([,\']*)([1-7])([,\']*)")
 
 
 def norm_digits(raw):
-    """任意写法 -> (音高数字串, 八度偏移列表)。升降号丢掉。"""
-    p, o = [], []
-    for m in NOTE.finditer(raw):
-        _acc, pre, dig, post = m.groups()
-        p.append(dig)
-        o.append((pre + post).count(",") - (pre + post).count("'"))
-    return "".join(p), o
+    """任意写法 -> (音高数字串, 八度偏移列表)。升降号丢掉。
+
+    **已废**: 这个实现用 `finditer` 在整段文本上逐字符抠数字, 而 `score` 里每个音符都带
+    时值前缀/后缀(`q3`/`5s`/`6c.`) -> 数字被重复计入, 231 个音符被膨胀成 377 个, 凭空造出
+    不存在的匹配(实测: `33565653253` 被谎报在 `th10_06` 的位置 0 "完全一致", 而那份谱里
+    根本没有这个音串)。**唯一口径是 jptok**: 先把文本 split 成 token, 再逐 token 解析。
+    这里保留函数名只为兼容, 实现改为转发 jptok.seq。
+    """
+    notes = jptok.seq(raw)
+    return "".join(str(d) for d, _a, _o in notes), [o for _d, _a, o in notes]
 
 
 def group_of(t):
@@ -64,10 +70,15 @@ def main():
     ap.add_argument("--top", type=int, default=8)
     ap.add_argument("--maxerr", type=int, default=3)
     a = ap.parse_args()
+    gate.gate(a.data)          # **自检门**: 已知答案用例不过就不许出结果
 
     segs = []
     for raw in a.frags:
-        d, o = norm_digits(raw)
+        # **查询也用 jptok**(唯一口径): 之前误用 norm_digits(raw) 解析用户输入,
+        # 它是给整段谱面设计的, 对"纯数字串"虽然能过但口径不统一。
+        notes = jptok.query(raw)
+        d = "".join(str(x[0]) for x in notes)
+        o = [x[2] for x in notes]
         if len(d) >= 5:
             segs.append((d, o))
     if not segs:
@@ -95,9 +106,15 @@ def main():
     res = []
     for g, members in groups.items():
         total, det, ok = 0, [], True
-        for (d, oq), q in zip(segs, qa):
+        for q in qa:
             best = None
-            for t, p, o, s in members:
+            for m in members:
+                # members 的元素是 (title, pitch, octstr, src) —— **必须显式取值, 不能按数量解包**:
+                # 之前写成 `for t, p, o, s in members`, 而某些构造路径下元素不是 4 元组,
+                # 解包直接抛 ValueError -> best 保持 None -> **被当成"0 错命中"**,
+                # 于是给出"完全一致"的假结论(实测踩过: 33565653253 被谎报命中神恋)。
+                t, p = m[0], m[1]
+                s = m[3] if len(m) > 3 else ""
                 arr = np.frombuffer(p.encode(), dtype=np.uint8)
                 if len(arr) < len(q):
                     continue
@@ -106,7 +123,7 @@ def main():
                 i = int(mm.argmin())
                 if best is None or int(mm[i]) < best["err"]:
                     best = {"err": int(mm[i]), "at": i, "title": t, "src": s,
-                            "oct": o, "pitch": p, "qoct": oq, "group": g}
+                            "pitch": p, "group": g}
             if best is None:
                 ok = False
                 break
@@ -121,16 +138,13 @@ def main():
         print(f"没找到(允许 ≤{a.maxerr} 个音差异)。缩短到 6-7 个音再试。")
         return
     print(f"查询 {' | '.join(d for d, _ in segs)}   库 {len(groups)} 首   允许错音 ≤{a.maxerr}\n")
-    print(f"{'#':>2} {'错音':>4} {'八度差':>6}  {'曲名':<26} 出处")
+    # **不显示八度差**: 用户口径「一般用户标升降的概率都比标八度的高」—— 八度不参与判断。
+    print(f"{'#':>2} {'错音':>4}  {'曲名':<28} 出处")
     for i, (total, g, det) in enumerate(res[:a.top], 1):
         h = det[0]
-        n = len(segs[0][0])
-        od = "-"
-        o, oq = h["oct"], h["qoct"]
-        if o and h["at"] + n <= len(o):
-            od = str(sum(1 for k in range(n) if int(o[h["at"] + k]) != oq[k]))
         flag = "   ← 完全一致" if total == 0 else ""
-        print(f"{i:>2} {total:>4} {od:>6}  {g[:24]:<26} {h['src']}{flag}")
+        print(f"{i:>2} {total:>4}  {g[:26]:<28} {h['src']}{flag}")
+        print(f"     库内该段: {' '.join(h['pitch'][h['at']:h['at'] + len(segs[0][0])])}")
 
 
 if __name__ == "__main__":

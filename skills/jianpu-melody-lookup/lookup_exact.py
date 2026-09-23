@@ -18,7 +18,9 @@ import sys
 import numpy as np
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-TOKRE = re.compile(r"^([qsdh]*)([,']*)([0-9x])")
+sys.path.insert(0, HERE)
+import jptok  # noqa: E402  **唯一 token 口径**
+import gate   # noqa: E402  **自检门**
 ZW = dict.fromkeys(map(ord, "\u200b-\u200f\u202a-\u202e\u2060\ufeff"), None)
 BAD = re.compile(r"吉他|钢琴|双谱|器乐|非洲|尤克里里|古筝|琵琶|二胡|笛|萨克斯|总谱|合唱")
 TAIL = re.compile(r"(?:[-_（(]?\s*(?:简谱|歌曲类|歌谱|五线谱|正谱|完整版|弹唱|吉他谱|钢琴谱)\s*[)）]?)+$")
@@ -30,18 +32,9 @@ def group_of(t):
 
 
 def pitches(score):
-    """-> (音高串, 八度串)  : 与库/前端统一口径, 丢 0/x。"""
-    p, o = [], []
-    for t in score.split():
-        m = TOKRE.match(t)
-        if not m:
-            continue
-        _pre, acc, dig = m.groups()
-        if dig in "0x":
-            continue
-        p.append(dig)
-        o.append(acc.count(",") - acc.count("'"))
-    return "".join(p), "".join(str(x) for x in o)
+    """-> (音高串, 八度串)  : 与库/前端统一口径, 丢 0/x。走 jptok(唯一口径)。"""
+    notes = jptok.seq(score)
+    return "".join(str(d) for d, _a, _o in notes), "".join(str(o) for _d, _a, o in notes)
 
 
 def main():
@@ -51,10 +44,11 @@ def main():
     ap.add_argument("--top", type=int, default=5)
     ap.add_argument("--maxerr", type=int, default=2, help="允许放宽到几个音")
     a = ap.parse_args()
+    gate.gate(a.data)          # **自检门**
 
     QS = []
     for raw in a.frags:
-        d = "".join(m.group(2) for m in re.finditer(r"([,']*)([1-7])", raw))
+        d = "".join(str(x[0]) for x in jptok.query(raw))
         if len(d) >= 5:
             QS.append(d)
     if not QS:

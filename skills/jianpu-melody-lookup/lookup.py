@@ -24,6 +24,8 @@ import sys
 import numpy as np
 
 HERE = os.path.dirname(os.path.abspath(__file__))
+sys.path.insert(0, HERE)
+import gate  # noqa: E402  **自检门**
 
 
 def _default_data():
@@ -86,6 +88,7 @@ def main():
     ap.add_argument("--data", default=DEFAULT_DATA)
     ap.add_argument("--json", action="store_true")
     a = ap.parse_args()
+    gate.gate(a.data)          # **自检门**
 
     if not os.path.exists(a.data):
         sys.exit(f"找不到数据集: {a.data}\n(可设环境变量 JIANPU_DATA 指向 data.jsonl)")

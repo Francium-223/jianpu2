@@ -25,36 +25,32 @@ import sys
 import numpy as np
 
 HERE = os.path.dirname(os.path.abspath(__file__))
+sys.path.insert(0, HERE)
+import jptok                        # noqa: E402  **唯一 token 口径**
+import gate                         # noqa: E402  **自检门**
 ZW = dict.fromkeys(map(ord, "\u200b-\u200f\u202a-\u202e\u2060\ufeff"), None)
 BAD = re.compile(r"吉他|钢琴|双谱|器乐|非洲|尤克里里|古筝|琵琶|二胡|笛|萨克斯|总谱|合唱")
 TAIL = re.compile(r"(?:[-_（(]?\s*(?:简谱|歌曲类|歌谱|五线谱|正谱|完整版|弹唱|吉他谱|钢琴谱)\s*[)）]?)+$")
-# token: 允许 八度/时值 在数字前后, 数字前可带变音记号
-TOK = re.compile(r"^([qsdh]*)([,']*)([#b♯♭]?)([1-7])([,']*)[.]*$")
-QNOTE = re.compile(r"([#b♯♭]?)([,']*)([1-7])([,']*)")
+# 这里**不再**定义 token 正则: 一律 jptok.parse_token / jptok.query(唯一口径)
 
 
 def toks_of(score):
-    """-> [(音级, 变音(0/1/-1), 八度, 原token)]，休止/念白剔除。"""
+    """-> [(音级, 变音(0/1/-1), 八度, 原token)]，休止/念白剔除。
+
+    解析走 jptok.parse_token(唯一口径), 不再自带正则 —— 之前 TOK 与 jptok 的差别
+    正是"升降号被整段丢掉"那次事故的同一个坑。
+    """
     out = []
     for t in (score or "").split():
-        m = TOK.match(t)
-        if not m:
+        p = jptok.parse_token(t)
+        if p is None or p[0] is None:
             continue
-        _pre, pre, acc, dig, post = m.groups()
-        a = 1 if acc in ("#", "♯") else (-1 if acc in ("b", "♭") else 0)
-        off = (pre + post).count(",") - (pre + post).count("'")
-        out.append((int(dig), a, off, t))
+        out.append((p[0], p[1], p[2], t))
     return out
 
 
 def query_of(raw):
-    out = []
-    for m in QNOTE.finditer(raw):
-        acc, pre, dig, post = m.groups()
-        a = 1 if acc in ("#", "♯") else (-1 if acc in ("b", "♭") else 0)
-        off = (pre + post).count(",") - (pre + post).count("'")
-        out.append((int(dig), a, off))
-    return out
+    return jptok.query(raw)
 
 
 def group_of(t):
@@ -95,6 +91,7 @@ def main():
     ap.add_argument("--c3", type=int, default=3)
     ap.add_argument("--maxcost", type=int, default=0, help="0 = 自动(先严后宽)")
     a = ap.parse_args()
+    gate.gate(a.data)          # **自检门**
 
     Q = []
     for raw in a.frags:
