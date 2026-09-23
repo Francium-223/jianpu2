@@ -101,6 +101,17 @@ def confident(cur, new):
     return len(new) <= len(cur) + 2 or (cur_ascii and bool(re.search(r"[\u4e00-\u9fa5]", new)))
 
 
+def clean_title(t):
+    """页面上抓来的标题是**不可信输入**: 去换行/制表/控制字符并合并空白。
+
+    2026-09-24 补: `--apply` 是拿 `re.sub` 直接替换 `title=` 那一行的, 如果 new 里带换行,
+    就会往曲谱里**注入额外的元数据行**(与 `linkurl.parse_tag` 那个坑同一类)。
+    现有 275 条提案实测干净, 但来源是网页, 必须在这里兜住。
+    """
+    t = re.sub(r"[\r\n\t\x00-\x1f\x7f]", " ", t or "")
+    return re.sub(r"\s{2,}", " ", t).strip()
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--apply", action="store_true")
@@ -151,8 +162,8 @@ def main():
         if code == 200 and raw:
             pt = re.sub(r"\s+", " ", re.search(r"<title[^>]*>(.*?)</title>", decode(raw, site), re.S | re.I).group(1)).strip() \
                 if re.search(r"<title[^>]*>(.*?)</title>", decode(raw, site), re.S | re.I) else ""
-            rec["page_title"] = pt[:200]
-            rec["new"] = official_title(pt, site)
+            rec["page_title"] = clean_title(pt)[:200]
+            rec["new"] = clean_title(official_title(pt, site))
         with _lock:
             cache[src] = rec
             if len(cache) % 50 == 0:
@@ -186,7 +197,10 @@ def main():
             raw = open(p, "rb").read()
             nl = b"\r\n" if b"\r\n" in raw else b"\n"
             text = raw.decode("utf-8")
-            text = re.sub(r"(?m)^title=.*$", "title=" + new.replace("\\", ""), text, count=1)
+            new = clean_title(new.replace("\\", ""))      # 纵深防御: 落盘前再清一遍
+            if not new:
+                continue
+            text = re.sub(r"(?m)^title=.*$", lambda m: "title=" + new, text, count=1)
             text = re.sub(r"(?m)^todo=refine the filename\s*$", "", text)
             text = re.sub(r"\n{3,}", "\n\n", text)
             # 文件名: 去掉 ASCII 化, 用官方名(仍保证唯一)

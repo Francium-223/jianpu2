@@ -50,6 +50,24 @@ if [ -f tools/propose_tags.py ]; then
   rm -rf "$T"
 fi
 
+# 功能自测: 标题提案工具在隔离副本里跑 --offline(不联网、不写语料), 必须出提案且不炸
+if [ -f tools/refine_titles_from_pages.py ]; then
+  echo
+  echo "=== 功能: 标题提案 --offline(隔离副本) ==="
+  T2="$(mktemp -d)"
+  DB0="${JIANPU_DB:-$(cd .. && pwd)/jianpu-db}"
+  mkdir -p "$T2/scores"
+  cp "$DB0"/source_pages.json "$T2/" 2>/dev/null
+  cp "$DB0"/scores/th10_06.txt "$T2/scores/" 2>/dev/null || cp "$(ls "$DB0"/scores/*.txt | head -1)" "$T2/scores/"
+  if JIANPU_DB="$T2" python3 tools/refine_titles_from_pages.py --offline --out "$T2/prop.tsv" >/dev/null 2>&1 \
+     && head -1 "$T2/prop.tsv" | grep -q 'proposed_title'; then
+    echo "  ✓ --offline 出提案正常 ($(($(wc -l < "$T2/prop.tsv")-1)) 条)"
+  else
+    echo "  !! --offline 失败"; fail=1
+  fi
+  rm -rf "$T2"
+fi
+
 # 解析副作用自检(别让"读一份谱"改掉仓库: by_* 污染、tags.json 的 cwd 依赖)
 if [ -f tools/check_sideeffects.py ]; then
   echo
@@ -57,5 +75,5 @@ if [ -f tools/check_sideeffects.py ]; then
   python3 tools/check_sideeffects.py || fail=1
 fi
 echo
-[ "$fail" = 0 ] && echo "工具链自检 通过(冒烟 + 副作用)" || echo "工具链自检 失败"
+[ "$fail" = 0 ] && echo "工具链自检 通过(冒烟 --help + 静态未定义名 + 功能写回 + 解析副作用)" || echo "工具链自检 失败(见上面 !! 处)"
 exit $fail
