@@ -78,6 +78,9 @@ def main():
     ap.add_argument("--lens", default="11,15")
     ap.add_argument("--errs", default="0")
     ap.add_argument("--per-song", type=int, default=1)
+    # 把"本次真的用来查询的片段 + 期望曲名"导出 -> 用来做**前端 JS 与 Python 侧的等价性测试**
+    # (两边是同一套代价模型的两份实现; 报告的指标出自 Python 侧, 用户实际跑的是 JS 侧)
+    ap.add_argument("--dump-queries", default="", help="把生成的查询片段导出成 TSV(查询/期望/榜单)")
     ap.add_argument("--seed", type=int, default=20260923)
     a = ap.parse_args()
     gate.gate(a.data)          # **自检门**
@@ -126,6 +129,7 @@ def main():
     multi = {w: v for w, v in hits.items() if len(v) >= 2}
     print(f"其中在库里有 >=2 个版本的: {len(multi)} 首 (留一口径的分母)")
 
+    dumped = []
     for L in [int(x) for x in a.lens.split(",")]:
         for k in [int(x) for x in a.errs.split(",")]:
             t1 = t3 = t5 = n = 0
@@ -144,6 +148,9 @@ def main():
                         cs = [x for x in (d - 1, d + 1) if 1 <= x <= 7]
                         if cs:
                             frag[j] = str(rnd.choice(cs))
+                    if a.dump_queries:
+                        dumped.append((os.path.basename(a.list)[:-4], " ".join(frag),
+                                       group_of(r0.get("title"))))
                     qa = np.frombuffer("".join(frag).encode(), dtype=np.uint8)
                     sc = []
                     for r2, p2, ar2 in idx:
@@ -178,6 +185,13 @@ def main():
                   f"Top1 {t1/n*100:>5.1f}%  Top3 {t3/n*100:>5.1f}%  Top5 {t5/n*100:>5.1f}%"
                   + (f"  |  多版本留一({ln_} 查询): Top1 {lt1/ln_*100:>5.1f}%  "
                      f"Top3 {lt3/ln_*100:>5.1f}%  Top5 {lt5/ln_*100:>5.1f}%" if ln_ else ""))
+
+
+    if a.dump_queries and dumped:
+        io.open(a.dump_queries, "w", encoding="utf-8", newline="\n").write(
+            "list\tquery\texpect_group\n" +
+            "\n".join("\t".join(x) for x in dumped) + "\n")
+        print(f"\n查询片段已导出 {len(dumped)} 条 -> {a.dump_queries}")
 
 
 if __name__ == "__main__":
