@@ -31,6 +31,7 @@
 | tools/refine_titles_from_pages.py | 给 `todo=refine the filename` 的曲从原谱页提议官方曲名(`--offline` 用缓存, `--apply` 落地) |
 | tools/coverage_gap.py | **榜单覆盖缺口量化**(只读): 复用 eval 的 norm/same 口径, 把每个榜单条目判成 命中/命中但太短/别名命中/模糊候选/真缺口, 出 TSV; 实测与 eval_golden 的覆盖率逐项一致 |
 | tools/safeout.py | **默认输出路径的护栏**: `default_out(DB, name)` —— DB 是工作区的 jianpu-db 就写 `_analysis/`，隔离跑就写进那个 DB 目录（实测踩过"隔离跑把真工作台提案覆盖成 1 行表头"） |
+| tools/check_images.py | **送转写前验图**: 短边过小(细条/截断)、坏 PNG、HTML 错误页都会被报出来; `--queue` 直接验转写队列。实测可转写队列 317 张 100% 可用 |
 | tools/check_transcribe_ready.py | **转写环境"差什么"清单**: 基座 VLM / LoRA 适配器 / 网格检测器 / 白名单 / Python 依赖 / CUDA / 内存 / 磁盘 —— 逐项 ✓✗ 并给出补法(2026-09-24 用它纠正了"models/ 空"的误判) |
 | tools/check_jptok_parity.py | **两份 token 口径的等价性测试**: 用 ast 从 score.py 抽出兜底 `_FallbackJptok`, 拿全语料(723 万 token)比 `is_note/parse_token/duration_letter/beat` 与 `beats_per_bar_from/recover_bars` -> 任何一处不一致就退非 0(2026-09-23 两份一起漂过, 36 首受损) |
 | —（自检门第 7 条）| `selfcheck.py` 现在核对**白名单不变量**: `data.jsonl` 里不许有 `status=midi`(多轨转储)/无 status/空谱 —— 对应 `parse_scores.py` 里那句"待整理已跳过 499" |
