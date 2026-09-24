@@ -167,6 +167,44 @@ def check(data_path=None):
     except Exception as e:
         rep.append(f"  (白名单用例跳过: {type(e).__name__}: {e})")
 
+    # ⑧ 注释不是属性: `%` 开头的行一律是注释, **哪怕里面有 `=`**(2026-09-24 加)
+    #    用户抓到的 bug: 源文件第一行常是 `%<原文件名>`, 而
+    #      `scores/草原之夜1=bE2_4_中速深情地.txt` 的第一行是
+    #      `%草原之夜1=bE2_4_中速深情地.txt` —— 解析器把 `=` 分支放在 `%` 注释分支**前面**,
+    #      于是读出一个**属性** `草原之夜1` = `bE2_4_中速深情地.txt`。用户原话:
+    #      "草原之夜不是attribute"。实测 123 首中招(3 首文件名带调号/拍号 + 120 首人工注释
+    #      `% 原 title=…`), data.json 里多出 4 个 `%` 开头的假属性键, 还长出 `by_% 原 title`
+    #      这种目录。这一条两头都钉住: ① 产物里不许有 `%` 开头的字段;
+    #      ② 源码里每个 `%` 开头含 `=` 的行, 其 `=` 左边绝不许出现在该曲的字段里。
+    try:
+        import json as _json
+        import glob as _glob
+        dpath = os.path.join(db, "data.json")
+        meta = _json.load(io.open(dpath, encoding="utf-8")) if os.path.isfile(dpath) else {}
+        bad_key = [(f, k) for f, m in meta.items() for k in m if k.startswith("%")]
+        n_comment_eq, bad_attr = 0, []
+        for p in sorted(_glob.glob(os.path.join(db, "scores", "*.txt"))):
+            if p.endswith(("_expand.txt", "_buf.txt")):
+                continue
+            fn = os.path.basename(p)
+            mm = meta.get(fn) or {}
+            for ln in io.open(p, encoding="utf-8"):
+                ln = ln.rstrip("\n")
+                if ln.replace(" ", "").startswith("%--"):
+                    break                      # 元数据区结束
+                if ln.startswith("%") and "=" in ln:
+                    n_comment_eq += 1
+                    k = ln.split("=", 1)[0].strip()
+                    if k in mm:
+                        bad_attr.append((fn, k))
+        good = (not bad_key) and (not bad_attr)
+        ok &= good
+        rep.append(f"{'OK ' if good else '**FAIL**'} 注释没被当成属性(扫到 {n_comment_eq} 处"
+                   f"『% 开头且含 =』的注释; 假属性键 {len(bad_key)} 个)"
+                   + (f"; 例 {bad_key[:2]}{bad_attr[:2]}" if not good else ""))
+    except Exception as e:
+        rep.append(f"  (注释/属性用例跳过: {type(e).__name__}: {e})")
+
     return ok, rep
 
 
