@@ -28,7 +28,12 @@ UA = ("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
 CAT = sys.argv[1] if len(sys.argv) > 1 else "583"
 NAME = sys.argv[2] if len(sys.argv) > 2 else "周杰伦"
 TARGET = int(sys.argv[3]) if len(sys.argv) > 3 and sys.argv[3].isdigit() else 150
-OUT = os.path.join("images-prep", f"jianpujia-{CAT}")
+# 图库落在**工作区**的 `images-prep/`(旧的 8.9GB 图库就在那儿, 单一存储);
+# 用 JIANPU_IMAGES 可以指到别处。以前是相对 cwd 的 "images-prep" —— 而本脚本会 chdir 到 jianpu2/,
+# 于是新爬的图跑进 jianpu2/images-prep/, 跟工作区那份**劈成了两个库**(2026-09-25 发现并修)。
+_WS = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))   # 工作区(三个 dirname: tools/x.py -> tools -> jianpu2 -> 工作区)
+IMG_ROOT = os.environ.get("JIANPU_IMAGES") or os.path.join(_WS, "images-prep")
+OUT = os.path.join(IMG_ROOT, f"jianpujia-{CAT}")
 os.makedirs(OUT, exist_ok=True)
 
 

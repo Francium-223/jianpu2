@@ -66,6 +66,17 @@
 - 转写 219 音, 单音符质量 96-100%
 - 序列对齐 61.4% (差异来自图片展开反复段 vs GT 循环记号, 非识别错误)
 
+## 四点五、本地转写的可行性(2026-09-25 实测, 补记)
+
+* 本机**没有 GPU**(核显 + Radeon)、内存 6.9GB -> VLM(jianpu-atom/Qwen2.5-VL-3B) **跑不了**
+  (`check_transcribe_ready.py`: 缺基座 7GB + 依赖, 内存也不够)。
+* 多任务 CNN 那条路**实测不可用**: `tools/infer_multitask.py` 原来丢了, 2026-09-25 才复原;
+  用新工具 `tools/check_cnn_accuracy.py`(1355 个"图+库里已有转写"的同源样本)量下来,
+  四个 checkpoint 相似度 0.00–0.04、前 20 音命中 26–50%(盲猜 14%) -> 等于随机。
+  真实音符训练图 `train-work/real_notes_v4/` 也已丢失, 要复活必须重造数据+重训。
+* CPU 版 torch 的装法(本机只有 py3.14, PyPI 的 Linux 轮子硬要 CUDA 库)见
+  `_analysis/本地转写可行性_2026-09-25.md`: 用上交镜像的 `torch-2.14.0+cpu-cp314` + 配对 `torchvision-0.29.0+cpu`。
+
 ## 五、下一步(待定)
 
 1. 扩大爬取规模(多分类/多网站)
