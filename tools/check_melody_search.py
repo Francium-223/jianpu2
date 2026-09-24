@@ -58,13 +58,14 @@ def main():
        "33565653253 -> %s（老版本这里永远命中 0 首）" % (h[0]["title"] if h else "无"))
     ok(bool(h) and h[0]["file"] == "th10_06.txt" and h[0]["pos"] == 0, "命中位置 0 / th10_06.txt")
 
-    # 并列规则与前端同向(八度记号少的优先): 66561232123 精确命中两首, 前端与机器人必须同第一名
-    h = top("66561232123", is_json=False) if False else ms.search(rows, ["66561232123"], 0, 5)
-    ok(len(h) == 2 and h[0]["title"] == "时光" and h[1]["title"] == "最炫民族风",
-       "66561232123 -> %s（前端 lookup.py 同款并列规则: 先看八度记号多少）"
-       % "、".join(x["title"] for x in h))
-    ok(all(x["diff"] == 0 for x in h), "两首都是 0 错音(纯数字串确实一样)")
-    ok(h[0]["octmarks"] <= h[1]["octmarks"], "并列时八度记号少的排前面")
+    # 并列排序(用户实测): `66561232123` 精确命中《最炫民族风》与《时光》, 正确答案是前者
+    # —— 靠"知名度代理 hot"(凤凰传奇在库 68 首 vs 时光无歌手信息 0 首)把顺序掰对。
+    h = ms.search(rows, ["66561232123"], 0, 5)
+    ok(len(h) == 2 and h[0]["title"] == "最炫民族风" and h[1]["title"] == "时光",
+       "66561232123 -> %s（并列时 hot 大的先: 68 vs 0）" % "、".join(x["title"] for x in h))
+    ok(all(x["diff"] == 0 for x in h), "两首都是 0 错音(纯数字串确实一样, 只能靠并列规则分)")
+    ok(h[0]["hot"] > h[1]["hot"], "第一位那首的 hot 更高(知名度代理生效)")
+    ok(h[0]["pop"] == h[1]["pop"], "两首的曲名组份数相同(pop 分不开, 必须靠 hot)")
 
     h = top("63731232")
     ok(len(h) >= 2 and any(x["title"] == "神々が恋した幻想郷" for x in h),

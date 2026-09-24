@@ -157,10 +157,23 @@ def main():
     for g, ents in groups.items():
         pop[pop_key(g)] = pop.get(pop_key(g), 0) + len(ents)
 
+    # 知名度代理: 该曲 artist/tag(非「分类/…」)里某个名字在语料里出现的最大次数。
+    # 公式与 jianpu-web/tools/build_web_data.py、tools/melody_search.py **必须一致**。
+    _hot = {}
+    for _e in rows:      # rows = 本次加载的 data.jsonl
+        for _n in list(_e.get("artist") or []) + [t for t in (_e.get("tag") or []) if not str(t).startswith("分类/")]:
+            _hot[_n] = _hot.get(_n, 0) + 1
+
+    def hot_of(head):
+        names = list(head.get("artist") or []) + [t for t in (head.get("tag") or []) if not str(t).startswith("分类/")]
+        return max([_hot.get(x, 0) for x in names] or [0])
+
     def sort_key(item):
         total, g, det = item
         head = det[0][2]
-        return (total, pop.get(pop_key(g), 0), 1 if BADWORD.search(head.get("title") or "") else 0,
+        # 注意 hot 取**负号**: 语料里谱多的歌手 = 更可能被人哼到的那首, 要排前面
+        return (total, pop.get(pop_key(g), 0), -hot_of(head),
+                1 if BADWORD.search(head.get("title") or "") else 0,
                 len(head.get("title") or ""), g)
 
     res.sort(key=sort_key)

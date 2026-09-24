@@ -58,17 +58,6 @@ def digits_of(text):
     return "".join(d for d, _o in _tokens(text))
 
 
-def octs_of(text):
-    """逐音记下**八度偏移**(用 off+2 编码, 所以 '2' = 没写八度记号)。
-
-    为什么需要它: 主排序故意丢八度(宽容哼唱), 并列时看"这一段的八度记号多不多"能分开
-    《水手》那类只差末两音低八度的歌 —— 前端 lookup.py 的并列规则就是这样。机器人这边
-    以前只按"谱短优先", 于是同一个查询在前端和机器人上给出的第一名可能不一样(实测:
-    `66561232123` 前端给《时光》、机器人给《最炫民族风》)。现在两边同规则。
-    """
-    return "".join(str(o + 2) for _d, o in _tokens(text))
-
-
 def _tokens(text):
     """token 流 -> [(音高数字, 八度偏移), ...]"""
     out = []
@@ -122,6 +111,7 @@ def build_corpus(path=DATA):
             rows.append({
                 "title": r.get("title") or "",
                 "artist": list(r.get("artist") or []),
+                "tag": list(r.get("tag") or []),
                 "source": src,
                 "site": (src.split("-")[0] if src else ""),
                 "file": f0,
@@ -129,8 +119,34 @@ def build_corpus(path=DATA):
                 "n_notes": int(r.get("n_notes") or 0),
                 "status": (st[0] or ""),
                 "digits": d,
-                "octs": octs_of(r.get("score") or ""),
+                "digits_len": len(d),
             })
+    return rows
+
+
+def _hotmap(rows):
+    """知名度代理: 某个名字(歌手/标签, 不含「分类/…」)在语料里出现在多少首里。
+
+    公式与 jianpu-web/tools/build_web_data.py、skills/jianpu-melody-lookup/lookup.py **必须一致**。
+    """
+    m = {}
+    for r in rows:
+        names = list(r.get("artist") or []) + [t for t in (r.get("tag") or []) if not str(t).startswith("分类/")]
+        for n in names:
+            m[n] = m.get(n, 0) + 1
+    return m
+
+
+def _annotate(rows):
+    """给每行补 pop(同曲名组份数) 与 hot(歌手/标签在语料里的谱数) —— 并列时按它们排序。"""
+    hot = _hotmap(rows)
+    pop = {}
+    for r in rows:
+        pop[r["title"]] = pop.get(r["title"], 0) + 1
+    for r in rows:
+        names = list(r.get("artist") or []) + [t for t in (r.get("tag") or []) if not str(t).startswith("分类/")]
+        r["pop"] = pop.get(r["title"], 0)
+        r["hot"] = max([hot.get(n, 0) for n in names] or [0])
     return rows
 
 
@@ -139,16 +155,17 @@ def load_corpus(path=DATA, use_cache=True):
     try:
         fp = _fingerprint(path)
     except OSError:
-        return build_corpus(path)
+        return _annotate(build_corpus(path))
     if use_cache:
         try:
             with open(CACHE, encoding="utf-8") as f:
                 c = json.load(f)
             if c.get("ver") == TOKVER and c.get("src") == fp and c.get("rows"):
-                return c["rows"]
+                return c["rows"]        # 热度/知名度已随缓存存下来了
         except Exception:
             pass
     rows = build_corpus(path)
+    _annotate(rows)
     if use_cache:
         try:
             os.makedirs(os.path.dirname(CACHE), exist_ok=True)
@@ -212,15 +229,11 @@ def search(rows, segs, fuzzy=0, top=20):
         if not ok:
             continue
         worst = max(x[1] for x in det)
-        # 并列时的次序与前端一致: ①不同音少 ②这段里**写出来的八度记号少**(说明它更"平")
-        # ③谱短(短谱里出现一段长旋律更像"就是它") ④曲名
-        om = 0
-        for (p0, _d), seg in zip(det, segs):
-            om += sum(1 for c in r["octs"][p0:p0 + len(seg)] if c != "2")
-        hits.append(dict(r, pos=det[0][0], diff=worst, octmarks=om,
-                         positions=[x[0] for x in det]))
-    # 越像越靠前: 不同数少 -> 八度记号少(与前端并列规则同向) -> 谱短 -> 曲名
-    hits.sort(key=lambda x: (x["diff"], x.get("octmarks", 0), x["n_notes"], x["title"]))
+        hits.append(dict(r, pos=det[0][0], diff=worst, positions=[x[0] for x in det]))
+    # 越像越靠前, 与网页前端同序: 不同数少 -> 热度(同曲名组份数) -> **知名度**(歌手/标签在语料里的谱数)
+    # -> 谱短 -> 曲名。热点说明: `66561232123` 精确命中《最炫民族风》(凤凰传奇, 库里 68 首) 与
+    # 《时光》(无歌手信息, 0 首) —— 用户判定正确答案是前者, 而"名短优先/八度记号少优先"都判给了后者。
+    hits.sort(key=lambda x: (x["diff"], -x.get("pop", 0), -x.get("hot", 0), x["n_notes"], x["title"]))
     return hits[:top] if top else hits
 
 
