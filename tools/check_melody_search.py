@@ -67,6 +67,28 @@ def main():
     ok(h[0]["hot"] > h[1]["hot"], "第一位那首的 hot 更高(知名度代理生效)")
     ok(h[0]["pop"] == h[1]["pop"], "两首的曲名组份数相同(pop 分不开, 必须靠 hot)")
 
+    # 命中片段: 必须给"命中的音 + 包含它的**完整小节**", 而不是只给一个序号(用户口径 2026-09-24)
+    h1 = top("33565653253")[0]
+    seg = h1.get("seg") or ""
+    print("   片段: 第 %s–%s 小节: %s" % (h1.get("bar_from"), h1.get("bar_to"), seg))
+    ok(bool(seg), "命中里带了原文片段")
+    ok(seg.count("【") == 1 and seg.count("】") == 1, "命中段用【】圈出来")
+    inner = seg.split("【")[1].split("】")[0] if "【" in seg else ""
+    ok("".join(c for c in inner if c.isdigit()) == "33565653253",
+       "【】里的音正好是查询的 11 个音(含时值/八度记号原样)")
+    ok("|" in seg, "片段里有小节线(不是一长串音)")
+    b0, b1, nb0, nb1 = ms.bar_span(h1["bars"], h1["pos"], 11)
+    ok((b0 in set(h1["bars"])) or b0 == 0, "片段从小节线开始(或全曲开头)")
+    ok((b1 in set(h1["bars"])) or b1 >= len(h1["digits"]), "片段在小节线结束(或全曲结尾)")
+    ok(nb0 >= 1 and nb1 >= nb0, "给了小节号: 第 %d–%d 小节" % (nb0, nb1))
+    # 第二首也应有片段(全部命中都要有, 不是只给第一条)
+    for x in top("1234567"):
+        if not x.get("seg"):
+            ok(False, "命中 %s 没有片段" % x["title"])
+            break
+    else:
+        ok(True, "多命中时每一条都带片段")
+
     h = top("63731232")
     ok(len(h) >= 2 and any(x["title"] == "神々が恋した幻想郷" for x in h),
        "63731232 -> %s" % "、".join(x["title"] for x in h))

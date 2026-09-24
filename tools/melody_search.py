@@ -41,7 +41,7 @@ WS = os.path.dirname(ROOT)                        # 工作区(三个仓库的上
 DB = os.environ.get("JIANPU_DB") or os.path.join(WS, "jianpu-db")
 DATA = os.path.join(DB, "data.jsonl")
 OK_STATUS = ("ok", "ocr")                         # 与 parse_scores 的白名单同一份口径
-TOKVER = 2                                        # 切 token 的口径改了就 +1(缓存自动失效)
+TOKVER = 3                                        # 切 token / 行结构改了就 +1(缓存自动失效)
 CACHE = os.environ.get("JIANPU_MELODY_CACHE") or os.path.join(
     os.environ.get("XDG_CACHE_HOME") or os.path.join(os.path.expanduser("~"), ".cache"),
     "jianpu", "melody_index.json")
@@ -121,7 +121,8 @@ def build_corpus(path=DATA):
                 "n_notes": int(r.get("n_notes") or 0),
                 "status": (st[0] or ""),
                 "digits": d,
-                "digits_len": len(d),
+                "score": r.get("score") or "",
+                "bars": [int(x) for x in (r.get("bars") or []) if isinstance(x, int)],
             })
     return rows
 
@@ -205,6 +206,63 @@ def find(needle, hay, fuzzy=0):
     return best
 
 
+def bar_span(bars, i0, n):
+    """包含命中音符 [i0, i0+n) 的**最小连续小节**。
+
+    返回 (音符下标区间 [b0, b1), 命中首音的小节号, 命中末音的小节号)。
+    小节号 1 起。`bars` 记的是"第 i 个音符之前有一条小节线"(与前端同一口径);
+    第一个音符(下标 0)之前的小节线可能没记 ── 那就当成第 1 小节的开头。
+    """
+    bs = sorted({int(b) for b in (bars or [])})
+    b0 = 0
+    for b in bs:
+        if b <= i0:
+            b0 = b
+        else:
+            break
+    b1 = None
+    for b in bs:
+        if b > i0 + n - 1:
+            b1 = b
+            break
+    if b1 is None:
+        b1 = 10 ** 9
+    return b0, b1, sum(1 for b in bs if b <= i0) or 1, sum(1 for b in bs if b <= i0 + n - 1) or 1
+
+
+def segment_text(r, i0, n, limit=240):
+    """命中的那几个音 + **包含它们的完整小节** -> 带 `|` 的原文片段, 命中段用【】圈出来。
+
+    为什么要有它(用户口径 2026-09-24): "第多少音起说了跟没说一样。至少要把匹配的音的所有
+    包括它的最小连续小节打出来。" —— 只给一个序号, 人没法核对; 给"这几个小节", 一眼就能对上。
+    """
+    toks = (r.get("score") or "").split()
+    idx = [k for k, t in enumerate(toks) if is_pitch(t)]
+    if not idx or i0 + n > len(idx):
+        return "", 0, 0
+    b0, b1, nb0, nb1 = bar_span(r.get("bars"), i0, n)
+    b1 = min(b1, len(idx))
+    bar_set = {int(b) for b in (r.get("bars") or [])}
+    parts = []
+    for k in range(b0, b1):                        # 第 k 个音符
+        if k in bar_set and parts:
+            parts.append("|")
+        pre = "【" if k == i0 else ""
+        post = "】" if k == i0 + n - 1 else ""
+        parts.append(pre + toks[idx[k]] + post)
+    out = " ".join(parts)
+    if len(out) > limit:                           # 极长的小节: 只截中间, 两头保留
+        out = out[:limit // 2] + " … " + out[-limit // 2:]
+    return out, nb0, nb1
+
+
+def is_pitch(t):
+    """有音高的 token(休止/记号不算) —— 与检索口径同一份实现(jptok)。"""
+    if jptok is not None:
+        return bool(jptok.is_pitch(t))
+    return bool(TOK.match(t))
+
+
 def split_query(s):
     """查询串 -> 若干段(空格/逗号/分号/竖线/顿号分隔; 每一段只留 1-7)。"""
     segs = [re.sub(r"[^1-7]", "", p) for p in re.split(r"[\s,，;；|、]+", s or "")]
@@ -231,7 +289,9 @@ def search(rows, segs, fuzzy=0, top=20):
         if not ok:
             continue
         worst = max(x[1] for x in det)
-        hits.append(dict(r, pos=det[0][0], diff=worst, positions=[x[0] for x in det]))
+        seg, nb0, nb1 = segment_text(r, det[0][0], len(segs[0]))
+        hits.append(dict(r, pos=det[0][0], diff=worst, positions=[x[0] for x in det],
+                         seg=seg, bar_from=nb0, bar_to=nb1))
     # 越像越靠前, 与网页前端同序: 不同数少 -> 热度(同曲名组份数) -> **知名度**(歌手/标签在语料里的谱数)
     # -> 谱短 -> 曲名。热点说明: `66561232123` 精确命中《最炫民族风》(凤凰传奇, 库里 68 首) 与
     # 《时光》(无歌手信息, 0 首) —— 用户判定正确答案是前者, 而"名短优先/八度记号少优先"都判给了后者。
@@ -287,9 +347,13 @@ def main():
     print("查询 %s（%d 个音%s）· 语料 %d 首"
           % (q, sum(len(x) for x in segs), "，允许 %d 处不同" % a.fuzzy if a.fuzzy else "，精确",
              len(rows)))
-    print("命中 %d 首" % len(hits) + ("（只显示前 %d）" % a.top if len(hits) >= a.top else ""))
+    print("命中 %d 首" % len(hits)
+          + ("（只显示前 %d）" % a.top if a.top and len(hits) >= a.top else ""))
     for i, h in enumerate(hits, 1):
         print("  " + fmt_hit(i, h))
+        if h.get("seg"):
+            print("       └ 第 %d%s 小节: %s" % (h["bar_from"],
+                  ("–%d" % h["bar_to"]) if h["bar_to"] != h["bar_from"] else "", h["seg"]))
     if not hits:
         print("   （无 —— 试 --fuzzy 1, 或换一段更完整的旋律）")
     return 0
