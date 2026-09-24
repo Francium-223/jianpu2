@@ -89,6 +89,50 @@ def main():
     else:
         ok(True, "多命中时每一条都带片段")
 
+    # 多段查询(用户实测两次): `316 316 31656564` —— 空格是"这儿我记不清", 不是"两首不同的歌"。
+    # 第一次只要求"每段都要在同一首里"; 用户随后纠正: 老版本把 `316 316` 对齐到**引子**(第 2 小节)、
+    # `31656564` 对齐到**副歌**(第 30 小节), 两处凑一起给人看 —— 而整句其实连着在副歌:
+    # `3 1 6 | 3 1 6 | 3 1 6 5 6 5 | 6 4`(=《路灯下的小姑娘》"亲爱的 小妹妹 请你不要不要哭泣",
+    # 已对原始谱图核过: `0 3 i | 6 3 i | 6 3 i | 6 5 6 5 6 4`)。现在必须按**整句**报一条。
+    h3 = ms.search(rows, ms.split_query("316 316 31656564"), 0, 3)
+    print("   多段: %s" % "、".join("%s(%d 段)" % (x["title"], len(x.get("segs_detail") or [])) for x in h3))
+    ok(len(h3) == 1 and h3[0]["title"] == "路灯下的小姑娘",
+       "316 316 31656564 -> %s" % (h3[0]["title"] if h3 else "无"))
+    det = h3[0].get("segs_detail") or []
+    ok(len(det) == 1 and det[0].get("aligned"), "三段拼成**一整句**(只回一条, 标 aligned)")
+    ok([m["pos"] for m in det[0]["marks"]] == [p for p in h3[0]["positions"]],
+       "整句里每段的位置都记下来了")
+    span = "".join(c for c in det[0]["seg"] if c.isdigit())
+    ok(span == "31631631656564",
+       "整句片段正好是查询的 14 个音、连着出现(不是引子+副歌两处拼的): %s" % span)
+    ok(det[0]["seg"].count("【") == 3 and det[0]["seg"].count("】") == 3, "每段各圈一个【】")
+    ok(all(det[0]["bar_from"] <= ms.bar_span(h3[0]["bars"], p, n)[2] <= det[0]["bar_to"]
+           for p, n in zip(h3[0]["positions"], (3, 3, 8))),
+       "整句的小节号覆盖三段(第 %d–%d 小节)" % (det[0]["bar_from"], det[0]["bar_to"]))
+    ok(ms.bar_span(h3[0]["bars"], h3[0]["positions"][2], 8)[2] == det[0]["bar_to"]
+       or ms.bar_span(h3[0]["bars"], h3[0]["positions"][2], 8)[3] <= det[0]["bar_to"],
+       "第 3 段就落在整句的末尾小节里(不再单列一处)")
+    # 拼不成一句的(两段在谱上离得很远)必须**退回**逐段报, 不能硬凑
+    h4 = ms.search(rows, ms.split_query("63731232 1765"), 0, 5)
+    far = [x for x in h4 if not (x["segs_detail"] or [{}])[0].get("aligned")]
+    ok(bool(far), "两段离得远时退回逐段报: %s" % (far[0]["title"] if far else "（这次都拼上了）"))
+    if far:
+        ok(len(far[0]["segs_detail"]) == 2 and all(d.get("seg") for d in far[0]["segs_detail"]),
+           "退回时每段都有自己的最小连续小节")
+    # align_phrase 单测: 顺序/间隔/最小跨度/不同数优先
+    ok(ms.align_phrase(["12", "34"], [[(0, 0)], [(100, 0)]]) is None, "离太远 -> 拼不成一句")
+    ok(ms.align_phrase(["12", "34"], [[(0, 0)], [(3, 0)]]) == [(0, 2), (3, 2)], "挨着 -> 顺序拼上")
+    ok(ms.align_phrase(["12", "34"], [[(0, 0), (50, 0)], [(3, 0), (53, 0)]]) == [(0, 2), (3, 2)],
+       "几处都能拼时取**跨度最小**的")
+    ok(ms.align_phrase(["12", "34"], [[(0, 0)], [(3, 1), (5, 0)]]) == [(0, 2), (5, 2)],
+       "差音少的拼法优先于跨度小的")
+    ok(ms.align_phrase(["12"], [[(9, 0)]]) == [(9, 2)], "单段不动用对齐(直接给这一处)")
+
+    # 老口径的每段细节仍在(单段/退路都要能用): 一段圈一个【】, 片段从/到小节线
+    h1 = top("33565653253")[0]
+    ok(len(h1.get("segs_detail") or []) == 1 and not h1["segs_detail"][0].get("aligned"),
+       "单段查询不算'整句对齐'(aligned=False)")
+
     h = top("63731232")
     ok(len(h) >= 2 and any(x["title"] == "神々が恋した幻想郷" for x in h),
        "63731232 -> %s" % "、".join(x["title"] for x in h))

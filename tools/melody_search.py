@@ -28,6 +28,13 @@
   python3 tools/melody_search.py 63731232 --json --top 0  # **全部**命中(机器人默认这么调;
                                                           #  它自己再决定分几条消息发)
   python3 tools/melody_search.py "63731232 1765"          # 多段(空格/逗号/竖线分隔): 每段都要出现
+
+多段查询的口径(2026-09-24 用户纠正"316 316 31656564"之后定的): 空格是**"这一段我记不清"**,
+  不是"两首不同的歌"。所以先按**先后顺序**把各段拼成**一句话**找(段与段之间允许夹 <= MAX_GAP
+  个没哼出来的音), 命中的是**整句**, 显示的就是**包含全部命中音的最小连续小节**; 拼不成一句
+  (各段离得太远)才退回"每段各自最近的一处"。反例正是《路灯下的小姑娘》: 老版本把 `316 316`
+  对齐到引子(第 2 小节)、`31656564` 对齐到副歌(第 30 小节), 看起来像两处凑出来的假命中;
+  实际整句就在副歌: `3 1 6 | 3 1 6 | 3 1 6 5 6 5 | 6 4`(= "亲爱的 小妹妹 请你不要不要哭泣")。
 """
 import argparse
 import json
@@ -42,6 +49,9 @@ DB = os.environ.get("JIANPU_DB") or os.path.join(WS, "jianpu-db")
 DATA = os.path.join(DB, "data.jsonl")
 OK_STATUS = ("ok", "ocr")                         # 与 parse_scores 的白名单同一份口径
 TOKVER = 3                                        # 切 token / 行结构改了就 +1(缓存自动失效)
+MAX_GAP = 8                                       # 整句对齐时, 段与段之间最多允许夹几个音(空格=记不清)
+OCC_CAP = 96                                      # 每段最多收集多少处出现(只影响显示/对齐, 不影响排名用的最小不同数)
+ALIGN_MAX = 300                                   # 只给排序后靠前的这些命中做整句对齐(剩下的照旧给最小连续小节)
 CACHE = os.environ.get("JIANPU_MELODY_CACHE") or os.path.join(
     os.environ.get("XDG_CACHE_HOME") or os.path.join(os.path.expanduser("~"), ".cache"),
     "jianpu", "melody_index.json")
@@ -206,6 +216,77 @@ def find(needle, hay, fuzzy=0):
     return best
 
 
+def find_all(needle, hay, fuzzy=0, cap=OCC_CAP):
+    """needle 在 hay 里的**所有**出现(按位置升序, 每处带不同数) + 全曲最小不同数。
+
+    返回 (occs, best_diff); 找不到时 ([], None)。fuzzy=0 走 `str.find`(C 速度, 出现再多也快);
+    fuzzy>0 时一趟扫完: `cap` 只限制**收集**多少处, 最小不同数照样全曲算完 —— 排名口径不因 cap 变。
+    """
+    out, best = [], None
+    n, m = len(hay), len(needle)
+    if m == 0 or m > n:
+        return out, best
+    if fuzzy <= 0:
+        pos = hay.find(needle)
+        while pos >= 0:
+            if len(out) < cap:
+                out.append((pos, 0))
+            pos = hay.find(needle, pos + 1)
+        return out, (0 if out else None)
+    for i in range(n - m + 1):
+        diff = 0
+        for k in range(m):
+            if hay[i + k] != needle[k]:
+                diff += 1
+                if diff > fuzzy:
+                    break
+        if diff <= fuzzy:
+            if best is None or diff < best:
+                best = diff
+            if len(out) < cap:
+                out.append((i, diff))
+    return out, best
+
+
+def align_phrase(segs, occs, max_gap=MAX_GAP):
+    """把各段按**先后顺序**拼成一句话: 返回 [(位置, 长度), ...]; 拼不成返回 None。
+
+    状态是 (各段位置, 起点, 终点, 不同数之和); 每走一段只保留"终点 + 不同数和"最优的若干条,
+    免得长查询把状态撑爆。挑法: 不同数和少优先, 其次**跨度小**(这才是"最小连续小节"该有的样子),
+    最后取靠前的。段与段允许夹 <= max_gap 个音(用户把记不清的地方敲成了空格)。
+    """
+    if not segs or not occs or any(not o for o in occs):
+        return None
+    if len(segs) == 1:
+        p, _d = occs[0][0]
+        return [(p, len(segs[0]))]
+    states = [((p,), p, p + len(segs[0]), d) for p, d in occs[0]]
+    for j in range(1, len(segs)):
+        L = len(segs[j])
+        nxt = []
+        for path, st, end, ds in states:
+            for q, dq in occs[j]:
+                if q < end:
+                    continue
+                if q - end > max_gap:                  # occs 升序: 再往后只会更远
+                    break
+                nxt.append((path + (q,), st, q + L, ds + dq))
+        if not nxt:
+            return None
+        nxt.sort(key=lambda s: (s[3], s[2] - s[1], s[1]))
+        seen_end, keep = set(), []                     # 同一个终点只留最优的一条
+        for s in nxt:
+            if s[2] in seen_end:
+                continue
+            seen_end.add(s[2])
+            keep.append(s)
+            if len(keep) >= 256:
+                break
+        states = keep
+    best = min(states, key=lambda s: (s[3], s[2] - s[1], s[1]))
+    return [(p, len(s)) for p, s in zip(best[0], segs)]
+
+
 def bar_span(bars, i0, n):
     """包含命中音符 [i0, i0+n) 的**最小连续小节**。
 
@@ -230,16 +311,21 @@ def bar_span(bars, i0, n):
     return b0, b1, sum(1 for b in bs if b <= i0) or 1, sum(1 for b in bs if b <= i0 + n - 1) or 1
 
 
-def segment_text(r, i0, n, limit=240):
-    """命中的那几个音 + **包含它们的完整小节** -> 带 `|` 的原文片段, 命中段用【】圈出来。
+def span_text(r, i0, n, marks=None, limit=240):
+    """音符区间 [i0, i0+n) + **包含它的完整小节** -> 带 `|` 的原文片段, 命中块各自用【】圈出来。
 
     为什么要有它(用户口径 2026-09-24): "第多少音起说了跟没说一样。至少要把匹配的音的所有
     包括它的最小连续小节打出来。" —— 只给一个序号, 人没法核对; 给"这几个小节", 一眼就能对上。
+    marks = [(位置, 长度), ...]: 整句对齐时每段各圈一个【】, 段之间没对上的音**照原样留着**
+    (不能吞掉, 否则看不出"整句"到底连不连得上)。
     """
     toks = (r.get("score") or "").split()
     idx = [k for k, t in enumerate(toks) if is_pitch(t)]
     if not idx or i0 + n > len(idx):
         return "", 0, 0
+    marks = marks or [(i0, n)]
+    opens = {p for p, _k in marks}
+    closes = {p + k - 1 for p, k in marks}
     b0, b1, nb0, nb1 = bar_span(r.get("bars"), i0, n)
     b1 = min(b1, len(idx))
     bar_set = {int(b) for b in (r.get("bars") or [])}
@@ -247,13 +333,16 @@ def segment_text(r, i0, n, limit=240):
     for k in range(b0, b1):                        # 第 k 个音符
         if k in bar_set and parts:
             parts.append("|")
-        pre = "【" if k == i0 else ""
-        post = "】" if k == i0 + n - 1 else ""
-        parts.append(pre + toks[idx[k]] + post)
+        parts.append(("【" if k in opens else "") + toks[idx[k]] + ("】" if k in closes else ""))
     out = " ".join(parts)
     if len(out) > limit:                           # 极长的小节: 只截中间, 两头保留
         out = out[:limit // 2] + " … " + out[-limit // 2:]
     return out, nb0, nb1
+
+
+def segment_text(r, i0, n, limit=240):
+    """单段命中: 等价于只圈一个【】的 span_text(老调用方沿用这个名字)。"""
+    return span_text(r, i0, n, [(i0, n)], limit)
 
 
 def is_pitch(t):
@@ -269,8 +358,61 @@ def split_query(s):
     return [x for x in segs if x]
 
 
+def hit_detail(r, segs, det, fuzzy=0, do_align=True):
+    """给一条命中补上"要给人看的东西": 整句(能拼成)或每段各自的最小连续小节。
+
+    整句: 只有**一个**片段 —— 包含全部命中音的最小连续小节, 每段各圈一个【】;
+    拼不成一句(各段离得太远): 退回"每段各自最近的一处", 每段都要能核对, 不能只给第一段。
+    """
+    marks = None
+    if do_align and len(segs) > 1:
+        occs = []
+        for j, s in enumerate(segs):
+            occ, _best = find_all(s, r["digits"], fuzzy)
+            occs.append(occ or [det[j]])
+        marks = align_phrase(segs, occs)
+    if marks:
+        i0 = marks[0][0]
+        n = marks[-1][0] + marks[-1][1] - i0
+        t, n0, n1 = span_text(r, i0, n, marks)
+        details = [{"seg": t, "bar_from": n0, "bar_to": n1, "pos": i0, "n": n,
+                    "aligned": True,
+                    "marks": [{"pos": p, "n": k} for p, k in marks]}]
+        positions = [p for p, _k in marks]
+    else:
+        details, seen, positions = [], {}, []
+        for j, (p0, _d) in enumerate(det, 1):
+            sgm = segs[j - 1]
+            positions.append(p0)
+            t, n0, n1 = segment_text(r, p0, len(sgm))
+            key = (n0, n1, t)
+            if key in seen:                        # 两段落在同一处: 别重复印, 标一下就行
+                details.append({"seg": "", "same_as": seen[key], "n": len(sgm),
+                                "bar_from": n0, "bar_to": n1, "pos": p0, "aligned": False})
+                continue
+            seen[key] = j
+            details.append({"seg": t, "bar_from": n0, "bar_to": n1, "pos": p0, "n": len(sgm),
+                            "aligned": False})
+    r["pos"] = positions[0]
+    r["positions"] = positions
+    r["seg"] = details[0]["seg"]
+    r["bar_from"] = details[0]["bar_from"]
+    r["bar_to"] = details[0]["bar_to"]
+    r["segs_detail"] = details
+    return r
+
+
 def search(rows, segs, fuzzy=0, top=20):
-    """每一段都必须在同一首里找到(与前端"多段相加"同一个意思: 多给几段更准)。"""
+    """每一段都必须在同一首里找到(多给几段更准); 能拼成一句就按**整句**报。
+
+    排序(与网页前端、技能 lookup.py 同一份口径): 不同数少 -> 热度(同曲名组份数) -> **知名度**
+    (歌手/标签在语料里的谱数) -> 谱短 -> 曲名。热点说明: `66561232123` 精确命中《最炫民族风》
+    (凤凰传奇, 库里 68 首) 与《时光》(无歌手信息, 0 首) —— 用户判定正确答案是前者,
+    而"名短优先/八度记号少优先"都判给了后者。
+
+    两遍走: 第一遍只算排名要用的"每段最小不同数"(早退, 极快), 排完序**只给要回话的那几条**
+    做整句对齐 —— 否则 `1 1` 这种顺手一敲的查询要对全库 7 千首做一遍对齐, 白白慢十几秒。
+    """
     segs = [s for s in (segs or []) if s]
     if not segs:
         return []
@@ -288,15 +430,15 @@ def search(rows, segs, fuzzy=0, top=20):
             det.append(got)
         if not ok:
             continue
-        worst = max(x[1] for x in det)
-        seg, nb0, nb1 = segment_text(r, det[0][0], len(segs[0]))
-        hits.append(dict(r, pos=det[0][0], diff=worst, positions=[x[0] for x in det],
-                         seg=seg, bar_from=nb0, bar_to=nb1))
-    # 越像越靠前, 与网页前端同序: 不同数少 -> 热度(同曲名组份数) -> **知名度**(歌手/标签在语料里的谱数)
-    # -> 谱短 -> 曲名。热点说明: `66561232123` 精确命中《最炫民族风》(凤凰传奇, 库里 68 首) 与
-    # 《时光》(无歌手信息, 0 首) —— 用户判定正确答案是前者, 而"名短优先/八度记号少优先"都判给了后者。
+        hits.append(dict(r, diff=max(x[1] for x in det), _det=det))
     hits.sort(key=lambda x: (x["diff"], -x.get("pop", 0), -x.get("hot", 0), x["n_notes"], x["title"]))
-    return hits[:top] if top else hits
+    if top:
+        hits = hits[:top]
+    for i, h in enumerate(hits):
+        det = h.pop("_det")
+        # 只给靠前的这些做整句对齐; 再多也没人看(bot 只发前 20 条), 别把 7 千首都算一遍
+        hit_detail(h, segs, det, fuzzy, do_align=(i < ALIGN_MAX))
+    return hits
 
 
 def fmt_hit(i, h):
@@ -351,9 +493,15 @@ def main():
           + ("（只显示前 %d）" % a.top if a.top and len(hits) >= a.top else ""))
     for i, h in enumerate(hits, 1):
         print("  " + fmt_hit(i, h))
-        if h.get("seg"):
-            print("       └ 第 %d%s 小节: %s" % (h["bar_from"],
-                  ("–%d" % h["bar_to"]) if h["bar_to"] != h["bar_from"] else "", h["seg"]))
+        multi = len(h.get("segs_detail") or []) > 1
+        for j, dt in enumerate(h.get("segs_detail") or [], 1):
+            tag = ("第 %d 段 " % j) if multi else ("整句 " if dt.get("aligned") else "")
+            if not dt.get("seg"):
+                print("       └ %s（与第 %d 段同一处）" % (tag, dt.get("same_as", 0)))
+                continue
+            rng = ("第 %d–%d 小节" % (dt["bar_from"], dt["bar_to"])
+                   if dt["bar_to"] != dt["bar_from"] else "第 %d 小节" % dt["bar_from"])
+            print("       └ %s%s: %s" % (tag, rng, dt["seg"]))
     if not hits:
         print("   （无 —— 试 --fuzzy 1, 或换一段更完整的旋律）")
     return 0
