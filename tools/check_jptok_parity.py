@@ -72,12 +72,20 @@ def main():
                 y = getattr(FB, fn_name)(t)
                 if x != y:
                     bad.setdefault(fn_name, []).append((fn, t, x, y))
-        # ② 拍号
+        # ② seq(): 整份谱 -> 有音高的 token 解析结果(export_hf / audit_corpus_quality /
+        #    quarantine_short_scores 都用它; 2026-09-24 兜底类**缺这个方法**导致 CI 挂过 ->
+        #    现在逐首比, 以后谁少实现一个方法/口径漂了都会红)
+        x = jptok.seq(body)
+        y = FB.seq(body)
+        if x != y:
+            bad.setdefault("seq", []).append((fn, "", f"{len(x)} 音", f"{len(y)} 音"))
+
+        # ③ 拍号
         x = jptok.beats_per_bar_from(text)
         y = FB.beats_per_bar_from(text)
         if x != y:
             bad.setdefault("beats_per_bar_from", []).append((fn, "", x, y))
-        # ③ 小节恢复
+        # ④ 小节恢复
         secs = [{"subtitle": "score", "score": " ".join(body.replace("%END", "").split())}]
         x = jptok.recover_bars(secs, x, keep_explicit=True)
         y = FB.recover_bars(secs, y, keep_explicit=True)
