@@ -2,6 +2,7 @@
 # 代码库只留"可复现的脚本与文本"(见 00_锦囊_先读我.md)。
 images/
 images-prep/
+images-prep
 models/
 
 # 训练数据 / 批量输出(体积大, 本地保留; 需要时用 tools/ 里的脚本重跑)
