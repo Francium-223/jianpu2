@@ -114,14 +114,81 @@ def clean_title(t):
     return re.sub(r"\s{2,}", " ", t).strip()
 
 
+def artist_of(path):
+    """取这份曲谱的 `artist=` 第一个值(撞名消歧要用它拼 `曲名（歌手）.txt`)。
+
+    只在**已经撞名**时才需要它; 读不到就返回空串(退回 `_2` 的老办法, 不会因此不改名)。
+    """
+    try:
+        head = io.open(path, encoding="utf-8", errors="replace").read().split("%--", 1)[0]
+    except OSError:
+        return ""
+    m = re.search(r"(?m)^artist=(.*)$", head)
+    if not m:
+        return ""
+    a = m.group(1).split(",")[0].strip()
+    return re.sub(r'[\\/:*?"<>|\x00-\x1f]', "_", a).strip()
+
+
+def pick_target(fn, new_title, taken):
+    """新曲名 -> 目标文件名(**保证不与现有文件冲突**)。
+
+    命名约定(用户 2026-09-24 定, 与上一轮 30 个改名一致):
+        曲名.txt  ->  撞名则 `曲名（歌手）.txt`  ->  还撞则 `曲名（歌手）_2.txt`/`_3…`
+        没有歌手信息 -> `曲名_2.txt`/`_3…`(老办法)
+    以前只有最后那档 `_2`, 于是《草原之夜》这种通用曲名会变成没法认的 `草原之夜_2.txt`。
+    """
+    base = re.sub(r'[\\/:*?"<>|]', "_", new_title).strip() or fn[:-4]
+
+    def free(b):
+        t = b + ".txt"
+        return t == fn or (t not in taken and not os.path.exists(os.path.join(SCORES, t)))
+
+    if free(base):
+        return base + ".txt"
+    art = artist_of(os.path.join(SCORES, fn))
+    if art:
+        b2 = "%s（%s）" % (base, art)
+        if free(b2):
+            return b2 + ".txt"
+        i = 2
+        while not free("%s_%d" % (b2, i)):
+            i += 1
+        return "%s_%d.txt" % (b2, i)
+    i = 2
+    while not free("%s_%d" % (base, i)):
+        i += 1
+    return "%s_%d.txt" % (base, i)
+
+
+def accepted_from_tsv(path):
+    """从**已在盘上的提案 TSV** 读 `file -> accepted`。
+
+    为什么: `--apply` 原来直接用刚算出来的 `confident()` 结果, 人改过的 `accepted` 列会被覆盖 ——
+    于是"审完把同意的留 1"这句话是假的(改完再跑就没了)。现在以盘上那份为准, 新出现的文件才用新算的。
+    """
+    out = {}
+    if not os.path.isfile(path):
+        return out
+    for i, ln in enumerate(io.open(path, encoding="utf-8")):
+        if i == 0 or not ln.strip():
+            continue
+        c = ln.rstrip("\n").split("\t")
+        if len(c) >= 4:
+            out[c[0]] = c[3]
+    return out
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--apply", action="store_true")
+    ap.add_argument("--plan", action="store_true", help="只打印改名计划(旧名 -> 新名 + 新曲名), 不动文件")
     ap.add_argument("--offline", action="store_true", help="不联网, 只用缓存重新出提案")
     ap.add_argument("--workers", type=int, default=6)
     ap.add_argument("--interval", type=float, default=0.25)
     ap.add_argument("--out", default=OUT)
     a = ap.parse_args()
+    reviewed = accepted_from_tsv(a.out) if (a.apply or a.plan) else {}
 
     sp = json.load(open(os.path.join(DB, "source_pages.json"), encoding="utf-8"))
     os.makedirs(CACHE, exist_ok=True)
@@ -188,29 +255,43 @@ def main():
     print("提案: %s (%d 条, 其中建议改名 %d 条)"
           % (a.out, len(rows), sum(1 for r in rows if r[3] == "1")))
 
-    if a.apply:
-        n = 0
+    if a.apply or a.plan:
+        todo_rows = []
         for fn, cur, new, acc, _s, _pt in rows:
+            acc = reviewed.get(fn, acc)          # 以盘上那份为准(人审过的 accepted 不被覆盖)
             if acc != "1":
                 continue
-            p = os.path.join(SCORES, fn)
-            if not os.path.isfile(p):
+            if not os.path.isfile(os.path.join(SCORES, fn)):
                 continue
-            raw = open(p, "rb").read()
-            nl = b"\r\n" if b"\r\n" in raw else b"\n"
-            text = raw.decode("utf-8")
             new = clean_title(new.replace("\\", ""))      # 纵深防御: 落盘前再清一遍
             if not new:
                 continue
+            todo_rows.append((fn, cur, new))
+
+    if a.plan:
+        print(f"\n改名计划({len(todo_rows)} 首; 只打印, 不动任何文件):")
+        taken = set()
+        for fn, cur, new in todo_rows:
+            # 必须**顺序累积** taken: 两条提案可能撞同一个新名, 打印的计划要与 --apply 的结果一致
+            tgt = pick_target(fn, new, taken)
+            taken.add(tgt)
+            mark = "" if tgt.startswith(new) else "  <- 名字被占"
+            print("  %-46s -> %-40s  title=%s%s" % (fn[:46], tgt[:40], new, mark))
+        print("\n冲突规则: 曲名.txt -> 曲名（歌手）.txt -> 曲名（歌手）_2.txt -> 曲名_2.txt")
+
+    if a.apply:
+        n = 0
+        taken = set()
+        for fn, cur, new in todo_rows:
+            p = os.path.join(SCORES, fn)
+            raw = open(p, "rb").read()
+            nl = b"\r\n" if b"\r\n" in raw else b"\n"
+            text = raw.decode("utf-8")
             text = re.sub(r"(?m)^title=.*$", lambda m: "title=" + new, text, count=1)
             text = re.sub(r"(?m)^todo=refine the filename\s*$", "", text)
             text = re.sub(r"\n{3,}", "\n\n", text)
-            # 文件名: 去掉 ASCII 化, 用官方名(仍保证唯一)
-            base = re.sub(r'[\\/:*?"<>|]', "_", new).strip() or fn[:-4]
-            tgt = base + ".txt"
-            i = 2
-            while os.path.exists(os.path.join(SCORES, tgt)) and tgt != fn:
-                tgt = "%s_%d.txt" % (base, i); i += 1
+            tgt = pick_target(fn, new, taken)
+            taken.add(tgt)
             open(p, "wb").write(text.encode("utf-8"))
             if tgt != fn:
                 os.rename(p, os.path.join(SCORES, tgt))
