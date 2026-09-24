@@ -113,18 +113,44 @@ def main():
             old = json.load(g)["files"]
         gone = sorted(set(old) - set(now))
         added = sorted(set(now) - set(old))
-        keybad, valbad, bodybad = [], [], []
+        # **认改名**: 正文哈希 + 音符数都一样、只是文件名变了 -> 这是 rename, 不是丢文件。
+        # (2026-09-24 实测: 有意给 30 个撞名文件改名, 老工具报了"消失 30 份 + 有问题" ✗ 太吵)
+        old_body = {}
+        for n in gone:
+            old_body.setdefault(old[n]["body_sha1"], []).append(n)
+        renamed = []
+        for n in list(added):
+            same = old_body.get(now[n]["body_sha1"])
+            if same and now[n]["n_pitch"] == old[same[0]]["n_pitch"]:
+                renamed.append((same.pop(0), n))
+                added.remove(n)
+        for _o, _n in renamed:
+            gone.remove(_o)
+        keybad, keynew, valbad, bodybad = [], [], [], []
         for n in sorted(set(old) & set(now)):
             o, w = old[n], now[n]
             if o["keys"] != w["keys"]:
-                keybad.append((n, o["keys"], w["keys"]))
+                # 键集合是**超集** -> 多半是"有意新增了一个字段"(如 artist=);
+                # 键**少了/换了名字**才是写坏(如 todo= 被写成 dtodo=)。分开报, 别一律喊狼来了。
+                if set(o["keys"]) < set(w["keys"]):
+                    keynew.append((n, [k for k in w["keys"] if k not in o["keys"]]))
+                else:
+                    keybad.append((n, o["keys"], w["keys"]))
             elif o["vals"] != w["vals"]:
                 valbad.append((n, o["vals"], w["vals"]))
             elif o["body_sha1"] != w["body_sha1"] or o["n_pitch"] != w["n_pitch"]:
                 bodybad.append((n, o["n_pitch"], w["n_pitch"]))
         print(f"\n=== 与 {a.check} 比对 ===")
-        print(f"新增 {len(added)} 份, 消失 {len(gone)} 份, "
-              f"**元数据键变了 {len(keybad)} 份**, 值变了 {len(valbad)} 份, 正文变了 {len(bodybad)} 份")
+        print(f"新增 {len(added)} 份, 消失 {len(gone)} 份, **改名 {len(renamed)} 份**, "
+              f"**键丢失/改名 {len(keybad)} 份**, 新增键 {len(keynew)} 份, "
+              f"值变了 {len(valbad)} 份, 正文变了 {len(bodybad)} 份")
+        if renamed:
+            print("\n改名(正文哈希一致, 只是文件名变了):")
+            for o, n in renamed[:8]:
+                print(f"   {o}  ->  {n}")
+        if keynew:
+            print(f"\n新增元数据键(多半是有意加的字段, 前 5): "
+                  + "; ".join(f"{n}: {k}" for n, k in keynew[:5]))
         if added:
             print("\n新增(前 10): " + ", ".join(added[:10]))
         if gone:
