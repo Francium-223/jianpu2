@@ -58,6 +58,14 @@ def main():
        "33565653253 -> %s（老版本这里永远命中 0 首）" % (h[0]["title"] if h else "无"))
     ok(bool(h) and h[0]["file"] == "th10_06.txt" and h[0]["pos"] == 0, "命中位置 0 / th10_06.txt")
 
+    # 并列规则与前端同向(八度记号少的优先): 66561232123 精确命中两首, 前端与机器人必须同第一名
+    h = top("66561232123", is_json=False) if False else ms.search(rows, ["66561232123"], 0, 5)
+    ok(len(h) == 2 and h[0]["title"] == "时光" and h[1]["title"] == "最炫民族风",
+       "66561232123 -> %s（前端 lookup.py 同款并列规则: 先看八度记号多少）"
+       % "、".join(x["title"] for x in h))
+    ok(all(x["diff"] == 0 for x in h), "两首都是 0 错音(纯数字串确实一样)")
+    ok(h[0]["octmarks"] <= h[1]["octmarks"], "并列时八度记号少的排前面")
+
     h = top("63731232")
     ok(len(h) >= 2 and any(x["title"] == "神々が恋した幻想郷" for x in h),
        "63731232 -> %s" % "、".join(x["title"] for x in h))

@@ -55,18 +55,35 @@ TOK = re.compile(r"^[,']*[cqsdh]*[,']*[#b♯♭]?([1-7])")
 
 def digits_of(text):
     """token 流 -> 纯数字串(丢掉时值/八度/附点/变音/休止/调号)。"""
+    return "".join(d for d, _o in _tokens(text))
+
+
+def octs_of(text):
+    """逐音记下**八度偏移**(用 off+2 编码, 所以 '2' = 没写八度记号)。
+
+    为什么需要它: 主排序故意丢八度(宽容哼唱), 并列时看"这一段的八度记号多不多"能分开
+    《水手》那类只差末两音低八度的歌 —— 前端 lookup.py 的并列规则就是这样。机器人这边
+    以前只按"谱短优先", 于是同一个查询在前端和机器人上给出的第一名可能不一样(实测:
+    `66561232123` 前端给《时光》、机器人给《最炫民族风》)。现在两边同规则。
+    """
+    return "".join(str(o + 2) for _d, o in _tokens(text))
+
+
+def _tokens(text):
+    """token 流 -> [(音高数字, 八度偏移), ...]"""
     out = []
     for t in (text or "").split():
         if jptok is not None:
             if jptok.is_pitch(t):
-                out.append(str(jptok.parse_token(t)[0]))
+                tok = jptok.parse_token(t)
+                out.append((str(tok[0]), int(tok[2])))
             continue
         if "=" in t:                              # 调号 `1=C` 里的 1 不是音符
             continue
         m = TOK.match(t)
         if m:
-            out.append(m.group(1))
-    return "".join(out)
+            out.append((m.group(1), 0))
+    return out
 
 
 def digits_of_file(path):
@@ -112,6 +129,7 @@ def build_corpus(path=DATA):
                 "n_notes": int(r.get("n_notes") or 0),
                 "status": (st[0] or ""),
                 "digits": d,
+                "octs": octs_of(r.get("score") or ""),
             })
     return rows
 
@@ -194,9 +212,15 @@ def search(rows, segs, fuzzy=0, top=20):
         if not ok:
             continue
         worst = max(x[1] for x in det)
-        hits.append(dict(r, pos=det[0][0], diff=worst, positions=[x[0] for x in det]))
-    # 越像越靠前: 不同数少 -> 谱短(短谱里出现一段长旋律更"是它") -> 曲名
-    hits.sort(key=lambda x: (x["diff"], x["n_notes"], x["title"]))
+        # 并列时的次序与前端一致: ①不同音少 ②这段里**写出来的八度记号少**(说明它更"平")
+        # ③谱短(短谱里出现一段长旋律更像"就是它") ④曲名
+        om = 0
+        for (p0, _d), seg in zip(det, segs):
+            om += sum(1 for c in r["octs"][p0:p0 + len(seg)] if c != "2")
+        hits.append(dict(r, pos=det[0][0], diff=worst, octmarks=om,
+                         positions=[x[0] for x in det]))
+    # 越像越靠前: 不同数少 -> 八度记号少(与前端并列规则同向) -> 谱短 -> 曲名
+    hits.sort(key=lambda x: (x["diff"], x.get("octmarks", 0), x["n_notes"], x["title"]))
     return hits[:top] if top else hits
 
 
