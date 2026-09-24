@@ -13,7 +13,7 @@ TOOLS="add_link propose_tags harvest_artists refine_titles_from_pages audit_corp
        quarantine_short_scores audit_arrangements verify_source_urls corpus_fingerprint
        coverage_gap verify_crawl_matches slice_systems audit_melody_clones
        check_transcribe_ready audit_meter check_images set_artists
-       make_score mbz_lookup transcribe batch_pipeline"
+       make_score mbz_lookup transcribe batch_pipeline melody_search"
 for t in $TOOLS; do
   [ -f "tools/$t.py" ] || continue
   printf '%-28s ' "$t"
@@ -23,6 +23,15 @@ for t in $TOOLS; do
     echo "!! 失败"; echo "$out" | tail -3 | sed 's/^/      /'; fail=1
   fi
 done
+# 功能自测: 查歌(melody_search) —— 机器人的「<数字>是什么歌」走的就是它。
+# 2026-09-24 之前的版本搜的是旧流水线的 batch-out/(里面没有 th10_06), 永远返回"命中 0 首"且不报错;
+# 现在搜 data.jsonl 并用 jptok 切 token, 这条自检把"已知答案 + 音数交叉验证"钉住。
+if [ -f tools/check_melody_search.py ]; then
+  echo
+  echo "=== 功能: 查歌 melody_search(机器人用) ==="
+  python3 tools/check_melody_search.py | tail -3 || fail=1
+fi
+
 # 静态检查: "调用了但没定义"的名字 —— 专抓"重构删了函数、调用还留着"
 # (2026-09-24 实测: propose_tags.py 的 apply_tsv/emit_template 就是这么没的, 而 --help 走不到那行)
 if [ -f tools/check_undefined.py ]; then
