@@ -25,6 +25,8 @@
   python3 tools/melody_search.py 33565653253
   python3 tools/melody_search.py 33565653253 --fuzzy 1 --top 5
   python3 tools/melody_search.py 63731232 --json          # 给机器人解析
+  python3 tools/melody_search.py 63731232 --json --top 0  # **全部**命中(机器人默认这么调;
+                                                          #  它自己再决定分几条消息发)
   python3 tools/melody_search.py "63731232 1765"          # 多段(空格/逗号/竖线分隔): 每段都要出现
 """
 import argparse
