@@ -154,6 +154,21 @@ def main():
             continue
         print("    结果 %d 条 (%s)" % (len(cands), url[:60]), flush=True)
         hits = pick(name, artist, cands)
+        if not hits and artist:
+            # **按歌手兜底**: 曲名搜不到时, 改用歌手当关键词, 再在结果里按曲名找。
+            # 为什么有用: 站点标题常是"曲名+描述+歌手", 而曲名本身可能带括号/副标题(如《落（花开花落日生日没）》),
+            # 直接搜曲名会 0 条; 搜歌手却能把他的谱全列出来, 目标就在里面。
+            try:
+                url2, cands2 = search(artist, a.sleep)
+                print("    曲名 0 命中 -> 改搜歌手「%s」: %d 条" % (artist, len(cands2)), flush=True)
+                hits = pick(name, "", cands2)
+                if hits:
+                    print("    按歌手找到 %d 个谱页" % len(hits), flush=True)
+                else:
+                    for sid, txt in cands2[:5]:
+                        print("      (该歌手候选) %-34s %s" % (txt[:34], sid), flush=True)
+            except Exception as e:
+                print("    按歌手兜底失败: %s" % type(e).__name__, flush=True)
         if not hits:
             for sid, txt in cands[:3]:
                 print("      (候选) %-34s %s" % (txt[:34], sid), flush=True)
