@@ -102,26 +102,22 @@ def main():
     ok(len(h3) == 1 and h3[0]["title"] == "路灯下的小姑娘",
        "316 316 31656564 -> %s" % (h3[0]["title"] if h3 else "无"))
     det = h3[0].get("segs_detail") or []
-    ok(len(det) == 1 and det[0].get("aligned"), "三段拼成**一整句**(只回一条, 标 aligned)")
-    ok([m["pos"] for m in det[0]["marks"]] == [p for p in h3[0]["positions"]],
-       "整句里每段的位置都记下来了")
+    # 2026-09-25 口径统一: 空格**不再分段**(与网页 parseQuery 一致) —— 整串就是一个连续乐句,
+    # 所以只有一个片段、一个【】, 也不再逐段记 marks。原来那句"三段各圈一个【】"是旧行为。
+    ok(len(det) == 1, "整串当成一整句(只回一条)")
+    ok(det and det[0].get("pos") == h3[0]["positions"][0], "整句片段位置与命中位置一致")
     span = "".join(c for c in det[0]["seg"] if c.isdigit())
     ok(span == "31631631656564",
        "整句片段正好是查询的 14 个音、连着出现(不是引子+副歌两处拼的): %s" % span)
-    ok(det[0]["seg"].count("【") == 3 and det[0]["seg"].count("】") == 3, "每段各圈一个【】")
-    ok(all(det[0]["bar_from"] <= ms.bar_span(h3[0]["bars"], p, n)[2] <= det[0]["bar_to"]
-           for p, n in zip(h3[0]["positions"], (3, 3, 8))),
-       "整句的小节号覆盖三段(第 %d–%d 小节)" % (det[0]["bar_from"], det[0]["bar_to"]))
-    ok(ms.bar_span(h3[0]["bars"], h3[0]["positions"][2], 8)[2] == det[0]["bar_to"]
-       or ms.bar_span(h3[0]["bars"], h3[0]["positions"][2], 8)[3] <= det[0]["bar_to"],
-       "第 3 段就落在整句的末尾小节里(不再单列一处)")
-    # 拼不成一句的(两段在谱上离得很远)必须**退回**逐段报, 不能硬凑
+    ok(det[0]["seg"].count("【") == 1 and det[0]["seg"].count("】") == 1, "整句一个【】(连续乐句)")
+    ok(det[0]["bar_from"] <= ms.bar_span(h3[0]["bars"], h3[0]["positions"][0], 14)[2] <= det[0]["bar_to"],
+       "整句的小节号覆盖这 14 个音(第 %d–%d 小节)" % (det[0]["bar_from"], det[0]["bar_to"]))
+    # 口径统一后"空格只是给人看的": 整串当一个连续乐句, 没有"分段"这回事了。
+    ok(ms.split_query("63731232 1765") == ["637312321765"],
+       "空格/逗号不分段(与网页 parseQuery 一致)")
     h4 = ms.search(rows, ms.split_query("63731232 1765"), 0, 5)
-    far = [x for x in h4 if not (x["segs_detail"] or [{}])[0].get("aligned")]
-    ok(bool(far), "两段离得远时退回逐段报: %s" % (far[0]["title"] if far else "（这次都拼上了）"))
-    if far:
-        ok(len(far[0]["segs_detail"]) == 2 and all(d.get("seg") for d in far[0]["segs_detail"]),
-           "退回时每段都有自己的最小连续小节")
+    ok(all(len(x.get("segs_detail") or []) == 1 for x in h4),
+       "不连续的串不再硬凑成一句(%d 条命中, 都是单个连续片段)" % len(h4))
     # align_phrase 单测: 顺序/间隔/最小跨度/不同数优先
     ok(ms.align_phrase(["12", "34"], [[(0, 0)], [(100, 0)]]) is None, "离太远 -> 拼不成一句")
     ok(ms.align_phrase(["12", "34"], [[(0, 0)], [(3, 0)]]) == [(0, 2), (3, 2)], "挨着 -> 顺序拼上")
@@ -168,8 +164,11 @@ def main():
     ok(bool(h) and h[0]["diff"] == 1, "末位写错 -> 容错 1 处仍能查到")
     ok(not top("33565653254"), "不容错时同一个错串查不到(说明 diff 是真在比)")
 
+    # 2026-09-25 口径统一: 空格不分段 -> 上面这句旧断言("每段都要命中")不再成立,
+    # 整串 `637312321765` 只在**真连着**的谱里命中。
     h = top("63731232 1765")
-    ok(len(h) >= 1 and all(len(x["positions"]) == 2 for x in h), "多段查询: 每段都要命中")
+    ok(all(len(x["positions"]) == 1 for x in h),
+       "空格不分段: 整串当一个连续乐句(%d 条命中)" % len(h))
 
     ok(not top("77717771777177") and not top("77717771777177", fuzzy=1), "真没有的片段查不到")
 
