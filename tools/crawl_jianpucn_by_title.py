@@ -50,7 +50,12 @@ os.makedirs(OUT, exist_ok=True)
 os.makedirs(os.path.dirname(SCANLOG), exist_ok=True)
 
 WANT = [x for x in (sys.argv[1].split(",") if len(sys.argv) > 1 else []) if x]
-MAXP = int(sys.argv[2]) if len(sys.argv) > 2 and sys.argv[2].isdigit() else 1400
+_args = sys.argv[2:]
+# `--from-log`: 不重扫目录, 直接读扫描日志里"已经命中过"的谱页去下载。
+# 为什么需要: 扫一遍 6 个分类要 ~40 分钟, 而"扫描"和"下载"是两件事 ——
+# 2026-09-25 实测下载静默失败(报"下载 0 个谱页", 退出码还是 0), 想重试就得再等 40 分钟重扫。
+FROM_LOG = "--from-log" in _args
+MAXP = int([a for a in _args if a.isdigit()][0]) if [a for a in _args if a.isdigit()] else 1400
 
 
 def norm(s):
@@ -74,6 +79,9 @@ def get(url):
 
 
 def safe(s):
+    # 2026-09-25: 站点标题里的 `&nbsp;&nbsp;` 会原样进目录名 -> 再一路漏进转写队列的"曲名"列 ->
+    # 转写完就成了 `title=阿姐鼓&nbsp;&nbsp;`。这里先去实体。
+    s = ENT.sub("", s)
     s = re.sub(r"[\\/:*?\"<>|\x00-\x1f\x7f-\x9f]", "_", s)
     return re.sub(r"\s+", " ", re.sub(r"\[[^\]]*\]", "", s)).strip()[:60] or "untitled"
 
@@ -96,36 +104,53 @@ for w in WANT:
 print(f"目标 {len(WANT)} 首 -> 需扫分类 {sorted(need_cat)}\n", flush=True)
 
 found = {}          # 曲名 -> [(url, title)]
-log = io.open(SCANLOG, "a", encoding="utf-8")
-for cat in CATS:
-    if cat not in need_cat:
-        continue
-    t0 = time.time()
-    for p in range(1, MAXP + 1):
-        u = f"http://www.jianpu.cn/{cat}" + ("" if p == 1 else f"/{p}.htm")
-        try:
-            h = get(u)
-        except Exception:
-            break
-        items = re.findall(r"href='(/pu/\d+/\d+\.htm)'[^>]*>([^<]{1,70})<", h)
-        if not items:
-            break
-        for path, title in items:
-            tn = norm(title)
-            for w, wn in WANTN.items():
-                if wn and matched(tn, wn) and path not in {x[0] for x in found.get(w, [])}:
-                    found.setdefault(w, []).append((path, title.strip()))
-                    print(f"   命中 {w} <- {title.strip()[:44]}  {path}", flush=True)
-                    log.write(f"{w}\t{title.strip()}\t{path}\t{cat}\tp{p}\n")
-                    log.flush()
-        if p % 100 == 0:
-            print(f"  [{cat}] 第 {p} 页 ({time.time()-t0:.0f}s) 累计命中 "
-                  f"{sum(len(v) for v in found.values())}", flush=True)
-        time.sleep(0.15)
-    print(f"  [{cat}] 扫完 {p} 页, 用时 {time.time()-t0:.0f}s", flush=True)
+if FROM_LOG:
+    # 日志里每行: 曲名 \t 页面标题 \t /pu/NN/NNNNNN.htm \t 分类 \t p页号
+    seen = set()
+    for ln in io.open(SCANLOG, encoding="utf-8"):
+        c = ln.rstrip("\n").split("\t")
+        if len(c) < 3 or c[0] not in WANTN:
+            continue
+        key = (c[0], c[2])
+        if key in seen:
+            continue
+        seen.add(key)
+        found.setdefault(c[0], []).append((c[2], c[1]))
+    print(f"--from-log: 从 {SCANLOG} 读到 {sum(len(v) for v in found.values())} 个谱页, 跳过目录扫描\n",
+          flush=True)
+else:
+    log = io.open(SCANLOG, "a", encoding="utf-8")
+    for cat in CATS:
+        if cat not in need_cat:
+            continue
+        t0 = time.time()
+        for p in range(1, MAXP + 1):
+            u = f"http://www.jianpu.cn/{cat}" + ("" if p == 1 else f"/{p}.htm")
+            try:
+                h = get(u)
+            except Exception:
+                break
+            items = re.findall(r"href='(/pu/\d+/\d+\.htm)'[^>]*>([^<]{1,70})<", h)
+            if not items:
+                break
+            for path, title in items:
+                tn = norm(title)
+                for w, wn in WANTN.items():
+                    if wn and matched(tn, wn) and path not in {x[0] for x in found.get(w, [])}:
+                        found.setdefault(w, []).append((path, title.strip()))
+                        print(f"   命中 {w} <- {title.strip()[:44]}  {path}", flush=True)
+                        log.write(f"{w}\t{title.strip()}\t{path}\t{cat}\tp{p}\n")
+                        log.flush()
+            if p % 100 == 0:
+                print(f"  [{cat}] 第 {p} 页 ({time.time()-t0:.0f}s) 累计命中 "
+                      f"{sum(len(v) for v in found.values())}", flush=True)
+            time.sleep(0.15)
+        print(f"  [{cat}] 扫完 {p} 页, 用时 {time.time()-t0:.0f}s", flush=True)
+    log.close()
 
 print(f"\n命中 {sum(len(v) for v in found.values())} 个谱页, 开始下载")
 ok = 0
+fails = {}          # 失败原因 -> 次数 (别再静默吞异常了)
 for w, lst in found.items():
     for path, title in lst:
         sid = re.search(r"/(\d+)\.htm", path).group(1)
@@ -135,11 +160,13 @@ for w, lst in found.items():
             continue
         try:
             ph = get("http://www.jianpu.cn" + path)
-        except Exception:
+        except Exception as e:
+            fails["页面取不到: " + type(e).__name__] = fails.get("页面取不到: " + type(e).__name__, 0) + 1
             continue
         imgs = [x for x in re.findall(r"<img[^>]+src=['\"](/img/[^'\"]+\.(?:jpg|gif|png))['\"]",
                                       ph, re.I) if "logo" not in x.lower()]
         if not imgs:
+            fails["页面里没匹配到 /img/ 谱图"] = fails.get("页面里没匹配到 /img/ 谱图", 0) + 1
             continue
         os.makedirs(d, exist_ok=True)
         n = 0
@@ -151,8 +178,8 @@ for w, lst in found.items():
                         open(os.path.join(d, f"00{n+1}.jpg"), "wb") as g:
                     g.write(r.read())
                 n += 1
-            except Exception:
-                pass
+            except Exception as e:
+                fails["图片下载失败: " + type(e).__name__] = fails.get("图片下载失败: " + type(e).__name__, 0) + 1
             time.sleep(0.15)
         if n:
             ok += 1
@@ -160,5 +187,9 @@ for w, lst in found.items():
         time.sleep(0.2)
 
 print(f"\n完成: 下载 {ok} 个谱页 -> {OUT}")
+if fails:
+    print("失败原因统计(以前这里是静默 `except: continue`, 所以只会看到\"下载 0\"):")
+    for k, v in sorted(fails.items(), key=lambda kv: -kv[1]):
+        print("   %-34s %d" % (k, v))
 for w in WANT:
     print(f"   {w:<16} {'命中 ' + str(len(found.get(w, []))) + ' 个谱页' if w in found else '未命中'}")

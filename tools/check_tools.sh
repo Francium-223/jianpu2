@@ -17,7 +17,7 @@ TOOLS="add_link propose_tags harvest_artists refine_titles_from_pages audit_corp
        crawl_jianpujia crawl_jianpucn crawl_qupu123 crawl_batch_jianpujia
        crawl_jianpucn_by_title
        queue_from_crawl batch_transcribe_queue fix_residual_titles
-       detect_sections tlsfetch propose_title_cleanup"
+       detect_sections tlsfetch propose_title_cleanup fix_image_dir_entities"
 # 2026-09-25: 这份清单是**手写**的, 于是烂了两个口子:
 #   ① `batch_pipeline`/`make_score`/`mbz_lookup` 三个文件早就没了, 循环里 `|| continue` 直接跳过,
 #      清单看着覆盖了其实没有(已换成真实存在的 `mbid_lookup`);
