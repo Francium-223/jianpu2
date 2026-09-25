@@ -265,6 +265,38 @@ if [ -f tools/propose_title_cleanup.py ]; then
   rm -rf "$T"
 fi
 
+# 功能: jianpucn 页面标题 -> 歌手的抽取规则(离线, 直接调函数)。
+# 2026-09-25 修过: 原来只认"语料曲名是页面标题的子串", 于是 48 首抽不到;
+# 加"结构法"退路后又太松(吐出 are/Moon/歌名), 最后加了 KNOWN 人名白名单。这几条把三面都钉住。
+if [ -f tools/harvest_artists.py ]; then
+  echo
+  echo "=== 功能: 歌手抽取规则(锚点法/结构法/白名单) ==="
+  if out=$(timeout 120 python3 - <<'PYEOF' 2>&1
+import sys
+sys.path.insert(0, "tools")
+import harvest_artists as H
+cases = [
+    (("不要说 不能说的感觉 张信哲 歌谱简谱网", "不要说 不能说的感覺"), "张信哲", "繁简不同 -> 结构法"),
+    (("多远都要在一起（2015央视春晚歌曲） — 邓紫棋 歌谱简谱网", "多远都要在一起 —"), "邓紫棋", "曲名被清理"),
+    (("好好(想把你写成一首歌)（尤克里里弹唱谱） 五月天 歌谱简谱网", "好好（尤克里里"), "五月天", "曲名被截断"),
+    (("人生无悔 电视连续剧(风雨丽人)片尾主题歌 歌谱简谱网", "人生无悔"), "", "影视描述词不是人名"),
+    (("Here We are 歌谱简谱网", "Here We are"), "", "英文碎片不是人名"),
+    (("五月天 倔强 歌谱简谱网", "倔强"), "", "歌手在前歌名在后, 不许取到歌名"),
+]
+bad = [(t, H.artist_from_jianpucn(pt, t), exp) for (pt, t), exp, _ in cases if H.artist_from_jianpucn(pt, t) != exp]
+print("OK 6/6" if not bad else "FAIL %s" % bad)
+PYEOF
+); then
+    if echo "$out" | grep -q "OK 6/6"; then
+      echo "  ✓ 6 条都对(真歌手抽得出, 描述词/英文碎片/歌名都不收)"
+    else
+      echo "  ✗ 抽取规则不对: $out"; fail=1
+    fi
+  else
+    echo "  ✗ 跑失败: $out"; fail=1
+  fi
+fi
+
 # 功能: 曲名尾部悬挂分隔符的清理(隔离副本) —— 2026-09-25 新发现的病灶(`title=可惜没如果 —`)。
 # 为什么必须单列: 改名时**漏改首行 `%<本文件名>`** 的话, score.py 的 `i != '%'+文件名` 判为不等,
 # 会把那行当**普通注释**收进 comments(实测 40 首中招), 所以这里要连首行一起验。
