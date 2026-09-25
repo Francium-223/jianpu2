@@ -119,7 +119,14 @@ def page_title(html):
     return re.sub(r"\s+", " ", m.group(1)).strip() if m else ""
 
 
-def check(url, want_title, want_id, site, interval):
+def check(url, want_title, want_id, site, interval, id_is_evidence=True):
+    """`id_is_evidence`: URL 里的 id 算不算**独立证据** —— 取决于 URL 是怎么来的。
+
+    2026-09-25 审计发现: `candidates()` 对 jianpucn/jianpujia 是**按 id 拼**出 URL 的
+    (`/pu/{sid[:2]}/{sid}.htm`), 所以"路径里有 id"是**循环论证** —— 只证明了"自己拼的 URL
+    返回 200"。只有 qupu123 的 URL 是 `find_qupu123()` **站内搜索**搜出来的, id 才算真证据。
+    以前不区分, 于是 jianpucn 64 + jianpujia 36 = 100 条被记成 `via:id`, 其实没有独立证据。
+    """
     code, raw = fetch(url, interval=interval)
     if code != 200 or not raw:
         return None
@@ -128,8 +135,9 @@ def check(url, want_title, want_id, site, interval):
     nt, nw = norm(t), norm(want_title)
     if nw and len(nw) >= 2 and nw in nt:
         return ("title", t)
-    if want_id and re.search(r"/p?%s\.(html|htm)$" % re.escape(want_id), urllib.parse.urlsplit(url).path):
-        # 次强证据: URL 里的 id 与 source 完全一致(jianpucn/jianpujia/qupu123 的 id 都在路径里)
+    if id_is_evidence and want_id and re.search(r"/p?%s\.(html|htm)$" % re.escape(want_id),
+                                                urllib.parse.urlsplit(url).path):
+        # 次强证据: URL 里的 id 与 source 完全一致 —— **仅当 URL 是搜出来的**(qupu123)
         return ("id", t)
     return None
 
@@ -225,7 +233,8 @@ def main():
         key, title = item
         try:
             for u in candidates(key, title, a.interval, prefixes):
-                got = check(u, title, key.split("-", 1)[-1], key.split("-")[0], a.interval)
+                got = check(u, title, key.split("-", 1)[-1], key.split("-")[0], a.interval,
+                            id_is_evidence=(key.split("-")[0] == "qupu123"))
                 if got:
                     via, t = got
                     with lock:

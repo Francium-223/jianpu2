@@ -206,6 +206,33 @@ if [ -f tools/detect_sections.py ]; then
   fi
 fi
 
+# 功能: 括号不配对曲名的提案(隔离) —— 2026-09-25 审计出 208 首。判据是**括号配对扫描**,
+# 不是正则猜; 必须保证"配对的曲名一个都不许进提案"(否则会提出把 `（吻别）` 砍掉的坏建议)。
+if [ -f tools/propose_title_cleanup.py ]; then
+  echo
+  echo "=== 功能: 括号不配对曲名提案(隔离) ==="
+  T="$(mktemp -d)"; mkdir -p "$T/jianpu-db"
+  printf '%s\n%s\n%s\n' \
+    '{"file":["坏.txt"],"title":"世界末日（","source":["jianpucn-1"],"status":"ocr"}' \
+    '{"file":["好.txt"],"title":"Take Me To Your Heart（吻别）","source":["jianpucn-2"],"status":"ocr"}' \
+    '{"file":["散.txt"],"title":"OVER THE RAINBOW）","source":["jianpucn-3"],"status":"ocr"}' \
+    > "$T/jianpu-db/data.jsonl"
+  if JIANPU_DB="$T/jianpu-db" python3 tools/propose_title_cleanup.py > "$T/log" 2>&1; then
+    rows=$(tail -n +2 "$T/jianpu-db/title_bracket_proposal.tsv" | wc -l)
+    if [ "$rows" = 2 ] \
+       && grep -q '^坏.txt	世界末日（	世界末日	未闭合开括号	1$' "$T/jianpu-db/title_bracket_proposal.tsv" \
+       && grep -q '^散.txt	OVER THE RAINBOW）	OVER THE RAINBOW	多余闭括号	1$' "$T/jianpu-db/title_bracket_proposal.tsv" \
+       && ! grep -q '^好.txt' "$T/jianpu-db/title_bracket_proposal.tsv"; then
+      echo "  ✓ 未闭合开括号/多余闭括号各出 1 条, 配对曲名不进提案"
+    else
+      echo "  ✗ 提案不对(应有 2 行且不含 好.txt)"; cat "$T/jianpu-db/title_bracket_proposal.tsv"; fail=1
+    fi
+  else
+    echo "  ✗ 跑失败"; tail -5 "$T/log"; fail=1
+  fi
+  rm -rf "$T"
+fi
+
 # 功能: 曲名尾部悬挂分隔符的清理(隔离副本) —— 2026-09-25 新发现的病灶(`title=可惜没如果 —`)。
 # 为什么必须单列: 改名时**漏改首行 `%<本文件名>`** 的话, score.py 的 `i != '%'+文件名` 判为不等,
 # 会把那行当**普通注释**收进 comments(实测 40 首中招), 所以这里要连首行一起验。
