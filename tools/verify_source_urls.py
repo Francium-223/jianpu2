@@ -36,6 +36,8 @@ import time
 import urllib.parse
 import urllib.request
 
+import tlsfetch                                     # 同目录: 取页 + 证书过期兜底
+
 UA = "Mozilla/5.0 (X11; Linux x86_64) jianpu-corpus-link-curator/1.0"
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(HERE)                                   # jianpu2/
@@ -56,6 +58,10 @@ _lock = threading.Lock()
 
 
 def _ssl_ctx():
+    """(留着给外部调用) —— 但**别再拿它当"证书过期兜底"**: create_default_context() 本身不会抛,
+    证书过期是在握手里才炸的, 所以原来那句 except 永远走不到(2026-09-25 实测: qupu123 证书
+    09-23 过期, 这里照样返回严格 context -> 请求全被记成 status 0, 白白停摆两天)。
+    真正的兜底在 fetch() 里, 走 tlsfetch.urlopen。"""
     try:
         return ssl.create_default_context()
     except Exception:
@@ -81,7 +87,9 @@ def fetch(url, interval=0.25, timeout=20, referer=None):
         hdr["Referer"] = referer
     req = urllib.request.Request(url, headers=hdr)
     try:
-        with urllib.request.urlopen(req, timeout=timeout, context=_ssl_ctx()) as r:
+        # tlsfetch: 先正常校验证书, 只有真的"证书过期/校验失败"才对**这个 host** 放开一次重试。
+        # (2026-09-25: qupu123 的证书 09-23 到期, 之前这里一律记成 status 0 = "打不开"。)
+        with tlsfetch.urlopen(req, timeout=timeout) as r:
             return r.status, r.read(500000)
     except urllib.error.HTTPError as e:
         return e.code, b""

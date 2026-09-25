@@ -25,6 +25,7 @@ import urllib.request
 sys.path.insert(0, "tools")
 sys.stdout.reconfigure(encoding="utf-8")
 os.chdir(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+import tlsfetch                                     # noqa: E402  取页 + 证书过期兜底
 
 # --help 保护: 这三个爬虫没有 argparse, 万一被当冒烟测试跑起来会**真的开始下载** —— 直接打文档退出。
 if any(a in ("-h", "--help") for a in sys.argv[1:]):
@@ -52,7 +53,9 @@ os.makedirs(OUT, exist_ok=True)
 def get(url, binary=False, timeout=30):
     req = urllib.request.Request(url, headers={"User-Agent": UA,
                                                "Referer": "https://www.qupu123.com/"})
-    with urllib.request.urlopen(req, timeout=timeout) as r:
+    # tlsfetch: qupu123 的证书 2026-09-23 到期, 严格校验会直接失败(以前被误当成"站点反爬/打不开")。
+    # 它先正常校验, 只有真的证书错误才对这个 host 放开一次重试。
+    with tlsfetch.urlopen(req, timeout=timeout) as r:
         raw = r.read()
     return raw if binary else raw.decode("utf-8", errors="replace")
 

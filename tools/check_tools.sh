@@ -206,6 +206,18 @@ if [ -f tools/detect_sections.py ]; then
   fi
 fi
 
+# 功能: 取页时的"证书过期兜底" —— 2026-09-25 实测 qupu123 证书过期(09-23 到期)被误判成"站点打不开",
+# 两天没人发现。自检离线, 只验"证书错误才兜底、超时/404 不兜底"这个分流。
+if [ -f tools/tlsfetch.py ]; then
+  echo
+  echo "=== 功能: 证书过期兜底的分流(tlsfetch) ==="
+  if out=$(timeout 60 python3 tools/tlsfetch.py 2>&1) && echo "$out" | grep -q "自检通过"; then
+    echo "$out" | sed 's/^/  /'
+  else
+    echo "  ✗ tlsfetch 自检失败"; echo "$out" | tail -5; fail=1
+  fi
+fi
+
 # 解析副作用自检(别让"读一份谱"改掉仓库: by_* 污染、tags.json 的 cwd 依赖)
 if [ -f tools/check_sideeffects.py ]; then
   echo
