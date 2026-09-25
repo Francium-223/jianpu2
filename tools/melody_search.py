@@ -48,8 +48,71 @@ WS = os.path.dirname(ROOT)                        # 工作区(三个仓库的上
 DB = os.environ.get("JIANPU_DB") or os.path.join(WS, "jianpu-db")
 DATA = os.path.join(DB, "data.jsonl")
 OK_STATUS = ("ok", "ocr")                         # 与 parse_scores 的白名单同一份口径
-TOKVER = 3                                        # 切 token / 行结构改了就 +1(缓存自动失效)
+TOKVER = 4                                        # 切 token / 行结构 / **索引字段**改了就 +1(缓存自动失效)
+                                                  # v4: 索引多了 `sec`(段落权重用), 老缓存没这个键
 MAX_GAP = 8                                       # 整句对齐时, 段与段之间最多允许夹几个音(空格=记不清)
+# 段落权重(用户 2026-09 定的规格, 见 jianpu2/README_PIPELINE.md §六「段落加权」):
+#   chorus/refrain 1.6 · verse 1.25 · pre-chorus/bridge/interlude 1.10 · score 1.00 ·
+#   intro/outro/layer/crazy-piano 0.80; 组合标签(如 `intro,chorus`)取**最大**; 不认识的当 1.00。
+# 为什么要有它: 用户哼的多半是副歌那一句; 前奏/尾奏/"发狂钢琴"这种炫技段被记住的概率低。
+SEC_W = {"chorus": 1.6, "refrain": 1.6, "verse": 1.25, "pre-chorus": 1.10, "bridge": 1.10,
+         "interlude": 1.10, "score": 1.00, "intro": 0.80, "outro": 0.80, "layer": 0.80,
+         "crazy-piano": 0.80}
+SEC_CN = {"chorus": "副歌", "refrain": "副歌", "verse": "主歌", "pre-chorus": "前副歌", "bridge": "桥段",
+          "interlude": "间奏", "score": "整曲", "intro": "前奏", "outro": "尾奏", "layer": "过渡",
+          "crazy-piano": "发狂钢琴", "maybe-rap": "说唱?"}
+
+
+def sec_weight(name):
+    """段落名 -> 权重。组合标签取最大; 空/未知 1.00(口径: 没标就当整曲)。"""
+    if not name:
+        return 1.00
+    return max([SEC_W.get(x.strip().lower(), 1.00) for x in str(name).split(",") if x.strip()] or [1.00])
+
+
+def sec_label(name):
+    """给回话用的中文名(组合标签用 `/` 连)。"""
+    if not name:
+        return ""
+    return "/".join(SEC_CN.get(x.strip().lower(), x.strip()) for x in str(name).split(",") if x.strip())
+
+
+def section_map(r, n_notes):
+    """把 sections[] 摊成"每个音高音符属于哪个段"的 RLE: [[起始下标, 段落名], …]。
+
+    口径: data.jsonl 的 `score` 就是各段 `score` 按顺序拼起来的(已实测逐首相等) —— 所以
+    按段内**音高音符数**累加即可对上 digits 的下标。对不上(总数不符)就退回"没有分段"(全 1.0),
+    绝不让错位的分段把权重安到别的音上。
+    """
+    secs = r.get("sections") or []
+    if not secs:
+        return []
+    out, off = [], 0
+    for s in secs:
+        name = (s.get("subtitle") or "").strip() or "score"
+        cnt = len(digits_of(s.get("score") or ""))
+        if cnt:
+            out.append([off, name])
+            off += cnt
+    if off != n_notes:                     # 段内音数之和与整串不符 -> 宁可不用分段
+        return []
+    return out if any(nm != "score" for _i, nm in out) else []
+
+
+def sec_at(sec, i0, n):
+    """命中区间 [i0, i0+n) 覆盖到的段落名(取权重最大的那个)。"""
+    if not sec:
+        return ""
+    names = []
+    for k, (start, nm) in enumerate(sec):
+        end = sec[k + 1][0] if k + 1 < len(sec) else 10 ** 9
+        if start < i0 + n and end > i0:      # 与命中区间有交集
+            names.append(nm)
+    if not names:
+        return ""
+    return max(names, key=sec_weight)
+
+
 OCC_CAP = 96                                      # 每段最多收集多少处出现(只影响显示/对齐, 不影响排名用的最小不同数)
 ALIGN_MAX = 300                                   # 只给排序后靠前的这些命中做整句对齐(剩下的照旧给最小连续小节)
 CACHE = os.environ.get("JIANPU_MELODY_CACHE") or os.path.join(
@@ -133,6 +196,7 @@ def build_corpus(path=DATA):
                 "digits": d,
                 "score": r.get("score") or "",
                 "bars": [int(x) for x in (r.get("bars") or []) if isinstance(x, int)],
+                "sec": section_map(r, len(d)),      # [[起始音下标, 段落名], …]; 空=没分段
             })
     return rows
 
@@ -393,6 +457,23 @@ def hit_detail(r, segs, det, fuzzy=0, do_align=True):
             seen[key] = j
             details.append({"seg": t, "bar_from": n0, "bar_to": n1, "pos": p0, "n": len(sgm),
                             "aligned": False})
+    # 段落: 按**展示出来的那段**算(整句就是整句跨度), 中文名给回话用。
+    # ⚠ 先把段落表存成局部变量再往 r 上写 —— r["sec"] 这一格要留给**回话用的段落名**,
+    #   2026-09-25 就是先覆盖成字符串、后面又拿它当表用, 直接 unpack 崩。
+    secmap = r.pop("_secmap", None)
+    if secmap is None and isinstance(r.get("sec"), (list, tuple)):
+        secmap = r["sec"]
+
+    def _sec_cn(pos, n):
+        return sec_label(sec_at(secmap, pos, n or 1))
+
+    for dt in details:
+        if dt.get("seg"):
+            dt["sec_cn"] = _sec_cn(dt["pos"], dt.get("n"))
+    sec_name = sec_at(secmap, positions[0], (details[0].get("n") or 1))
+    r["sec"] = sec_name
+    r["sec_cn"] = sec_label(sec_name)
+    r["sec_w"] = sec_weight(sec_name)
     r["pos"] = positions[0]
     r["positions"] = positions
     r["seg"] = details[0]["seg"]
@@ -423,15 +504,31 @@ def search(rows, segs, fuzzy=0, top=20):
             continue
         det, ok = [], True
         for s in segs:
-            got = find(s, d, fuzzy)
-            if not got:
-                ok = False
-                break
-            det.append(got)
+            if r.get("sec"):            # 有分段的歌: 同分里挑段落权重最高的那处
+                occ, _best = find_all(s, d, fuzzy)
+                if not occ:
+                    ok = False
+                    break
+                p, dd = max(occ, key=lambda o: (-o[1], sec_weight(sec_at(r["sec"], o[0], len(s))), -o[0]))
+                det.append((p, dd))
+            else:                       # 没分段的绝大多数: 走快路径(第一个出现位置)
+                got = find(s, d, fuzzy)
+                if not got:
+                    ok = False
+                    break
+                det.append(got)
         if not ok:
             continue
-        hits.append(dict(r, diff=max(x[1] for x in det), _det=det))
-    hits.sort(key=lambda x: (x["diff"], -x.get("pop", 0), -x.get("hot", 0), x["n_notes"], x["title"]))
+        _names = [sec_at(r.get("sec"), p, len(sg)) for (p, _d), sg in zip(det, segs)]
+        _sec = max(_names, key=sec_weight) if any(_names) else ""
+        hits.append(dict(r, diff=max(x[1] for x in det), _det=det, _secmap=r.get("sec") or [],
+                         sec=_sec, sec_cn=sec_label(_sec), sec_w=sec_weight(_sec)))
+    # 排序: 越像越靠前; 同分时**副歌/主歌 > 前奏/尾奏/发狂钢琴**(用户 2026-09 的段落权重规格),
+    # 再按 热度 -> 知名度 -> 谱短 -> 曲名。
+    # 段落权放**最后**: 只在其它口径全并列时才起作用(不干扰"哪首歌"的既有排序), 但**同一首歌的哪一处**
+    # 是它选的(见上面第一遍里 max(occ, key=段落权)) —— 用户那个例子(副歌 vs 前奏)就是后者的效果。
+    hits.sort(key=lambda x: (x["diff"], -x.get("pop", 0), -x.get("hot", 0),
+                             x["n_notes"], x["title"], -x.get("sec_w", 1.0)))
     if top:
         hits = hits[:top]
     for i, h in enumerate(hits):
@@ -451,6 +548,8 @@ def fmt_hit(i, h):
     if h["file"]:
         bits.append(h["file"])
     line = "%2d. %s" % (i, " ｜ ".join(bits))
+    if h.get("sec_cn") and h["sec_cn"] != "整曲":
+        line += "  〔%s〕" % h["sec_cn"]
     if h["diff"]:
         line += "  （差 %d 处）" % h["diff"]
     return line

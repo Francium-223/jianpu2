@@ -23,6 +23,18 @@ import sys
 
 import numpy as np
 
+# 段落权重(用户 2026-09 规格, 见 jianpu2/README_PIPELINE.md §六) —— **不复制第二份**,
+# 直接从 `jianpu2/tools/melody_search.py` 借同一份实现(三处引擎口径一致)。
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(
+    os.path.abspath(__file__)))), "tools"))
+try:
+    from melody_search import sec_weight, sec_label, section_map, sec_at     # noqa: E402
+except Exception:                                   # 独立部署时没有 tools/ -> 退化成"无段落权重"
+    def sec_weight(_n): return 1.0
+    def sec_label(_n): return ""
+    def section_map(_r, _n): return []
+    def sec_at(_s, _i, _n): return ""
+
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
 import gate  # noqa: E402  **自检门**
@@ -52,7 +64,15 @@ def _default_data():
 
 
 DEFAULT_DATA = _default_data()
-TOKRE = re.compile(r"^([qsdh]*)([,']*)([0-9x])")
+# ⚠ token 口径必须走 jptok(全库唯一实现)。原来这里自写窄正则 `^([qsdh]*)([,']*)([0-9x])`:
+# 它**不认 `c` 前缀时值**(KeepLength 的写法, 如 `c6.`)、也不认变音记号 —— 于是这些 token 被静默丢掉,
+# 音序**错位**, 连"精确命中"都会消失(2026-09-25 实测: `33565653253` 在《神々が恋した幻想郷》里
+# 明明 0 错命中, lookup 却只报出 1 错的别的歌)。这与 2026-09-23"索引丢音"是同一类坑。
+try:
+    import jptok as _jptok                       # 同一目录下就有(唯一实现)
+except Exception:
+    _jptok = None
+TOKRE = re.compile(r"^([qsdh]*)([,']*)([0-9x])")   # 兜底: 只在没有 jptok 时用(窄, 但口径写明白)
 ZW = dict.fromkeys(map(ord, "\u200b-\u200f\u202a-\u202e\u2060\ufeff"), None)
 SKIP = "0x"
 # 改编/器乐版本: 只在**并列**时降权, 不影响主排序(它们也是真歌, 只是不适合当"你哼的那首")
@@ -60,17 +80,27 @@ BADWORD = re.compile(r"吉他|钢琴|双谱|器乐|非洲|尤克里里|古筝|�
 
 
 def pitch_and_oct(score):
-    """`score` 字段 -> (音高串, 八度串)。丢休止 0 / 念白 x; 两者逐音对齐。"""
+    """`score` 字段 -> (音高串, 八度串)。丢休止 0 / 念白 x; 两者逐音对齐。**走 jptok(唯一实现)**。"""
     p, o = [], []
     for t in (score or "").split():
-        m = TOKRE.match(t)
-        if not m:
-            continue
-        _pre, acc, dig = m.groups()
-        if dig in SKIP:
-            continue
-        p.append(dig)
-        o.append(acc.count(",") - acc.count("'"))
+        if _jptok is not None:
+            got = _jptok.parse_token(t)
+            if got is None:                      # 不是 token(记号/说明文字)
+                continue
+            dig, _acc, off = got
+            if dig is None:                      # 休止 0 / 念白 x
+                continue
+            p.append(str(dig))
+            o.append(off)
+        else:                                    # 兜底口径(窄正则)
+            m = TOKRE.match(t)
+            if not m:
+                continue
+            _pre, acc, dig = m.groups()
+            if dig in SKIP:
+                continue
+            p.append(dig)
+            o.append(acc.count(",") - acc.count("'"))
     return "".join(p), o
 
 
@@ -132,8 +162,18 @@ def main():
                         continue
                     w = np.lib.stride_tricks.sliding_window_view(arr, len(vb))
                     mism = (w != vb).sum(axis=1)
-                    i = int(mism.argmin())
-                    m = int(mism[i])
+                    m = int(mism.min())
+                    same = np.where(mism == m)[0]          # 同分的所有位置
+                    if len(same) == 1:
+                        i = int(same[0])
+                    else:
+                        # 同分: 取段落权重最高的那处(副歌/主歌 > 间奏 > 整曲 > 前奏/尾奏/发狂钢琴)
+                        secmap = r.get("_secmap")
+                        if secmap is None:
+                            secmap = section_map(r, len(arr))
+                            r["_secmap"] = secmap
+                        i = max((int(x) for x in same),
+                                key=lambda p: (sec_weight(sec_at(secmap, p, len(vb))), -p))
                     if best is None or m < best[0]:
                         best = (m, i, r)
             if best is None:
@@ -168,13 +208,23 @@ def main():
         names = list(head.get("artist") or []) + [t for t in (head.get("tag") or []) if not str(t).startswith("分类/")]
         return max([_hot.get(x, 0) for x in names] or [0])
 
+    def secw_of(head, pos, n):
+        secmap = head.get("_secmap")
+        if secmap is None:
+            p2, _o2 = pitch_and_oct(head.get("score"))
+            secmap = section_map(head, len(p2))
+            head["_secmap"] = secmap
+        return sec_weight(sec_at(secmap, pos, n))
+
     def sort_key(item):
         total, g, det = item
         head = det[0][2]
+        # 同分时段落权重高的先(副歌 > 主歌 > 间奏 > 整曲 > 前奏/尾奏/发狂钢琴) —— 用户 2026-09 规格
+        secw = max(secw_of(d[2], d[1], len(QS[k])) for k, d in enumerate(det))
         # 注意 hot 取**负号**: 语料里谱多的歌手 = 更可能被人哼到的那首, 要排前面
         return (total, pop.get(pop_key(g), 0), -hot_of(head),
                 1 if BADWORD.search(head.get("title") or "") else 0,
-                len(head.get("title") or ""), g)
+                len(head.get("title") or ""), g, -secw)
 
     res.sort(key=sort_key)
     out = []
@@ -191,6 +241,9 @@ def main():
             "group": g, "source": head.get("source"), "status": head.get("status"),
             "tags": head.get("tags") or [], "n_notes": head.get("n_notes"),
             "octave_diff": odiff, "matched_at": i,
+            "sec": sec_at(head.get("_secmap"), i, n),
+            "sec_cn": sec_label(sec_at(head.get("_secmap"), i, n)),
+            "sec_w": sec_weight(sec_at(head.get("_secmap"), i, n)),
             "matched": p[i:i + n] if i + n <= len(p) else p[i:],
         })
     if a.json:
@@ -203,8 +256,9 @@ def main():
         print(f"{'#':>2} {'错音':>4} {'八度差':>5}  {'曲名':<26} {'状态':<4} 出处")
         for r in out:
             od = "-" if r["octave_diff"] is None else str(r["octave_diff"])
+            sec = ("〔%s〕" % r["sec_cn"]) if r.get("sec_cn") and r["sec_cn"] != "整曲" else ""
             print(f"{r['rank']:>2} {r['errors']:>4} {od:>5}  {str(r['title'])[:24]:<26} "
-                  f"{str(r['status']):<4} {r['source']}")
+                  f"{str(r['status']):<4} {r['source']} {sec}")
         if out and out[0]["matched"]:
             print(f"\n命中片段: {out[0]['matched']}")
 

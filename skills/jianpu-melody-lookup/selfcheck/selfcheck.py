@@ -104,6 +104,23 @@ def check(data_path=None):
     rep.append(f"{'OK ' if good else '**FAIL**'} 无音符被静默丢弃(数字数==旋律数)"
                + (f", 异常 {len(bad)} 首: {bad[:3]}" if bad else f", {len(rows)} 首全对"))
 
+
+    # ④b **lookup.py 自己那份 token 口径**也必须同源 —— 2026-09-25 实测它自写的窄正则
+    #     `^([qsdh]*)([,']*)([0-9x])` 不认 `c` 前缀时值(KeepLength 的写法, 如 `c6.`), 把这些音
+    #     静默丢掉 -> 音序错位 -> 连《神々が恋した幻想郷》那种**精确命中**都从结果里消失
+    #     (只报出 1 错的别的歌)。④ 那条查的是本自检里的 helper, 查不到 lookup.py 的私货, 所以补这条。
+    try:
+        sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+        import lookup as _lk
+        bad2 = [(r["file"][0], len(digits_of(r.get("score"))), len(_lk.pitch_and_oct(r.get("score"))[0]))
+                for r in rows if len(digits_of(r.get("score"))) != len(_lk.pitch_and_oct(r.get("score"))[0])]
+        good2 = (len(bad2) == 0)
+        ok &= good2
+        rep.append(f"{'OK ' if good2 else '**FAIL**'} lookup.py 的音符数与 jptok 同源(不静默丢音)"
+                   + (f", 异常 {len(bad2)} 首: {bad2[:3]}" if bad2 else f", {len(rows)} 首全对"))
+    except Exception as e:
+        rep.append(f"  (lookup.py 口径检查跳过: {type(e).__name__}: {e})")
+
     # ⑤ 小节线必须给休止计拍 —— th10_06 开头是「2.5 拍休止 + 三个八分音符弱起」:
     #    [c0 q0 q3 q3 q5] 正好 4 拍, 所以第一条线必须在**第 3 个音符之前**(c6.)。
     #    若休止不计时(老写法), 线会落到第 4 个音符之前 -> 用户实测一眼看出

@@ -56,7 +56,10 @@ def main():
     h = top("33565653253")
     ok(bool(h) and h[0]["title"] == "神々が恋した幻想郷",
        "33565653253 -> %s（老版本这里永远命中 0 首）" % (h[0]["title"] if h else "无"))
-    ok(bool(h) and h[0]["file"] == "th10_06.txt" and h[0]["pos"] == 0, "命中位置 0 / th10_06.txt")
+    # 2026-09-25 起这一条改成"落在副歌": 同一个片段前奏里也有(下标 0), 但按用户的段落权重规格
+    # 要选副歌那一处(下标 141)。老断言写死 pos==0, 正好说明"加权没落地时取的是第一处"。
+    ok(bool(h) and h[0]["file"] == "th10_06.txt" and h[0]["pos"] == 141,
+       "命中位置取副歌(下标 141), 而不是前奏的第一处(下标 0)")
 
     # 并列排序(用户实测): `66561232123` 精确命中《最炫民族风》与《时光》, 正确答案是前者
     # —— 靠"知名度代理 hot"(凤凰传奇在库 68 首 vs 时光无歌手信息 0 首)把顺序掰对。
@@ -132,6 +135,30 @@ def main():
     h1 = top("33565653253")[0]
     ok(len(h1.get("segs_detail") or []) == 1 and not h1["segs_detail"][0].get("aligned"),
        "单段查询不算'整句对齐'(aligned=False)")
+
+
+    # 段落权重(用户 2026-09 定的规格, 见 README_PIPELINE.md §六): 副歌/主歌 > 间奏 > 整曲 > 前奏/尾奏/发狂钢琴。
+    # 用户当时的实测例子必须成立: 《神々が恋した幻想郷》的 `33565653253` 同时出现在**前奏(0)**与
+    # **副歌(141)**, 加权后要取副歌 —— 老代码取第一处(=前奏), 就是这条把它钉住。
+    ok(ms.sec_weight("chorus") == 1.6 and ms.sec_weight("verse") == 1.25
+       and ms.sec_weight("interlude") == 1.10 and ms.sec_weight("score") == 1.0
+       and ms.sec_weight("intro") == ms.sec_weight("crazy-piano") == 0.8,
+       "权重表与规格一致(副歌1.6/主歌1.25/间奏1.10/整曲1.0/前奏=发狂钢琴0.8)")
+    ok(ms.sec_weight("intro,chorus") == 1.6 and ms.sec_weight("忘了这个段") == 1.0,
+       "组合标签取最大; 不认识的段落当整曲(1.0), 不乱猜")
+    ok(ms.sec_label("chorus") == "副歌" and ms.sec_label("crazy-piano") == "发狂钢琴",
+       "回话用中文段落名(副歌/发狂钢琴)")
+    h7 = ms.search(rows, ["33565653253"], 0, 3)
+    ok(bool(h7) and h7[0]["title"] == "神々が恋した幻想郷", "33565653253 -> 神々が恋した幻想郷")
+    ok(h7[0]["sec"] == "chorus" and h7[0]["sec_w"] == 1.6 and h7[0]["sec_cn"] == "副歌",
+       "命中取的是**副歌**那一处(而不是第一处前奏): pos=%s sec=%s" % (h7[0]["positions"], h7[0]["sec"]))
+    ok(0 not in h7[0]["positions"], "前奏里那次出现没有被选中(加权生效)")
+    row_th10 = next(r for r in rows if r["file"] == "th10_06.txt")
+    ok(ms.sec_at(row_th10["sec"], 300, 5) == "crazy-piano",
+       "发狂钢琴那一段能正确定位(下标 300 落在 crazy-piano)")
+    no_sec = [x for x in ms.search(rows, ["66561232123"], 0, 2)]
+    ok(all(x["sec_w"] == 1.0 and not x["sec"] for x in no_sec),
+       "没分段的歌(绝大多数)不受影响: 权重 1.0、无段落名")
 
     h = top("63731232")
     ok(len(h) >= 2 and any(x["title"] == "神々が恋した幻想郷" for x in h),
