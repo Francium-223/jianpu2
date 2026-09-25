@@ -190,6 +190,22 @@ if [ -f tools/queue_from_crawl.py ] && [ -f tools/batch_transcribe_queue.py ]; t
   rm -rf "$TMP"
 fi
 
+# 功能: 段落权重泛化(重复度)探测器 —— 它的价值是**否定结论**, 所以要保证它随时跑得动、
+# 而且"chorus 重复度高"这个反例还在(2026-09-26: 逐首看它有时对, 但 37 首整体是反相关的)。
+if [ -f tools/detect_sections.py ]; then
+  echo
+  echo "=== 功能: 重复度探测段落(否定结论的证据) ==="
+  if out=$(timeout 120 python3 tools/detect_sections.py profile th01_01.txt 2>&1); then
+    if echo "$out" | grep -Eq "chorus +\[ *50, *173\) +重复分中位数 1\.00"; then
+      echo "  ✓ th01_01: chorus 重复度最高(该曲符合「副歌会重复」的直觉)"
+    else
+      echo "  ✗ th01_01 的 chorus 重复度不对"; echo "$out" | head -6; fail=1
+    fi
+  else
+    echo "  ✗ detect_sections profile 跑失败"; fail=1
+  fi
+fi
+
 # 解析副作用自检(别让"读一份谱"改掉仓库: by_* 污染、tags.json 的 cwd 依赖)
 if [ -f tools/check_sideeffects.py ]; then
   echo
