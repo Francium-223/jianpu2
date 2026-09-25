@@ -35,6 +35,12 @@ STATE = os.path.join(WS, "_analysis", "crawl_state_jianpucn.json")
 UA = "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"
 BASE = "http://www.jianpu.cn"
 
+# --help 保护: 本脚本没有 argparse, 万一被当冒烟测试跑起来会**真的开始下载** —— 直接打文档退出。
+if any(a in ("-h", "--help") for a in sys.argv[1:]):
+    print(__doc__)
+    raise SystemExit(0)
+
+
 
 def fetch(url, binary=False):
     req = urllib.request.Request(url, headers={"User-Agent": UA, "Referer": BASE + "/"})

@@ -13,7 +13,9 @@ TOOLS="add_link propose_tags harvest_artists refine_titles_from_pages audit_corp
        quarantine_short_scores audit_arrangements verify_source_urls corpus_fingerprint
        coverage_gap verify_crawl_matches slice_systems audit_melody_clones
        check_transcribe_ready audit_meter check_images set_artists
-       make_score mbz_lookup transcribe batch_pipeline melody_search"
+       make_score mbz_lookup transcribe batch_pipeline melody_search
+       crawl_jianpujia crawl_jianpucn crawl_qupu123 crawl_batch_jianpujia
+       queue_from_crawl batch_transcribe_queue fix_residual_titles"
 for t in $TOOLS; do
   [ -f "tools/$t.py" ] || continue
   printf '%-28s ' "$t"
@@ -150,6 +152,42 @@ if [ -f tools/safeout.py ]; then
     echo "  !! 隔离跑动了真工作台(before=$before after=$after)"; fail=1
   fi
   rm -rf "$T4"
+fi
+
+# 功能: 爬取队列的**分拣 + 入库**(2026-09-25 夜间新增的两个工具) —— 全离线、临时目录、不碰真语料。
+# 为什么值得单列: 这两个工具决定"哪些爬回来的图算新歌、哪些是改编、怎么写进语料",
+# 而输入是几千个目录名的字符串解析 —— 最容易悄无声息退化成"永远 0 首"。
+if [ -f tools/queue_from_crawl.py ] && [ -f tools/batch_transcribe_queue.py ]; then
+  echo
+  echo "=== 功能: 爬取队列分拣 + 入库(隔离) ==="
+  TMP="$(mktemp -d)"
+  mkdir -p "$TMP/imgs/kw/新歌甲__qupu123-999999" "$TMP/imgs/kw/新歌乙钢琴__qupu123-999998" "$TMP/imgs/kw/祝福__qupu123-1"
+  for d in "$TMP/imgs/kw"/*/; do printf 'x' > "$d/001.jpg"; done
+  mkdir -p "$TMP/db/scores" "$TMP/work"
+  printf '1 2 3 4 5\n' > "$TMP/work/qupu123-999999.txt"
+  if python3 tools/queue_from_crawl.py --images "$TMP/imgs" --dirs "$TMP/imgs/kw" \
+        --with-images --out "$TMP/q.tsv" > "$TMP/q.log" 2>&1; then
+    n=$(grep -c "qupu123-999999" "$TMP/q.tsv" || true)
+    if [ "$n" = 1 ] && grep -q "改编" "$TMP/q.log"; then
+      echo "  ✓ 分拣: 新歌进队列 / 改编标注 / 库里已有的排除"
+    else
+      echo "  ✗ 分拣结果不对"; tail -6 "$TMP/q.log"; fail=1
+    fi
+  else
+    echo "  ✗ queue_from_crawl 跑失败"; tail -5 "$TMP/q.log"; fail=1
+  fi
+  if JIANPU_DB="$TMP/db" python3 tools/batch_transcribe_queue.py --stage import \
+        --queue "$TMP/q.tsv" --work "$TMP/work" > "$TMP/imp.log" 2>&1; then
+    f="$TMP/db/scores/新歌甲.txt"
+    if [ -f "$f" ] && grep -q '^status=ocr' "$f" && grep -q '^transcriber=' "$f" && grep -q '1 2 3 4 5' "$f"; then
+      echo "  ✓ 入库: 写出 scores/*.txt(带 status/transcriber 与正文)"
+    else
+      echo "  ✗ 入库产物不对"; ls -la "$TMP/db/scores" | tail -3; fail=1
+    fi
+  else
+    echo "  ✗ batch_transcribe_queue 跑失败"; tail -5 "$TMP/imp.log"; fail=1
+  fi
+  rm -rf "$TMP"
 fi
 
 # 解析副作用自检(别让"读一份谱"改掉仓库: by_* 污染、tags.json 的 cwd 依赖)
