@@ -206,6 +206,37 @@ if [ -f tools/detect_sections.py ]; then
   fi
 fi
 
+# 功能: 曲名尾部悬挂分隔符的清理(隔离副本) —— 2026-09-25 新发现的病灶(`title=可惜没如果 —`)。
+# 为什么必须单列: 改名时**漏改首行 `%<本文件名>`** 的话, score.py 的 `i != '%'+文件名` 判为不等,
+# 会把那行当**普通注释**收进 comments(实测 40 首中招), 所以这里要连首行一起验。
+if [ -f tools/refine_titles_from_pages.py ]; then
+  echo
+  echo "=== 功能: 悬挂曲名清理 + 首行自述同步(隔离) ==="
+  T="$(mktemp -d)"; mkdir -p "$T/jianpu-db/scores"
+  printf '{}\n' > "$T/jianpu-db/source_pages.json"
+  printf '%%测试_—.txt\ntitle=测试 —\ntag=x\nsource=jianpucn-1\n%%--\n4/4\n1 2 3\n' > "$T/jianpu-db/scores/测试_—.txt"
+  if JIANPU_DB="$T/jianpu-db" python3 tools/refine_titles_from_pages.py --strip-dangling --apply > "$T/log" 2>&1; then
+    if [ -f "$T/jianpu-db/scores/测试.txt" ] && [ ! -f "$T/jianpu-db/scores/测试_—.txt" ] \
+       && grep -qx 'title=测试' "$T/jianpu-db/scores/测试.txt" \
+       && [ "$(head -1 "$T/jianpu-db/scores/测试.txt")" = '%测试.txt' ]; then
+      echo "  ✓ 去尾巴 + 改名 + 首行 %<名> 同步"
+    else
+      echo "  ✗ 结果不对"; ls "$T/jianpu-db/scores"; head -3 "$T/jianpu-db/scores/测试.txt" 2>/dev/null; fail=1
+    fi
+  else
+    echo "  ✗ 跑失败"; tail -5 "$T/log"; fail=1
+  fi
+  # 不该动的别动: 尾部没有分隔符的曲名必须原样留着
+  printf '%%正常.txt\ntitle=正常\ntag=x\nsource=jianpucn-2\n%%--\n4/4\n1 2 3\n' > "$T/jianpu-db/scores/正常.txt"
+  JIANPU_DB="$T/jianpu-db" python3 tools/refine_titles_from_pages.py --strip-dangling --plan > "$T/log2" 2>&1
+  if [ -f "$T/jianpu-db/scores/正常.txt" ] && grep -qx 'title=正常' "$T/jianpu-db/scores/正常.txt"; then
+    echo "  ✓ 没有悬挂分隔符的曲名不被误动"
+  else
+    echo "  ✗ 误动了正常曲名"; fail=1
+  fi
+  rm -rf "$T"
+fi
+
 # 功能: 取页时的"证书过期兜底" —— 2026-09-25 实测 qupu123 证书过期(09-23 到期)被误判成"站点打不开",
 # 两天没人发现。自检离线, 只验"证书错误才兜底、超时/404 不兜底"这个分流。
 if [ -f tools/tlsfetch.py ]; then

@@ -18,6 +18,14 @@
 用法:
   python3 jianpu2/tools/refine_titles_from_pages.py            # 抓页面 + 出提案 TSV
   python3 jianpu2/tools/refine_titles_from_pages.py --apply    # 按 TSV 里 accepted=1 的行改名
+
+另一类曲名病灶(全离线, 与上面的"文件名式曲名"无关):
+  python3 tools/refine_titles_from_pages.py --strip-dangling --plan    # 只打印计划
+  python3 tools/refine_titles_from_pages.py --strip-dangling --apply   # 去掉尾巴 + 改名
+现场: `title=可惜没如果 —` / `title=塞纳河——` 这种**尾部悬挂分隔符**(2026-09-25 清掉 40 首)。
+判据不猜: 全库 7,318 首里 `title` 含 " — " 的只有 1 首 —— 本站曲名约定就是"只有曲名",
+歌手另有 `artist=` 字段, 所以是把尾巴**去掉**, 不是把歌手补进去。
+⚠ 改名会同时改首行 `%<本文件名>`: 漏改的话 score.py 会把这行当**普通注释**收进 comments。
 """
 import argparse
 import collections
@@ -114,6 +122,52 @@ def clean_title(t):
     return re.sub(r"\s{2,}", " ", t).strip()
 
 
+# ---------------------------------------------------------------------------
+# 另一类曲名病灶: 尾部**悬挂分隔符**（2026-09-25 新发现, 与"文件名式曲名"无关）
+#
+# 现场: `title=可惜没如果 —` / `title=塞纳河——` / `title=托起梦中的太阳·` 共 38 首。
+# 来源: 早前某版解析把歌手拼进了曲名(`曲名 — 歌手`), 后来不拼了, 于是只剩个分隔符尾巴。
+# 判据(不猜): **全库 7,318 首里 `title` 含 " — " 的只有 1 首** —— 说明本站曲名约定
+#   就是"只有曲名", 歌手另有 `artist=` 字段(这 38 首里 13 首有 artist、25 首没有)。
+#   所以正确修法是**把尾巴去掉**, 而不是把歌手补进去。
+# ---------------------------------------------------------------------------
+DANGLING = re.compile(r"^(?P<core>.*?)[\s\u3000]*(?:—+|–|--|-|·|_)[\s\u3000]*$")
+
+
+def strip_dangling(title):
+    """`可惜没如果 —` -> `可惜没如果`; 不是这类就返回 ''(表示不该动它)。"""
+    m = DANGLING.match((title or "").strip())
+    if not m:
+        return ""
+    core = m.group("core").strip(" \u3000")
+    # 去掉之后必须有东西, 否则会把整条曲名抹掉(如 title='—')
+    return core if core else ""
+
+
+def dangling_rows(sp):
+    """扫全部曲谱, 找出 `title` 尾部悬挂分隔符的那些 -> 与主流程同格式的行。"""
+    rows = []
+    for fn in sorted(os.listdir(SCORES)):
+        if not fn.endswith(".txt") or fn.endswith(("_expand.txt", "_buf.txt")):
+            continue
+        p = os.path.join(SCORES, fn)
+        try:
+            head = io.open(p, encoding="utf-8", errors="replace").read().split("%--", 1)[0]
+        except OSError:
+            continue
+        m = re.search(r"(?m)^title=(.*)$", head)
+        cur = m.group(1).strip() if m else ""
+        new = strip_dangling(cur)
+        if not new:
+            continue
+        s = re.search(r"(?m)^source=(\S+)", head)
+        src = s.group(1) if s else ""
+        site = src.split("-")[0] if src else ""
+        pt = ((sp.get(src) or {}).get("t") or "")[:200]
+        rows.append((fn, cur, clean_title(new), "1", site, pt))
+    return rows
+
+
 def artist_of(path):
     """取这份曲谱的 `artist=` 第一个值(撞名消歧要用它拼 `曲名（歌手）.txt`)。
 
@@ -187,10 +241,20 @@ def main():
     ap.add_argument("--workers", type=int, default=6)
     ap.add_argument("--interval", type=float, default=0.25)
     ap.add_argument("--out", default=OUT)
+    ap.add_argument("--strip-dangling", action="store_true",
+                    help="另一类曲名病灶: 尾部悬挂分隔符(`可惜没如果 —`)直接去掉; 全离线")
     a = ap.parse_args()
+    if a.strip_dangling and a.out == OUT:
+        a.out = default_out(DB, "title_dangling_proposal.tsv")
     reviewed = accepted_from_tsv(a.out) if (a.apply or a.plan) else {}
 
     sp = json.load(open(os.path.join(DB, "source_pages.json"), encoding="utf-8"))
+
+    if a.strip_dangling:                       # 离线分支: 不需要页面标题, 判据就是曲名本身
+        rows = dangling_rows(sp)
+        print("尾部悬挂分隔符的曲名: %d 条" % len(rows))
+        return emit(a, rows, reviewed)
+
     os.makedirs(CACHE, exist_ok=True)
     cpath = os.path.join(CACHE, "titles.json")
     cache = json.load(open(cpath, encoding="utf-8")) if os.path.isfile(cpath) else {}
@@ -249,14 +313,19 @@ def main():
             continue
         rows.append((r["fn"], r["cur"], r["new"],
                      "1" if confident(r["cur"], r["new"]) else "0", r["site"], r["page_title"]))
+    return emit(a, rows, reviewed)
+
+
+def emit(a, rows, reviewed):
+    """写提案 TSV + 按 `--plan`/`--apply` 落地。两条分支(抓页面 / --strip-dangling)共用。"""
     io.open(a.out, "w", encoding="utf-8", newline="\n").write(
         "file\tcurrent_title\tproposed_title\taccepted\tsite\tpage_title\n" +
         "\n".join("\t".join(x) for x in rows) + "\n")
     print("提案: %s (%d 条, 其中建议改名 %d 条)"
           % (a.out, len(rows), sum(1 for r in rows if r[3] == "1")))
 
+    todo_rows = []
     if a.apply or a.plan:
-        todo_rows = []
         for fn, cur, new, acc, _s, _pt in rows:
             acc = reviewed.get(fn, acc)          # 以盘上那份为准(人审过的 accepted 不被覆盖)
             if acc != "1":
@@ -285,13 +354,22 @@ def main():
         for fn, cur, new in todo_rows:
             p = os.path.join(SCORES, fn)
             raw = open(p, "rb").read()
-            nl = b"\r\n" if b"\r\n" in raw else b"\n"
             text = raw.decode("utf-8")
             text = re.sub(r"(?m)^title=.*$", lambda m: "title=" + new, text, count=1)
             text = re.sub(r"(?m)^todo=refine the filename\s*$", "", text)
             text = re.sub(r"\n{3,}", "\n\n", text)
             tgt = pick_target(fn, new, taken)
             taken.add(tgt)
+            # 首行 `%<本文件名>` 是**自述**, 必须跟着改名一起改。注意它带扩展名
+            # (`%可惜没如果_—.txt`) —— score.py 比的就是 `'%' + 完整文件名`。
+            # 2026-09-25 实测踩过: 漏改之后 `i != '%' + 文件名` 判为不等 ->
+            # 这行被当成**普通注释**收进 comments(40 首凭空多出一条旧文件名注释)。
+            if tgt != fn:
+                head, newhead = "%" + fn, "%" + tgt
+                for nl in ("\r\n", "\n"):
+                    if text.startswith(head + nl):
+                        text = newhead + text[len(head):]
+                        break
             open(p, "wb").write(text.encode("utf-8"))
             if tgt != fn:
                 os.rename(p, os.path.join(SCORES, tgt))
