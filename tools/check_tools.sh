@@ -15,7 +15,7 @@ TOOLS="add_link propose_tags harvest_artists refine_titles_from_pages audit_corp
        check_transcribe_ready audit_meter check_images set_artists
        mbid_lookup transcribe melody_search
        crawl_jianpujia crawl_jianpucn crawl_qupu123 crawl_batch_jianpujia
-       crawl_jianpucn_by_title
+       crawl_jianpucn_by_title crawl_jianpujia_search
        queue_from_crawl batch_transcribe_queue fix_residual_titles
        detect_sections tlsfetch propose_title_cleanup fix_image_dir_entities"
 # 2026-09-25: 这份清单是**手写**的, 于是烂了两个口子:
