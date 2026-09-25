@@ -18,7 +18,21 @@ import sys
 import time
 import urllib.request
 
-os.chdir(r"D:\Documents_D\jianpu2")
+# 2026-09-25 修: 这里原来硬编码着作者 Windows 机器的 `os.chdir(r"D:\Documents_D\jianpu2")`,
+# 在 Linux 上**直接 FileNotFoundError 崩掉** —— 而这个工具不在 check_tools.sh 的冒烟清单里,
+# 所以烂了没人发现。现在按 `__file__` 定位, 与别的工具同一口径。
+HERE = os.path.dirname(os.path.abspath(__file__))
+ROOT = os.path.dirname(HERE)                      # jianpu2/
+WS = os.path.dirname(ROOT)                        # 工作区
+sys.path.insert(0, HERE)
+import tlsfetch                                   # noqa: E402  取页 + 证书过期兜底
+
+# `--help` 保护: 本文件是**模块级脚本**, 没有 argparse —— 不拦的话 `--help` 会被当成
+# "要爬的曲名", 真的开始扫几万页目录。(同 2026-09-24 给另外三个爬虫加的那道保护。)
+if any(a in ("-h", "--help") for a in sys.argv[1:]):
+    print(__doc__)
+    raise SystemExit(0)
+
 sys.stdout.reconfigure(encoding="utf-8")
 UA = ("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
       "(KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36")
@@ -28,8 +42,12 @@ ENT = re.compile(r"&[a-zA-Z]{2,8};|&#\d+;")          # `绿光&nbsp;&nbsp;` -> `
 PAREN = re.compile(r"[（(【\[][^)）】\]]*[)）】\]]|[（(【\[].*$")   # `红茶馆(粤语)` -> `红茶馆`
 CATS = ["erzigepu", "sanzigepu", "sizigepu", "wuzigepu", "liuzigepu",
         "qizigepu", "bazigepu", "jiuzigepu", "shizijiyishang"]
-OUT = "images-prep/jianpucn-title"
+# 图库统一落工作区 `images-prep/`(JIANPU_IMAGES 可覆盖), 不再写相对路径靠 cwd 对上
+IMG_ROOT = os.environ.get("JIANPU_IMAGES") or os.path.join(WS, "images-prep")
+OUT = os.path.join(IMG_ROOT, "jianpucn-title")
+SCANLOG = os.path.join(ROOT, "train-work", "jianpucn_title_scan.tsv")
 os.makedirs(OUT, exist_ok=True)
+os.makedirs(os.path.dirname(SCANLOG), exist_ok=True)
 
 WANT = [x for x in (sys.argv[1].split(",") if len(sys.argv) > 1 else []) if x]
 MAXP = int(sys.argv[2]) if len(sys.argv) > 2 and sys.argv[2].isdigit() else 1400
@@ -51,7 +69,7 @@ if not WANT:
 def get(url):
     req = urllib.request.Request(url, headers={"User-Agent": UA,
                                                "Referer": "http://www.jianpu.cn/"})
-    with urllib.request.urlopen(req, timeout=25) as r:
+    with tlsfetch.urlopen(req, timeout=25) as r:
         return r.read().decode("gbk", "replace")
 
 
@@ -78,7 +96,7 @@ for w in WANT:
 print(f"目标 {len(WANT)} 首 -> 需扫分类 {sorted(need_cat)}\n", flush=True)
 
 found = {}          # 曲名 -> [(url, title)]
-log = io.open("train-work/jianpucn_title_scan.tsv", "a", encoding="utf-8")
+log = io.open(SCANLOG, "a", encoding="utf-8")
 for cat in CATS:
     if cat not in need_cat:
         continue
@@ -129,7 +147,7 @@ for w, lst in found.items():
             try:
                 req = urllib.request.Request("http://www.jianpu.cn" + iu,
                                              headers={"User-Agent": UA})
-                with urllib.request.urlopen(req, timeout=25) as r, \
+                with tlsfetch.urlopen(req, timeout=25) as r, \
                         open(os.path.join(d, f"00{n+1}.jpg"), "wb") as g:
                     g.write(r.read())
                 n += 1

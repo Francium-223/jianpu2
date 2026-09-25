@@ -10,6 +10,12 @@ MusicBrainz Web Service (ws/2):
 """
 import sys, json, time, urllib.parse, urllib.request
 
+# `--help` 保护(2026-09-25): 本文件没有 argparse —— 不加这道, `--help` 会被当成**曲名**,
+# 真的去 MusicBrainz 查一次 "--help"(实测返回 Harry Potter 那堆)。冒烟测试天天跑, 白打人家 API。
+if any(a in ("-h", "--help") for a in sys.argv[1:]):
+    print(__doc__)
+    raise SystemExit(0)
+
 UA = "jianpu2-transcriber/0.1 ( https://example.org/jianpu2 )"
 API = "https://musicbrainz.org/ws/2/{kind}/?query={q}&fmt=json&limit={n}"
 

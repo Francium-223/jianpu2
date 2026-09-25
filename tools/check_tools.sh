@@ -13,12 +13,23 @@ TOOLS="add_link propose_tags harvest_artists refine_titles_from_pages audit_corp
        quarantine_short_scores audit_arrangements verify_source_urls corpus_fingerprint
        coverage_gap verify_crawl_matches slice_systems audit_melody_clones
        check_transcribe_ready audit_meter check_images set_artists
-       make_score mbz_lookup transcribe batch_pipeline melody_search
+       mbid_lookup transcribe melody_search
        crawl_jianpujia crawl_jianpucn crawl_qupu123 crawl_batch_jianpujia
-       queue_from_crawl batch_transcribe_queue fix_residual_titles"
+       crawl_jianpucn_by_title
+       queue_from_crawl batch_transcribe_queue fix_residual_titles
+       detect_sections tlsfetch propose_title_cleanup"
+# 2026-09-25: 这份清单是**手写**的, 于是烂了两个口子:
+#   ① `batch_pipeline`/`make_score`/`mbz_lookup` 三个文件早就没了, 循环里 `|| continue` 直接跳过,
+#      清单看着覆盖了其实没有(已换成真实存在的 `mbid_lookup`);
+#   ② `crawl_jianpucn_by_title.py` 里硬编码着作者 Windows 的 `os.chdir(D:\...)`, 在 Linux 上必崩,
+#      却因为不在清单里而没人发现 —— 直到这一轮要用它补金曲缺口才撞上。
+# 所以下面把"清单里有、文件却没有"改成**明确失败**, 让清单漂移藏不住。
 for t in $TOOLS; do
-  [ -f "tools/$t.py" ] || continue
   printf '%-28s ' "$t"
+  if [ ! -f "tools/$t.py" ]; then
+    echo "!! 清单里有它, 但 tools/$t.py 不存在(清单过时了 —— 改名了就同步改这里)"; fail=1
+    continue
+  fi
   if out=$(timeout 120 python3 "tools/$t.py" --help 2>&1); then
     echo "OK"
   else
