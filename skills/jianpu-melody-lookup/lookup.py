@@ -222,9 +222,9 @@ def main():
         # 同分时段落权重高的先(副歌 > 主歌 > 间奏 > 整曲 > 前奏/尾奏/发狂钢琴) —— 用户 2026-09 规格
         secw = max(secw_of(d[2], d[1], len(QS[k])) for k, d in enumerate(det))
         # 注意 hot 取**负号**: 语料里谱多的歌手 = 更可能被人哼到的那首, 要排前面
-        return (total, pop.get(pop_key(g), 0), -hot_of(head),
+        return (total, -secw, pop.get(pop_key(g), 0), -hot_of(head),
                 1 if BADWORD.search(head.get("title") or "") else 0,
-                len(head.get("title") or ""), g, -secw)
+                len(head.get("title") or ""), g)
 
     res.sort(key=sort_key)
     out = []

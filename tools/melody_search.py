@@ -525,10 +525,11 @@ def search(rows, segs, fuzzy=0, top=20):
                          sec=_sec, sec_cn=sec_label(_sec), sec_w=sec_weight(_sec)))
     # 排序: 越像越靠前; 同分时**副歌/主歌 > 前奏/尾奏/发狂钢琴**(用户 2026-09 的段落权重规格),
     # 再按 热度 -> 知名度 -> 谱短 -> 曲名。
-    # 段落权放**最后**: 只在其它口径全并列时才起作用(不干扰"哪首歌"的既有排序), 但**同一首歌的哪一处**
-    # 是它选的(见上面第一遍里 max(occ, key=段落权)) —— 用户那个例子(副歌 vs 前奏)就是后者的效果。
-    hits.sort(key=lambda x: (x["diff"], -x.get("pop", 0), -x.get("hot", 0),
-                             x["n_notes"], x["title"], -x.get("sec_w", 1.0)))
+    # 排序口径(用户 2026-09-25 明确选 B): 代价 -> **段落权** -> 热度 -> 知名度 -> 名短 -> 曲名。
+    # 段落权紧跟代价 = 用户当年公式(匹配长度 × 段落权 × 覆盖率 − 错音惩罚)的精神:
+    # **副歌/主歌里的命中可以压过冷门歌前奏/发狂钢琴里的命中**(代价相同时)。用户接受由此带来的答案翻转。
+    hits.sort(key=lambda x: (x["diff"], -x.get("sec_w", 1.0), -x.get("pop", 0),
+                             -x.get("hot", 0), x["n_notes"], x["title"]))
     if top:
         hits = hits[:top]
     for i, h in enumerate(hits):
