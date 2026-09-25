@@ -223,20 +223,41 @@ if [ -f tools/propose_title_cleanup.py ]; then
   echo
   echo "=== 功能: 括号不配对曲名提案(隔离) ==="
   T="$(mktemp -d)"; mkdir -p "$T/jianpu-db"
-  printf '%s\n%s\n%s\n' \
-    '{"file":["坏.txt"],"title":"世界末日（","source":["jianpucn-1"],"status":"ocr"}' \
-    '{"file":["好.txt"],"title":"Take Me To Your Heart（吻别）","source":["jianpucn-2"],"status":"ocr"}' \
-    '{"file":["散.txt"],"title":"OVER THE RAINBOW）","source":["jianpucn-3"],"status":"ocr"}' \
+  printf '%s\n%s\n%s\n%s\n' \
+    '{"file":["坏.txt"],"title":"世界末日（","source":["qupu123-1"],"status":"ocr"}' \
+    '{"file":["好.txt"],"title":"Take Me To Your Heart（吻别）","source":["qupu123-2"],"status":"ocr"}' \
+    '{"file":["散.txt"],"title":"OVER THE RAINBOW）","source":["qupu123-3"],"status":"ocr"}' \
+    '{"file":["多.txt"],"title":"难忘的爱人】彩谱】","source":["qupu123-4"],"status":"ocr"}' \
     > "$T/jianpu-db/data.jsonl"
+  # 页面标题给前两条**佐证**; 第三条故意给个对不上的, 第四条是"多个多余闭括号"(必须标 0)
+  printf '%s\n' '{"qupu123-1":{"t":"世界末日（简谱版）_谱友园地_中国曲谱网","url":"u","via":"title","at":"x"},"qupu123-2":{"t":"Good_谱友园地_中国曲谱网","url":"u","via":"title","at":"x"},"qupu123-3":{"t":"夜来香（简谱）_谱友园地_中国曲谱网","url":"u","via":"title","at":"x"},"qupu123-4":{"t":"难忘的爱人（台语）】彩谱】_谱友园地_中国曲谱网","url":"u","via":"title","at":"x"}}' \
+    > "$T/jianpu-db/source_pages.json"
   if JIANPU_DB="$T/jianpu-db" python3 tools/propose_title_cleanup.py > "$T/log" 2>&1; then
-    rows=$(tail -n +2 "$T/jianpu-db/title_bracket_proposal.tsv" | wc -l)
-    if [ "$rows" = 2 ] \
-       && grep -q '^坏.txt	世界末日（	世界末日	未闭合开括号	1$' "$T/jianpu-db/title_bracket_proposal.tsv" \
-       && grep -q '^散.txt	OVER THE RAINBOW）	OVER THE RAINBOW	多余闭括号	1$' "$T/jianpu-db/title_bracket_proposal.tsv" \
-       && ! grep -q '^好.txt' "$T/jianpu-db/title_bracket_proposal.tsv"; then
-      echo "  ✓ 未闭合开括号/多余闭括号各出 1 条, 配对曲名不进提案"
+    P="$T/jianpu-db/title_bracket_proposal.tsv"
+    rows=$(tail -n +2 "$P" | wc -l)
+    if [ "$rows" = 3 ] \
+       && grep -q '^坏.txt	世界末日（	世界末日	未闭合开括号	1	1' "$P" \
+       && grep -q '^散.txt	OVER THE RAINBOW）	OVER THE RAINBOW	多余闭括号	0	0' "$P" \
+       && grep -q '^多.txt	难忘的爱人】彩谱】	难忘的爱人彩谱】	多余闭括号(多个)	0' "$P" \
+       && ! grep -q '^好.txt' "$P"; then
+      echo "  ✓ 佐证才给 accepted=1 / 配对的曲名不进提案 / 多个多余闭括号标 0"
     else
-      echo "  ✗ 提案不对(应有 2 行且不含 好.txt)"; cat "$T/jianpu-db/title_bracket_proposal.tsv"; fail=1
+      echo "  ✗ 提案不对(应 3 行: 佐证 1、无佐证 0、多个闭括号 0; 且不含 好.txt)"
+      cat "$P"; fail=1
+    fi
+    # --apply 只许动 accepted=1 的那一条, 且首行 `%<本名>` 要同步
+    # (文件名必须与 data.jsonl 的 `file` 一致 —— 第一版夹具写成 世界末日（.txt 而 file 是 坏.txt,
+    #  于是 apply 找不到文件、改名 0 首, 自检报假失败)
+    mkdir -p "$T/jianpu-db/scores"
+    printf '%%坏.txt\ntitle=世界末日（\ntag=x\nsource=qupu123-1\n%%--\n4/4\n1 2 3\n' > "$T/jianpu-db/scores/坏.txt"
+    printf '%%散.txt\ntitle=OVER THE RAINBOW）\ntag=x\nsource=qupu123-3\n%%--\n4/4\n1 2 3\n' > "$T/jianpu-db/scores/散.txt"
+    JIANPU_DB="$T/jianpu-db" python3 tools/propose_title_cleanup.py --apply > "$T/log2" 2>&1
+    if [ -f "$T/jianpu-db/scores/世界末日.txt" ] && grep -qx 'title=世界末日' "$T/jianpu-db/scores/世界末日.txt" \
+       && [ "$(head -1 "$T/jianpu-db/scores/世界末日.txt")" = '%世界末日.txt' ] \
+       && [ -f "$T/jianpu-db/scores/散.txt" ] && grep -qx 'title=OVER THE RAINBOW）' "$T/jianpu-db/scores/散.txt"; then
+      echo "  ✓ --apply 只动 accepted=1, 且首行 %<名> 同步"
+    else
+      echo "  ✗ --apply 结果不对"; ls "$T/jianpu-db/scores"; fail=1
     fi
   else
     echo "  ✗ 跑失败"; tail -5 "$T/log"; fail=1
