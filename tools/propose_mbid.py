@@ -120,8 +120,20 @@ def main():
     print("\n提案: %s (%d 条, 用时 %.1f 分钟)" % (a.out, len(out), (time.time() - t0) / 60))
     for k, v in c.most_common():
         print("   %-10s %d" % (k, v))
-    hi = [x for x in out if x[5] == "high"]
-    print("   high 里前 5 例:")
+    # ⚠ 只有 `kind=work` 能落地(2026-09-28 实测定案): 库里的 MBID 约定是 work ——
+    #   语料里 36 条 MBID 逐个问 /ws/2/work/<id> 全部 200 且标题对得上, 当作 recording 问一律 404;
+    #   前端链接也写死 /work/<mbid>。recording 换成 work 的成功率只有约 21%(90/427),
+    #   换不到的那些**没有 work 实体**, 写进去就是死链 —— 所以这里把两类的条数分别报出来。
+    wc = Counter((x[4], x[5]) for x in out)
+    n_ok = sum(n for (k, _cf), n in wc.items() if k == "work")
+    n_no = sum(n for (k, _cf), n in wc.items() if k and k != "work")
+    print("\n   按 (实体类型, 置信度) 分:")
+    for (k, cf), n in sorted(wc.items(), key=lambda x: -x[1]):
+        print("      %-10s %-8s %d" % (k or "(空)", cf or "(空)", n))
+    print("   -> **能落地(kind=work) %d 条**; 其余 kind=recording 的 %d 条**不要写**"
+          "(拿不到 work 实体, 会生成 /work/<recording-id> 的死链)" % (n_ok, n_no))
+    hi = [x for x in out if x[5] == "high" and x[4] == "work"]
+    print("   high+work 前 5 例:")
     for x in hi[:5]:
         print("      %-28s -> %s  (%s / %s, score %s)" % (x[1][:28], x[3][:36], x[6][:20], x[7][:18], x[8]))
     print("   (只出提案, 没写任何语料; 要落地得先人工看 high 的准确率)")

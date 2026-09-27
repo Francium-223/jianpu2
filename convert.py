@@ -227,6 +227,39 @@ def musicbrainz_search(kind, title, artist):
     return out
 
 
+def musicbrainz_recording_work(rec_id, want_title=""):
+    """`recording` -> 它演奏的那个 **work**。返回 (work_id, work_title) 或 (None, None)。
+
+    为什么要它(2026-09-28 定案): `data.jsonl` 里 MBID 的约定是 **work** —— 实测语料里 36 条 MBID
+    逐个问 `/ws/2/work/<id>` 全部 200 且标题对得上(如 `th10_06` -> 神々が恋した幻想郷)、
+    当作 recording 问一律 404;前端的 MusicBrainz 链接也写死 `/work/<mbid>`。
+    但 MusicBrainz 的 **work 实体通常不带 artist**(works 挂的是作曲者, search 回来的 `artists` 常为空),
+    于是下面 `artist_ok()` 永远不成立 -> work 最高只能评到 medium; 反倒是 recording 有 artist-credit,
+    能评到 high。结果就是"高置信度清一色是 recording" —— 照那个写库会写出 `/work/<recording-id>` 的死链。
+    所以命中 recording 时**顺着它的 work 关系换成 work 的 id**: 证据(标题+歌手)来自 recording,
+    写出去的 id 是 work。拿不到 work 就返回 None, 由调用方决定(本函数不替它做主)。
+    """
+    url = "https://musicbrainz.org/ws/2/recording/" + rec_id + "?inc=work-rels&fmt=json"
+    req = urllib.request.Request(url, headers={
+        "User-Agent": "jianpu2-converter/1.0 (https://github.com/ssb22/jianpu-ly)",
+    })
+    with urllib.request.urlopen(req, timeout=20) as r:
+        data = json.loads(r.read().decode("utf-8"))
+    works = []
+    for rel in data.get("relations", []) or []:
+        w = rel.get("work") or {}
+        if w.get("id") and not any(w["id"] == x[0] for x in works):
+            works.append((w["id"], w.get("title", "")))
+    if len(works) == 1:
+        return works[0]
+    if works and want_title:
+        n = re.sub(r"\s+", "", want_title.lower())
+        for wid, wt in works:
+            if re.sub(r"\s+", "", (wt or "").lower()) == n:
+                return wid, wt
+    return None, None
+
+
 def musicbrainz_lookup(title, artist):
     """自动查找 MBID, 分级置信度。
 
@@ -304,6 +337,19 @@ def musicbrainz_lookup(title, artist):
     order = {"high": 0, "medium": 1, "low": 2}
     ranked.sort(key=lambda x: (order[x[2]], 0 if x[0] == "work" else 1, -x[1]["score"]))
     kind, c, conf = ranked[0]
+    # ⚠ 库里 MBID 的约定是 **work**(证据见 musicbrainz_recording_work 的说明)。命中 recording 时
+    #   换成它演奏的 work: 置信度**不变**(证据还是那条 recording 的标题+歌手), 只把 id 换成 work 的。
+    #   拿不到 work 就**照原样返回 recording** —— 不丢信息, 但调用方**不要**把它写成 MBID,
+    #   否则 `make_link()` 会生成 `/work/<recording-id>` 的死链。
+    if kind == "recording":
+        try:
+            wid, wt = musicbrainz_recording_work(c["id"], c.get("title", ""))
+        except Exception:                                        # noqa: BLE001
+            wid, wt = None, None
+        time.sleep(1.1)                                          # 这一下也占用 MusicBrainz 的 1 req/s
+        if wid:
+            return wid, "work", conf, {"title": c["title"], "artists": c["artists"],
+                                       "via": "recording " + c["id"], "work_title": wt}
     return c["id"], kind, conf, {"title": c["title"], "artists": c["artists"]}
 
 
