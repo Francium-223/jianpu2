@@ -5,7 +5,15 @@
 我这边一边重建一边被覆盖, 导致 data.jsonl 与磁盘文件对不上(同一文件名两次读出不同内容)。
 判据: 任何命令行含 finalize / to_jianpu_db / parse_scores / transcribe / absorb 的 python 进程。
 
-用法: py -3.13 tools/rebuild_when_idle.py [最多等多少分钟=180]
+用法:
+    py -3.13 tools/rebuild_when_idle.py [最多等多少分钟=180]
+    py -3.13 tools/rebuild_when_idle.py 600 --site D:\\Documents_D\\jianpu-db.github.io
+
+`--site <前端仓库>` 为什么有用(2026-09-28 补): 语料重建完**前端索引并不会自己更新** ——
+`data/songs.jsonl.gz` 只有本机能生成(要读 scores/ 与图库), 而站点的 CI 只负责把已入库的
+data/ 摊到部署目录。于是新转写的歌会一直躺在 `scores/` 里, 没人跑 build_web_data.py 就上不了站。
+给了 --site 就顺带重建前端索引并**自己对账**(stats.songs == data.jsonl 行数、0 首重复小节线)。
+**不自动 git commit/push**: 推远端是人的决定, 脚本只把该敲的命令打出来。
 """
 import io
 import json
@@ -21,7 +29,12 @@ guard_help(__doc__)
 sys.stdout.reconfigure(encoding="utf-8")
 DB = r"D:\Documents_D\jianpu-db"
 PAT = re.compile(r"finalize|to_jianpu_db|parse_scores|transcribe|absorb|kugou_pipeline")
-WAIT_MIN = int(sys.argv[1]) if len(sys.argv) > 1 else 180
+_argv = [a for a in sys.argv[1:] if not a.startswith("-")]
+WAIT_MIN = int(_argv[0]) if _argv and _argv[0].isdigit() else 180
+SITE = None
+if "--site" in sys.argv:
+    _i = sys.argv.index("--site")
+    SITE = os.path.abspath(sys.argv[_i + 1]) if _i + 1 < len(sys.argv) else None
 
 
 def say(m):
@@ -78,4 +91,41 @@ for row in random.Random(7).sample(rows, 10):
         bad += 1
         say(f"  不一致 {row['file'][0]}: 文件 {n1} vs jsonl {n2}")
 say(f"验证: {len(rows)} 行, 抽查 10 首, 不一致 {bad}")
+
+# 顺带重建前端索引(--site): 语料重建完前端**不会自己更新**, 没人跑 build_web_data.py 就上不了站
+if SITE:
+    bw = os.path.join(SITE, "tools", "build_web_data.py")
+    if not os.path.isfile(bw):
+        say(f"!! --site 给的目录里没有 tools/build_web_data.py: {SITE} —— 跳过前端重建")
+    else:
+        say(f"重建前端索引 -> {os.path.join(SITE, 'data')}")
+        with open(r"D:\Documents_D\jianpu2\train-work\build_web_data_idle.log", "w", encoding="utf-8") as lg:
+            r = subprocess.run([sys.executable, "-u", bw,
+                                "--data", os.path.join(DB, "data.jsonl"),
+                                "--out", os.path.join(SITE, "data")],
+                               cwd=SITE, stdout=lg, stderr=subprocess.STDOUT, text=True)
+        say(f"build_web_data 退出码 {r.returncode}")
+        # 对账: 站点 stats 的曲数 == 语料行数; 且前端索引里 0 首重复小节线
+        try:
+            import gzip
+            st = json.load(io.open(os.path.join(SITE, "data", "stats.json"), encoding="utf-8"))
+            dup = 0
+            n_idx = 0
+            with gzip.open(os.path.join(SITE, "data", "songs.jsonl.gz"), "rt", encoding="utf-8") as g:
+                for ln in g:
+                    if not ln.strip():
+                        continue
+                    n_idx += 1
+                    b = json.loads(ln).get("bars") or []
+                    for i in range(1, len(b)):
+                        if b[i] <= b[i - 1]:
+                            dup += 1
+                            break
+            okc = (st.get("songs") == len(rows) == n_idx) and dup == 0
+            say(f"前端对账: stats.songs={st.get('songs')} 索引={n_idx} 语料={len(rows)} 重复小节线={dup}  {'OK' if okc else '!! 不一致'}")
+        except Exception as e:                                   # noqa: BLE001
+            say(f"!! 前端对账失败: {type(e).__name__}: {e}")
+        say(f"前端索引已就绪(我没有自动推远端, 免得替人做决定)。要发布就敲:")
+        say(f"    cd {SITE} && git add data && git commit -m \"chore(data): 重建前端索引(新转写的 N 首)\" && git push")
+        say("    推送后 pages.yml 会自己把产物同步到仓库根并核对线上首页")
 say("完成")
