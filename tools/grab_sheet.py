@@ -4,6 +4,8 @@
 用法: py -3.13 tools/grab_sheet.py <页面URL> <曲名>
 """
 import io, os, re, sys, urllib.parse, urllib.request
+from guard import guard_help        # noqa: E402  `--help` 守卫(唯一实现见 tools/guard.py)
+guard_help(__doc__)
 sys.stdout.reconfigure(encoding="utf-8")
 os.chdir(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 

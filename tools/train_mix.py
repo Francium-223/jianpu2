@@ -2,6 +2,8 @@
 """原子+真实 混合重训 6 头 (Qwen3-2B 特征). 合并 features.pkl(原子) + real_features.pkl(真实).
 输出 models/qwen-mt-v1/heads.pt. 类均衡 + 验证把关."""
 import os,sys,pickle; sys.path.insert(0,"tools"); os.chdir(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+from guard import guard_help        # noqa: E402  `--help` 守卫(唯一实现见 tools/guard.py)
+guard_help(__doc__)
 import numpy as np, torch, torch.nn as nn
 from torch.utils.data import DataLoader, TensorDataset
 import random; random.seed(0); np.random.seed(0); torch.manual_seed(0)

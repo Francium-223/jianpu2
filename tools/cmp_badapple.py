@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 """对比查询串与 th04_07(Bad Apple!!) 的数字串。"""
 import io, os, re, sys
+from guard import guard_help        # noqa: E402  `--help` 守卫(唯一实现见 tools/guard.py)
+guard_help(__doc__)
 sys.stdout.reconfigure(encoding="utf-8")
 os.chdir(r"D:\Documents_D\jianpu-db")
 

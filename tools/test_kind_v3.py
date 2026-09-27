@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 """验证组合判据(nline OR wide)在已知样本上的表现。"""
 import glob, os, sys
+from guard import guard_help        # noqa: E402  `--help` 守卫(唯一实现见 tools/guard.py)
+guard_help(__doc__)
 sys.path.insert(0, "tools"); os.chdir(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 sys.stdout.reconfigure(encoding="utf-8")
 from kind_detect2 import measure

@@ -2,6 +2,8 @@
 """统计: h_ref 改用按行带阈值(_R) 后, 有多少张谱的高度门会放宽(即原本被杀掉的真数字)。
 判据: 某个被接受的行带里, 存在高度介于 0.8*h_ref_new 与 0.8*h_ref_old 之间的连通域。"""
 import glob, json, os, sys
+from guard import guard_help        # noqa: E402  `--help` 守卫(唯一实现见 tools/guard.py)
+guard_help(__doc__)
 sys.path.insert(0, "tools"); os.chdir(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 sys.stdout.reconfigure(encoding="utf-8")
 import numpy as np

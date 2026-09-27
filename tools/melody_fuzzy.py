@@ -5,6 +5,8 @@
 说明: 在"去掉八度/休止"的音高串上滑窗比较, 允许 max 个位置不同(不计移位)。
 """
 import glob, os, sys
+from guard import guard_help        # noqa: E402  `--help` 守卫(唯一实现见 tools/guard.py)
+guard_help(__doc__)
 sys.path.insert(0, "tools")
 os.chdir(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 sys.stdout.reconfigure(encoding="utf-8")

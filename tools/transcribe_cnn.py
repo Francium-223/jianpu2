@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 """端到端: 简谱图片 → 拆分音符 → CNN8头预测 → 组装 jianpu-ly 序列。"""
 import os, sys, glob
+from guard import guard_help        # noqa: E402  `--help` 守卫(唯一实现见 tools/guard.py)
+guard_help(__doc__)
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 os.environ.setdefault("TOKENIZERS_PARALLELISM", "false")
 import torch

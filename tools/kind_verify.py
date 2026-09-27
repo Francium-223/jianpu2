@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 """核实关键样本的分类结果。"""
 import csv, sys
+from guard import guard_help        # noqa: E402  `--help` 守卫(唯一实现见 tools/guard.py)
+guard_help(__doc__)
 sys.stdout.reconfigure(encoding="utf-8")
 rows = {r["dir"]: r for r in csv.DictReader(open("train-work/kind2.tsv", encoding="utf-8"), delimiter="\t")}
 tests = [

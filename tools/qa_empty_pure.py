@@ -3,6 +3,8 @@
 纯简谱的空结果通常有原因: 伴奏谱/只有歌词/图太小。抽样导出供肉眼判断。
 """
 import csv, glob, os, sys
+from guard import guard_help        # noqa: E402  `--help` 守卫(唯一实现见 tools/guard.py)
+guard_help(__doc__)
 sys.path.insert(0, "tools"); os.chdir(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 sys.stdout.reconfigure(encoding="utf-8")
 import batch_transcribe as BT

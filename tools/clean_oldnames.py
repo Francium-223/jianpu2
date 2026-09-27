@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 """清掉 batch-out 里名字含控制字符的旧 txt/png(已被 safe_name 规范化版本取代)。"""
 import glob, os, re, sys
+from guard import guard_help        # noqa: E402  `--help` 守卫(唯一实现见 tools/guard.py)
+guard_help(__doc__)
 sys.path.insert(0, "tools"); os.chdir(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 sys.stdout.reconfigure(encoding="utf-8")
 CTRL = re.compile(r"[\x00-\x1f\x7f-\x9f]")

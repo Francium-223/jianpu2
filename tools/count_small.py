@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 """统计: 被挑页宽度 < JP_MINW(700) 的谱有多少(这些会被新的"小图放大"影响)。"""
 import glob, os, sys
+from guard import guard_help        # noqa: E402  `--help` 守卫(唯一实现见 tools/guard.py)
+guard_help(__doc__)
 sys.path.insert(0, "tools"); os.chdir(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 sys.stdout.reconfigure(encoding="utf-8")
 from PIL import Image

@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 """补 id-type 行: 对已有 ID= 但缺 id-type= 的 jianpu-db 曲谱, 按 ID 值推断类型并插入。"""
 import glob, os, re, sys
+from guard import guard_help        # noqa: E402  `--help` 守卫(唯一实现见 tools/guard.py)
+guard_help(__doc__)
 sys.stdout.reconfigure(encoding="utf-8")
 SRC = "D:/Documents_D/jianpu-db/scores"
 UUID = re.compile(r"^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$")

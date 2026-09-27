@@ -3,6 +3,8 @@
 `transcribe(img_path)` 返回 (toks, blocks_meta). 渲染脚本读 blocks_meta 直接画, 保证 图==转写.
 """
 import os, sys, json
+from guard import guard_help        # noqa: E402  `--help` 守卫(唯一实现见 tools/guard.py)
+guard_help(__doc__)
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 os.chdir(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 os.environ.setdefault("TOKENIZERS_PARALLELISM", "false")

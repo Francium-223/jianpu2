@@ -2,6 +2,8 @@
 """定位 时间都去哪了 中被标错的块('0'被判4, 'q5'当5, ',6'当6, 's6'缺低八), 看 geo beam/low.
 找到后对比 GT 该是什么。"""
 import sys; sys.path.insert(0,"tools"); import os; os.chdir(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+from guard import guard_help        # noqa: E402  `--help` 守卫(唯一实现见 tools/guard.py)
+guard_help(__doc__)
 import numpy as np, torch, torch.nn as nn
 from PIL import Image
 import transcribe as T

@@ -3,6 +3,8 @@
 用法: py -3.13 tools/extract_note_lyric_feats.py
 """
 import os, sys, json, pickle
+from guard import guard_help        # noqa: E402  `--help` 守卫(唯一实现见 tools/guard.py)
+guard_help(__doc__)
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 os.environ.setdefault("TOKENIZERS_PARALLELISM", "false")
 import torch

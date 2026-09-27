@@ -2,6 +2,8 @@
 """band9: 看 crop_note_regions 切出的块, 是否包含 y[0-6] 的顶部横线(-杠 vs 下划线)。
 并打印 每个块的 classify_block 判定 + 它实际覆盖的 y 范围, 找出'-'未被切出的原因。"""
 import os,sys; sys.path.insert(0,os.path.dirname(os.path.abspath(__file__)))
+from guard import guard_help        # noqa: E402  `--help` 守卫(唯一实现见 tools/guard.py)
+guard_help(__doc__)
 os.chdir(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import numpy as np
 from PIL import Image

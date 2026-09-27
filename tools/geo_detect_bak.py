@@ -7,6 +7,8 @@
 """
 import numpy as np
 from collections import deque
+from guard import guard_help        # noqa: E402  `--help` 守卫(唯一实现见 tools/guard.py)
+guard_help(__doc__)
 
 
 def _components(mask):

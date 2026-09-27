@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 """看一个乐句在各曲子里落在哪个 subtitle 段里(往前找最近的 subtitle=)。"""
 import re, sys, os
+from guard import guard_help        # noqa: E402  `--help` 守卫(唯一实现见 tools/guard.py)
+guard_help(__doc__)
 os.chdir(r"D:\Documents_D\jianpu2")
 sys.stdout.reconfigure(encoding="utf-8")
 

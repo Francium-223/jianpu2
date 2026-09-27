@@ -8,6 +8,8 @@ import sys
 import tarfile
 import urllib.request
 import zipfile
+from guard import guard_help        # noqa: E402  `--help` 守卫(唯一实现见 tools/guard.py)
+guard_help(__doc__)
 
 VENDOR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "vendor")
 os.makedirs(VENDOR, exist_ok=True)

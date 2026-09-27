@@ -2,6 +2,8 @@
 """检查 块11 x[452-463] 的裁剪是否把右邻 0 卷进来: 打印该块实际裁剪内容特征
 (相邻暗像素连通性/右边界是否贴到0)。同时打印相邻 0(块12 x514)位置。"""
 import os, sys; sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from guard import guard_help        # noqa: E402  `--help` 守卫(唯一实现见 tools/guard.py)
+guard_help(__doc__)
 os.chdir(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import numpy as np
 from PIL import Image

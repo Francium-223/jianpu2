@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 """验证管线里的纯简谱门: 各已知样本的 nline + 是否会被挡。"""
 import glob, sys
+from guard import guard_help        # noqa: E402  `--help` 守卫(唯一实现见 tools/guard.py)
+guard_help(__doc__)
 sys.path.insert(0, "tools"); sys.path.insert(0, "tools")
 import os
 os.chdir(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))

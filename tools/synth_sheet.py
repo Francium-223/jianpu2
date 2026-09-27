@@ -3,6 +3,8 @@
 并精确记录每个音符的 bounding box. 用于生成'切分检测'训练数据(图+精确框GT).
 """
 import os, sys, json, random
+from guard import guard_help        # noqa: E402  `--help` 守卫(唯一实现见 tools/guard.py)
+guard_help(__doc__)
 sys.path.insert(0, "tools"); os.chdir(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from PIL import Image, ImageDraw, ImageFont
 

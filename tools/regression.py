@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 """全链路回归: 用已生成/构造的模型输出验证 convert 管线 + jianpu-ly。"""
 import importlib.util, re, sys
+from guard import guard_help        # noqa: E402  `--help` 守卫(唯一实现见 tools/guard.py)
+guard_help(__doc__)
 sys.path.insert(0, 'vendor')
 spec = importlib.util.spec_from_file_location('convert', 'convert.py')
 m = importlib.util.module_from_spec(spec); spec.loader.exec_module(m)

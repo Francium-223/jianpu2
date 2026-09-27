@@ -28,6 +28,8 @@ AND 保证 nline 低的谱照旧放行 -> 对现有已接受语料零改动。�
 五线谱《我喜欢》(整页均值 230) 用 128 时 nline=0 混过过滤器, 自适应后 43 判对。
 """
 import csv, glob, os, sys
+from guard import guard_help        # noqa: E402  `--help` 守卫(唯一实现见 tools/guard.py)
+guard_help(__doc__)
 sys.path.insert(0, "tools"); os.chdir(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 sys.stdout.reconfigure(encoding="utf-8")
 import numpy as np

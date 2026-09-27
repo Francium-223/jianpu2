@@ -46,15 +46,22 @@ def insertion_line(src):
     except SyntaxError:
         return None
     last = 0
+    doc_end = 0
+    seen_doc = False
     for node in tree.body:
+        if isinstance(node, ast.Expr) and isinstance(node.value, ast.Constant) \
+                and isinstance(node.value.value, str) and node.lineno <= 3 and not seen_doc:
+            doc_end = getattr(node, "end_lineno", node.lineno)
+            seen_doc = True
+            last = max(last, doc_end)
+            continue
         if isinstance(node, (ast.Import, ast.ImportFrom)):
-            last = max(last, getattr(node, "end_lineno", node.lineno))
-        elif isinstance(node, ast.Expr) and isinstance(node.value, ast.Constant) \
-                and isinstance(node.value.value, str) and node.lineno <= 3:
             last = max(last, getattr(node, "end_lineno", node.lineno))
         else:
             break                      # 开头连续段结束 -> 再往后就是有副作用的代码了
-    return last
+    # 顶部没有 import 的文件(有的工具第一句就是 `sys.path.insert(...)`) -> 插到 docstring 之后,
+    # **不能插到第 1 行**: 那会把模块 docstring 挤成普通字符串, `__doc__` 变 None。
+    return last if last else doc_end
 
 
 def main():

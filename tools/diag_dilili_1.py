@@ -2,6 +2,8 @@
 """band7 '嘀哩哩嘀哩' 最后 '1 1 1 1 2': 打印每个块 数字预测 + geo_detect(beam/low/voice/dotted).
 判断 1 的时值(s/q) 与 数字 分别哪里错。"""
 import os,sys; sys.path.insert(0,os.path.dirname(os.path.abspath(__file__)))
+from guard import guard_help        # noqa: E402  `--help` 守卫(唯一实现见 tools/guard.py)
+guard_help(__doc__)
 os.chdir(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 os.environ.setdefault('TOKENIZERS_PARALLELISM','false')
 import numpy as np, torch, torch.nn as nn

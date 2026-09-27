@@ -4,6 +4,8 @@
 import re
 from difflib import SequenceMatcher
 from token_json import token_to_json as t2j
+from guard import guard_help        # noqa: E402  `--help` 守卫(唯一实现见 tools/guard.py)
+guard_help(__doc__)
 def load_out(f):
     t=open(f,encoding="utf-8",errors="replace").read(); m=re.search(r"\d+\s*音\s*\n?\s*(.+)$",t,re.S)
     return [x for x in (m.group(1) if m else t).split() if re.match(r"^[,']*[qsdh#b]*[,']*[1-7x0-][.,'qsdh#b-]*$",x)]

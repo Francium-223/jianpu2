@@ -2,6 +2,8 @@
 """统计: 全量谱里 fine_rows 行带划分的质量分布(行带数越少 = 越可能划分失败)。"""
 import glob, os, sys
 from collections import Counter
+from guard import guard_help        # noqa: E402  `--help` 守卫(唯一实现见 tools/guard.py)
+guard_help(__doc__)
 sys.path.insert(0, "tools")
 os.chdir(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 sys.stdout.reconfigure(encoding="utf-8")

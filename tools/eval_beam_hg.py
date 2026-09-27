@@ -3,6 +3,8 @@ import re
 """对比 spring 每个数字块的 Qwen beam头 vs geo beam, 以及 GT 期望 beam。
 判断 该用头 还是 geo。按GT逐位对齐后统计。"beam头对/geo对"。"""
 import os,sys; sys.path.insert(0,os.path.dirname(os.path.abspath(__file__)))
+from guard import guard_help        # noqa: E402  `--help` 守卫(唯一实现见 tools/guard.py)
+guard_help(__doc__)
 os.chdir(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 os.environ.setdefault('TOKENIZERS_PARALLELISM','false')
 import numpy as np, torch, torch.nn as nn

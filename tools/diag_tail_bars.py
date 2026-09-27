@@ -2,6 +2,8 @@
 """段11(尾声 y865-996): 看 细高连通域 分布, 为什么 count_bars 返回 0.
 打印 小节线候选 高度 vs count_bars 的判定。"""
 import os,sys; sys.path.insert(0,os.path.dirname(os.path.abspath(__file__)))
+from guard import guard_help        # noqa: E402  `--help` 守卫(唯一实现见 tools/guard.py)
+guard_help(__doc__)
 os.chdir(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import numpy as np
 from PIL import Image

@@ -2,6 +2,8 @@
 """最后一个值得试的: 把 s1/q1 裁剪放大后直接喂 beam 头, 看高分辨率能否让头分清 s/q。
 若头在高分辨率下 s/q 分明, 则改输入缩放; 否则确认头也无法从图像区分。"""
 import os,sys; sys.path.insert(0,os.path.dirname(os.path.abspath(__file__)))
+from guard import guard_help        # noqa: E402  `--help` 守卫(唯一实现见 tools/guard.py)
+guard_help(__doc__)
 os.chdir(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 os.environ.setdefault('TOKENIZERS_PARALLELISM','false')
 import numpy as np, torch, torch.nn as nn

@@ -2,6 +2,8 @@
 """QA: 检查版本择优的归并质量(找被并成大组的, 看有没有误并)。不 import pick_best
 (那会触发它整段执行), 直接复制 norm_title。"""
 import csv, os, re, sys, collections
+from guard import guard_help        # noqa: E402  `--help` 守卫(唯一实现见 tools/guard.py)
+guard_help(__doc__)
 sys.path.insert(0, "tools"); os.chdir(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 sys.stdout.reconfigure(encoding="utf-8")
 

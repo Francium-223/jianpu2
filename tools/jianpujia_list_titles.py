@@ -8,6 +8,8 @@
   站点证书过期 -> 必须关校验(ctx.check_hostname=False)。结果落盘缓存, 之后不再联网。
 """
 import io, os, re, ssl, sys, time, urllib.request
+from guard import guard_help        # noqa: E402  `--help` 守卫(唯一实现见 tools/guard.py)
+guard_help(__doc__)
 
 os.chdir(r"D:\Documents_D\jianpu2")
 sys.stdout.reconfigure(encoding="utf-8")

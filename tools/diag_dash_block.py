@@ -2,6 +2,8 @@
 """检查 band9 里 延音杠 '-' 的位置: 找 孤单横线(dash) 块, 看 classify_block 判定/裁剪。
 同时看 band7 尾部。打印所有 横线型(宽>高*2) 连通域。"""
 import os,sys; sys.path.insert(0,os.path.dirname(os.path.abspath(__file__)))
+from guard import guard_help        # noqa: E402  `--help` 守卫(唯一实现见 tools/guard.py)
+guard_help(__doc__)
 os.chdir(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import numpy as np
 from PIL import Image

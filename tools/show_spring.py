@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 """spring(春天在哪里) 生产路径转写 + 与 GT 对齐, 输出 token 序列 + 标注图。"""
 import os, re, sys
+from guard import guard_help        # noqa: E402  `--help` 守卫(唯一实现见 tools/guard.py)
+guard_help(__doc__)
 sys.path.insert(0, "tools"); os.chdir(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 sys.stdout.reconfigure(encoding="utf-8")
 from difflib import SequenceMatcher

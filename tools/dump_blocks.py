@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 """把识别出的每个块裁出来拼成图(标注 token), 用于核对"0"是真休止还是空块幻觉。"""
 import glob, os, sys
+from guard import guard_help        # noqa: E402  `--help` 守卫(唯一实现见 tools/guard.py)
+guard_help(__doc__)
 sys.path.insert(0, "tools")
 os.chdir(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 os.environ.setdefault("TOKENIZERS_PARALLELISM", "false")

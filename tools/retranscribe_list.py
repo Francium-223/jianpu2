@@ -4,6 +4,8 @@
 名单每行 = 目录名(batch-out 的 txt 名 = 该目录名经 safe_name 规范化)。
 """
 import glob, os, re, sys
+from guard import guard_help        # noqa: E402  `--help` 守卫(唯一实现见 tools/guard.py)
+guard_help(__doc__)
 sys.path.insert(0, "tools"); os.chdir(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 sys.stdout.reconfigure(encoding="utf-8")
 import batch_transcribe as BT

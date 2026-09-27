@@ -3,6 +3,8 @@
 stripped 里 w>=12 且 4<=h<=14 的细连通域, 且位置在数字带的上/下方。
 """
 import os, sys
+from guard import guard_help        # noqa: E402  `--help` 守卫(唯一实现见 tools/guard.py)
+guard_help(__doc__)
 sys.path.insert(0, "tools")
 os.chdir(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 sys.stdout.reconfigure(encoding="utf-8")

@@ -2,6 +2,8 @@
 """统一: 一次运行完成 spring 转写+画图. pipeline 切块 -> Qwen3-VL-4B(批量)认数字 + geo 认符号
 -> 同时(a)画框标token (b)输出序列+OK. 保证 图==转写."""
 import os,sys,re; sys.path.insert(0,"tools"); os.chdir(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+from guard import guard_help        # noqa: E402  `--help` 守卫(唯一实现见 tools/guard.py)
+guard_help(__doc__)
 os.environ.setdefault("TOKENIZERS_PARALLELISM","false")
 MODEL="D:/Documents_D/jianpu2/models/Qwen3-VL-2B-Instruct"
 import numpy as np, torch

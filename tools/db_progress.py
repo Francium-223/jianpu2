@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 """统计 jianpu-db README 的转写进度(按作品)。"""
 import re, sys
+from guard import guard_help        # noqa: E402  `--help` 守卫(唯一实现见 tools/guard.py)
+guard_help(__doc__)
 sys.stdout.reconfigure(encoding="utf-8")
 
 lines = open("D:/Documents_D/jianpu-db/README.md", encoding="utf-8").read().splitlines()

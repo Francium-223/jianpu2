@@ -16,6 +16,21 @@ guard_help(__doc__)
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(HERE)
 
+def _dotted(node):
+    """把 `sys.path.insert` 这种**多级属性**还原成完整点号名。
+
+    第一版只取了一层(`getattr(base,'id')` / `getattr(base,'attr')`), 于是 `sys.path.insert`
+    被读成 `path.insert`, 与白名单对不上 —— 结果把 474 个工具里"只有路径设置"的那些全判成失败。
+    """
+    parts = []
+    while isinstance(node, getattr(__import__("ast"), "Attribute")):
+        parts.append(node.attr)
+        node = node.value
+    if isinstance(node, getattr(__import__("ast"), "Name")):
+        parts.append(node.id)
+    return ".".join(reversed(parts))
+
+
 def _harmless(node, src_lines):
     """这条模块级语句算不算"可能碰数据"?
 
@@ -24,16 +39,13 @@ def _harmless(node, src_lines):
     """
     import ast as _ast
     if isinstance(node, _ast.Expr) and isinstance(node.value, _ast.Call):
-        f = node.value.func
-        name = ""
-        if isinstance(f, _ast.Attribute):
-            base = f.value
-            base_name = getattr(base, "id", "") or getattr(base, "attr", "")
-            name = "%s.%s" % (base_name, f.attr)
-        elif isinstance(f, _ast.Name):
-            name = f.id
+        name = _dotted(node.value.func)
         if name in ("sys.path.insert", "sys.stdout.reconfigure", "sys.stderr.reconfigure",
                     "os.chdir", "warnings.filterwarnings", "random.seed"):
+            return True
+        # `os.environ.setdefault(...)` / `os.environ.update(...)` 之类**纯设置**也是无害的
+        # (`t_min.py` 第一句就是 `import os; os.chdir(...); os.environ.setdefault('TOKENIZERS_PARALLELISM','false')`)
+        if name.startswith("os.environ."):
             return True
     if isinstance(node, _ast.Assign) and len(node.targets) == 1:
         v = node.value

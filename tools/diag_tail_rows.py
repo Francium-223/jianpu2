@@ -2,6 +2,8 @@
 """检查 spring 全图的 fine_rows 波段 + count_bars, 找 '眼睛里...' 尾声行是否被跳过。
 打印每个波段 y范围/bar数/是否PASS。"""
 import os,sys; sys.path.insert(0,os.path.dirname(os.path.abspath(__file__)))
+from guard import guard_help        # noqa: E402  `--help` 守卫(唯一实现见 tools/guard.py)
+guard_help(__doc__)
 os.chdir(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import numpy as np
 from PIL import Image

@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 """放大 带7 末尾 (x560-700) 的 '5 - | 11 11 2', 看 延音杠 - 与 1 的块, 为何 - 被误判成0, 1 时值为何乱。"""
 import os,sys; sys.path.insert(0,os.path.dirname(os.path.abspath(__file__)))
+from guard import guard_help        # noqa: E402  `--help` 守卫(唯一实现见 tools/guard.py)
+guard_help(__doc__)
 os.chdir(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from PIL import Image
 im=Image.open("images-prep/test-jianpujia/春天在哪里简谱_儿歌_快来儿歌里找春天__jianpujia-15770/001.jpg")

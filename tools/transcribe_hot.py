@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 """转写 images-prep/hot-crawl/ 下的热门歌曲谱(多页合并成一条序列)。"""
 import glob, os, sys
+from guard import guard_help        # noqa: E402  `--help` 守卫(唯一实现见 tools/guard.py)
+guard_help(__doc__)
 sys.path.insert(0, "tools")
 os.chdir(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 os.environ.setdefault("TOKENIZERS_PARALLELISM", "false")

@@ -3,6 +3,8 @@
 固定 128 对淡扫描件失效(实测《我喜欢》是钢琴五线谱却 nline=0 wide=4 混过过滤器)。
 """
 import glob, os, sys
+from guard import guard_help        # noqa: E402  `--help` 守卫(唯一实现见 tools/guard.py)
+guard_help(__doc__)
 sys.path.insert(0, "tools"); os.chdir(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 sys.stdout.reconfigure(encoding="utf-8")
 import numpy as np

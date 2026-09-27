@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 """核实《甜蜜蜜》匹配 + 复查《夜曲》, 并导出两首原谱。"""
 import glob, io, os, re, sys
+from guard import guard_help        # noqa: E402  `--help` 守卫(唯一实现见 tools/guard.py)
+guard_help(__doc__)
 sys.path.insert(0, "tools")
 sys.stdout.reconfigure(encoding="utf-8")
 os.chdir(r"D:\Documents_D\jianpu2")

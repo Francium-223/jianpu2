@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 """多谱验证: 用正式模块 jp_transcribe 跑 时间/兄弟/排排坐, 算 OK vs GT."""
 import os, sys, re
+from guard import guard_help        # noqa: E402  `--help` 守卫(唯一实现见 tools/guard.py)
+guard_help(__doc__)
 sys.path.insert(0, "tools"); os.chdir(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 os.environ.setdefault("TOKENIZERS_PARALLELISM", "false")
 from difflib import SequenceMatcher

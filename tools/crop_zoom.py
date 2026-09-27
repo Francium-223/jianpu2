@@ -2,6 +2,8 @@
 """裁一块放大, 用来看清低音点(数字下面的小点)。"""
 import os, sys
 from PIL import Image
+from guard import guard_help        # noqa: E402  `--help` 守卫(唯一实现见 tools/guard.py)
+guard_help(__doc__)
 os.chdir(r"D:\Documents_D\jianpu2")
 sys.stdout.reconfigure(encoding="utf-8")
 src, dst = sys.argv[1], sys.argv[2]

@@ -2,6 +2,8 @@
 """对照: 真低八度点(如 ,5) 的 点y位置 vs 数字底 & 下划线; 对比 误判的 x[462-473] 点y[46-49]。
 目的: 找"紧贴数字底"判据, 把远处(歌词)的点排除出 low。"""
 import os,sys; sys.path.insert(0,os.path.dirname(os.path.abspath(__file__)))
+from guard import guard_help        # noqa: E402  `--help` 守卫(唯一实现见 tools/guard.py)
+guard_help(__doc__)
 os.chdir(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import numpy as np
 from PIL import Image

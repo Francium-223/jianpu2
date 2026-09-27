@@ -3,6 +3,8 @@
 避免 4/0 过度主导(上次 4 不加权导致 4 泛滥, OK 81->72)。类权重限制在 [0.5, 3.0] 防止反失衡。
 输出 models/qwen-mt-v1/digit_head.pt 并并入 heads.pt。"""
 import os,sys,pickle; sys.path.insert(0,os.path.dirname(os.path.abspath(__file__)))
+from guard import guard_help        # noqa: E402  `--help` 守卫(唯一实现见 tools/guard.py)
+guard_help(__doc__)
 os.chdir(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import numpy as np, torch, torch.nn as nn
 from torch.utils.data import DataLoader, TensorDataset

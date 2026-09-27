@@ -8,6 +8,8 @@
 评估: 对每音符, 计算 head方案/geo方案/OT方案 的 beam, 与GT对照, 统计命中率.
 逐带用 块↔GT 顺序对齐(GT行去括号, 音符块也排除非digit), 严格逐位比较。"""
 import os,sys,re; sys.path.insert(0,os.path.dirname(os.path.abspath(__file__)))
+from guard import guard_help        # noqa: E402  `--help` 守卫(唯一实现见 tools/guard.py)
+guard_help(__doc__)
 os.chdir(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 os.environ.setdefault('TOKENIZERS_PARALLELISM','false')
 import numpy as np, torch, torch.nn as nn

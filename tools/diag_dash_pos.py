@@ -2,6 +2,8 @@
 """band9: 对照 真'-'杠 与 '2'数字 与 '5 6'下划线 的 y 位置。
 打印各连通域 y(带内坐标), 验证 杠的y 与 下划线y 不同。"""
 import os,sys; sys.path.insert(0,os.path.dirname(os.path.abspath(__file__)))
+from guard import guard_help        # noqa: E402  `--help` 守卫(唯一实现见 tools/guard.py)
+guard_help(__doc__)
 os.chdir(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import numpy as np
 from PIL import Image

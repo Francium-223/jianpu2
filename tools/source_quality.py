@@ -3,6 +3,8 @@
 用来判断哪个站值得爬(分辨率高 = 更适合 OCR)。
 """
 import glob, os, re, statistics, sys
+from guard import guard_help        # noqa: E402  `--help` 守卫(唯一实现见 tools/guard.py)
+guard_help(__doc__)
 sys.stdout.reconfigure(encoding="utf-8")
 os.chdir(r"D:\Documents_D\jianpu2")
 from PIL import Image

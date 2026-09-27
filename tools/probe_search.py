@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 """探测各曲谱站的搜索接口(为批量抓热门歌简谱做准备)。"""
 import re, sys, urllib.parse, urllib.request
+from guard import guard_help        # noqa: E402  `--help` 守卫(唯一实现见 tools/guard.py)
+guard_help(__doc__)
 sys.stdout.reconfigure(encoding="utf-8")
 
 HDR = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "

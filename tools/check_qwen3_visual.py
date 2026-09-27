@@ -2,6 +2,8 @@
 """下载完成后跑: 验证 Qwen3-VL-8B visual 的特征维度 + visual(pixel,image_grid_thw) 接口是否可用.
 若维度≠2048 或接口不同, 打印出来供适配. 也测一张 spring 裁剪特征. """
 import os,sys; sys.path.insert(0,"tools"); os.chdir(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+from guard import guard_help        # noqa: E402  `--help` 守卫(唯一实现见 tools/guard.py)
+guard_help(__doc__)
 os.environ["HF_ENDPOINT"]="https://hf-mirror.com"
 os.environ["HF_HOME"]="D:/Documents_D/jianpu2/hf_cache"
 os.environ.setdefault("TOKENIZERS_PARALLELISM","false")

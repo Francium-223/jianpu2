@@ -2,6 +2,8 @@
 """区分 真'-'(flat 直横线) vs 连音弧(slur 曲线): 看主导横线的"行剖面"是否平整(1行主导) vs 有多行(弧形).
 也用一个真'-'杠(带9 x454)对照。"""
 import os,sys; sys.path.insert(0,os.path.dirname(os.path.abspath(__file__)))
+from guard import guard_help        # noqa: E402  `--help` 守卫(唯一实现见 tools/guard.py)
+guard_help(__doc__)
 os.chdir(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import numpy as np
 from PIL import Image

@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 """第二行左段: 每个音符块 预测 + 裁剪是否含歌词字。找 识别成 q,,1/lower 的块。"""
 import os,sys; sys.path.insert(0,os.path.dirname(os.path.abspath(__file__)))
+from guard import guard_help        # noqa: E402  `--help` 守卫(唯一实现见 tools/guard.py)
+guard_help(__doc__)
 os.chdir(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 os.environ.setdefault('TOKENIZERS_PARALLELISM','false')
 import numpy as np, torch, torch.nn as nn

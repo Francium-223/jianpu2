@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 """定位查询旋律在 th10_06 里的位置, 并打印前后文。(纯读, 不改仓库)"""
 import io, os, re, sys
+from guard import guard_help        # noqa: E402  `--help` 守卫(唯一实现见 tools/guard.py)
+guard_help(__doc__)
 sys.stdout.reconfigure(encoding="utf-8")
 
 p = "D:/Documents_D/jianpu-db/scores/th10_06_expand.txt"

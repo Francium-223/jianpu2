@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 """spring GT 的附点数量。"""
 import re, sys
+from guard import guard_help        # noqa: E402  `--help` 守卫(唯一实现见 tools/guard.py)
+guard_help(__doc__)
 sys.stdout.reconfigure(encoding="utf-8")
 gts = [l.strip() for l in open("train-work/gt/春天在哪里.txt", encoding="utf-8").read().splitlines()]
 gtl = [l for l in gts if re.match(r"^[qsdh,']*[0-9x,\-()'qsdh ]", l)]

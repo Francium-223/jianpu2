@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 """调试: 为什么 melody_oct 这次没命中 59113。"""
 import os, sys, re
+from guard import guard_help        # noqa: E402  `--help` 守卫(唯一实现见 tools/guard.py)
+guard_help(__doc__)
 os.chdir(r"D:\Documents_D\jianpu2")
 sys.path.insert(0, "tools")
 sys.stdout.reconfigure(encoding="utf-8")

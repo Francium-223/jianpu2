@@ -2,6 +2,8 @@
 """检查各 '假0' 位置(带,x): 裁剪是否真是 rest0 椭圆, 还是数字被误判0。
 打印 数字头部 top3 + 洞数 + 宽高。"""
 import os,sys; sys.path.insert(0,os.path.dirname(os.path.abspath(__file__)))
+from guard import guard_help        # noqa: E402  `--help` 守卫(唯一实现见 tools/guard.py)
+guard_help(__doc__)
 os.chdir(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 os.environ.setdefault('TOKENIZERS_PARALLELISM','false')
 import numpy as np, torch, torch.nn as nn

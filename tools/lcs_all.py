@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 """用修好的解析器(认 c、剔除三连音标记、连音线合并)对**全部本地源**做最长公共子串扫描。"""
 import glob, io, os, re, sys
+from guard import guard_help        # noqa: E402  `--help` 守卫(唯一实现见 tools/guard.py)
+guard_help(__doc__)
 sys.stdout.reconfigure(encoding="utf-8")
 os.chdir(r"D:\Documents_D\jianpu2")
 

@@ -4,6 +4,8 @@
 其余: real_features.pkl 的非4 digit 保持不变。
 输出 models/qwen-mt-v1/heads.pt (仅更新 digit 头)。"""
 import os,sys,json,pickle; sys.path.insert(0,os.path.dirname(os.path.abspath(__file__)))
+from guard import guard_help        # noqa: E402  `--help` 守卫(唯一实现见 tools/guard.py)
+guard_help(__doc__)
 os.chdir(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 os.environ.setdefault('TOKENIZERS_PARALLELISM','false')
 import numpy as np, torch, torch.nn as nn

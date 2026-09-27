@@ -3,6 +3,8 @@
 纯几何部分(geo) 不依赖 Qwen. 但 acc(b) 是 Qwen 头, 需单独确认.
 先找 s6 块(十六分6) 和 b3 相关块. """
 import sys; sys.path.insert(0,"tools"); import os; os.chdir(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+from guard import guard_help        # noqa: E402  `--help` 守卫(唯一实现见 tools/guard.py)
+guard_help(__doc__)
 import numpy as np
 from PIL import Image
 import transcribe as T

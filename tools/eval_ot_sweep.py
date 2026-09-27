@@ -2,6 +2,8 @@
 """扫 OT 权重 w1(geo惩罚惩罚), 找使 OT 命中率最高的— 若 OT 在某个 w1 超过纯geo74%, 则值得用 OT。
 逐带严格对齐(用 digit 匹配块↔GT), 对比 head/geo/OT@不同w1。"""
 import os,sys,re; sys.path.insert(0,os.path.dirname(os.path.abspath(__file__)))
+from guard import guard_help        # noqa: E402  `--help` 守卫(唯一实现见 tools/guard.py)
+guard_help(__doc__)
 os.chdir(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 os.environ.setdefault('TOKENIZERS_PARALLELISM','false')
 import numpy as np, torch, torch.nn as nn

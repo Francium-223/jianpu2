@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 """诊断 兄弟抱一下 的行划分: 谱头是否并入第一行."""
 import os, sys
+from guard import guard_help        # noqa: E402  `--help` 守卫(唯一实现见 tools/guard.py)
+guard_help(__doc__)
 sys.path.insert(0, "tools"); os.chdir(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import numpy as np
 from PIL import Image

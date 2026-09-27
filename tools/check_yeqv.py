@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 """查几个含"夜曲"的目录的转写状态。"""
 import glob, os, re, sys
+from guard import guard_help        # noqa: E402  `--help` 守卫(唯一实现见 tools/guard.py)
+guard_help(__doc__)
 sys.path.insert(0, "tools"); os.chdir(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 sys.stdout.reconfigure(encoding="utf-8")
 from PIL import Image

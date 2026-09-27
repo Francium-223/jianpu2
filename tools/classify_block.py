@@ -10,6 +10,8 @@ import os
 
 import numpy as np
 from geo_detect import _components
+from guard import guard_help        # noqa: E402  `--help` 守卫(唯一实现见 tools/guard.py)
+guard_help(__doc__)
 
 
 def classify_block(crop):

@@ -3,6 +3,8 @@
 import json
 import urllib.parse
 import urllib.request
+from guard import guard_help        # noqa: E402  `--help` 守卫(唯一实现见 tools/guard.py)
+guard_help(__doc__)
 
 UA = {"User-Agent": "jianpu2-converter/1.0 (test)"}
 

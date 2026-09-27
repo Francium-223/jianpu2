@@ -2,6 +2,8 @@
 """spring 的 token 按行带分组, 查 1.15 阈值下多出的 token 来自哪个行带。"""
 import os, sys
 from collections import defaultdict
+from guard import guard_help        # noqa: E402  `--help` 守卫(唯一实现见 tools/guard.py)
+guard_help(__doc__)
 sys.path.insert(0, "tools"); os.chdir(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 sys.stdout.reconfigure(encoding="utf-8")
 import jp_transcribe as JP

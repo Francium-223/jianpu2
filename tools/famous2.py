@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 """知名歌曲清单: A) 按播放量前 N; B) 从 1408 个 scores 标题里挑经典。"""
 import glob, json, os, re, sys
+from guard import guard_help        # noqa: E402  `--help` 守卫(唯一实现见 tools/guard.py)
+guard_help(__doc__)
 sys.path.insert(0, "tools"); os.chdir(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 sys.stdout.reconfigure(encoding="utf-8")
 

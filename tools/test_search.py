@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 """测 jianpu.cn 搜索接口(UTF-8 编码查询)能否用。"""
 import re, sys, urllib.parse, urllib.request
+from guard import guard_help        # noqa: E402  `--help` 守卫(唯一实现见 tools/guard.py)
+guard_help(__doc__)
 sys.stdout.reconfigure(encoding="utf-8")
 UA = "Mozilla/5.0"
 

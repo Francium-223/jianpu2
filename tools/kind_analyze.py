@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 """用 long_rows 分类, 并和已有转写结果(音符数)交叉验证, 定阈值。"""
 import collections, csv, glob, os, re, sys
+from guard import guard_help        # noqa: E402  `--help` 守卫(唯一实现见 tools/guard.py)
+guard_help(__doc__)
 sys.path.insert(0, "tools"); os.chdir(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 sys.stdout.reconfigure(encoding="utf-8")
 import batch_transcribe as BT

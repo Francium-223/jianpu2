@@ -2,6 +2,8 @@
 """评估 beam 头在 real_features.pkl 上的 每类召回(混淆矩阵), 看 s 是否因类不平衡被压。
 若 s 召回显著低于 q, 说明 head 偏向 q, 可考虑重采样/加权。"""
 import os,sys,pickle; sys.path.insert(0,os.path.dirname(os.path.abspath(__file__)))
+from guard import guard_help        # noqa: E402  `--help` 守卫(唯一实现见 tools/guard.py)
+guard_help(__doc__)
 os.chdir(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import numpy as np, torch, torch.nn as nn
 rf=pickle.load(open('train-data-atoms-v4-json/real_features.pkl','rb'))

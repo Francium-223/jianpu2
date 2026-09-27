@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 """逐个检查所有《浮夸》转写, 找出真含查询旋律的那一个, 并导出原谱。"""
 import glob, io, os, re, sys
+from guard import guard_help        # noqa: E402  `--help` 守卫(唯一实现见 tools/guard.py)
+guard_help(__doc__)
 sys.stdout.reconfigure(encoding="utf-8")
 os.chdir(r"D:\Documents_D\jianpu2")
 from PIL import Image

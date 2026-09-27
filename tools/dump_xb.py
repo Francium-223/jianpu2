@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 """dump 兄弟抱一下 的所有块(行/坐标/token) + 画框叠加图, 查多切的是什么."""
 import os, sys
+from guard import guard_help        # noqa: E402  `--help` 守卫(唯一实现见 tools/guard.py)
+guard_help(__doc__)
 sys.path.insert(0, "tools"); os.chdir(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 os.environ.setdefault("TOKENIZERS_PARALLELISM", "false")
 from PIL import Image, ImageDraw, ImageFont

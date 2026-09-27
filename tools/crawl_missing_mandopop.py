@@ -14,6 +14,8 @@ import sys
 import time
 
 import os as _os
+from guard import guard_help        # noqa: E402  `--help` 守卫(唯一实现见 tools/guard.py)
+guard_help(__doc__)
 # 2026-09-24: 原来硬编码 Windows 路径 D:\Documents_D\jianpu2, 换机器必崩。
 # 与其它 tools 一致: 自己 chdir 到仓库根(jianpu2/)。
 _os.chdir(_os.path.dirname(_os.path.dirname(_os.path.abspath(__file__))))

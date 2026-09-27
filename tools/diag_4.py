@@ -2,6 +2,8 @@
 """诊断 '4' 识别: 找出 spring 里 GT=4 但 输出非4 的块, 打印 位置/预测/裁剪几何。
 看是 digit 头把 4 混淆成 3/5, 还是裁剪问题。"""
 import os,sys; sys.path.insert(0,os.path.dirname(os.path.abspath(__file__)))
+from guard import guard_help        # noqa: E402  `--help` 守卫(唯一实现见 tools/guard.py)
+guard_help(__doc__)
 os.chdir(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 os.environ.setdefault('TOKENIZERS_PARALLELISM','false')
 import numpy as np, torch, torch.nn as nn

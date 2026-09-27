@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 """看 long_rows 高低两组的其他特征, 判断这个判据可靠不可靠。"""
 import csv, statistics, sys
+from guard import guard_help        # noqa: E402  `--help` 守卫(唯一实现见 tools/guard.py)
+guard_help(__doc__)
 sys.stdout.reconfigure(encoding="utf-8")
 
 rows = list(csv.DictReader(open("train-work/kind_feats.tsv", encoding="utf-8"), delimiter="\t"))

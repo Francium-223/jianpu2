@@ -5,6 +5,8 @@ import re
 import subprocess
 import sys
 import tempfile
+from guard import guard_help        # noqa: E402  `--help` 守卫(唯一实现见 tools/guard.py)
+guard_help(__doc__)
 
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), ".."))
 from tools.validate_drafts import DIRS, JIANPU_LY, VENDOR, extract_body

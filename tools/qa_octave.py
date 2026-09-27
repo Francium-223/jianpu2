@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 """质量度量: 比较语料与 GT 的八度标记率/时值分布, 看是否有系统性偏差。"""
 import glob, os, re, sys, collections
+from guard import guard_help        # noqa: E402  `--help` 守卫(唯一实现见 tools/guard.py)
+guard_help(__doc__)
 sys.path.insert(0, "tools"); os.chdir(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 sys.stdout.reconfigure(encoding="utf-8")
 

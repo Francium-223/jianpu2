@@ -2,6 +2,8 @@
 """第一行: 看最后一个单独的 '3'(里上方) 与旁边 '0' 的裁剪, 以及预测概率。
 判断 3 为何被判0: 是裁剪把右邻0/下划线卷进来, 还是3本身形状像0。"""
 import os, sys; sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from guard import guard_help        # noqa: E402  `--help` 守卫(唯一实现见 tools/guard.py)
+guard_help(__doc__)
 os.chdir(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 os.environ.setdefault('TOKENIZERS_PARALLELISM','false')
 import numpy as np, torch, torch.nn as nn

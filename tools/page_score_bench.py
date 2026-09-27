@@ -2,6 +2,8 @@
 """判定: qupu123 多页目录里, 几何简谱分最高的页是不是总是 002.jpg? 计时两种缩放。"""
 import glob, os, sys, time
 from collections import Counter
+from guard import guard_help        # noqa: E402  `--help` 守卫(唯一实现见 tools/guard.py)
+guard_help(__doc__)
 sys.path.insert(0, "tools")
 os.chdir(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 sys.stdout.reconfigure(encoding="utf-8")

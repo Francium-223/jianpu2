@@ -11,6 +11,8 @@
 import os
 import torch
 from transformers import AutoModel, AutoImageProcessor
+from guard import guard_help        # noqa: E402  `--help` 守卫(唯一实现见 tools/guard.py)
+guard_help(__doc__)
 
 MODEL = os.environ.get("QWEN_MODEL", "models/Qwen2.5-VL-3B-Instruct")
 

@@ -2,6 +2,8 @@
 """0/1 背包: 黑板上的状态转移 dp[i][j] = max(dp[i-1][j], dp[i-1][j-cost[i]] + value[i])
 实现: 二维版 + 一维滚动数组版(空间 O(cap))。
 返回 最大价值 与 具体选中的物品下标。"""
+from guard import guard_help        # noqa: E402  `--help` 守卫(唯一实现见 tools/guard.py)
+guard_help(__doc__)
 
 def knapsack_2d(cost, value, cap):
     """二维 O(n*cap) 空间版。返回 (max_value, dp表, choice选物品下标)"""

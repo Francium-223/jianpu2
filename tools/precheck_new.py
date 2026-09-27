@@ -4,6 +4,8 @@ import glob
 import os
 import sys
 from collections import Counter
+from guard import guard_help        # noqa: E402  `--help` 守卫(唯一实现见 tools/guard.py)
+guard_help(__doc__)
 
 sys.path.insert(0, "tools")
 os.chdir(r"D:\Documents_D\jianpu2")

@@ -2,6 +2,8 @@
 """纯几何诊断(不加载Qwen): 对时间都去哪了所有块, 跑 geo_detect, 输出 beam/low/voice.
 找 该有下划线(时值)/低八点 但 geo 漏检的块. 不依赖 Qwen(不崩)."""
 import sys; sys.path.insert(0,"tools"); import os; os.chdir(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+from guard import guard_help        # noqa: E402  `--help` 守卫(唯一实现见 tools/guard.py)
+guard_help(__doc__)
 import numpy as np
 from PIL import Image
 import transcribe as T

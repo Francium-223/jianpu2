@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 """查 某谱 的谱头区边界: 打印所有行带的 frac/tall, 标出哪一行被判为"音乐起点"。"""
 import glob, os, sys
+from guard import guard_help        # noqa: E402  `--help` 守卫(唯一实现见 tools/guard.py)
+guard_help(__doc__)
 sys.path.insert(0, "tools"); os.chdir(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 sys.stdout.reconfigure(encoding="utf-8")
 import numpy as np

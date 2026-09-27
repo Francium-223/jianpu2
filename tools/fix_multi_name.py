@@ -4,6 +4,8 @@
 把那个变量改名成 MULTI(保留模块别名 M 给 melody_oct)。"""
 import io
 import re
+from guard import guard_help        # noqa: E402  `--help` 守卫(唯一实现见 tools/guard.py)
+guard_help(__doc__)
 
 p = "tools/melody_retrieval_holdout.py"
 s = io.open(p, encoding="utf-8").read()

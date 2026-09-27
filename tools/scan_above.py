@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 """放松条件扫描: 数字上方到底有没有细弧线? 逐行列出"在数字顶上方"的所有细连通域。"""
 import os, sys
+from guard import guard_help        # noqa: E402  `--help` 守卫(唯一实现见 tools/guard.py)
+guard_help(__doc__)
 sys.path.insert(0, "tools")
 os.chdir(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 sys.stdout.reconfigure(encoding="utf-8")

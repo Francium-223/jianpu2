@@ -3,6 +3,8 @@
 用法: py -3.13 tools/rank_by_bili.py [数量]  -> rank-out/ranked.jsonl + 打印 Top 30
 """
 import os, sys, glob, re, json, time, uuid, urllib.parse, urllib.request, statistics
+from guard import guard_help        # noqa: E402  `--help` 守卫(唯一实现见 tools/guard.py)
+guard_help(__doc__)
 sys.path.insert(0, "tools"); os.chdir(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 sys.stdout.reconfigure(encoding="utf-8")
 from to_jianpu_db import title_of

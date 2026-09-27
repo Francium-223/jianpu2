@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 import sys; sys.path.insert(0,"tools"); import os; os.chdir(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+from guard import guard_help        # noqa: E402  `--help` 守卫(唯一实现见 tools/guard.py)
+guard_help(__doc__)
 import pipeline as P
 toks,meta=P.transcribe("train-work/gt/时间都去哪了.jpg")
 open("train-work/time_pipe.txt","w",encoding="utf-8").write(" ".join(toks))

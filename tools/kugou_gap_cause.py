@@ -11,6 +11,8 @@ import io
 import os
 import re
 import sys
+from guard import guard_help        # noqa: E402  `--help` 守卫(唯一实现见 tools/guard.py)
+guard_help(__doc__)
 
 sys.stdout.reconfigure(encoding="utf-8")
 ROOT = r"D:\Documents_D\jianpu2"

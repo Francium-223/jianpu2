@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 """把 token 映射回图上的位置: 看开头那些 token 到底来自哪儿。"""
 import os, sys
+from guard import guard_help        # noqa: E402  `--help` 守卫(唯一实现见 tools/guard.py)
+guard_help(__doc__)
 sys.path.insert(0, "tools"); os.chdir(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 sys.stdout.reconfigure(encoding="utf-8")
 import batch_transcribe as BT

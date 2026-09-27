@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 """查 spring 里 3 个"5."(假附点) 的来源: dump 该块的连通域。"""
 import os, sys
+from guard import guard_help        # noqa: E402  `--help` 守卫(唯一实现见 tools/guard.py)
+guard_help(__doc__)
 sys.path.insert(0, "tools"); os.chdir(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 sys.stdout.reconfigure(encoding="utf-8")
 import numpy as np

@@ -12,6 +12,8 @@
 """
 import os
 import sys
+from guard import guard_help        # noqa: E402  `--help` 守卫(唯一实现见 tools/guard.py)
+guard_help(__doc__)
 
 # <root>/tools/jp_root.py -> <root>
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))

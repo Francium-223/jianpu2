@@ -2,6 +2,8 @@
 """找 时间都去哪了 里的附点音符(数字右侧小点), 打印附点相对数字的位置特征。
 用于安全地把附点纳入裁剪而不误吞相邻数字。"""
 import os,sys; sys.path.insert(0,os.path.dirname(os.path.abspath(__file__)))
+from guard import guard_help        # noqa: E402  `--help` 守卫(唯一实现见 tools/guard.py)
+guard_help(__doc__)
 os.chdir(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import numpy as np
 from PIL import Image

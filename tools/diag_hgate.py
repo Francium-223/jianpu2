@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 """诊断高度门: 逐行带打印 组件高度分布 / _hmax / 候选数字块高度。"""
 import os, sys
+from guard import guard_help        # noqa: E402  `--help` 守卫(唯一实现见 tools/guard.py)
+guard_help(__doc__)
 sys.path.insert(0, "tools"); os.chdir(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 sys.stdout.reconfigure(encoding="utf-8")
 import numpy as np

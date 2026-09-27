@@ -10,6 +10,8 @@
       否则(隔离/测试跑) -> 写 **那个 DB 目录里**，绝不碰真工作台。
 """
 import os
+from guard import guard_help        # noqa: E402  `--help` 守卫(唯一实现见 tools/guard.py)
+guard_help(__doc__)
 
 
 def is_canonical_db(db_dir):

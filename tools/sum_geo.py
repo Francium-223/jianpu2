@@ -3,6 +3,8 @@
 import re,sys
 from difflib import SequenceMatcher
 from token_json import token_to_json
+from guard import guard_help        # noqa: E402  `--help` 守卫(唯一实现见 tools/guard.py)
+guard_help(__doc__)
 def load(file):
     t=open(file,encoding="utf-8",errors="replace").read()
     m=re.search(r"\d+\s*音\s*\n?\s*(.+)$",t,re.S)

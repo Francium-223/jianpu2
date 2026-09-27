@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 """找出 qupu123 多页目录里几何最佳页不是 002.jpg 的例外, 看它们的 002 是什么。"""
 import glob, os, sys
+from guard import guard_help        # noqa: E402  `--help` 守卫(唯一实现见 tools/guard.py)
+guard_help(__doc__)
 sys.path.insert(0, "tools")
 os.chdir(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 sys.stdout.reconfigure(encoding="utf-8")

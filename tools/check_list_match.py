@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 """校验名单匹配: 名单里的谱现在是否已在 batch-out 里(以及能否按 ID 找回)。"""
 import glob, os, re, sys
+from guard import guard_help        # noqa: E402  `--help` 守卫(唯一实现见 tools/guard.py)
+guard_help(__doc__)
 sys.path.insert(0, "tools"); os.chdir(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 sys.stdout.reconfigure(encoding="utf-8")
 import batch_transcribe as BT

@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 """测 x(念白记号) 识别: 跑 TogetherWeFight(有 X 符号) 看能否转出 x。"""
 import os, sys, glob, time
+from guard import guard_help        # noqa: E402  `--help` 守卫(唯一实现见 tools/guard.py)
+guard_help(__doc__)
 sys.path.insert(0, "tools"); os.chdir(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 os.environ.setdefault("TOKENIZERS_PARALLELISM", "false")
 sys.stdout.reconfigure(encoding="utf-8")

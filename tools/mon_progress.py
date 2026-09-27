@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 """监视 lora_v2_err.log 的训练进度条, 每 5 秒更新 train-work/progress.txt 为易读格式."""
 import os, re, time
+from guard import guard_help        # noqa: E402  `--help` 守卫(唯一实现见 tools/guard.py)
+guard_help(__doc__)
 os.chdir(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 LOG="train-work/lora_v2_err.log"; OUT="train-work/progress.txt"
 while True:

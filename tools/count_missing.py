@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 """统计: 批次目标(前1531个目录)里有多少没有 txt, 以及原因(非法文件名/损坏图/跳过)。"""
 import glob, json, os, re, sys
+from guard import guard_help        # noqa: E402  `--help` 守卫(唯一实现见 tools/guard.py)
+guard_help(__doc__)
 sys.path.insert(0, "tools"); os.chdir(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 sys.stdout.reconfigure(encoding="utf-8")
 import batch_transcribe as BT

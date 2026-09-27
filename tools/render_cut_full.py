@@ -2,6 +2,8 @@
 """把 spring 整页谱 按当前切分逻辑(crop_note_regions + bar_extent 音符行收敛)切块,
 把每个块框画出来, 并标上模型预测的 token。生成: spring_cut_full.png """
 import os, sys; sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from guard import guard_help        # noqa: E402  `--help` 守卫(唯一实现见 tools/guard.py)
+guard_help(__doc__)
 os.chdir(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 os.environ.setdefault('TOKENIZERS_PARALLELISM','false')
 import numpy as np, torch, torch.nn as nn

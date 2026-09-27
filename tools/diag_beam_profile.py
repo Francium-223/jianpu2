@@ -2,6 +2,8 @@
 """s1(x584/x612) vs q1(x639/x664) vs 单/双线参考(x21 s4, x367 q2) 的下划线行剖面:
 打印下划线区域每行暗px, 看 s(双线)是否有两个暗峰/两行显著, q(单线)是否一行。"""
 import os,sys; sys.path.insert(0,os.path.dirname(os.path.abspath(__file__)))
+from guard import guard_help        # noqa: E402  `--help` 守卫(唯一实现见 tools/guard.py)
+guard_help(__doc__)
 os.chdir(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import numpy as np
 from PIL import Image

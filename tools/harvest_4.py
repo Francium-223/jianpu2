@@ -2,6 +2,8 @@
 """收割真实 '4' 样本(人工确认过的): band7 嘀哩哩那 4 个清晰的 4 + 跨语料小椭圆候选中的4。
 提取裁剪存为 digit=4 训练样本, 供重训 digit 头。先只从 spring 收 4 个已确认的四。"""
 import os,sys; sys.path.insert(0,os.path.dirname(os.path.abspath(__file__)))
+from guard import guard_help        # noqa: E402  `--help` 守卫(唯一实现见 tools/guard.py)
+guard_help(__doc__)
 os.chdir(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import numpy as np
 from PIL import Image

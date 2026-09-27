@@ -2,6 +2,8 @@
 """诊断 友谊天长地久: 逐行带 + 逐块 dump(位置/类型/token/geo_detect), 查
 (1) 标题行内容为何变成 token  (2) 附点为何全丢。"""
 import os, sys
+from guard import guard_help        # noqa: E402  `--help` 守卫(唯一实现见 tools/guard.py)
+guard_help(__doc__)
 sys.path.insert(0, "tools"); os.chdir(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 sys.stdout.reconfigure(encoding="utf-8")
 import numpy as np

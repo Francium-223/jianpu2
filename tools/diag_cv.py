@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 """跨多张谱: 行带特征 frac / CV / ±12%中位数占比, 找区分"文字行 vs 音符行/粘连行带"的判据。"""
 import os, statistics, sys
+from guard import guard_help        # noqa: E402  `--help` 守卫(唯一实现见 tools/guard.py)
+guard_help(__doc__)
 sys.path.insert(0, "tools"); os.chdir(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 sys.stdout.reconfigure(encoding="utf-8")
 import numpy as np

@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 """从 jianpu.cn 下载指定的曲谱页到 images-prep/jay-chou/。"""
 import os, re, sys, time, urllib.request
+from guard import guard_help        # noqa: E402  `--help` 守卫(唯一实现见 tools/guard.py)
+guard_help(__doc__)
 sys.path.insert(0, "tools")
 os.chdir(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 sys.stdout.reconfigure(encoding="utf-8")

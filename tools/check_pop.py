@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 """批量查: 常见华语流行/经典歌曲在不在库里(修 mojibake 后匹配)。"""
 import glob, os, sys
+from guard import guard_help        # noqa: E402  `--help` 守卫(唯一实现见 tools/guard.py)
+guard_help(__doc__)
 sys.path.insert(0, "tools"); os.chdir(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 sys.stdout.reconfigure(encoding="utf-8")
 

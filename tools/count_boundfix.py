@@ -2,6 +2,8 @@
 """统计: 新的"谱头边界"判据(加了下划线>=6)相对旧判据, 会让多少张谱多转出内容。
 = 在 [旧边界, 新边界) 区间内存在"宽松阈值下可通过"的行带 的谱数。"""
 import glob, json, os, sys
+from guard import guard_help        # noqa: E402  `--help` 守卫(唯一实现见 tools/guard.py)
+guard_help(__doc__)
 sys.path.insert(0, "tools"); os.chdir(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 sys.stdout.reconfigure(encoding="utf-8")
 import numpy as np

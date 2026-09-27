@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 """用 spring(有 GT) 检验 CV 门是否误杀真音符: 对比 OK 与音符数。"""
 import os, re, sys
+from guard import guard_help        # noqa: E402  `--help` 守卫(唯一实现见 tools/guard.py)
+guard_help(__doc__)
 sys.path.insert(0, "tools"); os.chdir(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 sys.stdout.reconfigure(encoding="utf-8")
 from difflib import SequenceMatcher

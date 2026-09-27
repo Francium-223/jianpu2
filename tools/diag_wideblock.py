@@ -2,6 +2,8 @@
 """检查那些 54-81px 宽的块(带5 x77/x427, 带7 x583/x662)内部: 含几个数字状连通域?
 看是否 '数字+数字' 或 '数字+下划线' 粘成一个块。打印连通域明细。"""
 import os,sys; sys.path.insert(0,os.path.dirname(os.path.abspath(__file__)))
+from guard import guard_help        # noqa: E402  `--help` 守卫(唯一实现见 tools/guard.py)
+guard_help(__doc__)
 os.chdir(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import numpy as np
 from PIL import Image

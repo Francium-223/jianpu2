@@ -2,6 +2,8 @@
 """验证"分辨率是否够": 把 x584/x612(s1), x639/x664(q1) 裁剪放大到不同倍, 看下划线
 双线(s) vs 单线(q) 是否在高分辨率下可分——即下划线区域是否有"空行分隔的双峰"。"""
 import os,sys; sys.path.insert(0,os.path.dirname(os.path.abspath(__file__)))
+from guard import guard_help        # noqa: E402  `--help` 守卫(唯一实现见 tools/guard.py)
+guard_help(__doc__)
 os.chdir(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import numpy as np
 from PIL import Image

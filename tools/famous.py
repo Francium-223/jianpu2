@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 """从 scores 的标题里挑出"耳熟能详"的歌, 按类别列出。"""
 import glob, os, sys
+from guard import guard_help        # noqa: E402  `--help` 守卫(唯一实现见 tools/guard.py)
+guard_help(__doc__)
 sys.path.insert(0, "tools"); os.chdir(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 sys.stdout.reconfigure(encoding="utf-8")
 

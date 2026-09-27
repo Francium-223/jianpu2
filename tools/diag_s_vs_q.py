@@ -2,6 +2,8 @@
 """对比 s1(x584/x612 双下划线) vs q1(x639/x664 单下划线) 的下划线几何:
 下划线连通域 高h、宽w、纵向暗px 是否分层。用于可靠区分 s(2线) vs q(1线)。"""
 import os,sys; sys.path.insert(0,os.path.dirname(os.path.abspath(__file__)))
+from guard import guard_help        # noqa: E402  `--help` 守卫(唯一实现见 tools/guard.py)
+guard_help(__doc__)
 os.chdir(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import numpy as np
 from PIL import Image

@@ -2,6 +2,8 @@
 """统计: 批次里各谱被挑中的页有多宽, 有多少超过阈值(绝对像素阈值会失效)。"""
 import glob, json, os, sys
 from collections import Counter
+from guard import guard_help        # noqa: E402  `--help` 守卫(唯一实现见 tools/guard.py)
+guard_help(__doc__)
 sys.path.insert(0, "tools"); sys.path.insert(0, "tools")
 os.chdir(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 sys.stdout.reconfigure(encoding="utf-8")

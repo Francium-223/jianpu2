@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 """看 GT/曲谱里三连音标记、连音线、圆滑线到底怎么写的 —— 决定解析规则。"""
 import collections, glob, io, os, re, sys
+from guard import guard_help        # noqa: E402  `--help` 守卫(唯一实现见 tools/guard.py)
+guard_help(__doc__)
 sys.stdout.reconfigure(encoding="utf-8")
 os.chdir(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 

@@ -2,6 +2,8 @@
 """band9 真'-'杠块 x[451-481]: 为什么 classify_block 判 empty 而非 dash?
 打印裁剪的连通域数量/暗px/几何。"""
 import os,sys; sys.path.insert(0,os.path.dirname(os.path.abspath(__file__)))
+from guard import guard_help        # noqa: E402  `--help` 守卫(唯一实现见 tools/guard.py)
+guard_help(__doc__)
 os.chdir(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import numpy as np
 from PIL import Image

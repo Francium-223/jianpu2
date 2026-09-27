@@ -5,6 +5,8 @@
 用法: py tools/melody_oct.py ",6 3 2 3 1 3 ,7 3" [--min 8] [--ctx 6]
 """
 import glob, os, re, sys
+from guard import guard_help        # noqa: E402  `--help` 守卫(唯一实现见 tools/guard.py)
+guard_help(__doc__)
 os.chdir(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 sys.stdout.reconfigure(encoding="utf-8")
 

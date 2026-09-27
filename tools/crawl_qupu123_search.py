@@ -14,6 +14,8 @@ import sys
 import time
 import urllib.parse
 import urllib.request
+from guard import guard_help        # noqa: E402  `--help` 守卫(唯一实现见 tools/guard.py)
+guard_help(__doc__)
 
 os.chdir(r"D:\Documents_D\jianpu2")
 sys.stdout.reconfigure(encoding="utf-8")

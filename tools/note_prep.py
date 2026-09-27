@@ -6,6 +6,8 @@ import numpy as np
 import torch
 from torchvision import transforms
 from PIL import Image
+from guard import guard_help        # noqa: E402  `--help` 守卫(唯一实现见 tools/guard.py)
+guard_help(__doc__)
 
 SIZE = 112
 

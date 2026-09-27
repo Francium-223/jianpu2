@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 """对比测试: 附点修复 + CV 行带门 的效果。用法: py -3.13 tools/test_dot_cv.py"""
 import os, sys, time
+from guard import guard_help        # noqa: E402  `--help` 守卫(唯一实现见 tools/guard.py)
+guard_help(__doc__)
 sys.path.insert(0, "tools"); os.chdir(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 sys.stdout.reconfigure(encoding="utf-8")
 import batch_transcribe as BT

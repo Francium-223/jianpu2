@@ -2,6 +2,8 @@
 """跨语料收集 被模型判为 4 的真实裁剪候选(用当前digit头), 按置信排序, 输出蒙太奇供肉眼确认。
 用于补 digit=4 真实样本。"""
 import os,sys,json; sys.path.insert(0,os.path.dirname(os.path.abspath(__file__)))
+from guard import guard_help        # noqa: E402  `--help` 守卫(唯一实现见 tools/guard.py)
+guard_help(__doc__)
 os.chdir(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 os.environ.setdefault('TOKENIZERS_PARALLELISM','false')
 import numpy as np, torch, torch.nn as nn

@@ -7,6 +7,8 @@
 import os
 import sys
 from PIL import Image, ImageDraw
+from guard import guard_help        # noqa: E402  `--help` 守卫(唯一实现见 tools/guard.py)
+guard_help(__doc__)
 
 sys.stdout.reconfigure(encoding="utf-8")
 SRC = r"C:\Users\qinxi\AppData\Roaming\dsh-desktop\harness\attachments\v1\objects\d6\d66854fdf876dce690a1c44337e39c3f63654b86442c362b52fe6553355e1c56"

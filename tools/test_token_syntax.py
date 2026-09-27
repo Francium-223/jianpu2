@@ -4,6 +4,8 @@ jianpu-ly 官方说明: 字符顺序无所谓, s1 与 1s 等价。
 若只认前置, 那么 GT 评测就会把 GT 的八分音符当成四分 -> 匹配率虚低。
 """
 import io, os, sys
+from guard import guard_help        # noqa: E402  `--help` 守卫(唯一实现见 tools/guard.py)
+guard_help(__doc__)
 sys.path.insert(0, "tools")
 os.chdir(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 sys.stdout.reconfigure(encoding="utf-8")

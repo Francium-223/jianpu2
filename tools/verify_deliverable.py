@@ -16,6 +16,8 @@ batch-out 里必然还有 0 音符/非纯谱/scores 数不匹配, 那是正常�
 用法: py tools/verify_deliverable.py
 """
 import csv, glob, json, os, re, sys, collections
+from guard import guard_help        # noqa: E402  `--help` 守卫(唯一实现见 tools/guard.py)
+guard_help(__doc__)
 sys.path.insert(0, "tools"); os.chdir(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 sys.stdout.reconfigure(encoding="utf-8")
 import batch_transcribe as BT

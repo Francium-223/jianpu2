@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 """端到端 Qwen 转写: 简谱图 → 拆分音符 → Qwen特征 → 分类头 → 组装 jianpu-ly。"""
 import os, sys
+from guard import guard_help        # noqa: E402  `--help` 守卫(唯一实现见 tools/guard.py)
+guard_help(__doc__)
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 os.environ.setdefault("TOKENIZERS_PARALLELISM", "false")
 import torch

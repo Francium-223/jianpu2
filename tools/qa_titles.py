@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 """检查交付物标题是否干净: 不该带源站后缀、源 ID、mojibake、控制字符。"""
 import glob, os, re, sys
+from guard import guard_help        # noqa: E402  `--help` 守卫(唯一实现见 tools/guard.py)
+guard_help(__doc__)
 sys.path.insert(0, "tools"); os.chdir(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 sys.stdout.reconfigure(encoding="utf-8")
 

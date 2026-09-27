@@ -2,6 +2,8 @@
 """看位置73(带7 x583) 与 91(带9 x448) 的裁剪——GT 说是 '-'(延音杠), 但输出 0/5。
 放大这两个位置, 看是真'-'还是被误切/误判。"""
 import os,sys; sys.path.insert(0,os.path.dirname(os.path.abspath(__file__)))
+from guard import guard_help        # noqa: E402  `--help` 守卫(唯一实现见 tools/guard.py)
+guard_help(__doc__)
 os.chdir(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from PIL import Image
 im=Image.open("images-prep/test-jianpujia/春天在哪里简谱_儿歌_快来儿歌里找春天__jianpujia-15770/001.jpg")

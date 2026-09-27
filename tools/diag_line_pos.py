@@ -2,6 +2,8 @@
 """对比: 真'-'杠块(x451 延音杠) vs 时值下划线块(x193 仅下划线?) 的 横线在块内的纵向位置。
 为 classify_block 的 dash 判定(主导宽横线 + 位置偏上) 提供依据。"""
 import os,sys; sys.path.insert(0,os.path.dirname(os.path.abspath(__file__)))
+from guard import guard_help        # noqa: E402  `--help` 守卫(唯一实现见 tools/guard.py)
+guard_help(__doc__)
 os.chdir(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import numpy as np
 from PIL import Image

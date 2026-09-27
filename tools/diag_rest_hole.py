@@ -2,6 +2,8 @@
 """对 预测为0 的块, 用 洞(内部闭合) + 圆度 判别真rest0 vs 裸数字假0。
 打印每个: 洞数, 宽高, 是否近似环形(0椭圆)。"""
 import os,sys; sys.path.insert(0,os.path.dirname(os.path.abspath(__file__)))
+from guard import guard_help        # noqa: E402  `--help` 守卫(唯一实现见 tools/guard.py)
+guard_help(__doc__)
 os.chdir(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 os.environ.setdefault('TOKENIZERS_PARALLELISM','false')
 import numpy as np, torch, torch.nn as nn

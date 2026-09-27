@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 """直接 diff 新旧 GT 加载逻辑, 找出 兄弟抱一下 的 3 个点差在哪。"""
 import io, os, re, sys
+from guard import guard_help        # noqa: E402  `--help` 守卫(唯一实现见 tools/guard.py)
+guard_help(__doc__)
 sys.path.insert(0, "tools")
 os.chdir(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 sys.stdout.reconfigure(encoding="utf-8")

@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 """诊断歌词泄漏: 逐行带打印 frac/tall/是否通过行带过滤, 以及每行带有多少块会送模型。"""
 import os, sys
+from guard import guard_help        # noqa: E402  `--help` 守卫(唯一实现见 tools/guard.py)
+guard_help(__doc__)
 sys.path.insert(0, "tools"); os.chdir(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 sys.stdout.reconfigure(encoding="utf-8")
 import numpy as np
