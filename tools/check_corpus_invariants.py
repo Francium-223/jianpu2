@@ -31,6 +31,9 @@ import os
 import re
 import sys
 
+from guard import guard_help                    # noqa: E402
+guard_help(__doc__)                             # `--help` 守卫: 必须在**任何实际工作之前**
+
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(HERE)
 WS = os.path.dirname(ROOT)
@@ -39,8 +42,6 @@ sys.path.insert(0, os.path.join(ROOT, "skills", "jianpu-melody-lookup"))
 sys.path.insert(0, DB)
 sys.stdout.reconfigure(encoding="utf-8")
 import jptok                                    # noqa: E402
-from guard import guard_help                    # noqa: E402
-guard_help(__doc__)
 try:
     import linkurl                              # noqa: E402
 except Exception:                               # noqa: BLE001
@@ -60,6 +61,10 @@ def main():
 
     bad = collections.Counter()
     ex = collections.defaultdict(list)
+    info = collections.Counter()          # 良性、但值得知道数量的东西(不要报警, 报警要留给真问题)
+
+    def note(kind, n=1):
+        info[kind] += n
 
     def fail(kind, fn, detail=""):
         bad[kind] += 1
@@ -121,23 +126,29 @@ def main():
         #      第一版把 `-`/`~` 当"解析不了", 于是 6850 首被误报。)
         STRUCTURAL = {"-", "~", "[", "]", "{", "}", "|"}
         unparseable = []
-        fragments = []
         for t in toks:
             if t in STRUCTURAL or re.match(r"^[cqsdh]+-$", t or ""):
                 continue
             if jptok.is_note(t):
                 continue
-            # 单独一档: **时值+连音线但没有音高**(`c~`/`q~`/`s~`)或**调号行漏进正文**(`1=C`)。
-            # 它们不是"垃圾 token", 而是**很可能这里丢了一个音高** —— 自检门那条
-            # "数字数==旋律数"看不见它(碎片里没有数字)。
-            if re.match(r"^[cqsdh]+[~\[\]]*$", t or "") or re.match(r"^\d+=[A-Ga-g#b]", t or ""):
-                fragments.append(t)
+            # 剩下两类**都不是坏东西**, 2026-09-28 定案(以前这里两档都当"可能丢音高"报警, 是假警报):
+            #   ① `c~`/`q~`/`s~` = **连音线**。`~` 是 jianpu-ly 的 tie(源码第 137 行 "Ties: 1 ~ 1"),
+            #      语法上可以写在短横后面(`1 - - - ~`) —— 转换器就把那个 `~` 连同前一个时值字母
+            #      写成了独立的 token。四方印证: ①jianpu-ly 源码 ②manifest 压缩形 `'1q … 1 - - - ~`
+            #      ③生成的 .ly 里是 `\note-mod "–" c''4` + Tie ④渲染出的 PNG 上就是一条连音弧。
+            #      它**没有音高也不占拍**(recover_bars 走"不是 token"分支 -> 0 拍), 正好是 tie 该有的样子。
+            #      实测: 191 个, 全在手工录入/jianpu-ly 转出的 status=ok 谱里, OCR 谱 0 个。
+            #   ② `1=C` = **调号**。语料没有"调号"字段, 而前端是逐 token 原样渲染 —— 写在正文里
+            #      正好把调号显示出来, 所以这不是漏, 是唯一能放它的地方(`parse_token` 认不出 ->
+            #      0 拍 0 音高, 对检索与小节线都无影响)。实测: 1 个(qd1z_anthem.txt 的 intro)。
+            if re.match(r"^[cqsdh]*~[cqsdh]*$", t or ""):
+                note("连音线 ~ (良性)", 1)
+            elif re.match(r"^\d+=[A-Ga-g#b]", t or ""):
+                note("正文里的调号 (良性)", 1)
             else:
                 unparseable.append(t)
         if unparseable:
             fail("score 里有解析不了的 token", f, str(unparseable[:3]))
-        if fragments:
-            fail("score 里有音符碎片(可能丢音高)", f, str(fragments[:3]))
         # 12. link 必须过唯一实现的校验
         if linkurl is not None and r.get("link"):
             try:
@@ -145,6 +156,11 @@ def main():
             except Exception as e:                          # noqa: BLE001
                 fail("link 过不了 linkurl 校验", f, str(e)[:50])
 
+    if info:
+        print("良性记号(不报警, 只报数):")
+        for k, n in info.most_common():
+            print("   %-28s %5d 个" % (k, n))
+        print()
     if not bad:
         print("结构不变量全部通过（%d 首）" % len(rows))
         return 0

@@ -166,9 +166,16 @@ def recover_bars(sections, beats_per_bar, keep_explicit=True):
                 acc = 0.0
                 continue
             if t == "-" or re.match(r"^[cqsdh]+-$", t or ""):
-                # `-` = 延长一拍; `c-`/`q-` 是 KeepLength 补时值时的写法(语料里 363 个),
+                # `-` = 延长一拍; `c-`/`q-` 是 KeepLength 补时值时的写法(全库 363 个)。
                 # 以前因为白名单不认被整段丢掉 -> 这些歌的小节线会往前漂。
-                acc += 1.0
+                # ⚠ 2026-09-28: 改成 `acc += beat(t)`。原来这里写死 `+= 1.0`, **不看字母**,
+                #   于是 `q-`(半拍)被当成一整拍, 那一小节之后的线全部偏移。
+                #   证据是参考实现, 不是推理: jianpu-ly 把 `q-` 渲染成 `\note-mod "–" c''8`(八分),
+                #   tools/check_beats_vs_lilypond.py 在 4 首带 .ly 的谱里**逐例**对上 ——
+                #   分歧次数正好等于各谱的 `q-` 个数(th01_03 5 / th02_05 4 / th02_01 1),
+                #   而全库共 35 个 `q-`, 分布在 6 首(th17_13 12 / th10_06 8 / th01_03 5 /
+                #   th07_13 5 / th02_05 4 / th02_01 1)。
+                acc += beat(t)
                 continue
             p = parse_token(t)
             if not p:
