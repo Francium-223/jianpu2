@@ -71,6 +71,19 @@ def check(data_path=None):
     rows = load(data_path)
     rep.append(f"数据 {len(rows)} 首")
 
+    # ⓪ 这份数据是不是**旧副本**?
+    #    `skills/*/data.jsonl` 是 .gitignore 的本地产物, 由 refresh.sh / add_link.py 从
+    #    `jianpu-db/data.jsonl` 同步过来。忘了同步时, 下面会报一串"音符数不对 / 小节线位置不对",
+    #    看着像自己刚改坏了某个口径 —— 2026-09-28 就为这个白绕了一圈(技能里那份旧了 5 天)。
+    #    先把话说清楚, 再报用例。
+    _dbp = os.path.normpath(os.path.join(HERE, "..", "..", "..", "..", "jianpu-db", "data.jsonl"))
+    if os.path.exists(_dbp) and os.path.abspath(_dbp) != os.path.abspath(data_path):
+        n_corpus = sum(1 for _l in io.open(_dbp, encoding="utf-8") if _l.strip())
+        if n_corpus != len(rows):
+            rep.append(f"!! **这份数据是旧副本**: 加载了 {len(rows)} 首, 而语料 {_dbp} 有 {n_corpus} 首")
+            rep.append("   先同步再判用例(与 refresh.sh 同一步): "
+                       "cp jianpu-db/data.jsonl skills/jianpu-melody-lookup/data.jsonl")
+
     # ① 解析器口径: th10_06 音符数必须是 415(源谱音符数; 少一个数就是某一类 token 又被静默丢了)
     #    231 = 后缀时值(`6c.`/`5s`/`3q`)被丢; 377 = `c` 前缀时值(`c6.`/`c3`)又被旧白名单丢掉。
     th = [r for r in rows if r["file"][0] == "th10_06.txt"]
