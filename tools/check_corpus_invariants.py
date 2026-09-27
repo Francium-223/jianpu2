@@ -49,6 +49,8 @@ except Exception:                               # noqa: BLE001
 
 UUID = re.compile(r"^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$", re.I)
 SRC = re.compile(r"^[a-z0-9]+-\d+$")
+# `to_jianpu_db.source_of()` 兜底会认的站点 token(与那边的元组**必须同步**; 见下面 source 那一段)
+SITE_TOKENS = {"21qupu", "qpcxw", "qinyipu", "gita"}
 
 
 def main():
@@ -89,7 +91,19 @@ def main():
             fail("status 不在白名单", f, str(r.get("status")))
         s = ((r.get("source") or [""]) or [""])[0]
         if s and not SRC.match(s):
-            fail("source 形状不对", f, s)
+            # 少数目录名**没有** `__站点-id`(手工抓的 hot-crawl), 但"不能因此就不写来源" ——
+            # `tools/to_jianpu_db.py:source_of()` 有**故意的三级兜底**:
+            #   ① 目录里的 `_source.txt` 记的原页 URL -> 用它的 host
+            #   ② 在目录名里认已知站点 token(21qupu / qpcxw / qinyipu / gita)-> `source=<token>`
+            #   ③ 都没有 -> 老实写 `source=unknown`
+            # (那段注释自己写着"之前这样漏出 4 份无 source= 的谱"。)
+            # 所以这几个值**是设计**, 不是形状错误 —— 之前这里把它们当红报, 是假警报(2026-09-28)。
+            if s == "unknown":
+                note("source=unknown(兜底: 出处确实没记)", 1)
+            elif s in SITE_TOKENS:
+                note("source=<站点 token>(兜底: 只有站名没有页面 id)", 1)
+            else:
+                fail("source 形状不对", f, s)
         mb = (r.get("MBID") or "").strip()
         if mb and not UUID.match(mb):
             fail("MBID 不是 UUID", f, mb)
