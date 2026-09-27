@@ -179,4 +179,12 @@ def recover_bars(sections, beats_per_bar, keep_explicit=True):
             if acc >= beats_per_bar - 1e-9:
                 bars.append(n)
                 acc = 0.0
-    return bars
+    # ⚠ 2026-09-28: **去掉相邻重复**。休止/念白占拍但不推进 n, 所以当"一串休止跨过整小节"时,
+    #   同一个音下标会被落两次线 —— 实测 101.txt 得到 [1,3,6,7,7,8,8,…](语料里 3044 首有这种
+    #   重复), 前端会把它渲染成一个**空小节**。"第 i 个音符之前有两条线"没有意义, 去重是对的。
+    #   (开头的 0 **保留**: 它表示"第一小节整小节是休止", 显示出来是有信息的。)
+    out = []
+    for b in bars:
+        if not out or out[-1] != b:
+            out.append(b)
+    return out
