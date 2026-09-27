@@ -1112,6 +1112,7 @@ def mbid_only_run(out_dir, args):
     start_progress_reporter()
     rows = []
     files = []
+    skipped_rec = 0        # 只找到 recording、换不到 work 的(按口径不写)
     for name in sorted(os.listdir(out_dir)):
         if name.endswith(".txt"):
             files.append(os.path.join(out_dir, name))
@@ -1144,6 +1145,14 @@ def mbid_only_run(out_dir, args):
             if m:
                 title = m.group(1).strip()
             artist = artist_map.get(title, "")
+            if not artist:
+                # ⚠ 2026-09-28: 原来**只**看 artist_map, 于是给语料里那些本来就写着 `artist=` 的谱补 MBID 时
+                #   歌手证据全丢 -> 置信度被降到 medium、还少了歌手过滤。
+                #   实测: `Honey Honey`(孙燕姿) 因此从 high+recording 掉成 work+medium, 匹配到的是同名的另一首。
+                #   这里读文件里的 `artist=` 兜底, 口径与 propose_mbid.py 一致(取**第一个**歌手)。
+                _ma = re.search(r"(?m)^artist=(.*)$", text)
+                if _ma and _ma.group(1).strip():
+                    artist = _ma.group(1).split(",")[0].strip()
             # 清理 alias 残留 &nbsp;
             text = re.sub(r"(?m)^(alias=.*?)&nbsp;+", r"\1", text)
             mbid, kind, conf, matched = "", None, None, None
@@ -1160,7 +1169,7 @@ def mbid_only_run(out_dir, args):
                     kind = mtype or "work"
             elif title:
                 mbid, kind, conf, matched = musicbrainz_lookup(title, artist)
-            if mbid and conf != "已有":
+            if mbid and conf != "已有" and kind != "recording":
                 if re.search(r"(?m)^MBID=", text):
                     text = re.sub(r"(?m)^MBID=.*$", f"MBID={mbid}", text, count=1)
                 else:
@@ -1169,10 +1178,19 @@ def mbid_only_run(out_dir, args):
                     pos = idx if idx >= 0 else 0
                     text = text[:pos] + f"MBID={mbid}\n" + text[pos:]
                 open(path, "w", encoding="utf-8").write(text)
+            elif mbid and kind == "recording":
+                # ⚠ 2026-09-28: 库里 MBID 的约定是 **work**(语料 36 条逐个问 /work/<id> 全部 200,
+                #   当作 recording 问一律 404;前端链接写死 /work/<mbid>)。`musicbrainz_lookup` 已经
+                #   尽量把 recording 换成它演奏的 work, **换不到**的那些(实测占 79%)就是没有 work 实体 ——
+                #   写进去只会生成 `/work/<recording-id>` 的死链, 所以这里**不写**。
+                skipped_rec += 1
+                print(f"[跳] {os.path.basename(path)} 只找到 recording({mbid[:8]})、换不到 work -> 不写")
             rows.append([os.path.basename(path), title, artist, mbid or "",
                          "recording" if kind == "recording" else "work",
                          conf or "", json.dumps(matched, ensure_ascii=False) if matched else ""])
-            print(f"[{'已有' if conf == '已有' else '填' if mbid else '缺'}] {os.path.basename(path)}  conf={conf or '-'}")
+            _lab = ("已有" if conf == "已有"
+                    else "跳" if (mbid and kind == "recording") else "填" if mbid else "缺")
+            print(f"[{_lab}] {os.path.basename(path)}  conf={conf or '-'}")
             if not mbid:
                 time.sleep(1.1)  # MusicBrainz 限速
     finally:
@@ -1181,8 +1199,13 @@ def mbid_only_run(out_dir, args):
         w = csv.writer(f)
         w.writerow(["song", "title", "artist", "mbid", "type", "confidence", "matched"])
         w.writerows(rows)
-    filled = sum(1 for r in rows if r[3])
+    # ⚠ 只数**真写进去**的: 只找到 recording 的那些在 CSV 里 mbid 列非空(留给人复核), 但**没写文件**,
+    #   所以这里要把 type=recording 的排除掉, 否则摘要会谎报"已填 N 首"(2026-09-28 实测踩到)。
+    filled = sum(1 for r in rows if r[3] and r[4] != "recording")
     print(f"MBID 补录完成: {filled}/{len(rows)} 已填, 其余见 mbid_review.csv")
+    if skipped_rec:
+        print(f"  (另有 {skipped_rec} 首只找到 recording、换不到 work —— **按口径没写**, "
+              f"见 mbid_review.csv 里 type=recording 的行)")
 
 
 def main():
