@@ -78,6 +78,11 @@ if writers():
 
 # 验证: data.jsonl 的 note 数与 scores/<file> 原文一致
 TOK = re.compile(r"^[,']*[qsdh]*[,']*[0-9x]")
+# ⚠ 拍号那一行(独立成行的 `4/4`)**必须排掉**: `TOK` 会把它的 "4" 当成音符 -> 文件比 jsonl 永远多 1。
+#   实测 2026-09-28: 抽查 10 首**全部**报 `文件 N vs jsonl N-1`, 整齐的差 1 就是这个原因
+#   (jsonl 里拍号是**独立字段** `beats_per_bar`, 不在 `score` 里)。
+#   验证: `就这样.txt` 是 178, 排掉 `4/4` 后 177 == jsonl 的 177 ✓。
+TS_LINE = re.compile(r"^\d+/\d+$")
 rows = [json.loads(l) for l in io.open(os.path.join(DB, "data.jsonl"), encoding="utf-8") if l.strip()]
 bad = 0
 for row in random.Random(7).sample(rows, 10):
@@ -85,7 +90,7 @@ for row in random.Random(7).sample(rows, 10):
     if not os.path.exists(f):
         bad += 1; continue
     raw = io.open(f, encoding="utf-8", errors="replace").read()
-    n1 = len([t for t in raw.split() if TOK.match(t)])
+    n1 = len([t for t in raw.split() if TOK.match(t) and not TS_LINE.match(t)])
     n2 = len([t for t in (row.get("score") or "").replace(" | ", " ").split() if TOK.match(t)])
     if n1 != n2:
         bad += 1
