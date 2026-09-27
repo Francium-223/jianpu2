@@ -30,6 +30,41 @@ MODEL_DIRS = [os.path.join(ROOT, "models"), os.path.join(WS, "models")]
 ok = warn = miss = 0
 
 
+def _total_mem_gb():
+    """物理内存(GB) —— 跨平台。判不出来返回 None。
+
+    为什么写这么啰嗦: 原来用的是 `os.sysconf("SC_PAGE_SIZE") * os.sysconf("SC_PHYS_PAGES")`,
+    那是 **Unix 专有**的; Windows 上 `os` 没有 `sysconf`, 本工具会直接
+    `AttributeError: module 'os' has no attribute 'sysconf'` 崩掉 —— 而它正是"跑转写前先看
+    环境就绪"的那个工具, 越是在 Windows 上越需要它能跑(2026-09-28 冒烟自检抓到)。
+    """
+    try:
+        import psutil                                   # 最省事, 装了就用
+        return psutil.virtual_memory().total / 2 ** 30
+    except Exception:
+        pass
+    if os.name == "nt":                                 # Windows: 问内核
+        try:
+            import ctypes
+
+            class _MS(ctypes.Structure):
+                _fields_ = [("dwLength", ctypes.c_ulong), ("dwMemoryLoad", ctypes.c_ulong),
+                            ("ullTotalPhys", ctypes.c_ulonglong), ("ullAvailPhys", ctypes.c_ulonglong),
+                            ("ullTotalPageFile", ctypes.c_ulonglong), ("ullAvailPageFile", ctypes.c_ulonglong),
+                            ("ullTotalVirtual", ctypes.c_ulonglong), ("ullAvailVirtual", ctypes.c_ulonglong),
+                            ("ullAvailExtendedVirtual", ctypes.c_ulonglong)]
+            st = _MS()
+            st.dwLength = ctypes.sizeof(_MS)
+            if ctypes.windll.kernel32.GlobalMemoryStatusEx(ctypes.byref(st)):
+                return st.ullTotalPhys / 2 ** 30
+        except Exception:
+            pass
+    try:                                                # Linux/macOS
+        return os.sysconf("SC_PAGE_SIZE") * os.sysconf("SC_PHYS_PAGES") / 2 ** 30
+    except Exception:
+        return None
+
+
 def line(sym, what, detail=""):
     global ok, warn, miss
     ok += sym == "✓"
@@ -101,10 +136,17 @@ def main():
         except Exception as e:
             line("!", "CUDA", f"判断失败: {e}")
     else:
-        line("!", "CUDA", "没装 torch，无法判断（本机是核显 + Radeon，基本可认为无 CUDA）")
-    mem = os.sysconf("SC_PAGE_SIZE") * os.sysconf("SC_PHYS_PAGES") / 2**30
+        line("!", "CUDA", "没装 torch，无法判断（装了 torch 再来看这一行）")
+    # ⚠ 2026-09-28 修: 原来是 `os.sysconf("SC_PAGE_SIZE") * os.sysconf("SC_PHYS_PAGES")`
+    #   —— **Unix 专有**, Windows 上 `os` 根本没有 `sysconf`, 于是本工具直接
+    #   `AttributeError: module 'os' has no attribute 'sysconf'` 崩掉(冒烟自检抓到的)。
+    #   改成跨平台: psutil(有就用) -> Windows ctypes -> os.sysconf(Linux/mac) -> 判不了就说判不了。
+    mem = _total_mem_gb()
     free = shutil.disk_usage(WS).free / 2**30
-    line("✓" if mem >= 8 else "!", "内存", f"{mem:.1f} GB（4bit 3B 建议 >=8GB；不足时靠 swap，会非常慢）")
+    if mem is None:
+        line("!", "内存", "判不出来（没装 psutil 且本平台没有 sysconf）；4bit 3B 建议 >=8GB")
+    else:
+        line("✓" if mem >= 8 else "!", "内存", f"{mem:.1f} GB（4bit 3B 建议 >=8GB；不足时靠 swap，会非常慢）")
     line("✓" if free >= 20 else "!", "磁盘余量", f"{free:.0f} GB 可用（基座约 7GB + 缓存）")
 
     print(f"\n小结: 就绪 {ok} 项 / 需注意 {warn} 项 / **缺 {miss} 项**")
