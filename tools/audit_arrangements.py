@@ -59,18 +59,21 @@ def main():
         sp = json.load(io.open(p, encoding="utf-8"))
 
     # 图在哪: images-prep 里按 `<名字>__<site>-<id>` 找(嵌在分类子目录下)
+    # ⚠ 2026-09-28 修: 原来这里用 `WS`(= <工作区>, 即 jianpu2 的上一级) 去找 `images-prep`,
+    #   而 images-prep 其实在 **jianpu2/** 下面 —— 于是每条都 glob 不到, 统计里一律记成"没图",
+    #   把"能不能重转写"这个关键结论整体判反了(实测抽 60 条, 60/60 都有图)。
+    PREP = os.path.join(ROOT, "images-prep")
     out, stat = [], collections.Counter()
     for r in arr:
         d = r["dir"]
         m = ID_RE.search(d)
         sid = m.group(1) if m else ""
-        hits = glob.glob(os.path.join(WS, "images-prep", "*", d)) or \
-            glob.glob(os.path.join(WS, "images-prep", d))
+        hits = glob.glob(os.path.join(PREP, "*", d)) or glob.glob(os.path.join(PREP, d))
         stat["有图" if hits else "没图"] += 1
         stat["语料已有该 source" if sid and sid in srcs else "语料里是新曲"] += 1
         if sid in sp:
             stat["有核对过的原谱页"] += 1
-        out.append((d, hits[0].replace(WS + "/", "") if hits else "",
+        out.append((d, os.path.relpath(hits[0], WS).replace(os.sep, "/") if hits else "",
                     sid, "1" if sid in srcs else "0",
                     r.get("nline", ""), r.get("staff", ""), sp.get(sid, {}).get("url", "")))
 
@@ -85,7 +88,31 @@ def main():
     print()
     print("结论口径: 『有图 + 语料里是新曲』的那批才是『放宽口径』能净增的曲;")
     print("          『语料已有该 source』的收了只是多一个版本(可用于替换更差的版本)。")
-    print("重转写需要视觉模型(Ollama + qwen2.5vl, 见锦囊 §4), 本机没装。")
+    print("重转写需要视觉模型, 现在:%s" % vision_ready())
+
+
+def vision_ready():
+    """本机**现在**能不能跑视觉转写 —— 实测, 不要写死结论。
+
+    原来这里硬编码打印"本机没装"。2026-09-28 实测: 本机装了 ollama(在 PATH), 服务 11434 返回 200,
+    并且已经拉过 `qwen2.5vl:7b` / `qwen2.5vl:3b`。一句写死的判断会让人以为这条路走不通,
+    从而放弃本来能做的重转写 —— 所以改成现查现报。
+    """
+    import json as _json
+    import shutil
+    import urllib.request
+    if not shutil.which("ollama"):
+        return "ollama 不在 PATH(装了的话把它加进 PATH)"
+    try:
+        with urllib.request.urlopen("http://127.0.0.1:11434/api/tags", timeout=3) as r:
+            tags = _json.loads(r.read().decode("utf-8", "replace"))
+    except Exception as e:                                        # noqa: BLE001
+        return "ollama 服务连不上(127.0.0.1:11434: %s)" % type(e).__name__
+    names = [m.get("name", "") for m in tags.get("models", [])]
+    vis = [n for n in names if "vl" in n.lower() or "vision" in n.lower()]
+    if not vis:
+        return "ollama 在, 但没拉视觉模型(需要 qwen2.5vl:7b 之类)"
+    return "可用 -> %s (共 %d 个模型)" % (", ".join(vis[:3]), len(names))
 
 
 if __name__ == "__main__":

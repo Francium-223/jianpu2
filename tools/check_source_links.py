@@ -10,8 +10,8 @@
   * 失败时再试一把 `http://`（qupu123 的 http 端点是坏的: 同路径 http 404 / https 200）
 
 用法:
-    python3 tools/check_source_links.py --out /tmp/links.tsv
-    python3 tools/check_source_links.py --out /tmp/x.tsv --limit 50 --workers 6
+    python3 tools/check_source_links.py                    # 默认写到工作台 _analysis/source_links.tsv
+    python3 tools/check_source_links.py --out x.tsv --limit 50 --workers 6
 """
 import argparse
 import collections
@@ -32,6 +32,7 @@ ROOT = os.path.dirname(HERE)
 WS = os.path.dirname(ROOT)
 sys.path.insert(0, HERE)
 import tlsfetch                                              # noqa: E402
+from safeout import default_out                              # noqa: E402
 
 DB = os.environ.get("JIANPU_DB") or os.path.join(WS, "jianpu-db")
 UA = "Mozilla/5.0 (X11; Linux x86_64) jianpu-corpus-link-check/1.0"
@@ -87,7 +88,9 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--pages", default=os.path.join(DB, "source_pages.json"))
     ap.add_argument("--data", default=os.path.join(DB, "data.jsonl"))
-    ap.add_argument("--out", default="/tmp/source_links.tsv")
+    # 默认输出: 走 safeout -> 真工作区写 `_analysis/source_links.tsv`(隔离副本则写进那个 DB 目录),
+    # 绝不再写死 `/tmp/...` —— 那是 Unix 路径, 在 Windows 上会 FileNotFoundError 直接崩掉。
+    ap.add_argument("--out", default=default_out(DB, "source_links.tsv"))
     ap.add_argument("--workers", type=int, default=6)
     ap.add_argument("--interval", type=float, default=0.25)
     ap.add_argument("--limit", type=int, default=0)
@@ -113,6 +116,7 @@ def main():
 
     rows, stat = [], collections.Counter()
     t0 = time.time()
+    os.makedirs(os.path.dirname(os.path.abspath(a.out)), exist_ok=True)   # 目录不存在就直接建, 别等报错
     g = io.open(a.out, "w", encoding="utf-8", newline="\n")
     g.write("source\tsite\t判定\thttp\t备注\t最终地址\t原URL\t页面标题\t语料曲名\n")
     g.flush()

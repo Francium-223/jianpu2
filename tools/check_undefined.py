@@ -71,12 +71,17 @@ def main():
     if args:
         files = args
     else:
+        # 站点仓库: 2026-09-25 起是 jianpu-db.github.io; 旧 jianpu-web 仍在时也一起扫(过渡期两边都要干净)
+        ws = os.path.dirname(ROOT)
+        site = [os.path.join(ws, n) for n in ("jianpu-db.github.io", "jianpu-web")
+                if os.path.isdir(os.path.join(ws, n))]
         patterns = [os.path.join(HERE, "*.py"),                     # jianpu2/tools
                     os.path.join(DB, "*.py"),                       # jianpu-db
                     os.path.join(ROOT, "skills", "*", "*.py"),      # skill: jptok/lookup/eval_*
-                    os.path.join(ROOT, "skills", "*", "selfcheck", "*.py"),
-                    os.path.join(os.path.dirname(ROOT), "jianpu-web", "app", "*.py"),
-                    os.path.join(os.path.dirname(ROOT), "jianpu-web", "tools", "*.py")]
+                    os.path.join(ROOT, "skills", "*", "selfcheck", "*.py")]
+        for sd in site:
+            patterns += [os.path.join(sd, "app", "*.py"),
+                         os.path.join(sd, "tools", "*.py")]
         files = sorted({f for pat in patterns for f in glob.glob(pat)})
     bad = 0
     skipped = 0

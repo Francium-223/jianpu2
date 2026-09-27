@@ -60,6 +60,28 @@ SITE_WORDS = ("简谱", "歌谱", "曲谱", "歌曲类", "五线谱", "钢琴谱
               # `电视连续剧 片尾主题歌` 当成人名收下。
               "电视连续剧", "电视剧", "电视", "连续剧", "电影", "纪录片", "片头", "片尾",
               "主题歌", "主题曲", "插曲", "宣传曲", "推广曲", "片尾曲", "片头曲", "组曲")
+# 2026-09-28: **版本/版面标签**。STOP 是个精确匹配集合, 挡不住 `赵一民版`/`双吉他版` 这种
+# "人名/乐器 + 版"的组合, 也挡不住 `认证谱`/`彩谱版`/`版本二`/`两版本`。
+# 实测(本机全量 harvest 的提案里): 这些词会作为"歌手"漏出来 —— 一旦落盘就是把
+# `认证谱`/`版本二` 写成语料的 artist=。改成正则整体挡住。
+VERSION_LABEL = re.compile(
+    r"版$|谱$|版本|彩谱|认证|修正|高清|手写|珍藏|完美|完整|简化|双吉他|两版本|原版|超清|清晰|扫描")
+# 前缀版别词: `修正版 齐豫` 这种"版别 + 真人名"要**剥掉前缀再判**, 而不是整条丢掉。
+LEADING_LABEL = re.compile(
+    r"^(?:修正版|彩谱版?|认证谱|高清版?|手写版?|珍藏版?|完美版?|完整版?|简化版?|原版|"
+    r"版本[一二三四五六七八九十\d]*|双吉他版?)\s+")
+# `乐器/形式 — 歌手`: 页面标题常见 `喜欢你 吉他 — Beyond 歌谱简谱网`, 锚点法会把
+# `吉他 — Beyond` 整段当歌手(2026-09-28 实测)。剥掉前面的乐器/形式词再判。
+LEADING_INSTR = re.compile(
+    r"^(?:双?吉他|钢琴|电子琴|键盘|尤克里里|乌克丽丽|古筝|琵琶|二胡|笛子?|葫芦丝|萨克斯|"
+    r"小提琴|大提琴|手风琴|口琴|架子鼓|鼓|贝斯|bass|伴奏|弹唱|指弹|独奏|合奏|齐奏|独唱|合唱|"
+    r"乐器谱?|简谱|歌谱|曲谱|五线谱|原谱)\s*[\s—\-–~－、,，:：]+\s*")
+# 注: 分隔符里**含空白** —— 实测 `乐器谱 刀郎` 是用空格分的, 只认破折号会漏掉它。
+# 之所以安全: 必须"乐器/形式词 + 分隔符"同时命中才剥, 而人名不会以这些词开头。
+# 纯角色词(不是人名): 实测 `bass` 这种"乐器/声部"会被当歌手抽出来。
+ROLE_WORDS = {"bass", "guitar", "piano", "drum", "drums", "vocal", "vocals", "voice",
+              "strings", "synth", "keyboard", "midi", "mix", "arrange", "arranger",
+              "unknown", "various", "traditional", "instrumental", "karaoke"}
 # 2026-09-25: **结构法退路的白名单**。
 # 为什么需要: 结构法(取标题最后一个词)会吐出 `are`/`Moon`/`男孩》` 这类英文碎片,
 # 以及 `五月天 倔强` 这种"歌手在前、歌名在后"的页面里把**歌名**当人名。
@@ -124,6 +146,8 @@ def page_title(html):
 def clean_name(s):
     s = re.sub(r"[（(【\[].*?[）)】\]]", " ", s or "")
     s = re.sub(r"\s+", " ", s).strip(" _-·—,，、;；:：/\\")
+    s = LEADING_LABEL.sub("", s).strip()      # `修正版 齐豫` -> `齐豫`(剥前缀, 别整条丢)
+    s = LEADING_INSTR.sub("", s).strip()      # `吉他 — Beyond` -> `Beyond`
     return s.strip()
 
 
@@ -132,9 +156,13 @@ def plausible(name, title):
         return False
     if name in STOP or name == title:
         return False
+    if name.strip().casefold() in ROLE_WORDS:  # `bass` 这种角色词不是人名
+        return False
     if re.search(r"[0-9=（）()【】\[\]]", name):
         return False
     if any(w in name for w in SITE_WORDS):
+        return False
+    if VERSION_LABEL.search(name):            # 版本/版面词不是人名(见 VERSION_LABEL 注释)
         return False
     return bool(re.search(r"[\u4e00-\u9fa5A-Za-z]", name))
 
@@ -157,6 +185,12 @@ def artist_from_jianpucn(ptitle, title):
     现在: 锚点法失败时**退到结构法** —— 去掉站点尾巴后取最后一个词, 交给 `plausible()` 过滤。
     已知不够好的情形: `在那桃花盛开的地方(京剧版) — 霍尊 蒋大为` 有两个歌手, 取到最后一个(蒋大为);
     这类靠下游 `set_artists.py` 的"已有 artist= 就不动"兜住。
+
+    ⚠ 2026-09-28 已知假阳性(名字形状上无法与"歌手组合"区分, 只能事后人工看):
+      `南屏晚钟 合唱简谱 陈蝶衣 王福龄 歌谱简谱网` —— 页面把**词曲署名**放在曲名之后,
+      于是抽出 `陈蝶衣 王福龄`(词作者 + 曲作者), 而这首歌的演唱者是别人。
+      同类还有 `朱 海 词 子 山 曲 弦声编配`(带"词/曲/编配"字样, 已被过滤)。
+      纯名字组合(如真正的双人对唱)看起来一模一样, 自动判不了 —— 实测 1332 条里就这 1 例。
     """
     t = SITE_SUFFIX.sub("", ptitle).strip()
     if title and title in t:
@@ -235,11 +269,13 @@ def main():
         cache = json.load(open(cpath, encoding="utf-8"))
     if a.reparse:
         # 不联网: 用缓存里的 page_title 重跑抽取规则(改了规则时用), 顺便把旧的错误值清掉
+        # ⚠ 2026-09-28: **不要清 category** —— 分类是从 jianpujia 的 HTML 里抽的(见
+        #   category_from_jianpujia), 而缓存里只存了 page_title、没存 HTML;
+        #   清掉就再也算不回来(实测: 一次 --reparse 把 302 条分类全丢了)。改造 artist 就够了。
         n = 0
         for rec in cache.values():
             pt = rec.get("page_title") or ""
             rec["artist"] = ""
-            rec["category"] = ""
             if pt:
                 cand = (artist_from_jianpucn(pt, rec.get("title", ""))
                         if rec.get("site") == "jianpucn" else artist_from_jianpujia(pt))
@@ -247,7 +283,7 @@ def main():
                     rec["artist"] = cand
                     n += 1
         json.dump(cache, open(cpath, "w", encoding="utf-8"), ensure_ascii=False)
-        print("离线重解析完成: %d 条缓存, 抽到歌手 %d 个" % (len(cache), n))
+        print("离线重解析完成: %d 条缓存, 抽到歌手 %d 个(分类保持原样)" % (len(cache), n))
         if not a.apply:
             return 0
     todo = []
@@ -324,19 +360,32 @@ def main():
 
     if a.apply:
         sys.path.insert(0, HERE)
-        from propose_tags import add_tag           # 同一份"写进曲谱"的实现, 不复制
-        n_add = n_ex = 0
-        for fn, _t, _s, _site, artist, cat, _pt in rows:
-            if not fn:
+        from propose_tags import add_tag           # 同一份"写 usertag"的实现, 不复制
+        n_add = n_ex = n_skip = 0
+        for fn, _t, _s, _site, _artist, cat, _pt in rows:
+            if not fn or not cat:
                 continue
-            for tag in [x for x in (artist, cat) if x]:
-                try:
-                    r = add_tag(os.path.join(SCORES, fn), tag, clear_todo=tag.startswith('分类/'))
-                    n_add += (r == "added")
-                    n_ex += (r == "exists")
-                except Exception as e:
-                    print("  ! %s: %s" % (fn, e))
-        print("已写入 %d 条标签(已存在 %d 条)。记得跑 parse_scores.py 重建索引。" % (n_add, n_ex))
+            path = os.path.join(SCORES, fn)
+            if not os.path.isfile(path):
+                continue
+            # ⚠ 2026-09-28 两处改正:
+            #   ① **只写分类, 不写歌手**。`artist=` 由 `set_artists.py` 独家负责 —— 它的过滤器更严
+            #      (实测它会把 `朱 海 词 子 山 曲 弦声编配`、`知道不知道陕北民歌 梦之旅` 这类
+            #      **署名行/拼起来的标题**挡掉, 而本脚本曾把 6 条这种当歌手写进 `artist=`)。
+            #      两个写手各写一部分 = 迟早分叉; 现在这里只写标签。
+            #   ② 分类要加 `分类/` 前缀。语料里的约定是 `分类/儿歌`(带命名空间), 而
+            #      `category_from_jianpujia()` 返回的是**裸词** `儿歌`; 直接写会得到
+            #      `usertag=分类/儿歌,儿歌` —— 同一件事两个标签, by_tag 里还会多出一份。
+            tag = cat if cat.startswith('分类/') else '分类/' + cat
+            try:
+                r = add_tag(path, tag, clear_todo=True)
+                n_add += (r == "added")
+                n_ex += (r == "exists")
+            except Exception as e:                 # noqa: BLE001
+                print("  ! tag %s: %s" % (fn, e))
+        print("已写分类标签 %d 条(已存在 %d 条)。歌手请用 set_artists.py --apply(它只补缺失)。"
+              % (n_add, n_ex))
+        print("记得跑 parse_scores.py 重建索引。")
     return 0
 
 

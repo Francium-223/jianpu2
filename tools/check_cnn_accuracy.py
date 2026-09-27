@@ -26,6 +26,7 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(HERE)                       # jianpu2
 WS = os.path.dirname(ROOT)
 sys.path.insert(0, HERE)
+from jp_root import images_root
 sys.path.insert(0, os.path.join(ROOT, "skills", "jianpu-melody-lookup"))
 
 import infer_multitask as Q                        # noqa: E402
@@ -66,7 +67,7 @@ def samples(db, img_root):
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--db", default=os.path.join(WS, "jianpu-db"))
-    ap.add_argument("--images", default=os.path.join(WS, "images-prep"))
+    ap.add_argument("--images", default=images_root())
     ap.add_argument("-n", type=int, default=int(os.environ.get("N", "8")))
     a = ap.parse_args()
     sys.stdout.reconfigure(encoding="utf-8", line_buffering=True)

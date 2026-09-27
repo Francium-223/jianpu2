@@ -20,6 +20,12 @@
 import io
 import json
 import os
+
+HERE = os.path.dirname(os.path.abspath(__file__))
+sys_path_tools = os.path.dirname(HERE)
+if sys_path_tools not in __import__('sys').path:
+    __import__('sys').path.insert(0, sys_path_tools)
+from jp_root import images_root
 import re
 import sys
 import time
@@ -29,7 +35,7 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(HERE)                        # jianpu2
 WS = os.path.dirname(ROOT)                          # 工作区
 DB = os.environ.get("JIANPU_DB") or os.path.join(WS, "jianpu-db")
-IMG_ROOT = os.environ.get("JIANPU_IMAGES") or os.path.join(WS, "images-prep")
+IMG_ROOT = images_root()
 OUT = os.path.join(IMG_ROOT, "jianpucn-pop")
 STATE = os.path.join(WS, "_analysis", "crawl_state_jianpucn.json")
 UA = "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"

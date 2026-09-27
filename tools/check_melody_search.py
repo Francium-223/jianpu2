@@ -42,7 +42,10 @@ def main():
     ok(all(r["digits"] for r in rows), "每首都解出了数字串")
     total = sum(len(r["digits"]) for r in rows)
     print("   解出音符总数: %d" % total)
-    stats = os.path.join(WS, "jianpu-web", "data", "stats.json")
+    # 前端索引 stats.json: 站点 2026-09-25 搬到 jianpu-db.github.io, 旧 jianpu-web 已被取代
+    stats = next((os.path.join(WS, n, "data", "stats.json")
+                  for n in ("jianpu-db.github.io", "jianpu-web")
+                  if os.path.isfile(os.path.join(WS, n, "data", "stats.json"))), None)
     if os.path.isfile(stats):
         want = json.load(io.open(stats, encoding="utf-8")).get("notes")
         ok(total == want, "与前端索引 stats.notes 一致(%s == %s) —— token 口径=jptok" % (total, want))

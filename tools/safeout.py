@@ -23,7 +23,12 @@ def is_canonical_db(db_dir):
     if os.path.basename(d) != "jianpu-db":
         return False
     parent = os.path.dirname(d)
-    return all(os.path.isdir(os.path.join(parent, x)) for x in ("jianpu2", "jianpu-web"))
+    # 站点仓库 2026-09-25 起搬到 `jianpu-db.github.io`(组织站), 旧的 `jianpu-web` 已被取代。
+    # **两个都认**: 不然清理掉旧目录后, 所有用 safeout 的工具都会判成"不是真工作区",
+    # 于是把提案写进语料库本身 —— 正是本文件头部那个事故的翻版。
+    return (os.path.isdir(os.path.join(parent, "jianpu2"))
+            and any(os.path.isdir(os.path.join(parent, x))
+                    for x in ("jianpu-web", "jianpu-db.github.io")))
 
 
 def default_out(db_dir, name):

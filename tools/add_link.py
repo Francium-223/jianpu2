@@ -84,8 +84,22 @@ def show(fname):
             print(f"   原谱站  {got['url']}   (已核对: {got.get('via')} · {got.get('t','')[:40]})")
 
 
+def site_repo():
+    """前端仓库在哪 —— 2026-09-25 起站点搬到了组织站 `jianpu-db.github.io`, 旧的 `jianpu-web` 已被取代。
+
+    找不到新仓库才退回旧的。**必须优先新仓库**: 否则 link= 落地后重建的是那份**过时的**索引,
+    线上站点看不到任何变化(自检还会因为"改完没生效"徒增困惑)。
+    """
+    ws = os.path.dirname(ROOT)
+    for name in ("jianpu-db.github.io", "jianpu-web"):
+        d = os.path.join(ws, name)
+        if os.path.isfile(os.path.join(d, "tools", "build_web_data.py")):
+            return d
+    return os.path.join(ws, "jianpu-web")
+
+
 def refresh():
-    web = os.path.join(os.path.dirname(ROOT), "jianpu-web")
+    web = site_repo()
     print("重算索引 (parse_scores.py)…")
     r = subprocess.run([sys.executable, "parse_scores.py"], cwd=DB)
     if r.returncode:
@@ -98,7 +112,7 @@ def refresh():
         print("已同步 skill 的 data.jsonl")
     build = os.path.join(web, "tools", "build_web_data.py")
     if os.path.isfile(build):
-        print("重建前端索引 (build_web_data.py)…")
+        print("重建前端索引 (%s/tools/build_web_data.py)…" % os.path.basename(web))
         subprocess.run([sys.executable, build, "--data", src, "--out", os.path.join(web, "data")])
     return 0
 

@@ -25,6 +25,7 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(HERE)                      # jianpu2/
 WS = os.path.dirname(ROOT)                        # 工作区
 sys.path.insert(0, HERE)
+from jp_root import images_root
 import tlsfetch                                   # noqa: E402  取页 + 证书过期兜底
 
 # `--help` 保护: 本文件是**模块级脚本**, 没有 argparse —— 不拦的话 `--help` 会被当成
@@ -43,7 +44,7 @@ PAREN = re.compile(r"[（(【\[][^)）】\]]*[)）】\]]|[（(【\[].*$")   # `�
 CATS = ["erzigepu", "sanzigepu", "sizigepu", "wuzigepu", "liuzigepu",
         "qizigepu", "bazigepu", "jiuzigepu", "shizijiyishang"]
 # 图库统一落工作区 `images-prep/`(JIANPU_IMAGES 可覆盖), 不再写相对路径靠 cwd 对上
-IMG_ROOT = os.environ.get("JIANPU_IMAGES") or os.path.join(WS, "images-prep")
+IMG_ROOT = images_root()
 OUT = os.path.join(IMG_ROOT, "jianpucn-title")
 SCANLOG = os.path.join(ROOT, "train-work", "jianpucn_title_scan.tsv")
 os.makedirs(OUT, exist_ok=True)

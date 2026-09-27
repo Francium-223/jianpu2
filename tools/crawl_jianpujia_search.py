@@ -34,11 +34,12 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(HERE)
 WS = os.path.dirname(ROOT)
 sys.path.insert(0, HERE)
+from jp_root import images_root
 import tlsfetch                                              # noqa: E402
 
 UA = ("Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 "
       "(KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36")
-IMG_ROOT = os.environ.get("JIANPU_IMAGES") or os.path.join(WS, "images-prep")
+IMG_ROOT = images_root()
 OUT = os.path.join(IMG_ROOT, "jianpujia-title")
 SCANLOG = os.path.join(ROOT, "train-work", "jianpujia_search_scan.tsv")
 ENT = re.compile(r"&[a-zA-Z]{2,8};|&#\d+;")

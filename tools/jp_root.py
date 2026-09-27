@@ -59,10 +59,26 @@ def path(key, default):
     v = cfg("paths", key, default=default)
     return v if os.path.isabs(v) else os.path.join(ROOT, v)
 
+
+def images_root():
+    """图库根目录 —— **唯一口径**。
+
+    优先级: 环境变量 `JIANPU_IMAGES` > `pipeline.toml` 的 `paths.images_dir` > `<仓库根>/images-prep`。
+
+    ⚠ 2026-09-28 修: 有 7 个脚本(爬虫/队列/体检)原来默认写
+    `os.path.join(WS, "images-prep")` —— `WS` 是**工作区**(= jianpu2 的上一级), 而图库一直在
+    `jianpu2/images-prep`。工作区里根本没有 `images-prep`, 所以那些脚本一旦跑起来会把新图
+    **散到仓库外面**去(或对着一堆不存在的目录空转)。实测: 工作区/images-prep 不存在,
+    jianpu2/images-prep 有 3.8 万个文件。以后只许从这里取。
+    """
+    return os.environ.get("JIANPU_IMAGES") or path("images_dir", "images-prep")
+
+
 if __name__ == "__main__":
     print(f"ROOT      = {ROOT}")
     print(f"TOOLS     = {TOOLS}")
     print(f"pipeline.toml = {'有' if os.path.exists(os.path.join(ROOT, 'pipeline.toml')) else '无(用默认值)'}")
+    print(f"images_root() = {images_root()}  ({'存在' if os.path.isdir(images_root()) else '**不存在**'})")
     for k, d in (("images_dir", "images-prep"), ("batch_out", "batch-out"),
                  ("scores_out", "jianpu-db-out/scores"), ("work_dir", "train-work")):
         print(f"  {k:12s} = {path(k, d)}")

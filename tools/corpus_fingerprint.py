@@ -134,6 +134,17 @@ def main():
                 # 键**少了/换了名字**才是写坏(如 todo= 被写成 dtodo=)。分开报, 别一律喊狼来了。
                 if set(o["keys"]) < set(w["keys"]):
                     keynew.append((n, [k for k in w["keys"] if k not in o["keys"]]))
+                elif (set(w["keys"]) < set(o["keys"])
+                      # ⚠ 2026-09-28: **"加了标签顺手清掉 `todo=add tags`"是设计如此**
+                      #   (`linkurl.add_usertag(clear_todo=True)` —— 那条 todo 的字面意思就是
+                      #   "该加标签了")。原来这种正常操作会撞进"键丢失"、报 `!! 几乎必然是写坏了`,
+                      #   实测一次 11 条分类标签就误报 1 次。误报会让人对报警麻木, 所以这里放行:
+                      #   只有消失的键**恰好是 todo**、且**值里出现了新标签**(usertag/tag 变了),
+                      #   才算预期内。
+                      and set(o["keys"]) - set(w["keys"]) == {"todo"}
+                      and (o["vals"].get("usertag") != w["vals"].get("usertag")
+                           or o["vals"].get("tag") != w["vals"].get("tag"))):
+                    keynew.append((n, ["(清掉了 todo, 因为加了标签)"]))
                 else:
                     keybad.append((n, o["keys"], w["keys"]))
             elif o["vals"] != w["vals"]:

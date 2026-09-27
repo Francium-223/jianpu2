@@ -24,6 +24,7 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(HERE)                       # jianpu2
 WS = os.path.dirname(ROOT)                         # 工作区
 sys.path.insert(0, HERE)
+from jp_root import images_root
 sys.path.insert(0, os.path.join(ROOT, "skills", "jianpu-melody-lookup"))
 from verify_crawl_matches import ARRANGE          # noqa: E402  同一份"改编"口径
 from eval_golden import norm                      # noqa: E402  同一份曲名口径
@@ -57,7 +58,7 @@ def parse_dir(name):
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--db", default=os.path.join(WS, "jianpu-db"))
-    ap.add_argument("--images", default=os.path.join(WS, "images-prep"))
+    ap.add_argument("--images", default=images_root())
     ap.add_argument("--dirs", nargs="*", default=[], help="只扫这些分类目录(默认扫 --images 下全部)")
     ap.add_argument("--out", default="", help="TSV 输出路径(默认只打摘要)")
     ap.add_argument("--with-images", action="store_true",

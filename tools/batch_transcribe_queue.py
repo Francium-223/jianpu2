@@ -22,6 +22,12 @@ import argparse
 import glob
 import io
 import os
+
+HERE = os.path.dirname(os.path.abspath(__file__))
+sys_path_tools = os.path.dirname(HERE)
+if sys_path_tools not in __import__('sys').path:
+    __import__('sys').path.insert(0, sys_path_tools)
+from jp_root import images_root
 import re
 import subprocess
 import sys
@@ -68,7 +74,7 @@ def existing_sources():
 
 def pages_of(row):
     d = row.get("目录", "")
-    root = os.path.join(WS, "images-prep")
+    root = images_root()
     # ⚠ 只 escape **目录名本身**, 不能把 `**` 也 escape 了(那样递归通配就失效, 一个都找不到 —— 实测踩过)。
     #   目录名里有 `【】[]《》` 这类字符, 不 escape 也会匹配错。
     found = [x for x in glob.glob(os.path.join(root, "**", glob.escape(d)), recursive=True)
