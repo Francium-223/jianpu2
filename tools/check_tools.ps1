@@ -54,7 +54,10 @@ foreach ($n in ($names | Sort-Object)) {
     #   "用 --help 探测工具链"这个做法本身就是**有副作用**的, 只能对声明支持它的工具用。
     $src = Get-Content -LiteralPath $path -Raw -Encoding UTF8
     $dq = [char]34
-    $declaresHelp = ($src -match 'argparse') -or ($src.Contains("'--help'")) -or ($src.Contains($dq + '--help' + $dq))
+    # 声明了"只读入口"的三种写法都算: argparse / 自己的 --help 判断 / 统一的 guard_help(__doc__)
+    # (2026-09-28 起 497 个工具都接了 guard.py, 所以现在几乎不会再跳过。)
+    $declaresHelp = ($src -match 'argparse') -or ($src.Contains("'--help'")) -or
+        ($src.Contains($dq + '--help' + $dq)) -or ($src -match 'guard_help\(')
     if (-not $declaresHelp) {
         $skipped += $n
         continue
