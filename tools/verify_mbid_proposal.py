@@ -50,7 +50,7 @@ def main():
     if not highs:
         sys.exit("缓存里还没有 high 档（先跑 propose_mbid.py）")
     print("核对 %d 条 high 档(每条 2 次请求, 间隔 1.1s)\n" % len(highs))
-    good = bad = 0
+    good = bad = n_variant = 0
     for k, v in highs:
         kind = v.get("kind") or "work"
         mbid = v["mbid"]
@@ -63,7 +63,17 @@ def main():
             time.sleep(1.1)
             continue
         mt = ent.get("title", "")
-        ok_title = norm(mt) == norm(v["title"])
+        # ⚠ 2026-09-28: 不能只比"完全相等"。语料里大量标题是**简体**, 而 MusicBrainz 那条是**繁体**
+        #   (`再見理想` vs `再见理想`、`單行的軌道` vs `单行的轨道`、`一個都不能少` vs `一个都不能少`),
+        #   只比相等会把 95/150 判成"标题对不上", 其实全是同一首 —— 我差点被自己这个数字带偏。
+        #   改用 `musicbrainz_lookup.title_ok()` 的**同一个口径**: 完全相等算一致; 否则字符重合度
+        #   >= 0.5 算"繁简/异体"。(仓库里没有简繁转换表, 检索那边一直就是这么兜的 —— 口径必须一致。)
+        _a, _b = norm(mt), norm(v["title"])
+        if _a == _b:
+            ok_title, variant = True, ""
+        else:
+            _ov = len(set(_a) & set(_b)) / max(len(_a), len(_b), 1)
+            ok_title, variant = (_ov >= 0.5), ("繁简/异体" if _ov >= 0.5 else "")
         arts = []
         for r in (ent.get("relations") or []):
             a = (r.get("artist") or {}).get("name")
@@ -90,7 +100,13 @@ def main():
             except Exception:
                 pass
         verified = ok_title and (v.get("artist") and any(norm(v["artist"]) in norm(a) or norm(a) in norm(v["artist"]) for a in arts if a))
-        tag = "✓" if verified else ("? 标题一致但署名里没我们的歌手" if ok_title else "✗ 标题对不上")
+        if ok_title and variant:
+            n_variant += 1
+        _tok = "完全一致" if not variant else variant
+        # 保留"标题对得上、但署名里没有我们那个歌手"这一档: 对 **work** 来说这**不是错**
+        # (work 认的是作品, 本库那首常常是翻唱; 例 `西海情歌` 的 work 署名是刀郎, 我们这首是降央卓玛)。
+        tag = ("✓ " + _tok if verified else
+               ("? 标题一致(%s)但署名里没我们的歌手" % _tok if ok_title else "✗ 标题对不上"))
         if ok_title:
             good += 1
         else:
@@ -98,7 +114,8 @@ def main():
         print("  %-34s %-10s MB: %s | 署名: %s"
               % ("%s（%s）" % (v["title"][:24], v["artist"][:8]), tag, mt[:28], " / ".join(arts[:3])[:40]))
         time.sleep(1.1)
-    print("\n标题一致 %d / %d; 不一致 %d" % (good, len(highs), bad))
+    print("\n标题一致 %d / %d(其中简繁/异体 %d); 不一致 %d"
+          % (good, len(highs), n_variant, bad))
     return 0
 
 
