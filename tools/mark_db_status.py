@@ -10,6 +10,8 @@ README 约定: ⬛=无文件;  🟥=有旋律但"待整理";  其它 emoji(☯�
 用法: py -3.13 tools/mark_db_status.py
 """
 import glob, os, re, sys
+from guard import guard_help        # noqa: E402  `--help` 守卫(唯一实现见 tools/guard.py)
+guard_help(__doc__)
 sys.stdout.reconfigure(encoding="utf-8")
 
 DB = "D:/Documents_D/jianpu-db"

@@ -23,6 +23,8 @@
 用法: py -3.13 tools/db_to_jsonl.py [输出路径]
 """
 import glob, json, os, re, sys
+from guard import guard_help        # noqa: E402  `--help` 守卫(唯一实现见 tools/guard.py)
+guard_help(__doc__)
 sys.stdout.reconfigure(encoding="utf-8")
 # 把 <仓库根>/tools 加进 sys.path, 以便读 pipeline.toml
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))

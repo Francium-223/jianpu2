@@ -8,7 +8,10 @@ import。对没有 argparse、也没有 `--help` 守卫的工具, 这个探测�
 """
 import glob
 import os
+import re
 import sys
+from guard import guard_help        # noqa: E402  `--help` 守卫(唯一实现见 tools/guard.py)
+guard_help(__doc__)
 
 TOOLS = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "tools")
 DQ = chr(34)
@@ -27,9 +30,18 @@ for p in sorted(glob.glob(os.path.join(TOOLS, "*.py"))):
     # 粗判它会不会"干活": 有没有读写文件/起子进程/联网
     risky = any(k in src for k in ("open(", "io.open", "subprocess", "urlopen", "shutil",
                                    "os.rename", "os.remove", "Image", "torch"))
-    rows.append((n, "有副作用风险" if risky else "看着只读"))
+    # 更狠的一档: **会写语料**(唯一实现那几个函数 / 直接改 scores)
+    corpus = bool(re.search(r"add_to_score_file|add_usertag|add_field|SCORES|scores/", src)) and \
+        bool(re.search(r"""open\([^)]*['"]w|unlink|\.remove\(|\.rename\(|shutil\.move""", src))
+    rows.append((n, "写语料" if corpus else ("有副作用风险" if risky else "看着只读")))
 
-print("没有 --help 保护的工具: %d 个" % len(rows))
+want = sys.argv[1] if len(sys.argv) > 1 else ""
+if want == "--corpus":
+    rows = [r for r in rows if r[1] == "写语料"]
+elif want == "--risky":
+    rows = [r for r in rows if r[1] != "看着只读"]
+
+print("没有 --help 保护的工具: %d 个%s" % (len(rows), ("（筛选: %s）" % want) if want else ""))
 for n, tag in rows:
     print("   %-34s %s" % (n, tag))
 sys.exit(0)

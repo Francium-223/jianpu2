@@ -23,6 +23,8 @@ jianpu-db 格式(见 D:/Documents_D/jianpu-db/README.md):
 输出: jianpu-db-out/scores/<name>.txt  (+ jianpu-db-out/progress.txt)
 """
 import os, sys, glob, re, time, hashlib, html
+from guard import guard_help        # noqa: E402  `--help` 守卫(唯一实现见 tools/guard.py)
+guard_help(__doc__)
 
 sys.path.insert(0, "tools"); os.chdir(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 SRC = "batch-out/*.txt"
