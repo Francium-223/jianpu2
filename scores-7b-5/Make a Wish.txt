@@ -3,7 +3,7 @@ type=work
 %TODO:revise
 usertag=to_be_revised
 MBID=3e474240-c312-4f02-a749-c982504161e5
-copyright=歌谱简谱网
+copyright=歌谱简谱网,版权归原作者及原网站
 %--
 4/4
 3 1' q6 d3 b2 s0 d0 | 7 5 0 0 | 0 0 0 0 |

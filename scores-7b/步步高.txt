@@ -3,7 +3,7 @@ type=work
 %TODO:revise
 usertag=to_be_revised
 MBID=d4b8cc47-0f07-4b07-9f69-89321f1a038c
-copyright=歌谱简谱网
+copyright=歌谱简谱网,版权归原作者及原网站
 %--
 2/4
 subtitle=快乐的小快板

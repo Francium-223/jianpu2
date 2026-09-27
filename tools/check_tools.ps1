@@ -35,21 +35,59 @@ $names = if ($args -contains '-All') { $all } else { $Curated | Where-Object { $
 
 $fail = @()
 $ok = 0
+$skipped = @()
+$timeoutSec = 25          # 每个工具最多给 25 秒
 foreach ($n in ($names | Sort-Object)) {
-    $out = & py -3.13 "tools/$n.py" --help 2>&1 | Out-String
-    $code = $LASTEXITCODE
-    # --help 正常退出是 0; 有的工具用 SystemExit(0) 也是 0。非 0 或输出里带 Traceback 都算坏。
+    $path = Join-Path $Here "$n.py"
+    # ---- 第一步: **静态**语法检查(永远安全) ----
+    $syn = & py -3.13 -c "import ast,sys; ast.parse(open(sys.argv[1],encoding='utf-8').read())" $path 2>&1
+    if ($LASTEXITCODE -ne 0) {
+        $fail += [pscustomobject]@{ tool = $n; code = 'SYNTAX'; why = ("$syn" -split "`n" | Select-Object -Last 1) }
+        continue
+    }
+    # ---- 第二步: 只有**声明了 --help 的工具**才真的执行 ----
+    # ⚠ 2026-09-28 血案: 原来对所有工具都跑 `--help`。而有一批工具**没有 argparse、也没有 --help 保护**,
+    #   于是 `--help` 被当成正常参数、**工具真的跑起来**:
+    #     * `autopilot.py` 进入"等没有 python 进程"的循环 -> 空等一小时, 把整条冒烟自检卡死;
+    #     * `add_copyright.py` 真跑了一遍 -> **改写了 266 个草稿**的 copyright 行;
+    #     * `bench_batch.py` 真跑起来 -> 会加载模型重转写(和转写流水线抢 GPU)。
+    #   "用 --help 探测工具链"这个做法本身就是**有副作用**的, 只能对声明支持它的工具用。
+    $src = Get-Content -LiteralPath $path -Raw -Encoding UTF8
+    $dq = [char]34
+    $declaresHelp = ($src -match 'argparse') -or ($src.Contains("'--help'")) -or ($src.Contains($dq + '--help' + $dq))
+    if (-not $declaresHelp) {
+        $skipped += $n
+        continue
+    }
+    $so = Join-Path $env:TEMP ("ctool_" + $n + ".out")
+    $se = Join-Path $env:TEMP ("ctool_" + $n + ".err")
+    $p = Start-Process -FilePath 'py' -ArgumentList '-3.13', "tools/$n.py", '--help' `
+        -WorkingDirectory $Root -RedirectStandardOutput $so -RedirectStandardError $se `
+        -NoNewWindow -PassThru
+    if (-not $p.WaitForExit($timeoutSec * 1000)) {
+        try { $p.Kill($true) } catch { }
+        $fail += [pscustomobject]@{ tool = $n; code = 'TIMEOUT'; why = "超过 $timeoutSec 秒没退出" }
+        Remove-Item $so, $se -Force -EA SilentlyContinue
+        continue
+    }
+    $out = (Get-Content -LiteralPath $so -Raw -EA SilentlyContinue) + (Get-Content -LiteralPath $se -Raw -EA SilentlyContinue)
+    $code = $p.ExitCode
+    Remove-Item $so, $se -Force -EA SilentlyContinue
     if ($code -ne 0 -or $out -match 'Traceback|ModuleNotFoundError|ImportError') {
         $first = ($out -split "`n" | Where-Object { $_ -match 'Error|error' } | Select-Object -First 1)
         $fail += [pscustomobject]@{ tool = $n; code = $code; why = ("$first").Trim() }
     } else { $ok++ }
 }
 
-Write-Host ("工具冒烟: 通过 {0} / 检查 {1}" -f $ok, @($names).Count)
+Write-Host (("工具冒烟: 语法 OK 且 --help 正常 {0} / 检查 {1}; 跳过(没有 --help 保护) {2}") -f $ok, @($names).Count, @($skipped).Count)
+if (@($skipped).Count) {
+    Write-Host ("  跳过的: " + (($skipped | Sort-Object) -join ', '))
+    Write-Host "  (这些工具没有 argparse/--help 保护, 用 --help 探测会让它们真跑起来 —— 见脚本里的血案注释)"
+}
 if ($fail.Count) {
     Write-Host "**坏了这些:**"
     $fail | Format-Table -AutoSize | Out-String | Write-Host
     exit 1
 }
-Write-Host "全部能 import 并打出 --help"
+Write-Host "全部通过(语法 + 声明了 --help 的那些)"
 exit 0

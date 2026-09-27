@@ -4,7 +4,7 @@ alias=大风车简谱_儿歌_致我们的童年，那里有悠悠转着的大风
 %TODO:revise
 usertag=to_be_revised
 MBID=bcfc3429-78eb-4e20-9c1a-f6f69bffd861
-copyright=简谱之家
+copyright=简谱之家,版权归原作者及原网站
 %--
 4/4
 5 - - q3 q2 | 1' 7 6 0 | 0 0 0 0 | 0 0 0 0 |

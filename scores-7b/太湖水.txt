@@ -2,7 +2,7 @@ title=太湖水
 type=work
 %TODO:revise
 usertag=to_be_revised
-copyright=歌谱简谱网
+copyright=歌谱简谱网,版权归原作者及原网站
 %--
 2/4
 3 - | q6 q7 q1' q2' | q0 - q0 | - 0 |

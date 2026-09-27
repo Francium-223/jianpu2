@@ -8,6 +8,16 @@
 全程后台, 不需要人盯。日志: train-work/autopilot.log
 """
 import glob, os, subprocess, sys, time
+
+# ⚠ 2026-09-28: **`--help` 保护**。本文件没有 argparse, 所以 `autopilot.py --help` 会**当成正常启动**
+#   直接跑起来 —— 实测被工具的冒烟自检(`check_tools.ps1` / `check_tools.sh` 都会这样调每个工具)
+#   误启动, 而且它第一步是 `wait_for_idle()`: 等"没有 python.exe 在跑", 而转写流水线一直在跑,
+#   于是**空等一小时**、把冒烟自检整条卡死(别的工具都没被验到)。同一个坑 `mbid_lookup.py`
+#   在 09-25 也踩过(那次是白打 MusicBrainz API), 这里补上同样的守卫。
+if any(a in ("-h", "--help") for a in sys.argv[1:]):
+    print(__doc__.strip())
+    raise SystemExit(0)
+
 sys.path.insert(0, "tools"); os.chdir(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 sys.stdout.reconfigure(encoding="utf-8")
 LOG = open("train-work/autopilot.log", "w", encoding="utf-8")

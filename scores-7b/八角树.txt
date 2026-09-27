@@ -2,7 +2,7 @@ title=八角树
 type=work
 %TODO:revise
 usertag=to_be_revised
-copyright=歌谱简谱网
+copyright=歌谱简谱网,版权归原作者及原网站
 %--
 4/4
 6 q2 s3 0 0 s0 | 0 0 0 0 |
