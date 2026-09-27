@@ -48,7 +48,11 @@ except Exception:                               # noqa: BLE001
     linkurl = None
 
 UUID = re.compile(r"^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$", re.I)
-SRC = re.compile(r"^[a-z0-9]+-\d+$")
+# `source` 的形状: `<站点>-<id>`。**id 允许数字 id 也允许拼音 slug**(`qupu123-guanghuisuiyue`) ——
+# 权威口径是 `tools/to_jianpu_db.py` 的提取正则 `^(.*?)__([a-z0-9]+)-([0-9a-z_]+)$`, 它本来就收 slug;
+# 而 `score.py:make_link()` 只要求 source 是**单个安全 token**(当目录名用), slug 同样安全。
+# (2026-09-28: 原来写成 `-\d+$`, 于是新导入的那 6 首 slug 来源被误报成"形状不对"。)
+SRC = re.compile(r"^[a-z0-9]+-[0-9a-z_]+$")
 # `to_jianpu_db.source_of()` 兜底会认的站点 token(与那边的元组**必须同步**; 见下面 source 那一段)
 SITE_TOKENS = {"21qupu", "qpcxw", "qinyipu", "gita"}
 
