@@ -26,7 +26,7 @@ guard_help(__doc__)
 ROOT = r"D:\Documents_D\jianpu2"
 IMG_ROOTS = [os.path.join(ROOT, "images-prep"), os.path.join(ROOT, "images")]
 BOUT = os.path.join(ROOT, "batch-out")
-PRIORITY = ["user", "jianpujia", "jianpucn", "qupu123"]
+PRIORITY = ["user", "jianpujia", "jp114", "jianpucn", "qupu123"]
 
 
 def source_of(name):
