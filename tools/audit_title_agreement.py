@@ -23,6 +23,9 @@ import os
 import re
 import sys
 
+from guard import guard_help        # noqa: E402  `--help` 守卫必须是**第一段实际代码**
+guard_help(__doc__)
+
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(HERE)
 DB = os.environ.get("JIANPU_DB") or os.path.join(os.path.dirname(ROOT), "jianpu-db")
@@ -30,8 +33,6 @@ SKILL = os.path.join(ROOT, "skills", "jianpu-melody-lookup")
 for p in (SKILL, DB):
     if p not in sys.path:
         sys.path.insert(0, p)
-from guard import guard_help        # noqa: E402
-guard_help(__doc__)
 from lookup import pitch_and_oct          # noqa: E402  与检索同一口径
 from eval_golden import norm              # noqa: E402  曲名口径复用同一份
 

@@ -13,10 +13,10 @@ import io
 import os
 import sys
 
-ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-sys.path.insert(0, os.path.join(ROOT, "tools"))
-from guard import guard_help        # noqa: E402
+from guard import guard_help        # noqa: E402  `--help` 守卫必须是**第一段实际代码**
 guard_help(__doc__)
+
+ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 
 def main():

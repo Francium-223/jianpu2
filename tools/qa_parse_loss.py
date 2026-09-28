@@ -25,6 +25,9 @@ import os
 import re
 import sys
 
+from guard import guard_help                # noqa: E402  `--help` 守卫必须是**第一段实际代码**
+guard_help(__doc__)
+
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(HERE)
 WS = os.path.dirname(ROOT)
@@ -33,8 +36,6 @@ sys.path.insert(0, os.path.join(ROOT, "skills", "jianpu-melody-lookup"))
 sys.path.insert(0, DB)                      # jianpu-db 的 score.py = 唯一解析实现
 sys.path.insert(0, HERE)
 import jptok                                # noqa: E402
-from guard import guard_help                # noqa: E402
-guard_help(__doc__)
 sys.stdout.reconfigure(encoding="utf-8")
 
 OK_STATUS = ("ok", "ocr")

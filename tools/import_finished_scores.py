@@ -27,6 +27,9 @@ import re
 import shutil
 import sys
 
+from guard import guard_help                     # noqa: E402  `--help` 守卫必须是**第一段实际代码**
+guard_help(__doc__)
+
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(HERE)
 WS = os.path.dirname(ROOT)
@@ -34,8 +37,6 @@ DB = os.environ.get("JIANPU_DB") or os.path.join(WS, "jianpu-db")
 sys.path.insert(0, os.path.join(ROOT, "skills", "jianpu-melody-lookup"))
 sys.path.insert(0, HERE)
 import jptok                                     # noqa: E402  唯一口径
-from guard import guard_help                     # noqa: E402
-guard_help(__doc__)
 
 sys.stdout.reconfigure(encoding="utf-8")
 MIN_PITCH = 5          # 与 quarantine_short_scores.py 一致
