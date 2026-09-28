@@ -56,6 +56,54 @@ def seed_ledger(fin_mtime):
     return [n for n, p in batch_names().items() if os.path.getmtime(p) <= fin_mtime]
 
 
+# ---- `--rescue`: 不看账本, 只看"这份转写的旋律到底在不在语料里" ----------------------------
+# 为什么要有它: 账本是"按名字/时间猜"的, 猜错就把歌永久锁在外面。而**内容**是不会骗人的 ——
+# 把一个 batch 的旋律指纹拿去语料里查, 查不到就是"转出来了但没进语料"(实测 2026-09-28:
+# 整份重转抢名导致 **76 首**这样白转)。指纹口径与 tools/check_convert_damage.py 一致:
+# 只取有音高的 token(带时值/变音, 去掉八度记号), 所以同一份转换的结果必然同指纹。
+_OCT = str.maketrans("", "", ",'")
+
+
+def _conv():
+    """把 to_jianpu_db 当模块读进来 —— 只为复用它的 clean_tokens(与转换产物逐字同源)。"""
+    import check_convert_rename_drift as D
+    return D.load_conv()
+
+
+def melody_hash(tokens, conv):
+    import hashlib
+    h = hashlib.sha1()
+    for t in tokens:
+        if conv.NOTE_RE.match(t) and any(c in "1234567" for c in t):
+            h.update(t.translate(_OCT).encode("utf-8"))
+            h.update(b" ")
+    return h.hexdigest()
+
+
+def rescue_candidates(data_path):
+    """-> (要补转的 batch 名集合, 说明文字)。只读。"""
+    import json
+    conv = _conv()
+    hashes = set()
+    n = 0
+    for ln in io.open(data_path, encoding="utf-8"):
+        if ln.strip():
+            r = json.loads(ln)
+            n += 1
+            hashes.add(melody_hash((r.get("score") or "").replace(" | ", " ").split(), conv))
+    out = set()
+    for name, p in batch_names().items():
+        try:
+            tk = conv.clean_tokens(io.open(p, encoding="utf-8", errors="replace").read())
+        except OSError:
+            continue
+        if len(tk) < 10:
+            continue
+        if melody_hash(tk, conv) not in hashes:
+            out.add(name)
+    return out, f"语料 {n} 行 / {len(hashes)} 种旋律指纹 -> 不在语料里的 batch {len(out)} 个"
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--apply", action="store_true", help="默认 dry: 只列要转的")
@@ -66,6 +114,11 @@ def main():
     ap.add_argument("--limit", type=int, default=0, help="最多转几首(0=全部)")
     ap.add_argument("--also", default="", help="额外强制要转的 batch 名单文件(每行一个) —— 补转"
                                               "'转过但导入时被跳过'的谱, 见 tools/check_convert_damage.py")
+    ap.add_argument("--rescue", action="store_true",
+                    help="内容兜底: 不管账本, 把'旋律不在语料里'的 batch 都补转一遍(最保险, 也最慢)")
+    ap.add_argument("--data", default=os.path.join(os.path.dirname(os.path.dirname(
+        os.path.dirname(os.path.abspath(__file__)))), "jianpu-db", "data.jsonl"),
+        help="--rescue 用的语料(默认同级 jianpu-db/data.jsonl)")
     a = ap.parse_args()
 
     forced = set()
@@ -93,18 +146,25 @@ def main():
 
     # 账本里有的一律跳过(有账本=转过且并进去了, 再转会撞出新的一份 -> 重复)。
     # `--also` 只是"额外候选", 仍然受账本约束 —— 它的作用是**在播种时不被锁死**。
-    new = sorted(n for n in (set(bn) | forced) if n in bn and n not in led)
+    new = set(n for n in (set(bn) | forced) if n in bn and n not in led)
     if forced & led:
         print(f"(--also 里有 {len(forced & led)} 个已在账本里, 跳过 —— 那些已经转进去了)")
+    if a.rescue:
+        res, msg = rescue_candidates(a.data)
+        print(f"内容兜底(--rescue): {msg}")
+        allready = res & new
+        print(f"   其中账本里本来就要转的 {len(allready)} 个; **账本漏掉、靠内容查出来的 {len(res - new)} 个**")
+        new |= res
+    new = sorted(new)
     if a.limit:
         new = new[:a.limit]
-    print(f"新谱(账本里没有的): {len(new)} 个")
+    print(f"要转的: {len(new)} 个")
     for n in new[:10]:
         print(f"   {n}")
     if len(new) > 10:
         print(f"   ... 还有 {len(new) - 10} 个")
     if not new:
-        print("没有新谱, 不用转。")
+        print("没有要转的。")
         return
     if not a.apply:
         print("\n(dry) 加 --apply 才会真转。")
