@@ -80,8 +80,12 @@ def melody_hash(tokens, conv):
     return h.hexdigest()
 
 
-def rescue_candidates(data_path):
-    """-> (要补转的 batch 名集合, 说明文字)。只读。"""
+def rescue_candidates(data_path, suspect_dir=""):
+    """-> (要补转的 batch 名集合, 说明文字)。只读。
+
+    ⚠ 必须把 `scores-suspect/`(**故意隔离**出去的失败谱, 如休止占多数的 17 首)排掉 ——
+      否则"补转"会把人工隔离的决定又推翻(它们的旋律当然不在语料里, 但那是**故意的**)。
+    """
     import json
     conv = _conv()
     hashes = set()
@@ -91,7 +95,15 @@ def rescue_candidates(data_path):
             r = json.loads(ln)
             n += 1
             hashes.add(melody_hash((r.get("score") or "").replace(" | ", " ").split(), conv))
+    skip = set()
+    if suspect_dir and os.path.isdir(suspect_dir):
+        for p in glob.glob(os.path.join(suspect_dir, "*.txt")):
+            try:
+                skip.add(melody_hash(conv._note_tokens_of_outfile(p), conv))
+            except OSError:
+                continue
     out = set()
+    n_skip = 0
     for name, p in batch_names().items():
         try:
             tk = conv.clean_tokens(io.open(p, encoding="utf-8", errors="replace").read())
@@ -99,9 +111,15 @@ def rescue_candidates(data_path):
             continue
         if len(tk) < 10:
             continue
-        if melody_hash(tk, conv) not in hashes:
-            out.add(name)
-    return out, f"语料 {n} 行 / {len(hashes)} 种旋律指纹 -> 不在语料里的 batch {len(out)} 个"
+        h = melody_hash(tk, conv)
+        if h in hashes:
+            continue
+        if h in skip:
+            n_skip += 1
+            continue
+        out.add(name)
+    return out, (f"语料 {n} 行 / {len(hashes)} 种旋律指纹; 故意隔离(scores-suspect) "
+                 f"{len(skip)} 种指纹, 因此跳过 {n_skip} 个 -> 不在语料里的 batch {len(out)} 个")
 
 
 def main():
@@ -119,7 +137,10 @@ def main():
     ap.add_argument("--data", default=os.path.join(os.path.dirname(os.path.dirname(
         os.path.dirname(os.path.abspath(__file__)))), "jianpu-db", "data.jsonl"),
         help="--rescue 用的语料(默认同级 jianpu-db/data.jsonl)")
+    ap.add_argument("--suspect", default="", help="故意隔离出去的谱目录(默认 <语料目录>/scores-suspect)")
     a = ap.parse_args()
+    if not a.suspect:
+        a.suspect = os.path.join(os.path.dirname(a.data), "scores-suspect")
 
     forced = set()
     if a.also and os.path.isfile(a.also):
@@ -150,7 +171,7 @@ def main():
     if forced & led:
         print(f"(--also 里有 {len(forced & led)} 个已在账本里, 跳过 —— 那些已经转进去了)")
     if a.rescue:
-        res, msg = rescue_candidates(a.data)
+        res, msg = rescue_candidates(a.data, a.suspect)
         print(f"内容兜底(--rescue): {msg}")
         allready = res & new
         print(f"   其中账本里本来就要转的 {len(allready)} 个; **账本漏掉、靠内容查出来的 {len(res - new)} 个**")
