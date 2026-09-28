@@ -76,9 +76,13 @@ def pick_page(d):
 
     **图片后缀不能只认 .jpg**(2026-09-22 修): qupu123 有的曲子只发 `.png`
     (实测《领悟》`领悟（李宗盛词曲）__qupu123-261725/001.png`), 只找 jpg 会让这些谱
-    **静默跳过**、基准集永远差那一首 ✗。现在 jpg/jpeg/png 一起收。"""
+    **静默跳过**、基准集永远差那一首 ✗。现在 jpg/jpeg/png 一起收。
+
+    **`.gif` 也不能漏**(2026-09-29 修, 第三处同款病): jianpujia 有一整批谱只发 `001.gif`
+    (实测图库里 **1,247 个目录只有 gif、没有任何 jpg/png**, 其中 1,175 个从没转录过 ——
+    一直是"名单 150 个 -> 命中 961 个目录 / 完成 6"里那 955 个静默空转)。"""
     cands = [f for f in glob.glob(os.path.join(d, "*"))
-             if os.path.splitext(f)[1].lower() in (".jpg", ".jpeg", ".png")
+             if os.path.splitext(f)[1].lower() in (".jpg", ".jpeg", ".png", ".gif", ".webp")
              and "__pg" not in os.path.basename(f)]
     if not cands:
         return None
@@ -126,7 +130,7 @@ def pick_pages(d):
     "双谱"目录里 004/006/008 是五线谱页, 与简谱页同为竖版, 只能靠门来挡。
     """
     cands = [f for f in glob.glob(os.path.join(d, "*"))
-             if os.path.splitext(f)[1].lower() in (".jpg", ".jpeg", ".png")
+             if os.path.splitext(f)[1].lower() in (".jpg", ".jpeg", ".png", ".gif", ".webp")
              and "__pg" not in os.path.basename(f)]
     if not cands:
         return []
