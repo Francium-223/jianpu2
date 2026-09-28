@@ -8,13 +8,22 @@
 用法:
     py -3.13 tools/rebuild_when_idle.py [最多等多少分钟=180]
     py -3.13 tools/rebuild_when_idle.py 600 --site D:\\Documents_D\\jianpu-db.github.io
+    py -3.13 tools/rebuild_when_idle.py 900 --import --site D:\\Documents_D\\jianpu-db.github.io
 
-`--site <前端仓库>` 为什么有用(2026-09-28 补): 语料重建完**前端索引并不会自己更新** ——
+`--import` 为什么有用(2026-09-28 补): 流水线是**两段式**的 —— 转录批次只往
+`jianpu-db-out/scores/`(成品, 覆盖率报告里叫"待入库")写; 而"成品 -> `jianpu-db/scores/`"这一段
+**原先靠人手动跑**(`kugou_pipeline` 只管酷狗那批, `batch_transcribe_queue` 要队列文件)。
+于是夜里批次跑一整晚, 新谱就躺在成品目录里没人管 —— 实测成品 8573 / 语料 7816,
+**1639 份 `status=ocr` 从未入库**。给了 `--import` 就在重建**之前**先跑
+`tools/import_finished_scores.py --apply`(它只拷不覆盖、只拷不删, 并复用流水线自己的两条判据)。
+
+`--site <前端仓库>` 为什么有用: 语料重建完**前端索引并不会自己更新** ——
 `data/songs.jsonl.gz` 只有本机能生成(要读 scores/ 与图库), 而站点的 CI 只负责把已入库的
 data/ 摊到部署目录。于是新转写的歌会一直躺在 `scores/` 里, 没人跑 build_web_data.py 就上不了站。
 给了 --site 就顺带重建前端索引并**自己对账**(stats.songs == data.jsonl 行数、0 首重复小节线)。
 **不自动 git commit/push**: 推远端是人的决定, 脚本只把该敲的命令打出来。
 """
+import atexit
 import io
 import json
 import os
@@ -80,7 +89,6 @@ def drop_lock():
 
 
 take_lock()
-import atexit                                                  # noqa: E402
 atexit.register(drop_lock)      # 正常退出/异常退出都清; 被强杀时留下的锁靠 "PID 还活着吗" 判为陈旧
 
 
@@ -108,6 +116,31 @@ else:
     say("超时, 放弃"); sys.exit(1)
 
 say("写者已清空, 开始重建")
+
+# ---- 先导入成品(--import) --------------------------------------------------------
+# 为什么要有这一步: 流水线是两段式的, 转录批次只往 `jianpu-db-out/scores/`(成品, 覆盖率报告里叫"待入库")
+# 写; 而 `jianpu-db/scores/` -> data.jsonl 那一段**原先靠人手动跑**。夜里批次跑了一整晚, 新谱就
+# 一直躺在成品目录里 —— 2026-09-28 实测: 成品 8573 / 语料 7816, **1639 份 status=ocr 从未入库**。
+# 顺序**必须先导入再重建**(导入写 scores/, parse_scores 才读得到)。
+IMPORT = "--import" in sys.argv
+if IMPORT:
+    _imp = os.path.join(os.path.dirname(os.path.abspath(__file__)), "import_finished_scores.py")
+    if not os.path.isfile(_imp):
+        say(f"!! --import 要的工具不在: {_imp}")
+    else:
+        with open(r"D:\Documents_D\jianpu2\train-work\import_idle.log", "w", encoding="utf-8") as lg:
+            ri = subprocess.run([sys.executable, "-u", _imp, "--apply"], cwd=os.path.dirname(_imp),
+                                stdout=lg, stderr=subprocess.STDOUT, text=True)
+        tail = ""
+        try:
+            with io.open(r"D:\Documents_D\jianpu2\train-work\import_idle.log", encoding="utf-8") as f:
+                for ln in f:
+                    if ln.startswith("  -> **可导入") or ln.startswith("已拷入"):
+                        tail += " " + ln.strip()
+        except Exception:                                        # noqa: BLE001
+            pass
+        say(f"导入成品(import_finished_scores --apply) 退出码 {ri.returncode} ->{tail}")
+
 r = subprocess.run([sys.executable, "-u", "parse_scores.py"], cwd=DB,
                    stdout=open(r"D:\Documents_D\jianpu2\train-work\parse_idle.log", "w", encoding="utf-8"),
                    stderr=subprocess.STDOUT, text=True)
