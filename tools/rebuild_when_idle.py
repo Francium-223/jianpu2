@@ -44,6 +44,46 @@ def say(m):
         g.write(line + "\n")
 
 
+# ---------------- 单实例锁(照 refresh.sh 的 .refresh.lock 先例) ----------------
+# 为什么必须有: 2026-09-28 实测自己踩到 —— 重启"带新检查的守候作业"时**忘了停旧的**, 两个实例同时
+# 等在写者清空; 一旦清空, 两个 `parse_scores.py` 会**并发重建同一个 data.jsonl**,
+# 正是本文件 docstring 里写的那个事故("一边重建一边被覆盖 -> data.jsonl 与磁盘文件对不上")。
+LOCK = r"D:\Documents_D\jianpu2\train-work\rebuild_when_idle.lock"
+
+
+def _pid_alive(pid):
+    r = subprocess.run(["powershell", "-NoProfile", "-Command",
+                        f"(Get-Process -Id {pid} -ErrorAction SilentlyContinue | Measure-Object).Count"],
+                       capture_output=True, text=True)
+    return (r.stdout or "").strip() not in ("", "0")
+
+
+def take_lock():
+    if os.path.isfile(LOCK):
+        try:
+            old = io.open(LOCK, encoding="utf-8").read().strip()
+            if old.isdigit() and _pid_alive(int(old)):
+                print(f"!! 已有一个守候作业在跑(PID {old})—— 两个同时等清空会并发重建语料, 拒绝启动。")
+                print(f"   要换新的: 先停掉 {old}, 或删掉 {LOCK}")
+                sys.exit(2)
+        except Exception:                                        # noqa: BLE001
+            pass
+    io.open(LOCK, "w", encoding="utf-8").write(str(os.getpid()))
+
+
+def drop_lock():
+    try:
+        if os.path.isfile(LOCK) and io.open(LOCK, encoding="utf-8").read().strip() == str(os.getpid()):
+            os.remove(LOCK)
+    except Exception:                                            # noqa: BLE001
+        pass
+
+
+take_lock()
+import atexit                                                  # noqa: E402
+atexit.register(drop_lock)      # 正常退出/异常退出都清; 被强杀时留下的锁靠 "PID 还活着吗" 判为陈旧
+
+
 def writers():
     r = subprocess.run(["powershell", "-NoProfile", "-Command",
                         "Get-CimInstance Win32_Process -Filter \"Name='python.exe'\" | "
@@ -154,3 +194,4 @@ if SITE:
         say(f"    cd {SITE} && git add data && git commit -m \"chore(data): 重建前端索引(新转写的 N 首)\" && git push")
         say("    推送后 pages.yml 会自己把产物同步到仓库根并核对线上首页")
 say("完成")
+drop_lock()
