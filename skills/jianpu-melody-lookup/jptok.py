@@ -153,6 +153,28 @@ def beats_per_bar_from(text, default=DEFAULT_BEATS_PER_BAR):
         return default
 
 
+def tuplet_ratio(word):
+    """`3[` 这类连音开记号 -> (num, fitIn); 不是记号返回 None。
+
+    这是**抄参考实现**, 不是自己推的: jianpu-ly_patched.py:1786 里
+        fitIn = int(word[:-1]); i = 2; while i < fitIn: i *= 2
+        num = int(fitIn*3/2) if i == fitIn else int(i/2)
+        notehead_markup.tuplet = (num, fitIn)      # 时值 × num/fitIn
+    于是 `3[` -> fitIn=3, i=4, num=int(4/2)=2 -> 时值 ×2/3, 与它输出的 `\\times 2/3 { … }` 一致
+    (train-work/gt/Lemon_用户.ly 里 20 处 `\\times 2/3` 就是这段源码渲染出来的)。
+    组内**音符个数** = fitIn; `]` 收尾, 或者装满 fitIn 个(语料里 MIDI 转来的写法没有 `]`)。
+    """
+    m = re.match(r"^([1-9][0-9]*)\[$", word or "")
+    if not m:
+        return None
+    fit_in = int(m.group(1))
+    i = 2
+    while i < fit_in:
+        i *= 2
+    num = int(fit_in * 3 / 2) if i == fit_in else int(i / 2)
+    return (num, fit_in)
+
+
 def recover_bars(sections, beats_per_bar, keep_explicit=True):
     """按拍号+时值恢复小节线。
 
@@ -167,14 +189,27 @@ def recover_bars(sections, beats_per_bar, keep_explicit=True):
     改成计时后, th10_06 前三个小节正好各 4.0 拍:
         [c0 c- q0 q3 q3 q5] [c6. s5 s6 q5 q3 q2 q5] [c3 c- c- q3 q5] …
     即"2.5 拍休止 + 3 个八分音符弱起" —— 这才是这首曲子的真实小节。
+
+    ⚠ 2026-09-28 补: **连音组内的时值要按 num/fitIn 缩放**(见 tuplet_ratio)。
+    以前连音开记号 `3[` 被当成一个音(还占一整拍), 组内三个音按各自的字面时值计时 ——
+    含连音的 4 首(th06_15 / qd1z_anthem / th10_06 / th075_34)小节线因此偏。
+    现在: 开记号本身不占拍; 组内每个 token 的时值 ×num/fitIn; 装满 fitIn 个或遇 `]` 收组。
     """
     bars, n, acc = [], 0, 0.0
+    ratio, left = 1.0, 0          # 连音比例与组内剩余个数
     for sec in sections or []:
         for t in (sec.get("score") or "").split():
             if t == "|":
                 if keep_explicit:
                     bars.append(n)
                 acc = 0.0
+                continue
+            if t == "]":              # 连音组收尾
+                ratio, left = 1.0, 0
+                continue
+            tp = tuplet_ratio(t)
+            if tp:                    # 连音组开头(它自己不是音符, 不占拍)
+                ratio, left = tp[0] / float(tp[1]), tp[1]
                 continue
             if t == "-" or re.match(r"^[cqsdh]+-$", t or ""):
                 # `-` = 延长一拍; `c-`/`q-` 是 KeepLength 补时值时的写法(全库 363 个)。
@@ -186,14 +221,18 @@ def recover_bars(sections, beats_per_bar, keep_explicit=True):
                 #   分歧次数正好等于各谱的 `q-` 个数(th01_03 5 / th02_05 4 / th02_01 1),
                 #   而全库共 35 个 `q-`, 分布在 6 首(th17_13 12 / th10_06 8 / th01_03 5 /
                 #   th07_13 5 / th02_05 4 / th02_01 1)。
-                acc += beat(t)
+                acc += beat(t) * ratio
                 continue
             p = parse_token(t)
             if not p:
                 continue                      # 根本不是 token(升降号之外的记号等)
             if p[0] is not None:
                 n += 1                        # 只有**有音高**的音才推进"第几个音符"
-            acc += beat(t)                    # 休止/念白同样占拍: 不记时会让小节线前漂
+            acc += beat(t) * ratio            # 休止/念白同样占拍: 不记时会让小节线前漂
+            if left > 0:
+                left -= 1                     # 连音组内: 装满就自动收组(语料里没有 `]` 的写法)
+                if left == 0:
+                    ratio = 1.0
             if acc >= beats_per_bar - 1e-9:
                 bars.append(n)
                 acc = 0.0
