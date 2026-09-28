@@ -1,6 +1,6 @@
 ---
 name: jianpu-melody-lookup
-description: 给一段简谱旋律（唱名数字串，如 `55532235 3211612655`），在 10153 份中文简谱库里找出它最可能是哪首歌。适用于"这是哪首歌""哼一句查歌""识别这段旋律"这类请求。纯离线，不需要联网或 API key。
+description: 给一段简谱旋律（唱名数字串，如 `55532235 3211612655`），在 10170 份中文简谱库里找出它最可能是哪首歌。适用于"这是哪首歌""哼一句查歌""识别这段旋律"这类请求。纯离线，不需要联网或 API key。
 ---
 
 # 简谱旋律查歌
@@ -81,7 +81,7 @@ python lookup.py 512233 --json                     # 给程序读
 | `gate.py` / `selfcheck/` | 自检门：已知答案用例 |
 | `show_hit.py` / `check_hit.py` | 把库里命中那一段原样摊开（带记号） |
 | `show_song.py` | 把一首谱**按小节**分段打出来（`show_song.py 神々`），便于人工圈定是哪一段 |
-| `data.jsonl` | 数据集本体：10153 首（= HuggingFace `Caesium-132/chinese-jianpu-corpus`）；自检门会核对它是否与 `jianpu-db/data.jsonl` 同步 |
+| `data.jsonl` | 数据集本体：10170 首（= HuggingFace `Caesium-132/chinese-jianpu-corpus`）；自检门会核对它是否与 `jianpu-db/data.jsonl` 同步 |
 | `eval_golden.py` | 金曲清单指标 |
 | `eval_metric.py` | 随机留一指标（含两种口径的定义） |
 
