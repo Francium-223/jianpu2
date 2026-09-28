@@ -52,10 +52,15 @@ def pitch_of(score):
 
 
 def digits_of(score):
-    """score 文本里"人读谱会读到的音高数字"(排除调号里的数字)。"""
+    """score 文本里"人读谱会读到的音高数字"(排除调号里的数字)。
+
+    ⚠ 2026-09-28: 三连音开记号 `3[` 要跳过 —— jianpu-ly 写作 `3[ 5 3 4 ]`, 那个 **3 是连音数**,
+      人读谱读的是 `5 3 4` 三个音。以前这里不跳, 于是 ④/④b 两条不变量在含连音的 4 首上误报
+      "有音符被静默丢弃"(实测 qd1z_anthem / th06_15 / th075_34 / th10_06)。
+    """
     out = []
     for t in (score or "").split():
-        if KEY_SIG.match(t):
+        if KEY_SIG.match(t) or t.endswith("["):
             continue
         out.append("".join(c for c in t if c in "1234567"))
     return "".join(out)
@@ -84,15 +89,18 @@ def check(data_path=None):
             rep.append("   先同步再判用例(与 refresh.sh 同一步): "
                        "cp jianpu-db/data.jsonl skills/jianpu-melody-lookup/data.jsonl")
 
-    # ① 解析器口径: th10_06 音符数必须是 415(源谱音符数; 少一个数就是某一类 token 又被静默丢了)
+    # ① 解析器口径: th10_06 音符数必须是 404(源谱音符数; 少一个数就是某一类 token 又被静默丢了)
     #    231 = 后缀时值(`6c.`/`5s`/`3q`)被丢; 377 = `c` 前缀时值(`c6.`/`c3`)又被旧白名单丢掉。
+    #    ⚠ 2026-09-28: 415 -> **404**。原期望 415 把 11 个三连音开记号 `3[` 也算成了音
+    #      (记号的 3 是连音数, 不是音符); 同一次修掉后全库 4 首各少 13/40/2/11 个假音。
     th = [r for r in rows if r["file"][0] == "th10_06.txt"]
     if th:
         n = len(pitch_of(th[0].get("score")))
-        good = (n == 415)
+        good = (n == 404)
         ok &= good
-        rep.append(f"{'OK ' if good else '**FAIL**'} th10_06 音符数 = {n} (期望 415; 231=后缀时值被丢, "
-                   f"377=`c` 前缀时值又被白名单丢, 后者会把第 1 小节读成 `3 3 5 6 3 2 5 5 6`)")
+        rep.append(f"{'OK ' if good else '**FAIL**'} th10_06 音符数 = {n} (期望 404; 231=后缀时值被丢, "
+                   f"377=`c` 前缀时值又被白名单丢, 415=三连音开记号 `3[` 被当成音, 后者会把第 1 小节读成 "
+                   f"`3 3 5 6 3 2 5 5 6` 那一类错位)")
     else:
         rep.append("  (th10_06.txt 不在数据里, 跳过该用例)")
 
