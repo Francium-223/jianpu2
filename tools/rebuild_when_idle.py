@@ -63,6 +63,35 @@ SITE = None
 if "--site" in sys.argv:
     _i = sys.argv.index("--site")
     SITE = os.path.abspath(sys.argv[_i + 1]) if _i + 1 < len(sys.argv) else None
+# `--push`: 重建完**直接把语料仓库与站点仓库提交并推远端**(2026-09-29 用户授权: "仓库你动就行了。我让你动。")
+PUSH = "--push" in sys.argv
+
+
+def _commit_push(repo, paths, msg):
+    """在 repo 里 add 指定路径 -> **有变化才** commit -> push; 被 CI 抢先推了就 fetch+merge 再来一次。"""
+    try:
+        st = subprocess.run(["git", "status", "--porcelain", "--"] + paths, cwd=repo,
+                            capture_output=True, text=True)
+        if not (st.stdout or "").strip():
+            say(f"  {os.path.basename(repo)}: 没有变化, 不提交")
+            return
+        subprocess.run(["git", "add"] + paths, cwd=repo, check=True)
+        r = subprocess.run(["git", "commit", "-q", "-m",
+                            msg + "\n\nCo-authored-by: deepseek-ai <service@deepseek.com>"],
+                           cwd=repo, capture_output=True, text=True)
+        if r.returncode != 0:
+            say(f"  !! {os.path.basename(repo)} 提交失败: {(r.stderr or r.stdout or '').strip()[:200]}")
+            return
+        p = subprocess.run(["git", "push"], cwd=repo, capture_output=True, text=True)
+        if p.returncode != 0:
+            subprocess.run(["git", "fetch", "-q"], cwd=repo)
+            subprocess.run(["git", "merge", "--no-edit", "-X", "ours", "FETCH_HEAD"], cwd=repo,
+                           capture_output=True, text=True)
+            p = subprocess.run(["git", "push"], cwd=repo, capture_output=True, text=True)
+        say(f"  {os.path.basename(repo)}: push 退出码 {p.returncode}"
+            + ("" if p.returncode == 0 else f" :: {(p.stderr or '')[:180]}"))
+    except Exception as e:                                       # noqa: BLE001
+        say(f"  !! {os.path.basename(repo)} 提交/推送异常: {type(e).__name__}: {e}")
 
 
 def say(m):
@@ -271,8 +300,22 @@ if SITE:
             say(f"前端对账: stats.songs={st.get('songs')} 索引={n_idx} 语料={len(rows)} 重复小节线={dup}  {'OK' if okc else '!! 不一致'}")
         except Exception as e:                                   # noqa: BLE001
             say(f"!! 前端对账失败: {type(e).__name__}: {e}")
-        say(f"前端索引已就绪(我没有自动推远端, 免得替人做决定)。要发布就敲:")
-        say(f"    cd {SITE} && git add data && git commit -m \"chore(data): 重建前端索引(新转写的 N 首)\" && git push")
-        say("    推送后 pages.yml 会自己把产物同步到仓库根并核对线上首页")
+        # `--push`: 重建完直接提交并推远端(语料仓库 + 站点仓库)。
+        # 为什么现在默认不做、要显式开关: 推远端=替人做发布决定。**2026-09-29 用户明确授权**
+        # ("仓库你动就行了。我让你动。"), 所以给了这个开关, 我自己的守候都带上它。
+        # 对账不通过(okc=False)时**不推** —— 宁可停在本地让人看。
+        if PUSH:
+            if not okc:
+                say("!! 对账没通过, --push 跳过(不推远端)")
+            else:
+                _commit_push(DB, ["scores", "data.jsonl", "data.json", "by_alias", "by_artist",
+                                  "by_copyright", "by_MBID", "by_source", "by_status", "by_tag",
+                                  "by_tagroute", "by_title", "by_todo", "by_transcriber"],
+                             f"chore(data): 语料 {len(rows)} 首(自动入库)")
+                _commit_push(SITE, ["data"], f"chore(data): 重建前端索引({len(rows)} 首)")
+        else:
+            say("前端索引已就绪(没开 --push, 没自动推远端)。要发布就敲:")
+            say(f"    cd {SITE} && git add data && git commit -m \"chore(data): 重建前端索引(新转写的 N 首)\" && git push")
+            say("    推送后 pages.yml 会自己把产物同步到仓库根并核对线上首页")
 say("完成")
 drop_lock()
