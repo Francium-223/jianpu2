@@ -97,6 +97,26 @@ for row in random.Random(7).sample(rows, 10):
         say(f"  不一致 {row['file'][0]}: 文件 {n1} vs jsonl {n2}")
 say(f"验证: {len(rows)} 行, 抽查 10 首, 不一致 {bad}")
 
+# 重建后跑一次"静默丢数据"检查(qa_parse_loss): 抓"正文有音、解析出来却是空"。
+# 为什么放这儿: 2026-09-28 的 `%END` 前缀 bug 就是这样丢了一首歌, 而**三道自检都看不见**
+# (不变量查进库的数据、自检门查库内一致性、CI 查产物)。代价是几分钟 CPU, 而这时机器本来就空着。
+_qp = os.path.join(os.path.dirname(os.path.abspath(__file__)), "qa_parse_loss.py")
+if os.path.isfile(_qp):
+    with open(r"D:\Documents_D\jianpu2\train-work\qa_parse_loss_idle.log", "w", encoding="utf-8") as lg:
+        r = subprocess.run([sys.executable, "-u", _qp], cwd=os.path.dirname(_qp),
+                           stdout=lg, stderr=subprocess.STDOUT, text=True)
+    tail = ""
+    try:
+        with io.open(r"D:\Documents_D\jianpu2\train-work\qa_parse_loss_idle.log", encoding="utf-8") as f:
+            for ln in f:
+                if ln.startswith("①") or ln.startswith("②") or ln.startswith("③"):
+                    tail += " " + ln.strip()
+    except Exception:                                            # noqa: BLE001
+        pass
+    say(f"静默丢数据检查(qa_parse_loss) 退出码 {r.returncode} ->{tail}")
+    if r.returncode != 0:
+        say("!! 有全丢或准入缺口 —— 看 train-work/qa_parse_loss_idle.log")
+
 # 顺带重建前端索引(--site): 语料重建完前端**不会自己更新**, 没人跑 build_web_data.py 就上不了站
 if SITE:
     bw = os.path.join(SITE, "tools", "build_web_data.py")
