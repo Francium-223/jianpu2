@@ -82,10 +82,16 @@ def main():
         have, short, miss = [], [], []
         for t, artist in items:
             n = norm(t)
-            m = next(((orig, f, ln) for cn, orig, f, ln in titles if same(n, cn)), None)
-            if m is None:
+            # ⚠ 2026-09-29 修: 原来取**第一条**匹配到的谱, 于是《泡沫》被判成"有谱但短于 11 音" ——
+            #   其实库里还有 399 音的那版(`泡沫.txt`), 只是同名的 10 音那条先被扫到。
+            #   判据必须是"**同名里最长的那份**够不够 11 音", 与 eval_golden 的 covered(任一版本 >=L 即算覆盖) 对齐。
+            cand = [(ln, orig, f) for cn, orig, f, ln in titles if same(n, cn)]
+            if not cand:
                 miss.append((t, artist, None, path))
-            elif m[2] < 11:
+                continue
+            ln, orig, f = max(cand, key=lambda x: x[0])
+            m = (orig, f, ln)
+            if m[2] < 11:
                 # 曲名对得上, 但这份谱短于检索下限 11 音 -> eval_golden 的 idx 里没有它,
                 # 所以它的"分母"少一个(实测酷狗 65 vs 64 就差在这里)。分出来才不冤枉算法。
                 short.append((t, artist, m[0], path))
