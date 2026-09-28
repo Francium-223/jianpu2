@@ -75,14 +75,42 @@ def is_pitch(t):
     return p is not None and p[0] is not None
 
 
-def seq(score):
-    """整份谱 -> [(音级, 变音, 八度)]，只保留有音高的 token(与检索口径一致)。"""
-    out = []
+def pitched(score, merge_ties=True):
+    """整份谱 -> [(音级, 变音, 八度)]，只保留有音高的 token。
+
+    `merge_ties=True`(默认) 时把**连音线** `X ~ X` 并成**一个音** —— 用户口径(2026-09-28):
+        "`~` 要看作一个音符。"
+    `~` 是连音线: 同一个音被唱长一些, 记谱写成两个音头 + 一条弧线, 人只会数成一个音。
+    判据只用**音级 + 变音**(不看八度): 检索口径本来就不看八度; 而且实测语料 14661 个 `~` 里
+    13207 个两侧完全相同、1452 个只差八度记号(转写把八度标歪了的连音线), 只有 **2 个**是真圆滑线
+    (音级不同 -> 不并, 保留两个音)。
+    `~` 自己永远不是音符(`parse_token('~') is None`), 这里只管两个音头要不要并。
+    想要"记谱上有几个音头"就传 `merge_ties=False`。
+    """
+    out, tie, last_note = [], False, False
     for t in (score or "").split():
+        if t == "~":
+            tie = last_note               # 只有紧跟在音符后面的 `~` 才算连音线
+            continue
+        if t == "-" or re.match(r"^[cqsdh]+-$", t or ""):
+            # `-` = **延长**前一个音: 它不打断连音线(`'1 - ~ '1` = 一个长音, 实测 th01_10 那种写法)
+            continue
         p = parse_token(t)
-        if p and p[0] is not None:
-            out.append(p)
+        if not p or p[0] is None:
+            tie, last_note = False, False  # 休止/念白/别的记号都会打断连音线
+            continue
+        if merge_ties and tie and out and (out[-1][0], out[-1][1]) == (p[0], p[1]):
+            last_note = True
+            tie = False                   # 并掉这个音头(时值由前一个音承担)
+            continue
+        out.append(p)
+        tie, last_note = False, True
     return out
+
+
+def seq(score, merge_ties=True):
+    """同 `pitched`(名字保留给老调用方)。默认并连音线 —— 全项目**只此一份**音高序列口径。"""
+    return pitched(score, merge_ties=merge_ties)
 
 
 def query(raw):
@@ -194,9 +222,14 @@ def recover_bars(sections, beats_per_bar, keep_explicit=True):
     以前连音开记号 `3[` 被当成一个音(还占一整拍), 组内三个音按各自的字面时值计时 ——
     含连音的 4 首(th06_15 / qd1z_anthem / th10_06 / th075_34)小节线因此偏。
     现在: 开记号本身不占拍; 组内每个 token 的时值 ×num/fitIn; 装满 fitIn 个或遇 `]` 收组。
+    ⚠ 2026-09-28 补 ②: **连音线 `X ~ X` 只算一个音**(与 `pitched()` 同一口径)。
+    否则"第几个音符"的计数会比音高序列多出连音线的那些音头, 前端的小节线/高亮会整体错位
+    (实测 3058 首带连音线)。
     """
     bars, n, acc = [], 0, 0.0
     ratio, left = 1.0, 0          # 连音比例与组内剩余个数
+    tie, last_note = False, False  # 连音线(并与不并的口径见 pitched())
+    prev_pitch = None              # 上一个音头(判连音线用)
     for sec in sections or []:
         for t in (sec.get("score") or "").split():
             if t == "|":
@@ -206,6 +239,9 @@ def recover_bars(sections, beats_per_bar, keep_explicit=True):
                 continue
             if t == "]":              # 连音组收尾
                 ratio, left = 1.0, 0
+                continue
+            if t == "~":
+                tie = last_note
                 continue
             tp = tuplet_ratio(t)
             if tp:                    # 连音组开头(它自己不是音符, 不占拍)
@@ -225,10 +261,17 @@ def recover_bars(sections, beats_per_bar, keep_explicit=True):
                 continue
             p = parse_token(t)
             if not p:
+                tie, last_note = False, False  # 别的记号 -> 打断连音线
                 continue                      # 根本不是 token(升降号之外的记号等)
+            merged = False
             if p[0] is not None:
-                n += 1                        # 只有**有音高**的音才推进"第几个音符"
+                if tie and n > 0 and prev_pitch and prev_pitch[:2] == (p[0], p[1]):
+                    merged = True                 # 连音线的第二个音头: 不推进"第几个音符"
+                else:
+                    n += 1                        # 只有**有音高**的音才推进"第几个音符"
+                prev_pitch = p
             acc += beat(t) * ratio            # 休止/念白同样占拍: 不记时会让小节线前漂
+            tie, last_note = False, (p[0] is not None)
             if left > 0:
                 left -= 1                     # 连音组内: 装满就自动收组(语料里没有 `]` 的写法)
                 if left == 0:

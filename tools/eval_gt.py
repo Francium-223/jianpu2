@@ -13,9 +13,11 @@ def load_out(file):
     t=open(file,encoding="utf-8",errors="replace").read()
     m=re.search(r"\d+\s*音\s*\n?\s*(.+)$",t,re.S)
     toks=[x for x in (m.group(1) if m else t).split() if re.match(r"^[,']*[qsdhc#b]*[,']*[1-7x0-][.,'qsdh#b-]*$",x)]
-    # merge_ties=False: 我方转写不输出 `~` 连音线标记(两个音就是两个 token),
-    # 评测时若把 GT 的 `2s ~ 2q` 并成一个音, 两边结构就不一致了(实测反而掉 3 个点)
-    return normalize_tokens(toks, merge_ties=False)
+    # ⚠ 2026-09-28 改: **两边都并连音线**(merge_ties 默认 True)。用户口径: "`~` 要看作一个音符"。
+    #   原来两边都传 False, 理由是"我方转写不输出 `~`"(OCR 谱里确实多数没有连音线记号),
+    #   那时若只并 GT 一侧就会结构错位(实测掉 3 个点)。现在**两侧同口径**, 谁有 `~` 谁并:
+    #   语料里 3079 首带 `~`(.ly/MIDI 转来的为主), GT 里 84 个 `~` —— 两边一致才谈得上对齐。
+    return normalize_tokens(toks, merge_ties=True)
 
 def load_gt(file):
     t=open(file,encoding="utf-8",errors="replace").read()
@@ -25,12 +27,12 @@ def load_gt(file):
     # 注意: **不能**把 [](){}~ 直接替换成空格 —— 那样 `3[` 会剩下 `3` 被当音符
     # (实测 GT 里三连音标记被当成音符, 污染音符数)。必须按 token 保留结构符号再规范化:
     #   规则2: `3[` 是三连音标记, 那个 3 不是音符  -> 去掉 ✓
-    #   规则1: 同数字且用 ~ 连接 = 一个音 -> 这里**不合并**(见 load_out 的说明)
+    #   规则1: 同音高且用 ~ 连接 = 一个音(连音线) -> 与 load_out 同口径, 两边都并(2026-09-28)
     toks=[]
     for tok in " ".join(lines).split():
         if NOTE.match(tok) or tok == "-" or is_marker(tok) or is_tuplet_marker(tok):
             toks.append(tok)
-    return normalize_tokens(toks, merge_ties=False)
+    return normalize_tokens(toks, merge_ties=True)
 def key(t):
     j=t2j(t); return (j["digit"],j["low"],len(j["voice"]),j["beam"],j["dotted"],j["accidental"])
 def score(gt_file,out_file):

@@ -80,27 +80,52 @@ BADWORD = re.compile(r"吉他|钢琴|双谱|器乐|非洲|尤克里里|古筝|�
 
 
 def pitch_and_oct(score):
-    """`score` 字段 -> (音高串, 八度串)。丢休止 0 / 念白 x; 两者逐音对齐。**走 jptok(唯一实现)**。"""
+    """`score` 字段 -> (音高串, 八度串)。丢休止 0 / 念白 x; 两者逐音对齐。**走 jptok(唯一实现)**。
+
+    ⚠ 2026-09-28: **连音线 `X ~ X` 只算一个音**(用户口径: "`~` 要看作一个音符")。
+      判据与 `jptok.pitched()` 一致: 音级+变音相同(忽略八度)。它原来是个"第五份口径"的隐患 ——
+      自己循环调 parse_token, 所以连音线口径一变它就跟 jptok 分叉(自检门 ④b 当场抓到 3058 首)。
+    """
     p, o = [], []
+    tie, prev_key = False, None
     for t in (score or "").split():
+        if t == "~":
+            tie = prev_key is not None
+            continue
+        if t == "-" or re.match(r"^[cqsdh]+-$", t or ""):
+            continue                             # `-` 是延长, 不打断连音线(与 jptok 同口径)
         if _jptok is not None:
             got = _jptok.parse_token(t)
             if got is None:                      # 不是 token(记号/说明文字)
+                tie, prev_key = False, None
                 continue
-            dig, _acc, off = got
+            dig, acc, off = got
             if dig is None:                      # 休止 0 / 念白 x
+                tie, prev_key = False, None
+                continue
+            key = (dig, acc)
+            if tie and prev_key == key:
+                tie = False                      # 连音线的第二个音头
                 continue
             p.append(str(dig))
             o.append(off)
+            tie, prev_key = False, key
         else:                                    # 兜底口径(窄正则)
             m = TOKRE.match(t)
             if not m:
+                tie, prev_key = False, None
                 continue
             _pre, acc, dig = m.groups()
             if dig in SKIP:
+                tie, prev_key = False, None
+                continue
+            key = (dig, 0)
+            if tie and prev_key == key:
+                tie = False
                 continue
             p.append(dig)
             o.append(acc.count(",") - acc.count("'"))
+            tie, prev_key = False, key
     return "".join(p), o
 
 

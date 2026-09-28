@@ -57,12 +57,27 @@ def digits_of(score):
     ⚠ 2026-09-28: 三连音开记号 `3[` 要跳过 —— jianpu-ly 写作 `3[ 5 3 4 ]`, 那个 **3 是连音数**,
       人读谱读的是 `5 3 4` 三个音。以前这里不跳, 于是 ④/④b 两条不变量在含连音的 4 首上误报
       "有音符被静默丢弃"(实测 qd1z_anthem / th06_15 / th075_34 / th10_06)。
+    ⚠ 2026-09-28 同日: **连音线 `X ~ X` 的第二个音头也不数**(与 jptok.pitched 同一口径) ——
+      它是同一个音被唱长, 人只数一个音。不跳的话 ④/④b 会在 3058 首带连音线的谱上误报。
     """
-    out = []
+    out, tie, prev_key = [], False, None
     for t in (score or "").split():
-        if KEY_SIG.match(t) or t.endswith("["):
+        if t == "~":
+            tie = prev_key is not None
             continue
-        out.append("".join(c for c in t if c in "1234567"))
+        if t == "-" or re.match(r"^[cqsdh]+-$", t or ""):
+            continue                     # `-` 是延长, 不打断连音线(与 jptok.pitched 同口径)
+        if KEY_SIG.match(t) or t.endswith("["):
+            tie, prev_key = False, None
+            continue
+        digs = "".join(c for c in t if c in "1234567")
+        acc = 1 if ("#" in t or "♯" in t) else (-1 if ("b" in t or "♭" in t) else 0)
+        key = (digs[-1:] if digs else "", acc)
+        if tie and digs and prev_key == key:
+            tie = False                  # 连音线的第二个音头
+            continue
+        out.append(digs)
+        tie, prev_key = False, key
     return "".join(out)
 
 
