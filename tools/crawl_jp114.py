@@ -61,26 +61,35 @@ def clean_title(detail_html, fallback):
 
 
 # ---- 1) 收集列表 ----
-items, page, last = [], START, None
-while len(items) < CAP * 3:
+# ⚠ 分页控件显示的"共 9 页"是**骗人的**(只列出一小段页码): 实测第 200 页仍有新条目。
+# 所以判停不用页码上限, 而用"这一页没有新 id"(或超过 MAXPAGES 保护)。
+MAXPAGES = int(os.environ.get("JP114_MAXPAGES", "400"))
+items, page, seen_ids, dry_pages = [], START, set(), 0
+while len(items) < CAP * 3 and page <= MAXPAGES:
     try:
         h = fetch(f"{BASE}/jianpu/lists-{CAT}-{page}.html")
     except Exception as e:
         print(f"  列表失败 {page}: {type(e).__name__}", flush=True)
         break
-    if last is None:
-        nums = [int(x) for x in re.findall(r"/jianpu/lists-%s-(\d+)\.html" % CAT, h)]
-        last = max(nums) if nums else START
-        print(f"   {NAME}(id={CAT}): 共 {last} 页", flush=True)
     found = re.findall(r'href="(/jianpu/(\d+)\.html)"[^>]*>([^<]{2,90})', h)
+    fresh = 0
     for path, sid, txt in found:
-        if path not in {i[0] for i in items}:
-            items.append((path, sid, txt.replace("&nbsp;", " ").strip()))
-    if page >= last:
-        break
+        if sid in seen_ids:
+            continue
+        seen_ids.add(sid)
+        items.append((path, sid, txt.replace("&nbsp;", " ").strip()))
+        fresh += 1
+    if page == START:
+        print(f"   {NAME}(id={CAT}): 从第 {START} 页开始扫(分页控件显示的页数不可信)", flush=True)
+    if fresh == 0:
+        dry_pages += 1
+        if dry_pages >= 2:                 # 连续两页没有新 id -> 到底了
+            break
+    else:
+        dry_pages = 0
     page += 1
     if page % 25 == 0:
-        print(f"   已翻 {page} 页, 收集 {len(items)}", flush=True)
+        print(f"   已扫到第 {page} 页, 收集 {len(items)}", flush=True)
     time.sleep(0.25)
 
 print(f"{NAME}: 收集 {len(items)} 个谱页, 下载上限 {CAP}", flush=True)
