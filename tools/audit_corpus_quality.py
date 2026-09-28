@@ -91,11 +91,24 @@ def main():
         seq = jptok.seq(sc)
         n = len(seq)
         groups[" ".join(sc.split())].append(r)
+        toks = len([t for t in sc.split() if t != "|"])
+        # ⚠ 2026-09-28 修: 原来这里是 `if n < 20: continue` —— 用**音数**当门槛, 于是
+        #   "音很少 + token 很多"(休止/延长占绝大多数)的失败谱**根本没被评估**:
+        #   实测那 17 首里 16 首的 n_notes 只有 9~16, 被这一句全挡在外面(只有 1 首 n>=20 进了 suspect)。
+        #   改成只在**样本太短**(token < 20)时跳过, 让"空谱"也能被下面的 `ratio` 判据抓到。
+        if toks < 20:
+            continue
         if n < 20:
+            # 音太少时 `top/n` 没意义(3 个音时恒等于 1.0), 所以这一支只看 ratio(= 音符/token)。
+            # ratio < 0.25 = 四分之三以上是休止/延长/念白 —— 实测这一档全是转写失败。
+            ratio = n / max(1, toks)
+            if ratio < 0.25:
+                junk.append((r["file"][0], r.get("title") or "", n, 0.0, round(ratio, 2), 0))
+            elif ratio < 0.35:
+                suspect.append((r["file"][0], r.get("title") or "", n, 0.0, round(ratio, 2), 0))
             continue
         c = collections.Counter(d for d, _x, _y in seq)
         top = c.most_common(1)[0][1]
-        toks = len([t for t in sc.split() if t != "|"])
         ratio = n / max(1, toks)
         info = (r["file"][0], r.get("title") or "", n, round(top / n, 2), round(ratio, 2), len(c))
         if top / n >= 0.9 or ratio < 0.25 or (len(c) <= 2 and n >= 20):
