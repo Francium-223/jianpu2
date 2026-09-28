@@ -19,7 +19,9 @@ jianpu-db 格式(见 D:/Documents_D/jianpu-db/README.md):
   %END
 
 我们只有图, 没有 MBID/usertag -> 留空待补(README 说 MBID 必填, 故加 TODO 注释)。
-用法: py -3.13 tools/to_jianpu_db.py [--transcriber 名字]
+用法: py -3.13 tools/to_jianpu_db.py [--transcriber 名字] [--mbid] [--meter]
+      [--outdir 目录] [--only 名单文件] [--avoid 已用名目录]
+      # 增量入库(推荐): --outdir <临时目录> --only <今天新谱名单> --avoid jianpu-db-out/scores
 输出: jianpu-db-out/scores/<name>.txt  (+ jianpu-db-out/progress.txt)
 """
 import os, sys, glob, re, time, hashlib, html
@@ -306,16 +308,40 @@ def main():
     kind = "work"
     if "--kind" in sys.argv:
         kind = sys.argv[sys.argv.index("--kind") + 1]
+    # `--outdir`: 换个落点(默认 jianpu-db-out/scores)。
+    # 为什么需要: 重跑一次会把**全部** batch-out 重新命名一遍, 而文件名是按"撞名才加 _2/_3"
+    # 定的 —— 想在不碰现成 8xxx 份成品的前提下核对"重命名是否会漂移", 就得先转到一个空目录里比。
+    if "--outdir" in sys.argv:
+        globals()["OUTDIR"] = sys.argv[sys.argv.index("--outdir") + 1]
+    # `--only <名单文件>`: 只转名单里的 batch 名(每行一个, 带不带 .txt 都行)。
+    # `--avoid <目录>`: 先把该目录下已经用掉的输出名占住, 让新谱自动躲开(退到 _2/_3)。
+    # 为什么要有这两个: 整份重转**不是**无害操作 —— 实测新谱会占掉旧名(见 tools/check_convert_rename_drift.py:
+    # 9043 个 batch 里有 162 首新谱抢走旧名, 176 首老谱被迫改名), 而导入是"只拷不覆盖"
+    # -> 抢名的新歌被丢掉、改名后的老歌被再拷一份。增量入库必须"只转新谱 + 躲开已有名"。
+    only = None
+    if "--only" in sys.argv:
+        only = set()
+        for _l in open(sys.argv[sys.argv.index("--only") + 1], encoding="utf-8"):
+            _l = _l.strip()
+            if _l:
+                only.add(_l[:-4] if _l.endswith(".txt") else _l)
+    seed = []
+    if "--avoid" in sys.argv:
+        seed = [os.path.splitext(os.path.basename(_q))[0]
+                for _q in glob.glob(os.path.join(sys.argv[sys.argv.index("--avoid") + 1], "*.txt"))]
     os.makedirs(OUTDIR, exist_ok=True)
     files = sorted(glob.glob(SRC))
     CLEAN = load_clean_titles_soft()
     print(f"曲名清洗表: {len(CLEAN)} 条(先用清名, 其余退回 title_of)", flush=True)
     n = 0
     n_local = 0
-    _used_names = set()          # 输出文件名去重(撞名时加 _2/_3, 不加源 ID)
+    _manifest = []
+    _used_names = set(seed)      # 输出文件名去重(撞名时加 _2/_3, 不加源 ID); --avoid 预先占名
     for f in files:
         name = os.path.splitext(os.path.basename(f))[0]
         if name in ("progress",):
+            continue
+        if only is not None and name not in only:
             continue
         toks = clean_tokens(open(f, encoding="utf-8").read())
         if len(toks) < 10:            # 太短(转写失败/空) -> 跳过
@@ -448,11 +474,19 @@ def main():
                 pass
         with open(f"{OUTDIR}/{safe}.txt", "w", encoding="utf-8") as g:
             g.write(_txt)
+        _manifest.append(f"{name}\t{safe}")
         n += 1
         if not mbid:
             n_local += 1
     print(f"转换完成: {n} 个 -> {OUTDIR}/  (MBID {'已查' if do_mbid else '未查'}, 占位 {n_local} 个)")
-    with open("jianpu-db-out/progress.txt", "w", encoding="utf-8") as g:
+    # 来源清单: 哪个 batch 名转成了哪个成品名。
+    # 为什么需要: 成品文件里只有 `%<成品名>`, **没有**来源信息 —— 于是"某个 batch 到底转过没有"
+    # 无从判断, 增量入库就只能整份重转(会抢名, 见 tools/check_convert_rename_drift.py 的实测)。
+    # 名字用 .tsv, 免得被 import_finished_scores.py 的 `*.txt` 当成品拷走。
+    with open(os.path.join(OUTDIR, "_converted.tsv"), "w", encoding="utf-8") as g:
+        g.write("batch\tout\n")
+        g.write("\n".join(_manifest) + ("\n" if _manifest else ""))
+    with open(os.path.join(OUTDIR, "..", "progress.txt"), "w", encoding="utf-8") as g:
         g.write(f"转换 {n} 个 (源 {len(files)} 个, mbid={do_mbid})\n")
 
 if __name__ == "__main__":

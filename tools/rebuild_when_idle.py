@@ -9,6 +9,13 @@
     py -3.13 tools/rebuild_when_idle.py [最多等多少分钟=180]
     py -3.13 tools/rebuild_when_idle.py 600 --site D:\\Documents_D\\jianpu-db.github.io
     py -3.13 tools/rebuild_when_idle.py 900 --import --site D:\\Documents_D\\jianpu-db.github.io
+    py -3.13 tools/rebuild_when_idle.py 5400 --convert --import --site D:\\Documents_D\\jianpu-db.github.io
+
+`--convert` 为什么有用(2026-09-28 补): 转录只写 `batch-out/`(裸 token), 成品目录要
+`to_jianpu_db.py` 转。而**整份重转会给现成成品改名** —— 实测 165 首新谱抢走旧名、178 首老谱被迫
+改名, 配上"只拷不覆盖"的导入 = **76 首白转、从未进语料**(tools/check_convert_damage.py 量出来的)。
+所以给 `--convert`: 先跑 `tools/convert_new_batches.py --apply`(只转账本里没有的新谱, 躲开已有名,
+落点隔离后再只拷不覆盖地并进成品), **然后**才轮到 `--import`。
 
 `--import` 为什么有用(2026-09-28 补): 流水线是**两段式**的 —— 转录批次只往
 `jianpu-db-out/scores/`(成品, 覆盖率报告里叫"待入库")写; 而"成品 -> `jianpu-db/scores/`"这一段
@@ -116,6 +123,35 @@ else:
     say("超时, 放弃"); sys.exit(1)
 
 say("写者已清空, 开始重建")
+
+# ---- 先把裸 token 转成成品(--convert) -------------------------------------------
+# 为什么需要这一段(**2026-09-28 实测的教训**): 转录批次只往 `batch-out/` 写裸 token, 而成品目录
+# 是靠 `to_jianpu_db.py` 整份重转出来的。整份重转**不是**无害操作: 新谱会**抢走**旧名
+# (实测 9053 个 batch 里 165 首新谱抢名 / 178 首老谱被迫改名), 导入又是"只拷不覆盖"
+# -> 抢名的新谱被丢掉(实测 **76 首**转出来却从未进语料), 老谱则可能被再拷一份。
+# `tools/convert_new_batches.py` 就是为此写的: 只转"账本里没有的"新谱, `--avoid` 躲开已有名,
+# 落点隔离在 `train-work/conv-new/`, 再只拷不覆盖地并进成品。
+CONVERT = "--convert" in sys.argv
+if CONVERT:
+    _cv = os.path.join(os.path.dirname(os.path.abspath(__file__)), "convert_new_batches.py")
+    _lost = r"D:\Documents_D\_analysis\lost_batches.txt"
+    if not os.path.isfile(_cv):
+        say(f"!! --convert 要的工具不在: {_cv}")
+    else:
+        _cmd = [sys.executable, "-u", _cv, "--apply"]
+        if os.path.isfile(_lost):
+            _cmd += ["--also", _lost]      # 补转"转过但被跳过"的谱(播种时会剔除它们)
+        with open(r"D:\Documents_D\jianpu2\train-work\convert_idle.log", "w", encoding="utf-8") as lg:
+            rc = subprocess.run(_cmd, cwd=os.path.dirname(_cv), stdout=lg, stderr=subprocess.STDOUT, text=True)
+        tail = ""
+        try:
+            with io.open(r"D:\Documents_D\jianpu2\train-work\convert_idle.log", encoding="utf-8") as f:
+                for ln in f:
+                    if ln.startswith("新谱(") or ln.startswith("合并:") or ln.startswith("转换完成"):
+                        tail += " " + ln.strip()
+        except Exception:                                        # noqa: BLE001
+            pass
+        say(f"转换新谱(convert_new_batches --apply) 退出码 {rc.returncode} ->{tail}")
 
 # ---- 先导入成品(--import) --------------------------------------------------------
 # 为什么要有这一步: 流水线是两段式的, 转录批次只往 `jianpu-db-out/scores/`(成品, 覆盖率报告里叫"待入库")
