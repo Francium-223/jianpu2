@@ -24,15 +24,29 @@ sys.stdout.reconfigure(encoding="utf-8")
 DRY = "--dry" in sys.argv
 
 # ---------- 采数 ----------
-scores = glob.glob("jianpu-db-out/scores/*.txt")
+# "成品" = **已入库的那批**(`jianpu-db/scores`) —— 2026-09-29 改: 增量管线
+# (`convert_new_batches` -> `import_finished_scores`) 直接把新谱并进 `jianpu-db/scores`,
+# 而 `jianpu-db-out/scores` 只是上一次"整份重转"的落点, 实测只有 8,687 份(入库 10,687),
+# 拿它当"成品曲谱"会把交付量说少 2 千份。
+_DB_SCORES = r"D:\Documents_D\jianpu-db\scores"
+scores = (glob.glob(os.path.join(_DB_SCORES, "*.txt")) if os.path.isdir(_DB_SCORES)
+          else glob.glob("jianpu-db-out/scores/*.txt"))
 n_scores = len(scores)
 n_src = sum(1 for f in scores if any(l.startswith("source=") for l in
                                      io.open(f, encoding="utf-8", errors="replace")))
 q = {k: len(glob.glob(f"batch-out{k}/*.txt")) for k in ("", "-dup", "-bad", "-empty", "-suspect")}
-jsonl = "train-work/jpdbtest/out.jsonl"
+# **语料本体**(2026-09-29 修): 以前读 `train-work/jpdbtest/out.jsonl` —— 那是一份**测试遗留**,
+# 数字永远停在 8,675 首, 于是"醒来汇报"里的语料数一直是假的(真实 10,191 首)。现在读真语料,
+# 音符数按 `score` 字段里的数字个数(与其它工具同口径; 不是已废弃的 `n_notes` 字段)。
+JSONL = r"D:\Documents_D\jianpu-db\data.jsonl"
+if not os.path.exists(JSONL):
+    JSONL = "train-work/jpdbtest/out.jsonl"
+sys.path.insert(0, os.path.join("skills", "jianpu-melody-lookup"))
+import jptok as _JP        # noqa: E402  唯一 token 口径(数音符也用它, 别再自己数数字)
 n_song = n_note = 0
-if os.path.exists(jsonl):
-    for line in io.open(jsonl, encoding="utf-8", errors="replace"):
+_titles = set()
+if os.path.exists(JSONL):
+    for line in io.open(JSONL, encoding="utf-8", errors="replace"):
         line = line.strip()
         if not line:
             continue
@@ -41,7 +55,19 @@ if os.path.exists(jsonl):
         except Exception:
             continue
         n_song += 1
-        n_note += int(d.get("n_notes") or 0)
+        sc = d.get("score") or ""
+        # 音符数用**唯一 token 口径** `jptok.pitched(score, merge_ties=True)` —— 实测它与站点
+        # stats.json 的 notes 完全相等(2026-09-29: 两边都是 1,817,657)。自己数数字会多算:
+        # 含 `0` 休止多 12.5 万、三连音开记号的 `3[` 又把连音数当音、连音线重复的音头也没并。
+        body = " ".join(l for l in sc.splitlines()
+                        if not l.startswith("%") and not re.match(r"^[A-Za-z_]+=", l))
+        try:
+            n_note += len(_JP.pitched(body, merge_ties=True))
+        except Exception:
+            n_note += sum(1 for c in body if c in "1234567")
+        t = (d.get("title") or "").strip()
+        if t:
+            _titles.add(t)
 
 # 索引规模(与 melody_query 同口径: batch-out + batch-out-dup, 按曲名分组)
 sys.path.insert(0, "tools")
@@ -53,10 +79,10 @@ for pat in ("batch-out/*.txt", "batch-out-dup/*.txt"):
         base = re.sub(r"[\u200b-\u200f\u202a-\u202e\u2060\ufeff]", "", b.split("__")[0])
         key = re.split(r"[（(\s　【\[《]", base)[0].strip() or base.strip()
         _groups.setdefault(key, []).append(b)
-n_idx_song = len(_groups)
-n_idx_score = sum(len(v) for v in _groups.values())
+n_idx_song = len(_titles) or len(_groups)
+n_idx_score = n_song or sum(len(v) for v in _groups.values())
 
-print(f"采数: scores={n_scores} source={n_src} JSONL={n_song}首/{n_note:,}音符 "
+print(f"采数: 成品={n_scores} source={n_src} 语料={n_song}首/{n_note:,}音符(源 {JSONL}) "
       f"索引={n_idx_song}首/{n_idx_score}份 队列={q}")
 
 # ---------- 替换 ----------
@@ -70,8 +96,9 @@ EDITS = [
      f"{n_src/max(1,n_scores)*100:.1f}% / JSONL {n_song} 首 {n_note/10000:.1f} 万音符 /\n"
      f"检索索引 {n_idx_song} 首歌 / 基准集 100/100 全覆盖。**"),
     ("train-work/DELIVERY.md",
-     r"- 成品谱: \*\*\d+\*\* 份",
-     f"- 成品谱: **{n_scores}** 份"),
+     r"- 成品谱: \*\*\d+\*\* 份(?: \([^)]*\))?",
+     f"- 成品谱: **{n_scores}** 份 (已入库 `jianpu-db/scores/*.txt`; "
+     f"`jianpu-db-out/scores` 只是上次整份重转的落点, 会比交付量少)"),
     ("train-work/DELIVERY.md",
      r"- 带 `source=` 出处的: \d+ \([\d.]+%\)，缺 \d+ 份",
      f"- 带 `source=` 出处的: {n_src} ({n_src/max(1,n_scores)*100:.1f}%)，缺 {n_scores-n_src} 份"),
@@ -82,6 +109,9 @@ EDITS = [
     ("train-work/DELIVERY.md",
      r"索引 = \d+ 首歌 / \d+ 份谱",
      f"索引 = {n_idx_song} 首歌 / {n_idx_score} 份谱"),
+    ("train-work/DELIVERY.md",
+     r"`jianpu-db-out/scores/\*\.txt` —— 每份是 jianpu-ly 文本",
+     r"`jianpu-db/scores/*.txt`（已入库）—— 每份是 jianpu-ly 文本"),
 ]
 
 done, skipped = [], []
