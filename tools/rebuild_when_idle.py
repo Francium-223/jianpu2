@@ -44,7 +44,19 @@ guard_help(__doc__)
 
 sys.stdout.reconfigure(encoding="utf-8")
 DB = r"D:\Documents_D\jianpu-db"
-PAT = re.compile(r"finalize|to_jianpu_db|parse_scores|transcribe|absorb|kugou_pipeline")
+# 写者判据分两档:
+#   * DB_WRITERS —— **真的会写 scores/ 与 data.jsonl** 的那些工具。等它们是对的: 一边重建一边被覆盖,
+#     data.jsonl 就会与磁盘对不上(本文件 docstring 里的那个事故)。
+#   * PAT(默认, = DB_WRITERS + transcribe/absorb) —— 更保守: 连**转录**也等。理由是"转录之后紧接着
+#     就是驱动脚本的 finalize/导入", 早做一次重建多半马上被覆盖, 白忙。
+#     ⚠ 2026-09-28 实测这个保守档会把自己饿死: 外部 `mandopop_absorb3` 从 07:53 一直逐个源转录到 20:28
+#       (12.5 小时里**没有一刻**没有转录进程), 于是守候从 10:43 一直等到被关机, 一次都没重建 ——
+#       而转录只写 `batch-out/`, 跟 `scores/`、`data.jsonl` **毫无关系**。
+#       所以给了 `--ignore-transcribers`: 只等真正的 DB 写者。实测那次手工执行(确认无 DB 写者后
+#       直接 import+parse)完全安全, 语料 8926 -> 9340。
+DB_WRITERS = re.compile(r"finalize|to_jianpu_db|parse_scores|import_finished|db_to_jsonl|kugou_pipeline")
+PAT_STRICT = re.compile(r"finalize|to_jianpu_db|parse_scores|transcribe|absorb|kugou_pipeline")
+PAT = DB_WRITERS if "--ignore-transcribers" in sys.argv else PAT_STRICT
 _argv = [a for a in sys.argv[1:] if not a.startswith("-")]
 WAIT_MIN = int(_argv[0]) if _argv and _argv[0].isdigit() else 180
 SITE = None
