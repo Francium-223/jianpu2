@@ -29,6 +29,11 @@
 data/ 摊到部署目录。于是新转写的歌会一直躺在 `scores/` 里, 没人跑 build_web_data.py 就上不了站。
 给了 --site 就顺带重建前端索引并**自己对账**(stats.songs == data.jsonl 行数、0 首重复小节线)。
 **不自动 git commit/push**: 推远端是人的决定, 脚本只把该敲的命令打出来。
+
+`--rescue` 为什么有用(2026-09-29 补): `--convert` 只转"账本里没有的"谱, 所以**重转过**(内容变了
+但账本里已有)的谱永远进不了语料 —— 实测《爱错》多页回锅 6 音 -> 204 音, 只跑 --convert 时语料里
+还是旧的那份。给了 `--rescue` 就再跑一遍 `convert_new_batches.py --rescue`(按内容判: 旋律在语料里
+找不到的才转)。**多页回锅那几批必须带这个参数。**
 """
 import atexit
 import io
@@ -173,6 +178,7 @@ say("写者已清空, 开始重建")
 # `tools/convert_new_batches.py` 就是为此写的: 只转"账本里没有的"新谱, `--avoid` 躲开已有名,
 # 落点隔离在 `train-work/conv-new/`, 再只拷不覆盖地并进成品。
 CONVERT = "--convert" in sys.argv
+RESCUE = "--rescue" in sys.argv
 if CONVERT:
     _cv = os.path.join(os.path.dirname(os.path.abspath(__file__)), "convert_new_batches.py")
     _lost = r"D:\Documents_D\_analysis\lost_batches.txt"
@@ -180,6 +186,10 @@ if CONVERT:
         say(f"!! --convert 要的工具不在: {_cv}")
     else:
         _cmd = [sys.executable, "-u", _cv, "--apply"]
+        if RESCUE:
+            # **重转过**的谱(内容变了但账本里已有)只能靠 --rescue 抓回来: 账本播种会剔除它们。
+            # 实测 2026-09-29: 多页回锅把《爱错》从 6 音重转成 204 音, 只跑 --convert 时它**不进语料**。
+            _cmd += ["--rescue"]
         if os.path.isfile(_lost):
             _cmd += ["--also", _lost]      # 补转"转过但被跳过"的谱(播种时会剔除它们)
         with open(r"D:\Documents_D\jianpu2\train-work\convert_idle.log", "w", encoding="utf-8") as lg:
