@@ -114,6 +114,43 @@ def pick_page(d):
     return best[0]
 
 
+def pick_pages(d):
+    """目录里的**全部**候选谱页(按文件名里的数字排序), 给"多页谱拼接"用。
+
+    为什么需要(2026-09-29 实测): 旧管线只用 pick_page 挑**一张**页, 于是
+    `爱错（简和谱）__qupu123-350544`(两页, 002.jpg 是第 2 页)成品只有 `1 7 - 3 6 5 1`
+    六个音 —— 榜单曲在库里成了"碎片"。多页谱必须逐页转写再拼。
+
+    只取竖版页(h >= 1.3w, 宽高>100), 这样 qupu123 的 001.jpg 标题条(750x55)与横版插图
+    都不会进来; 文件名里的数字决定页序。调用方仍要**逐页过纯简谱门**——qupu123 的
+    "双谱"目录里 004/006/008 是五线谱页, 与简谱页同为竖版, 只能靠门来挡。
+    """
+    cands = [f for f in glob.glob(os.path.join(d, "*"))
+             if os.path.splitext(f)[1].lower() in (".jpg", ".jpeg", ".png")
+             and "__pg" not in os.path.basename(f)]
+    if not cands:
+        return []
+    from PIL import Image as _Img
+    info = []
+    for f in cands:
+        try:
+            w, h = _Img.open(f).size
+        except Exception:
+            continue
+        if w > 100 and h > 100 and h >= 1.3 * w:
+            info.append((f, w, h))
+
+    def _idx(t):
+        m = re.search(r"(\d+)", os.path.basename(t[0]))
+        return int(m.group(1)) if m else 9999
+
+    info.sort(key=_idx)
+    if not info:                      # 没有竖版页 -> 退回旧逻辑挑一张
+        one = pick_page(d)
+        return [one] if one else []
+    return [t[0] for t in info]
+
+
 def safe_name(name):
     """输出文件名规范化。
     病根: jianpujia 的部分目录名是"UTF-8 被按 latin-1 解码"的 mojibake, 其中含
