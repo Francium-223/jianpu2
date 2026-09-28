@@ -299,6 +299,84 @@ def to_score(name, toks, transcriber, mbid="", kind="work", meter="4/4", mb_titl
     lines.append("%END")
     return "\n".join(lines) + "\n"
 
+
+# ---- `--stable`: 让"整份重转"不再抢名 ------------------------------------------------
+# 病根: 输出名是按 `sorted(batch-out)` 的**遍历顺序**定的(撞名才加 _2/_3)。往 batch-out 里新丢一批谱
+# 再整份重转, 新谱若排在前面就会**占掉**旧名, 老谱被挤成 _2 —— 配上"只拷不覆盖"的导入
+# = 新歌丢、老歌重(实测 2026-09-28: 165 首抢名 / 76 首白转)。
+#
+# 修法(--stable, 可选, 不影响默认行为): 先用**内容**把"现成成品 ↔ 是哪个 batch 转的"对上
+# (旋律指纹一一对应), 让老谱**占住自己的名字**; 再让新谱在剩下的名字里躲。于是:
+#   * 现成成品的名字永远不会被别的谱占用;
+#   * 老谱重转后名字不变 -> 内容刷新但名字稳定 -> 导入不会漏、也不会多拷一份。
+# 默认不开: 它会改变输出命名(哪怕只是极少数), 而 finalize 等外部脚本会调本工具。
+_OCT = str.maketrans("", "", ",'")
+
+
+def _melody_hash(tokens):
+    """旋律指纹: 只取有音高的 token(带时值/变音, 去八度记号) —— **忽略休止/延长/念白**。"""
+    h = hashlib.sha1()
+    for t in tokens:
+        if NOTE_RE.match(t) and any(c in "1234567" for c in t):
+            h.update(t.translate(_OCT).encode("utf-8"))
+            h.update(b" ")
+    return h.hexdigest()
+
+
+def _body_hash(tokens):
+    """正文指纹: **逐字**整串(含休止/延长/念白/八度记号)。
+
+    认领老名字时用这个而不是旋律指纹 —— 旋律指纹忽略休止, 会让"音符相同、休止写法不同"的两份
+    互相对上(实测: 用旋律指纹时有 12 份成品被写成了同一旋律的另一个版本), 逐字比就没这个问题。
+    """
+    return hashlib.sha1(" ".join(tokens).encode("utf-8")).hexdigest()
+
+
+def _note_tokens_of_outfile(path):
+    """成品文件 -> 音符 token 列表(跳过 % 头、key=value、拍号行; 到 %END 为止)。"""
+    out = []
+    seen = False
+    for ln in open(path, encoding="utf-8", errors="replace"):
+        s = ln.strip()
+        if not seen:
+            if s == "%--":
+                seen = True
+            continue
+        if s == "%END":
+            break
+        if not s or "=" in s or re.fullmatch(r"\d+/\d+", s):
+            continue
+        out += s.split()
+    return out
+
+
+def _stable_claims(outdir, files, clean):
+    """-> {batch 名: 输出名}: 用内容把现成成品与 batch 对上, 对上就让它占住那个名字。"""
+    by_hash = {}
+    for p in glob.glob(os.path.join(outdir, "*.txt")):
+        stem = os.path.splitext(os.path.basename(p))[0]
+        try:
+            by_hash.setdefault(_body_hash(_note_tokens_of_outfile(p)), []).append(stem)
+        except OSError:
+            continue
+    claims, taken = {}, set()
+    for f in files:
+        name = os.path.splitext(os.path.basename(f))[0]
+        try:
+            tk = clean_tokens(open(f, encoding="utf-8", errors="replace").read())
+        except OSError:
+            continue
+        if len(tk) < 10:
+            continue
+        stems = by_hash.get(_body_hash(tk)) or []
+        # 内容相同的 batch 可能不止一个(逐字节重复的转写): 第一个占住, 其余照旧躲名。
+        cand = [s for s in stems if s not in taken]
+        if cand:
+            claims[name] = cand[0]
+            taken.add(cand[0])
+    return claims
+
+
 def main():
     transcriber = TRANSCRIBER
     if "--transcriber" in sys.argv:
@@ -329,6 +407,12 @@ def main():
     if "--avoid" in sys.argv:
         seed = [os.path.splitext(os.path.basename(_q))[0]
                 for _q in glob.glob(os.path.join(sys.argv[sys.argv.index("--avoid") + 1], "*.txt"))]
+    # `--stable`: 内容对号入座, 老谱占住自己的名字(见 _stable_claims 的说明)。
+    # `--stable-from <目录>`: 拿哪个目录当"现成成品"来对号(默认 = 落点; 转到空目录核对时要用它)。
+    stable = "--stable" in sys.argv
+    stable_from = OUTDIR
+    if "--stable-from" in sys.argv:
+        stable_from = sys.argv[sys.argv.index("--stable-from") + 1]
     os.makedirs(OUTDIR, exist_ok=True)
     files = sorted(glob.glob(SRC))
     CLEAN = load_clean_titles_soft()
@@ -337,6 +421,20 @@ def main():
     n_local = 0
     _manifest = []
     _used_names = set(seed)      # 输出文件名去重(撞名时加 _2/_3, 不加源 ID); --avoid 预先占名
+    _claims = {}
+    if stable:
+        try:
+            _claims = _stable_claims(stable_from, files, clean_tokens)
+        except Exception as _e:                                  # noqa: BLE001
+            # **绝不因为"想保名字"而把整次重建搞崩**: 出错就退回原来的按序命名(会抢名, 但能跑完)。
+            print(f"[--stable] !! 对号入座失败({type(_e).__name__}: {_e}) -> 退回普通命名", flush=True)
+            _claims = {}
+        # ⚠ 现成成品的名字要**一直留在 used 里**(否则未认领的新谱会先来抢走它 —— 实测就是这么错的):
+        #   只有"内容对上的那个 batch"在轮到自己时把名字临时摘出来用掉, 用完再占回去。
+        _used_names |= {os.path.splitext(os.path.basename(_p))[0]
+                        for _p in glob.glob(os.path.join(stable_from, "*.txt"))}
+        print(f"[--stable] 内容对上号的老谱 {len(_claims)} 份(保住原名); "
+              f"占住的名字 {len(_used_names)} 个, 未认领的新谱只能躲", flush=True)
     for f in files:
         name = os.path.splitext(os.path.basename(f))[0]
         if name in ("progress",):
@@ -351,6 +449,11 @@ def main():
         # 撞名处理: 不同源的谱常有同名标题(如 3 首《只是太爱你》), 直接覆盖会丢数据。
         # 文件名保持中立(只含曲名), 仅在冲突时加最小序号 _2/_3...
         safe = safe_base
+        if stable and name in _claims:
+            # 内容对上了某份现成成品 -> 只有它能拿这个名字(临时从 used 摘出, 下面循环就不会躲)
+            safe = _claims[name]
+            _used_names.discard(safe)
+            safe_base = safe
         _k = 2
         while safe in _used_names:
             safe = f"{safe_base}_{_k}"

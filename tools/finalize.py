@@ -81,7 +81,13 @@ for _f in glob.glob("jianpu-db-out/scores/*.txt"):
         pass
 if _n_old:
     print(f"\n=== 5) 旧 scores 移到 scores-prev ({_n_old} 个, 供拍号/人工标记复用) ===")
-run(["tools/to_jianpu_db.py", "--meter", "--transcriber", "jianpu2-auto"], "5) 重建 scores")
+# `--stable`: 上面刚把旧成品整体移到 scores-prev, 输出目录是空的 -> 若不"对号入座", 新谱会按 sorted
+# 顺序**抢走旧名**(实测 2026-09-28 07:16 那次: 165 首新谱抢名 / 178 首老谱被迫改名), 而导入是"只拷不覆盖"
+# -> 抢名的新歌被丢掉、改名后的老歌被再拷一份(实测 76 首白转)。
+# `--stable-from scores-prev` 让每份老谱按**内容**认回自己的名字, 新谱只能躲到 _2/_3。
+# 对不上号/出任何错时 to_jianpu_db 会自己退回普通命名, 不会让这一步失败。
+run(["tools/to_jianpu_db.py", "--meter", "--stable", "--stable-from", "jianpu-db-out/scores-prev",
+     "--transcriber", "jianpu2-auto"], "5) 重建 scores")
 run(["tools/make_source_map.py"], "5b) 生成来源映射表(旁路, 供溯源)")
 
 # 6) 下游(副本, 不动用户的 jianpu-db 仓库)
