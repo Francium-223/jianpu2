@@ -28,3 +28,9 @@ _*.mid
 
 # 技能目录里的语料索引(12MB, 由 jianpu-db/data.jsonl 同步而来)
 skills/*/data.jsonl
+# HF 缓存在仓库里会随每次下载膨胀(2026-09-30 加)
+.hf-cache/
+hf_cache/
+
+# 打包产物(由 build 脚本生成, 不入库)
+deploy/kaggle-*.zip
