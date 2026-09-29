@@ -149,10 +149,10 @@ def _digits_of_batch(crops, batch_size=None):
         enc = _proc(images=imgs, text=[tmpl] * len(imgs), padding=True, return_tensors="pt")
         enc = {k: (v.to(_model.device) if torch.is_tensor(v) else v) for k, v in enc.items()}
         with torch.no_grad():
-            # `JP_CONF=1` 时顺手把**每个数字的 top-1 概率**收下来(多要 output_scores 不多跑前向),
-            # 供"谱级 confidence"用: 贪心解码下这就是模型对自己认得有多确定的直接读数。
-            # 默认关(不开就不多算 softmax, 也不改输出形状), 免得影响正在跑的批次。
-            if os.environ.get("JP_CONF") == "1":
+            # 置信度**默认就收**(2026-09-30; 设 `JP_CONF=0` 关掉): 实测零开销 ——
+            # 同一张图各跑两次, JP_CONF 关 30.1/30.0 秒 vs 开 30.0/30.4 秒(多要 output_scores
+            # 只是把已经算出来的 logits 做一次 softmax, 不多跑前向)。
+            if os.environ.get("JP_CONF", "1") == "1":
                 out = _model.generate(**enc, max_new_tokens=2, do_sample=False,
                                       return_dict_in_generate=True, output_scores=True)
                 _collect_conf(out.scores)
