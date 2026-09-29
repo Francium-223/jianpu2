@@ -47,6 +47,15 @@ def main():
     a = ap.parse_args()
 
     # 1) 语料里"可疑"的曲名
+    #   三类(2026-09-30 实测):
+    #     ① 单字 / 纯数字        —— 乱码名只救回一两个字节(`两`、`17`)
+    #     ② 名字里带 `_` 连串    —— 未命名/下划线顶替坏字节(`中__年`、`乡__路_谱`)
+    #     ③ `未命名-<站点>-<id>` —— 抓取时就没拿到标题
+    def dirty(t):
+        return (len(t) <= 1 or bool(re.match(r"^[\d\s\-_.]+$", t))
+                or "__" in t or t.count("_") >= 2 or t.startswith("未命名")
+                or bool(re.search(r"(jianpu\.cn|qupu123|jianpujia|jianpucn)", t)))
+
     sus = {}
     for line in io.open(os.path.join(DB, "data.jsonl"), encoding="utf-8"):
         line = line.strip()
@@ -55,11 +64,9 @@ def main():
         d = json.loads(line)
         t = (d.get("title") or "")
         s = (d.get("source") or [""])[0]
-        if not s:
-            continue
-        if len(t) <= 1 or re.match(r"^[\d\s\-_.]+$", t):
+        if s and dirty(t):
             sus[s] = t
-    print(f"语料里可疑曲名(单字/纯数字) {len(sus)} 个 source")
+    print(f"语料里可疑曲名(单字/纯数字/下划线/未命名) {len(sus)} 个 source")
 
     # 2) batch-out 索引: source -> [文件名]
     idx = {}
