@@ -77,12 +77,18 @@ for i, d in enumerate(dirs):
         dropped = 0
         page_notes = []
         page_toks = []
+        # 逐页的置信度(见下面"谱级 confidence"): 每页一定有一个 (confidence, conf_p10, conf_n)
+        page_conf = []
         for k, p in enumerate(good):
             side = png if k == 0 else f"{png[:-4]}_m{k}.png"
             tk, meta = BT.transcribe_paged(p, txt, side)
             nd = sum(1 for t in tk if t.lstrip("qsdh,").rstrip("'.") and t.lstrip("qsdh,").rstrip("'.")[-1] in "1234567")
             page_notes.append(nd)
             page_toks.append(tk)
+            # ⚠ `meta` 是**这一页**的, 多页时会被下一页覆盖 —— 所以置信度必须在这里逐页收集,
+            #   不能等循环结束只读 `meta`(那样只拿到最后一页的, 2026-09-30 自查时发现)。
+            if meta and isinstance(meta, list) and meta[0].get("confidence") is not None:
+                page_conf.append((meta[0]["confidence"], meta[0].get("conf_p10"), meta[0].get("conf_n") or 0))
         # **织体判据(2026-09-30 重做 —— 上一版把真歌截断了, 见下)**:
         #   上一版是"逐页丢 >300 音", 实测**截断了真歌**: 13 份被丢过页, 丢掉的页是 321~508 音,
         #   而这些谱**每页中位只有 285 音**(旋律谱的 p90 才 265!) —— 也就是把正常流行歌最密的那几页
@@ -123,10 +129,18 @@ for i, d in enumerate(dirs):
         # 下游按 token 逐行解析；置信度是元数据，塞进去会污染口径。转换器读这个边车写成
         # 曲谱头里的 `confidence=`（唯一真源还是 jp_transcribe 的概率）。
         try:
-            if meta and isinstance(meta, list) and meta[0].get("confidence") is not None:
-                side = {"confidence": meta[0]["confidence"], "conf_p10": meta[0].get("conf_p10"),
-                        "conf_n": meta[0].get("conf_n"), "pages": len(good),
-                        "page_notes": page_notes, "dropped_pages": dropped}
+            if page_conf:
+                # **谱级 confidence**: 多页时按每页数字个数**加权平均**(页越密权重越大),
+                # `conf_p10` 取**最差那一页**的分位(它才是"有没有个别音很虚"的信号)。
+                _w = sum(n for _c, _p, n in page_conf)
+                _c = (sum(c * n for c, _p, n in page_conf) / _w) if _w else \
+                    (sum(c for c, _p, _n in page_conf) / len(page_conf))
+                _p10 = min((p for _c, p, _n in page_conf if p is not None), default=None)
+                side = {"confidence": round(_c, 3),
+                        "conf_p10": (round(_p10, 3) if _p10 is not None else None),
+                        "conf_n": _w, "pages": len(good),
+                        "page_notes": page_notes, "dropped_pages": dropped,
+                        "page_confidence": [c for c, _p, _n in page_conf]}
                 with open(os.path.splitext(txt)[0] + ".json", "w", encoding="utf-8") as g:
                     json.dump(side, g, ensure_ascii=False)
         except Exception:
