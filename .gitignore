@@ -34,3 +34,5 @@ hf_cache/
 
 # 打包产物(由 build 脚本生成, 不入库)
 deploy/kaggle-*.zip
+# 调转写时的试验散件(截图/PDF, 留档在磁盘但不入库)
+_analysis/_scratch/
