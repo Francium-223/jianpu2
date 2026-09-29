@@ -288,6 +288,10 @@ def main():
             "sec_cn": sec_label(sec_at(head.get("_secmap"), i, n)),
             "sec_w": sec_weight(sec_at(head.get("_secmap"), i, n)),
             "matched": p[i:i + n] if i + n <= len(p) else p[i:],
+            # 转写置信度(有就带出来): 排错时先看它 —— 低置信的谱更可能是转写噪声
+            "confidence": head.get("confidence"),
+            "conf_p10": head.get("conf_p10"),
+            "versions": len(groups.get(g) or []),
         })
     if a.json:
         print(json.dumps({"query": QS, "index_songs": len(groups),
@@ -305,8 +309,16 @@ def main():
         for r in out:
             od = "-" if r["octave_diff"] is None else str(r["octave_diff"])
             sec = ("〔%s〕" % r["sec_cn"]) if r.get("sec_cn") and r["sec_cn"] != "整曲" else ""
+            # 置信度**只在这份谱真有读数时**才打(老谱没有 -> 不显示, 免得看起来像"50% 很烂")
+            try:
+                cf = float(r.get("confidence"))
+                cfs = f" 置信 {cf * 100:.0f}%"
+                if r.get("conf_p10"):
+                    cfs += f"/低10% {float(r['conf_p10']) * 100:.0f}%"
+            except (TypeError, ValueError):
+                cfs = ""
             print(f"{r['rank']:>2} {r['errors']:>4} {od:>5}  {str(r['title'])[:24]:<26} "
-                  f"{str(r['status']):<4} {r['source']} {sec}")
+                  f"{str(r['status']):<4} {r['source']} {sec}{cfs}")
         if out and out[0]["matched"]:
             print(f"\n命中片段: {out[0]['matched']}")
         # **并列提示**: 与第一名同代价的歌还有几首 —— 有的话，第一名的"唯一性"是假的。
