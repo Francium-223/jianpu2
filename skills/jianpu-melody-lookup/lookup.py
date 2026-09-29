@@ -264,7 +264,10 @@ def main():
         return (total,
                 0 if head.get("status") == "ok" else 1,
                 -_conf(head),
-                -len(groups.get(g) or []),
+                # **按"不同 source"数版本**, 不是按文件数 —— 实测语料里 888 个 source 有 1,835 份成品
+                # (同一次抓取被转过两遍/多遍), 按文件数会把"同一页的两份稿"当成两个版本,
+                # 于是"版本多"这条并列依据被灌水(2026-09-30 实测)。
+                -len({((e[0].get("source") or [""])[0]) for e in (groups.get(g) or [])}),
                 -secw, pop.get(pop_key(g), 0), -hot_of(head),
                 1 if BADWORD.search(head.get("title") or "") else 0,
                 len(head.get("title") or ""), g)
@@ -291,7 +294,7 @@ def main():
             # 转写置信度(有就带出来): 排错时先看它 —— 低置信的谱更可能是转写噪声
             "confidence": head.get("confidence"),
             "conf_p10": head.get("conf_p10"),
-            "versions": len(groups.get(g) or []),
+            "versions": len({((e[0].get("source") or [""])[0]) for e in (groups.get(g) or [])}),   # 按 source 去重
         })
     if a.json:
         print(json.dumps({"query": QS, "index_songs": len(groups),
