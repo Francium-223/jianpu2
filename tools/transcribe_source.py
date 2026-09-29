@@ -76,18 +76,36 @@ for i, d in enumerate(dirs):
         toks, meta = [], None
         dropped = 0
         page_notes = []
+        page_toks = []
         for k, p in enumerate(good):
             side = png if k == 0 else f"{png[:-4]}_m{k}.png"
             tk, meta = BT.transcribe_paged(p, txt, side)
-            # **织体页判据**(2026-09-29 加): 一页上的"音符"多到不像旋律时就丢掉这一页。
-            # 阈值是**实测标定**出来的(202 份多页回锅日志, 每页音数): 中位 145 · 25% 83 · 75% 210 ·
-            # 90% 265 · 最大 513; 平均每页 >250 的占 13.9% · >400 的占 1.5%。
-            # 取 **300**: 只砍"明显是钢琴/织体"的那一小撮(见 438/513 那些), 不去动"密但仍是旋律"的谱
-            # (250 会切掉 14%, 容易把正常谱的某一页也丢掉 -> 旋律被截断, 那比留着噪声更糟)。
-            # 可用 JP_MAX_NOTES_PER_PAGE 覆盖(设 0 = 关掉这层)。
-            cap = int(os.environ.get("JP_MAX_NOTES_PER_PAGE", "300"))
             nd = sum(1 for t in tk if t.lstrip("qsdh,").rstrip("'.") and t.lstrip("qsdh,").rstrip("'.")[-1] in "1234567")
             page_notes.append(nd)
+            page_toks.append(tk)
+        # **织体判据(2026-09-30 重做 —— 上一版把真歌截断了, 见下)**:
+        #   上一版是"逐页丢 >300 音", 实测**截断了真歌**: 13 份被丢过页, 丢掉的页是 321~508 音,
+        #   而这些谱**每页中位只有 285 音**(旋律谱的 p90 才 265!) —— 也就是把正常流行歌最密的那几页
+        #   当织体丢了(例:《旅行》1580 -> 357、《圣诞结》416 -> 112)。
+        #   所以改成**按整份谱判**, 而不是按单页判:
+        #     ① 整份的**每页中位**超过 `JP_AVG_NOTES_PER_PAGE`(默认 400) -> 整份当织体, 不写稿;
+        #     ② 单页超过 `JP_MAX_NOTES_PER_PAGE`(默认 600) 才丢那一页(只兜极端的)。
+        #   400 这条线也是实测的: 上面那 13 份**真歌**的每页中位最高 397(圣诞结), 而明确的钢琴
+        #   织体 `BEYOND_THE_TIME钢琴简谱` 8 页 3,504 音 = 中位 438, 贝斯谱_邓丽君3 中位 620
+        #   -> 取 400 正好把 15 个实测样本分成"13 留 / 2 跳", 且**一页都不截断**。
+        #   设 0 可分别关掉这两层。
+        cap = int(os.environ.get("JP_MAX_NOTES_PER_PAGE", "600"))
+        avg_cap = int(os.environ.get("JP_AVG_NOTES_PER_PAGE", "400"))
+        if avg_cap and page_notes:
+            _srt = sorted(page_notes)
+            _med = _srt[len(_srt) // 2]
+            if _med > avg_cap:
+                if os.path.exists(png):
+                    os.remove(png)
+                print(f"[{i+1}/{len(dirs)}] {name[:40]}: 整份像织体(每页中位 {_med} 音 > {avg_cap}), 跳过 "
+                      f"({time.time()-t0:.0f}s)", flush=True)
+                continue
+        for nd, tk in zip(page_notes, page_toks):
             if cap and nd > cap:
                 dropped += 1
                 continue
