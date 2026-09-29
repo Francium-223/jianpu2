@@ -79,10 +79,12 @@ for i, d in enumerate(dirs):
             side = png if k == 0 else f"{png[:-4]}_m{k}.png"
             tk, meta = BT.transcribe_paged(p, txt, side)
             # **织体页判据**(2026-09-29 加): 一页上的"音符"多到不像旋律时就丢掉这一页。
-            # 实测依据: 正常简谱一页 80~150 个音; 而"钢琴简谱"那种和弦堆叠一页 200~450 个音
-            # (例: BEYOND_THE_TIME钢琴简谱 8 页 3,504 音 ≈ 438/页)。它是钢琴织体, 不是旋律,
-            # 进了旋律语料只会当噪声。阈值可用 JP_MAX_NOTES_PER_PAGE 覆盖(设 0 = 关掉这层)。
-            cap = int(os.environ.get("JP_MAX_NOTES_PER_PAGE", "250"))
+            # 阈值是**实测标定**出来的(202 份多页回锅日志, 每页音数): 中位 145 · 25% 83 · 75% 210 ·
+            # 90% 265 · 最大 513; 平均每页 >250 的占 13.9% · >400 的占 1.5%。
+            # 取 **300**: 只砍"明显是钢琴/织体"的那一小撮(见 438/513 那些), 不去动"密但仍是旋律"的谱
+            # (250 会切掉 14%, 容易把正常谱的某一页也丢掉 -> 旋律被截断, 那比留着噪声更糟)。
+            # 可用 JP_MAX_NOTES_PER_PAGE 覆盖(设 0 = 关掉这层)。
+            cap = int(os.environ.get("JP_MAX_NOTES_PER_PAGE", "300"))
             nd = sum(1 for t in tk if t.lstrip("qsdh,").rstrip("'.") and t.lstrip("qsdh,").rstrip("'.")[-1] in "1234567")
             if cap and nd > cap:
                 dropped += 1
