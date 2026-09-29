@@ -1,0 +1,11 @@
+fix(tools): check_live.mjs 在 Windows 上跑不起来(file:///D:/D:/…)
+
+
+ew URL('..', import.meta.url).pathname 在 Windows 上给出 /D:/…(带前导斜杠),
+再经 pathToFileURL 变成 ile:///D:/D:/… -> ERR_MODULE_NOT_FOUND, 本自检直接跑不了。
+改标准的 fileURLToPath。Linux 上一直是好的, 所以没暴露。
+
+修后对本地 8770 全项通过: 深链 / 原图索引 17,167 source / with_images 7,277 == 真有图的
+7,277 首(9,069 页) / 原图 200 image/jpeg + 长缓存头 / 5 项路径穿越全部 404。
+
+Co-authored-by: deepseek-ai <service@deepseek.com>
