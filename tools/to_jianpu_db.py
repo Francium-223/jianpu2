@@ -229,12 +229,17 @@ def to_score(name, toks, transcriber, mbid="", kind="work", meter="4/4", mb_titl
         lines.append(f"MBID={mbid}")
     if wd:
         lines.append(f"Wikidata={wd}")
-    # **confidence=**(2026-09-30 加): 转写时 `JP_CONF=1` 会在 `batch-out/<name>.json` 落一个边车
+    # **confidence=**(2026-09-30 加): 转写时会在 `batch-out/<name>.json` 落一个边车
     # （每个数字的 top-1 概率汇总）。这里把它写进曲谱头，供前端显示 / 并列时优先。
     # 为什么走边车而不是写进 txt: txt 是**纯 token 流**，元数据塞进去会污染下游解析口径。
-    # 没开 JP_CONF 的老谱没有边车 -> 不写这个字段（前端按"中性 0.5"处理），不造假数。
+    # 没开转写置信度/老谱没有边车 -> 不写这个字段（前端按"没有"处理），不造假数。
+    #
+    # ⚠ 路径必须**绝对**：转换器是被 `rebuild_when_idle.py` 用 `cwd=tools/` 调起来的
+    #   （见那边 `subprocess.run(_cmd, cwd=os.path.dirname(_cv))`），写相对路径 `batch-out/…`
+    #   会去找 `tools/batch-out/…` —— 找不到就**静默**不写 confidence（2026-09-30 实测踩到）。
     try:
-        _sp = os.path.join("batch-out", os.path.splitext(name)[0] + ".json")
+        _root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        _sp = os.path.join(_root, "batch-out", os.path.splitext(os.path.basename(name))[0] + ".json")
         if os.path.isfile(_sp):
             _sj = json.load(open(_sp, encoding="utf-8"))
             if _sj.get("confidence") is not None:
