@@ -142,6 +142,12 @@ def main():
     dumped = []
     for L in [int(x) for x in a.lens.split(",")]:
         for k in [int(x) for x in a.errs.split(",")]:
+            # **每一行(L,k)用自己的随机流**(2026-09-29 修):
+            # 以前全局一个 `random.Random(seed)`, 于是"这次还问了哪几行"会改变后面几行的抽到的片段 ——
+            # 实测同一份语料 `--lens 15 --errs 0` 跑出酷狗 15 音 Top-1 = 100.0%,
+            # 而 `--lens 11,15 --errs 0,1` 里同一格是 97.7%(L=11 那行先消耗了随机数)。
+            # 指标必须"同一口径换谁来跑都一样", 所以按 (seed, L, k) 固定每行的流。
+            rnd = random.Random(a.seed + L * 1000 + k)
             t1 = t3 = t5 = n = 0
             lt1 = lt3 = lt5 = ln_ = 0
             vt1 = vt3 = vt5 = vn_ = 0          # 旋律核实过的多版本(见下面注释)
