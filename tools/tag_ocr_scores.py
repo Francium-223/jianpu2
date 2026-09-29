@@ -32,6 +32,8 @@ guard_help(__doc__)
 os.chdir(r"D:\Documents_D\jianpu2")
 sys.stdout.reconfigure(encoding="utf-8")
 APPLY = "--apply" in sys.argv
+# **可选**: 把首位歌手同时写进 artist=（默认关 —— 这是数据口径, 等用户点头; 见下面用法注释）
+ALSO_ARTIST = "--also-artist" in sys.argv
 SCORES = "jianpu-db-out/scores"
 REPORT = "train-work/ocr_tag_plan.tsv"
 PAGEMETA = "train-work/page_meta.tsv"
@@ -217,6 +219,10 @@ if __name__ == "__main__":
     rows, stat = [], Counter()
     tagged = todo = already = 0
     artist_cnt, cat_cnt = Counter(), Counter()
+    # `--also-artist` 的**回填清单**: 已经有 usertag(所以上面会 continue)、但 `artist=` 还是空的谱。
+    # 为什么要这条: `artist` 与「人标」是两个字段(见 --also-artist 的说明), 标签器只写人标,
+    # 于是"已经打过标签"的那 7,475 份在 artist 上仍然是空 —— 想补就得**回头看**它们, 不能只处理未标的。
+    artist_backfill = []
 
     for f in files:
         t = io.open(f, encoding="utf-8", errors="replace").read()
@@ -226,6 +232,12 @@ if __name__ == "__main__":
         if re.search(r"(?m)^usertag=[^\s]", t):
             already += 1
             stat["已有标签(不动)"] += 1
+            if ALSO_ARTIST:
+                ut = re.search(r"(?m)^usertag=(.+)$", t)
+                first = [x.strip() for x in (ut.group(1) if ut else "").split(",") if x.strip()]
+                if first and not first[0].startswith("分类/") \
+                        and not re.search(r"(?m)^artist=\s*\S", t):
+                    artist_backfill.append((base, first[0]))
             continue
         batch, nm = BL.get(src, ("", ""))
         ti = re.search(r"(?m)^title=(.*)$", t)
@@ -260,7 +272,7 @@ if __name__ == "__main__":
     print(f"\n  明细 -> {REPORT}")
 
     if APPLY:
-        n_tag = n_todo = n_clean = 0
+        n_tag = n_todo = n_clean = n_artist = 0
         for base, src, batch, tagcell, _ in rows:
             # 标签在这一行里是 `A|B` 的字符串(见上面 rows.append)。**必须再切开**:
             # `",".join("毛不易")` = `"毛,不,易"` —— 字符串会被当字符序列逐字加逗号,
@@ -290,6 +302,19 @@ if __name__ == "__main__":
                                   "usertag=" + ",".join(tags) + nl, 1)
                 if not re.search(r"(?m)^usertag=" + re.escape(",".join(tags)) + r"$", txt):
                     txt = txt.replace("%--", "usertag=" + ",".join(tags) + nl + "%--", 1)
+            # **可选**: 把"首位歌手"同时写进 `artist=`(默认**不写**)。
+            # 为什么默认不写: `artist` 是 2026-09-24 起的**独立字段**(「下游没法直接问'这首谁唱的'」),
+            # 与「人标」是两种东西; 让一个工具同时写两个字段属于**数据口径**的决定, 等用户点头。
+            # 要开: `--also-artist`。判据只认"这首歌的第一个标签是歌手(不是 分类/…)"。
+            if ALSO_ARTIST and tags and not tags[0].startswith("分类/"):
+                _a = tags[0]
+                if re.search(r"(?m)^artist=", txt):
+                    if re.search(r"(?m)^artist=\s*$", txt):
+                        txt = re.sub(r"(?m)^artist=\s*$", "artist=" + _a, txt, count=1)
+                        n_artist += 1
+                else:
+                    txt = txt.replace("%--", "artist=" + _a + nl + "%--", 1)
+                    n_artist += 1
             if not tags and not done_todo and "todo=add tags" not in txt:
                 txt = txt.replace("%--", "todo=add tags" + nl + "%--", 1)
             io.open(p, "w", encoding="utf-8", newline="").write(txt)
@@ -309,6 +334,25 @@ if __name__ == "__main__":
             out = [ln for ln in raw.split(nl) if ln.strip() != "todo=add tags"]
             io.open(f, "w", encoding="utf-8", newline="").write(nl.join(out))
             n_clean += 1
+        # `--also-artist`: 给"已有人标但 artist 还空着"的谱回填 `artist=<首位标签>`
+        # （只认首标签是歌手、不是 `分类/…` 的；已有 artist 的不动 —— 幂等）
+        if ALSO_ARTIST:
+            for base, who in artist_backfill:
+                p = SCORES + "/" + base
+                raw = io.open(p, encoding="utf-8", errors="replace", newline="").read()
+                nl = "\r\n" if "\r\n" in raw else "\n"
+                if re.search(r"(?m)^artist=\s*\S", raw):
+                    continue
+                if re.search(r"(?m)^artist=\s*$", raw):
+                    raw = re.sub(r"(?m)^artist=\s*$", "artist=" + who, raw, count=1)
+                else:
+                    raw = raw.replace("%--", "artist=" + who + nl + "%--", 1)
+                io.open(p, "w", encoding="utf-8", newline="").write(raw)
+                n_artist += 1
         print(f"\n  已落盘: 写了标签 {n_tag} 份, 写了 todo {n_todo} 份, 摘掉多余 todo {n_clean} 份 -> {SCORES}/")
+        if ALSO_ARTIST:
+            print(f"          顺带回填 artist= {n_artist} 份(首位标签是歌手的)")
     else:
+        if ALSO_ARTIST:
+            print(f"\n  (--also-artist: 会回填 artist= **{len(artist_backfill)}** 份; 未落盘)")
         print("\n  (未落盘; 加 --apply 才写)")
