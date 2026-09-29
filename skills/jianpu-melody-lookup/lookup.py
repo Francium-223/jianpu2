@@ -241,13 +241,31 @@ def main():
             head["_secmap"] = secmap
         return sec_weight(sec_at(secmap, pos, n))
 
+    def _conf(r):
+        """谱级置信度(转写时写的 `confidence=`; 老谱没有 -> 0.5 中性)。"""
+        try:
+            c = float(r.get("confidence"))
+        except (TypeError, ValueError):
+            return 0.5
+        return max(0.0, min(1.0, c))
+
     def sort_key(item):
         total, g, det = item
         head = det[0][2]
         # 同分时段落权重高的先(副歌 > 主歌 > 间奏 > 整曲 > 前奏/尾奏/发狂钢琴) —— 用户 2026-09 规格
         secw = max(secw_of(d[2], d[1], len(QS[k])) for k, d in enumerate(det))
         # 注意 hot 取**负号**: 语料里谱多的歌手 = 更可能被人哼到的那首, 要排前面
-        return (total, -secw, pop.get(pop_key(g), 0), -hot_of(head),
+        #
+        # ⚠ 2026-09-30 加"证据优先"的并列键: 原来同分只看段落权/人气/标题长度, 于是
+        #   《你怎么说》(ocr, 而且是转写把"行尾 3- + 间奏括号"连读拼出来的假片段) 能靠人气
+        #   压过《神々が恋した幻想郷》(ok, 人工校对过)。同分时**先看证据**才是对的:
+        #   ① 人工校对过(ok) > 机器转写(ocr) ② 转写置信度高 > 低 ③ 版本多 > 少
+        #   ④ 之后才轮到段落权/人气(那是"更像你想找的那首"的偏好, 与"这条谱可不可信"无关)。
+        return (total,
+                0 if head.get("status") == "ok" else 1,
+                -_conf(head),
+                -len(groups.get(g) or []),
+                -secw, pop.get(pop_key(g), 0), -hot_of(head),
                 1 if BADWORD.search(head.get("title") or "") else 0,
                 len(head.get("title") or ""), g)
 

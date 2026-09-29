@@ -8,7 +8,7 @@
                   默认关闭 = 老行为(只挑一张页)。
   为什么: `爱错（简和谱）__qupu123-350544` 有两页, 老行为成品只有 `1 7 - 3 6 5 1` 六个音。
 """
-import glob, os, sys, time, traceback
+import glob, json, os, sys, time, traceback
 from guard import guard_help        # noqa: E402  `--help` 守卫(唯一实现见 tools/guard.py)
 guard_help(__doc__)
 sys.path.insert(0, "tools"); os.chdir(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -75,6 +75,7 @@ for i, d in enumerate(dirs):
             continue
         toks, meta = [], None
         dropped = 0
+        page_notes = []
         for k, p in enumerate(good):
             side = png if k == 0 else f"{png[:-4]}_m{k}.png"
             tk, meta = BT.transcribe_paged(p, txt, side)
@@ -86,6 +87,7 @@ for i, d in enumerate(dirs):
             # 可用 JP_MAX_NOTES_PER_PAGE 覆盖(设 0 = 关掉这层)。
             cap = int(os.environ.get("JP_MAX_NOTES_PER_PAGE", "300"))
             nd = sum(1 for t in tk if t.lstrip("qsdh,").rstrip("'.") and t.lstrip("qsdh,").rstrip("'.")[-1] in "1234567")
+            page_notes.append(nd)
             if cap and nd > cap:
                 dropped += 1
                 continue
@@ -98,6 +100,19 @@ for i, d in enumerate(dirs):
             continue
         with open(txt, "w", encoding="utf-8") as f:
             f.write(" ".join(toks))
+        # **confidence 边车**(2026-09-30 加): `JP_CONF=1` 时 `render` 会把"每个数字的 top-1 概率"
+        # 汇总进 meta，这里落一个同名 `<name>.json`。为什么不写进 txt: txt 是**纯 token 流**，
+        # 下游按 token 逐行解析；置信度是元数据，塞进去会污染口径。转换器读这个边车写成
+        # 曲谱头里的 `confidence=`（唯一真源还是 jp_transcribe 的概率）。
+        try:
+            if meta and isinstance(meta, list) and meta[0].get("confidence") is not None:
+                side = {"confidence": meta[0]["confidence"], "conf_p10": meta[0].get("conf_p10"),
+                        "conf_n": meta[0].get("conf_n"), "pages": len(good),
+                        "page_notes": page_notes, "dropped_pages": dropped}
+                with open(os.path.splitext(txt)[0] + ".json", "w", encoding="utf-8") as g:
+                    json.dump(side, g, ensure_ascii=False)
+        except Exception:
+            pass
         d2 = sum(1 for t in toks if t.lstrip("qsdh,").rstrip("'.") and t.lstrip("qsdh,").rstrip("'.")[-1] in "1234567")
         tail = f" 页 {len(good)}/{len(pages)}" if MULTIPAGE else ""
         if dropped:

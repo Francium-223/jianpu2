@@ -24,7 +24,7 @@ jianpu-db 格式(见 D:/Documents_D/jianpu-db/README.md):
       # 增量入库(推荐): --outdir <临时目录> --only <今天新谱名单> --avoid jianpu-db-out/scores
 输出: jianpu-db-out/scores/<name>.txt  (+ jianpu-db-out/progress.txt)
 """
-import os, sys, glob, re, time, hashlib, html
+import os, sys, glob, re, time, hashlib, html, json
 from guard import guard_help        # noqa: E402  `--help` 守卫(唯一实现见 tools/guard.py)
 guard_help(__doc__)
 
@@ -229,6 +229,21 @@ def to_score(name, toks, transcriber, mbid="", kind="work", meter="4/4", mb_titl
         lines.append(f"MBID={mbid}")
     if wd:
         lines.append(f"Wikidata={wd}")
+    # **confidence=**(2026-09-30 加): 转写时 `JP_CONF=1` 会在 `batch-out/<name>.json` 落一个边车
+    # （每个数字的 top-1 概率汇总）。这里把它写进曲谱头，供前端显示 / 并列时优先。
+    # 为什么走边车而不是写进 txt: txt 是**纯 token 流**，元数据塞进去会污染下游解析口径。
+    # 没开 JP_CONF 的老谱没有边车 -> 不写这个字段（前端按"中性 0.5"处理），不造假数。
+    try:
+        _sp = os.path.join("batch-out", os.path.splitext(name)[0] + ".json")
+        if os.path.isfile(_sp):
+            _sj = json.load(open(_sp, encoding="utf-8"))
+            if _sj.get("confidence") is not None:
+                _c = float(_sj["confidence"])
+                lines.append(f"confidence={_c:.3f}")
+                if _sj.get("conf_p10") is not None:
+                    lines.append(f"conf_p10={float(_sj['conf_p10']):.3f}")
+    except Exception:
+        pass
     lines += [
         f"title={title}",
         "tag=",                       # 衍生字段(score.py 由 usertag 算出), 生成时留空即可

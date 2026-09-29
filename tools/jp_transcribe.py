@@ -32,6 +32,7 @@ METER_PROMPT = "这是简谱谱头的一部分。请只输出拍号(形如 4/4 �
 
 _model = _proc = None
 _crop_cache = {}          # crop 指纹 -> 数字(重复音符复用, 省大量 Qwen 前向)
+_CONF = []                # `JP_CONF=1` 时累计的"每个数字的 top-1 概率"(见 _collect_conf/pop_conf)
 
 def _crop_key(crop):
     """crop 的近似指纹: 缩到 16x24 灰度(容忍微小位移/尺寸差异)。"""
@@ -69,6 +70,29 @@ def _init():
     if torch.cuda.is_available():
         _model = _model.to("cuda")
     print(f"[jp] 模型已加载, device={_model.device}, dtype={_dtype}", flush=True)
+
+def _collect_conf(scores):
+    """把一次 generate 的**首 token top-1 概率**收进 `_CONF`（`JP_CONF=1` 时才被调用）。
+
+    为什么只取第一个 token: 识别一个数字只生成 1~2 个 token（数字本身 + 可能的结束符），
+    真正决定"认得对不对"的是**第一个** token 的概率；后面的结束符概率没有信息量。
+    `scores` 是每步的 logits（未归一化），这里做一次 softmax 取最大值 —— 贪心解码选的就是它。
+    """
+    import torch
+    try:
+        s0 = scores[0]                                  # [B, vocab]
+        p = torch.softmax(s0.float(), dim=-1).max(dim=-1).values
+        _CONF.extend(float(x) for x in p.detach().cpu())
+    except Exception:
+        pass
+
+
+def pop_conf():
+    """取走并清空累计的置信度列表（`transcribe()` 用它算这一份谱的谱级 confidence）。"""
+    global _CONF
+    out, _CONF = _CONF, []
+    return out
+
 
 def _digit_of(crop):
     """Qwen3-VL-2B 看原子块 -> 数字字符。"""
@@ -125,7 +149,16 @@ def _digits_of_batch(crops, batch_size=None):
         enc = _proc(images=imgs, text=[tmpl] * len(imgs), padding=True, return_tensors="pt")
         enc = {k: (v.to(_model.device) if torch.is_tensor(v) else v) for k, v in enc.items()}
         with torch.no_grad():
-            out = _model.generate(**enc, max_new_tokens=2, do_sample=False)
+            # `JP_CONF=1` 时顺手把**每个数字的 top-1 概率**收下来(多要 output_scores 不多跑前向),
+            # 供"谱级 confidence"用: 贪心解码下这就是模型对自己认得有多确定的直接读数。
+            # 默认关(不开就不多算 softmax, 也不改输出形状), 免得影响正在跑的批次。
+            if os.environ.get("JP_CONF") == "1":
+                out = _model.generate(**enc, max_new_tokens=2, do_sample=False,
+                                      return_dict_in_generate=True, output_scores=True)
+                _collect_conf(out.scores)
+                out = out.sequences
+            else:
+                out = _model.generate(**enc, max_new_tokens=2, do_sample=False)
         L = enc["input_ids"].shape[1]
         for t, o in enumerate(out):
             s = _proc.decode(o[L:], skip_special_tokens=True).strip()
@@ -736,6 +769,16 @@ def transcribe(img_path):
                      "ny0": _cy0, "y1": _cy1, "btype": bt, "tok": lab})
         if i in _cmark_after:               # 连音线 '~' / 圆滑线 ')' 跟在这个音后面
             toks.extend(_cmark_after[i].split())
+    # **谱级 confidence**（`JP_CONF=1` 时才有值）: 把这一份谱里所有"数字识别"的 top-1 概率汇总。
+    # 写进 meta 供上层落盘（`confidence=` 元数据），不改变 toks 与 meta 的既有字段。
+    _cf = pop_conf()
+    if _cf:
+        _cf.sort()
+        meta_cf = {"confidence": round(sum(_cf) / len(_cf), 3),
+                   "conf_p10": round(_cf[max(0, int(len(_cf) * 0.1) - 1)], 3),
+                   "conf_n": len(_cf)}
+        for _m in meta:
+            _m.update(meta_cf)
     return toks, meta
 
 def render(img_path, out_png):
