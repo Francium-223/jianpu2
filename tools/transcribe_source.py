@@ -19,6 +19,9 @@ import batch_transcribe as BT
 SRC = sys.argv[1] if len(sys.argv) > 1 else "images-prep/jianpucn-pop"
 LIMIT = int(sys.argv[2]) if len(sys.argv) > 2 and sys.argv[2].isdigit() else 100000
 MULTIPAGE = os.environ.get("JP_MULTIPAGE", "") == "1"
+# 多页最多转几页(2026-09-29 加): 实测一份 8 页的"钢琴简谱"要 244 秒、转出 3504 个音(那不是旋律,
+# 是钢琴织体) —— 页数上限既能砍掉这类噪声的大头, 又把每份的耗时压回可接受范围。
+PAGE_MAX = int(os.environ.get("JP_MULTIPAGE_MAX", "4"))
 OUT = "batch-out"
 os.makedirs(OUT, exist_ok=True)
 
@@ -36,6 +39,8 @@ done = 0
 for i, d in enumerate(dirs):
     pages = BT.pick_pages(d) if MULTIPAGE else [p for p in [BT.pick_page(d)] if p]
     pages = [p for p in pages if p]
+    if MULTIPAGE and len(pages) > PAGE_MAX:      # 只转前 PAGE_MAX 页(见上面 PAGE_MAX 的实测理由)
+        pages = pages[:PAGE_MAX]
     if not pages:
         continue
     name = BT.safe_name(os.path.basename(d))
