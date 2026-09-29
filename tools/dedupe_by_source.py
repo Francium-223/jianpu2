@@ -82,10 +82,17 @@ def main():
     extra = sum(len(v) - 1 for v in multi.values())
     print(f"语料 {len(groups)} 个 source; 同源多份 {len(multi)} 组, 共多出 **{extra}** 份")
 
+    def title_ok(t):
+        """曲名"像话"吗 —— 单字/纯数字/带下划线(乱码稿的痕迹)都算不像话。"""
+        return not (len(t) <= 1 or re.match(r"^[\d\s\-_.]+$", t) or t.count("_") >= 2)
+
     def rank(item):
         p, m = item
         capped = m["notes"] if m["notes"] <= a.cap else -1     # 织体封顶
-        return (0 if m["status"] == "ok" else 1, -capped, -m["conf"], -os.path.getmtime(p))
+        # **曲名质量排在音符数前面**: 同一页的两份稿, 名字被截断/乱码的那份多半是早期产物,
+        # 而且留下的名字会被写进语料(实测 `谱.txt` 会赢过 `虫儿飞_2.txt` —— 那是反的)。
+        return (0 if m["status"] == "ok" else 1, 0 if title_ok(m["title"]) else 1,
+                -capped, -m["conf"], -os.path.getmtime(p))
 
     plans, ident = [], 0
     for s, v in sorted(multi.items()):
