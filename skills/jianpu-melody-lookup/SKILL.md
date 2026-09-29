@@ -118,9 +118,13 @@ python lookup.py 512233 --json                     # 给程序读
 | `gate.py` / `selfcheck/` | 自检门：已知答案用例 |
 | `show_hit.py` / `check_hit.py` | 把库里命中那一段原样摊开（带记号） |
 | `show_song.py` | 把一首谱**按小节**分段打出来（`show_song.py 神々`），便于人工圈定是哪一段 |
-| `data.jsonl` | 数据集本体：10191 首（= HuggingFace `Caesium-132/chinese-jianpu-corpus`）；自检门会核对它是否与 `jianpu-db/data.jsonl` 同步 |
-| `eval_golden.py` | 金曲清单指标 |
+| `data.jsonl` | 数据集本体：10892 首（= HuggingFace `Caesium-132/chinese-jianpu-corpus`）；自检门会核对它是否与 `jianpu-db/data.jsonl` 同步 |
+| `eval_golden.py` | 金曲清单指标（末尾还会报"**代价并列**的查询有多少条"—— 并列里排第一不算唯一命中） |
 | `eval_metric.py` | 随机留一指标（含两种口径的定义） |
+
+**想在图上看"这句话在原谱哪里"**：`py -3.13 tools/find_fragment.py --file 你怎么说_2.txt --query 33565653253`
+—— 按音乐行逐行重认，命中就把那行圈上，输出标注图 + 报告；**纸上没有这一串时会明说**，
+并给出最接近的行与最长公共子串（假命中往往是整页转写把行尾/括号连读拼出来的）。
 
 换数据集：`--data 别的.jsonl` 或环境变量 `JIANPU_DATA`。
 
