@@ -150,6 +150,7 @@ def main():
             rnd = random.Random(a.seed + L * 1000 + k)
             t1 = t3 = t5 = n = 0
             lt1 = lt3 = lt5 = ln_ = 0
+            tie_q = tie_hit = 0                 # 与第一名**同代价**的查询数 / 其中 Top-1 也命中的
             vt1 = vt3 = vt5 = vn_ = 0          # 旋律核实过的多版本(见下面注释)
             for w in covered:
                 vers = [v for v in hits[w] if len(v[1]) >= L]
@@ -180,6 +181,23 @@ def main():
                     top1 = sc[0][1]
                     top3 = [x[1] for x in sc[:3]]
                     top5 = [x[1] for x in sc[:5]]
+                    # **并列统计**(2026-09-29 加): 与第一名同代价的**不同歌**有几首。
+                    # 为什么要报: 实测有"代价 0 并列"的查询(《你怎么说》vs《神々》), 其中一条还是转写误读——
+                    # 只看 Top-1 会把"并列中恰好排前面"读成"唯一命中"。这里把并列率量出来,
+                    # 让人知道 Top-1 这个数字里有多少条其实是"抽签抽中的"。
+                    # ⚠ 必须**按曲名去重**: `sc` 是逐份谱的, 同一首歌的多个版本会各占一条,
+                    #    不去重就会把"多版本"当成"多首歌并列"(那就把指标说虚了)。
+                    _best = sc[0][0]
+                    _names = []
+                    for x in sc:
+                        if x[0] != _best:
+                            break
+                        if x[1] not in _names:
+                            _names.append(x[1])
+                    if len(_names) > 1:
+                        tie_q += 1
+                        if same(top1, w):
+                            tie_hit += 1
                     if same(top1, w):
                         t1 += 1
                     if any(same(x, w) for x in top3):
@@ -219,7 +237,9 @@ def main():
                   + (f"  |  多版本留一({ln_} 查询): Top1 {lt1/ln_*100:>5.1f}%  "
                      f"Top3 {lt3/ln_*100:>5.1f}%  Top5 {lt5/ln_*100:>5.1f}%" if ln_ else "")
                   + (f"  |  其中**旋律核实**过的多版本({vn_} 查询): Top1 {vt1/vn_*100:>5.1f}%  "
-                     f"Top3 {vt3/vn_*100:>5.1f}%  Top5 {vt5/vn_*100:>5.1f}%" if vn_ else ""))
+                     f"Top3 {vt3/vn_*100:>5.1f}%  Top5 {vt5/vn_*100:>5.1f}%" if vn_ else "")
+                  + (f"  |  **代价并列**的查询 {tie_q}({tie_q/n*100:.1f}%), 其中 Top-1 命中 {tie_hit}"
+                     f"（并列里排第一不算'唯一命中'）" if tie_q else ""))
 
 
     if a.dump_queries and dumped:
