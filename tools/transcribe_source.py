@@ -74,14 +74,32 @@ for i, d in enumerate(dirs):
             print(f"[{i+1}/{len(dirs)}] {name[:40]}: 非纯简谱, 跳过 ({time.time()-t0:.0f}s)", flush=True)
             continue
         toks, meta = [], None
+        dropped = 0
         for k, p in enumerate(good):
             side = png if k == 0 else f"{png[:-4]}_m{k}.png"
             tk, meta = BT.transcribe_paged(p, txt, side)
+            # **织体页判据**(2026-09-29 加): 一页上的"音符"多到不像旋律时就丢掉这一页。
+            # 实测依据: 正常简谱一页 80~150 个音; 而"钢琴简谱"那种和弦堆叠一页 200~450 个音
+            # (例: BEYOND_THE_TIME钢琴简谱 8 页 3,504 音 ≈ 438/页)。它是钢琴织体, 不是旋律,
+            # 进了旋律语料只会当噪声。阈值可用 JP_MAX_NOTES_PER_PAGE 覆盖(设 0 = 关掉这层)。
+            cap = int(os.environ.get("JP_MAX_NOTES_PER_PAGE", "250"))
+            nd = sum(1 for t in tk if t.lstrip("qsdh,").rstrip("'.") and t.lstrip("qsdh,").rstrip("'.")[-1] in "1234567")
+            if cap and nd > cap:
+                dropped += 1
+                continue
             toks += tk
+        if not toks and dropped:
+            if os.path.exists(png):
+                os.remove(png)
+            print(f"[{i+1}/{len(dirs)}] {name[:40]}: 全是织体页(丢弃 {dropped} 页), 跳过 ({time.time()-t0:.0f}s)",
+                  flush=True)
+            continue
         with open(txt, "w", encoding="utf-8") as f:
             f.write(" ".join(toks))
         d2 = sum(1 for t in toks if t.lstrip("qsdh,").rstrip("'.") and t.lstrip("qsdh,").rstrip("'.")[-1] in "1234567")
         tail = f" 页 {len(good)}/{len(pages)}" if MULTIPAGE else ""
+        if dropped:
+            tail += f" 丢织体页 {dropped}"
         print(f"[{i+1}/{len(dirs)}] {name[:40]}: token {len(toks)} 数字 {d2}{tail} ({time.time()-t0:.0f}s)", flush=True)
     except Exception as ex:
         print(f"[{i+1}/{len(dirs)}] {name[:40]}: 失败 {type(ex).__name__}", flush=True)
