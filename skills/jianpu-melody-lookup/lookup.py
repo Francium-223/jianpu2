@@ -274,6 +274,11 @@ def main():
     if a.json:
         print(json.dumps({"query": QS, "index_songs": len(groups),
                           "index_scores": sum(len(v) for v in groups.values()),
+                          # **同代价并列几首**(与前端 search.js 的 groupsAtBest 同一口径):
+                          # 起因 2026-09-29 —— `33565653253` 在《你怎么说》与《神々》上都是代价 0,
+                          # 而《你怎么说》那条语料本身是转写误读。CLI 也把"这句不唯一"说出来,
+                          # 别让离线结果看起来比实际更硬。
+                          "tied": sum(1 for t, _g, _d in res if t == (res[0][0] if res else 0)),
                           "results": out}, ensure_ascii=False, indent=2))
     else:
         print(f"查询 {(' | '.join(QS))}   库 {len(groups)} 首 / "
@@ -286,6 +291,15 @@ def main():
                   f"{str(r['status']):<4} {r['source']} {sec}")
         if out and out[0]["matched"]:
             print(f"\n命中片段: {out[0]['matched']}")
+        # **并列提示**: 与第一名同代价的歌还有几首 —— 有的话，第一名的"唯一性"是假的。
+        if res:
+            best = res[0][0]
+            tied = [t for t, _g, d in res if t == best]
+            if len(tied) > 1:
+                names = [d[0][2].get("title") for _t, _g, d in res if _t == best]
+                others = [str(x) for x in names[1:4]]
+                print(f"\n⚠ 代价 {best} 的还有 {len(tied) - 1} 首（{('、'.join(others))}"
+                      f"{'…' if len(names) > 4 else ''}）—— 这句**不是唯一命中**，别把第一条当铁证")
 
 
 if __name__ == "__main__":
