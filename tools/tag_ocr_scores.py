@@ -236,7 +236,7 @@ if __name__ == "__main__":
                 ut = re.search(r"(?m)^usertag=(.+)$", t)
                 first = [x.strip() for x in (ut.group(1) if ut else "").split(",") if x.strip()]
                 if first and not first[0].startswith("分类/") \
-                        and not re.search(r"(?m)^artist=\s*\S", t):
+                        and not re.search(r"(?m)^artist=[ \t]*\S", t):
                     artist_backfill.append((base, first[0]))
             continue
         batch, nm = BL.get(src, ("", ""))
@@ -309,8 +309,8 @@ if __name__ == "__main__":
             if ALSO_ARTIST and tags and not tags[0].startswith("分类/"):
                 _a = tags[0]
                 if re.search(r"(?m)^artist=", txt):
-                    if re.search(r"(?m)^artist=\s*$", txt):
-                        txt = re.sub(r"(?m)^artist=\s*$", "artist=" + _a, txt, count=1)
+                    if re.search(r"(?m)^artist=[ \t]*$", txt):
+                        txt = re.sub(r"(?m)^artist=[ \t]*$", "artist=" + _a, txt, count=1)
                         n_artist += 1
                 else:
                     txt = txt.replace("%--", "artist=" + _a + nl + "%--", 1)
@@ -341,10 +341,10 @@ if __name__ == "__main__":
                 p = SCORES + "/" + base
                 raw = io.open(p, encoding="utf-8", errors="replace", newline="").read()
                 nl = "\r\n" if "\r\n" in raw else "\n"
-                if re.search(r"(?m)^artist=\s*\S", raw):
+                if re.search(r"(?m)^artist=[ \t]*\S", raw):
                     continue
-                if re.search(r"(?m)^artist=\s*$", raw):
-                    raw = re.sub(r"(?m)^artist=\s*$", "artist=" + who, raw, count=1)
+                if re.search(r"(?m)^artist=[ \t]*$", raw):
+                    raw = re.sub(r"(?m)^artist=[ \t]*$", "artist=" + who, raw, count=1)
                 else:
                     raw = raw.replace("%--", "artist=" + who + nl + "%--", 1)
                 io.open(p, "w", encoding="utf-8", newline="").write(raw)
