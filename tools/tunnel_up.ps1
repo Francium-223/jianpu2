@@ -23,17 +23,49 @@ $CF = 'C:\Program Files (x86)\cloudflared\cloudflared.exe'
 if (-not (Test-Path $CF)) { throw "没装 cloudflared: $CF" }
 if (-not (Test-Path $SiteRepo)) { throw "站点仓库不在: $SiteRepo" }
 
-# ① 本机服务在不在、要不要 token
-try { $h = Invoke-RestMethod "http://127.0.0.1:$Port/api/health" -TimeoutSec 8 }
-catch { throw "本机服务没在跑（http://127.0.0.1:$Port/api/health 取不到）。先起 app/server.py。" }
+# ⓪ 本机服务没起就先把服务起起来（token 从 tunnel_secret.txt 读；没有就生成一个并记下来）
+$secretFile = 'D:\Documents_D\jianpu2\train-work\tunnel_secret.txt'
+function Read-Token {
+  if (Test-Path $secretFile) {
+    $m = [regex]::Match((Get-Content $secretFile -Raw), 'TOKEN=(\S+)')
+    if ($m.Success) { return $m.Groups[1].Value }
+  }
+  return ''
+}
+function Save-SecretFile($url, $tok) {
+  $t = @"
+URL=$url
+TOKEN=$tok
+# $(Get-Date -Format 'yyyy-MM-dd HH:mm') 起: cloudflared 快速隧道 -> 本机 127.0.0.1:$Port; Worker 的
+# API_UPSTREAM/API_TOKEN 就是上面两个值。重启电脑后跑一次: pwsh -File tools\tunnel_up.ps1
+# 本机服务必须带同一个 token 起 —— 见 README: set JPSUBMIT_TOKEN=<TOKEN> 再起 app/server.py
+"@
+  [System.IO.File]::WriteAllText($secretFile, $t, (New-Object System.Text.UTF8Encoding($false)))
+}
+$tok = Read-Token
+$alive = $false
+try { $h = Invoke-RestMethod "http://127.0.0.1:$Port/api/health" -TimeoutSec 6; $alive = $true } catch { $alive = $false }
+if (-not $alive) {
+  if (-not $tok) { $tok = 'jp' + ([guid]::NewGuid().ToString('N').Substring(0, 20)); "没找到 token, 新生成一个" }
+  "本机服务没在跑, 先起来（带 JPSUBMIT_TOKEN）..."
+  Start-Process -FilePath 'py' -ArgumentList '-3.13', 'app/server.py', "$Port" `
+    -WorkingDirectory $SiteRepo -WindowStyle Hidden -Environment @{ JPSUBMIT_TOKEN = $tok }
+  for ($i = 0; $i -lt 15; $i++) { Start-Sleep -Seconds 1; try { $h = Invoke-RestMethod "http://127.0.0.1:$Port/api/health" -TimeoutSec 6; $alive = $true; break } catch {} }
+}
+if (-not $alive) { throw "本机服务起不来（http://127.0.0.1:$Port/api/health 取不到）" }
 if (-not $h.token_required) {
   throw ("本机服务**没有**要求 X-Token —— 隧道一开等于把写接口挂公网。`n" +
          "  先带 JPSUBMIT_TOKEN 重启服务，并把同一个值 `npx wrangler secret put API_TOKEN` 写进 Worker。")
 }
 "✓ 本机服务在跑, 且要求 X-Token（repo=$($h.repo)）"
 
+# ① 起隧道前先清掉"指向本端口"的旧快速隧道（避免越积越多；别人的隧道不动）
+Get-CimInstance Win32_Process -Filter "Name='cloudflared.exe'" |
+  Where-Object { $_.CommandLine -match "--url http://127\.0\.0\.1:$Port(\s|$)" } |
+  ForEach-Object { Stop-Process -Id $_.ProcessId -Force; "  清掉旧隧道 PID $($_.ProcessId)" }
+
 # ② 起隧道, 从日志里读出地址(等到出现为止, 最多 60 秒)
-$before = if (Test-Path $Log) { Get-Content $Log -Raw } else { '' }
+if (Test-Path $Log) { Remove-Item $Log -Force }
 Start-Process -FilePath $CF -ArgumentList 'tunnel', '--url', "http://127.0.0.1:$Port", '--no-autoupdate', '--logfile', $Log -WindowStyle Hidden
 $url = ''
 for ($i = 0; $i -lt 30; $i++) {
@@ -45,11 +77,13 @@ for ($i = 0; $i -lt 30; $i++) {
 if (-not $url) { throw "60 秒内没等到隧道地址, 看日志: $Log" }
 "✓ 隧道: $url"
 
-# ③ 把地址写进 Worker（这一步会新建一个 Worker 版本, 不用重新 deploy）
+# ③ 把地址与 token 写进 Worker（这一步会新建一个 Worker 版本, 不用重新 deploy）
 Push-Location $SiteRepo
 try {
-  $url | & npx wrangler secret put API_UPSTREAM 2>&1 | Select-String -Pattern 'Success|ERROR' | ForEach-Object { "  $_" }
+  $url | & npx wrangler secret put API_UPSTREAM 2>&1 | Select-String -Pattern 'Success|ERROR' | ForEach-Object { "  API_UPSTREAM: $_" }
+  if ($tok) { $tok | & npx wrangler secret put API_TOKEN 2>&1 | Select-String -Pattern 'Success|ERROR' | ForEach-Object { "  API_TOKEN:    $_" } }
 } finally { Pop-Location }
+Save-SecretFile $url $tok
 
 # ④ 验证: 域名 health 里 api 应为 true、upstream 应是这条地址
 Start-Sleep -Seconds 8
