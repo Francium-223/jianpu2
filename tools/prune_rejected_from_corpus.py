@@ -59,6 +59,8 @@ def meta(p):
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--apply", action="store_true")
+    ap.add_argument("--all", action="store_true",
+                    help="连「清了就没别的版本」的那批也一起清(默认只清有版本兜底的)")
     a = ap.parse_args()
 
     live = set()
@@ -85,8 +87,29 @@ def main():
             continue
         if s not in live:
             plans.append((b, s))
+    # **再分一刀**：清了之后这首歌**一个版本都不剩**的，单独列出来（默认不动它们）。
+    # 实测 1,434 份里有 **257** 份属于这种 —— 清了就等于把这 257 首歌从语料里删掉，
+    # 而它们大多是被判废的钢琴谱/英文歌（`Eyes_On_Me钢琴`、`Lemon_Tree`、`I_Do钢琴`…）。
+    # 这一步是"能不能动"的关键: 别让"清理残留"顺手把歌也清了。
+    import json as _json
+    import collections as _c
+    _title = {}
+    for _line in io.open(os.path.join(DB, "data.jsonl"), encoding="utf-8"):
+        _line = _line.strip()
+        if not _line:
+            continue
+        _d = _json.loads(_line)
+        _title[(_d.get("file") or [""])[0]] = (_d.get("title") or "")
+    _by = _c.Counter(_title.values())
+    sole = [x for x in plans if _by.get(_title.get(x[0], ""), 0) <= 1]
+    dup = [x for x in plans if x not in sole]
     print(f"语料里'流水线已不再生产'的: **{len(plans)}** 份"
           f"（另有 status=ok 跳过 {skipped_ok} 份、无 source 跳过 {no_src} 份）")
+    print(f"   其中**清了这首就一个版本都不剩**的: **{len(sole)}** 份"
+          f"（默认**不动**；要一起清加 --all）")
+    print(f"   另有别的版本兜底的: **{len(dup)}** 份（默认清这批）")
+    if not a.all:
+        plans = dup
     for b, s in plans[:12]:
         print(f"   {b[:40]:<42} source={s}")
     with io.open(os.path.join(ROOT, "train-work", "prune_rejected.tsv"), "w",
