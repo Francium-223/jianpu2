@@ -584,22 +584,44 @@ def main():
         # 这些字段本来就是给人/下游看的, 不属于自动生成内容, 必须继承。
         # finalize 现在把旧 scores **移到 scores-prev/**(不再删除), 所以这里也去那儿找 ——
         # 顺带让**拍号复用**重新生效(否则每次重建都要对 6000+ 份谱重跑一次模型认拍号, ~50 分钟 GPU)。
-        _oldp = f"{OUTDIR}/{safe}.txt"
-        if not os.path.exists(_oldp):
-            _oldp = f"jianpu-db-out/scores-prev/{safe}.txt"
-        if os.path.exists(_oldp):
+        #
+        # ⚠ 2026-09-30 两次修正(都是实测踩出来的):
+        #   ① **保留的字段**从 `todo=`/`preferred=` 扩到把页面上可人工编辑的元数据也留下
+        #      (`usertag=`/`artist=`/`alias=`/`link=`/`MBID=`) —— 否则一次 finalize 就把
+        #      标签器写的 7,475 份 usertag 冲光。
+        #   ② **两个来源都要看**: 原来写成"`OUTDIR/{safe}.txt` 不存在才去看 scores-prev",
+        #      可是同一份 safe 名在本轮里可能已经被写过一次(空 usertag), 于是永远读不到 scores-prev,
+        #      标签照样丢(实测 `17.txt`: scores-prev 里 `usertag=毛不易`, 重建后是空)。
+        #      现在把两处的内容**都**拿来当"旧文件"。
+        #   ③ 判重改成**按字段**判: 新文件里那一栏**有值**才跳过; 是**空行**就替换那一行;
+        #      没有这一行才插到 `%--` 前面。绝不能拿"整行字符串在不在"当判据 ——
+        #      新文件里本来就有 `usertag=`(空)这一行, 那样永远判成"已有"。
+        _olds = []
+        for _p in (f"{OUTDIR}/{safe}.txt", f"jianpu-db-out/scores-prev/{safe}.txt"):
+            if os.path.exists(_p):
+                try:
+                    _olds.append(open(_p, encoding="utf-8", errors="replace").read())
+                except Exception:
+                    pass
+        for _old in _olds:
             try:
-                _old = open(_oldp, encoding="utf-8", errors="replace").read()
-                # **保留的字段**（2026-09-30 扩过一次）：
-                #   `todo=`/`preferred=` 是老两位；新加 **`usertag=`/`artist=`/`alias=`/`link=`/`MBID=`** ——
-                #   这几条是页面上**可人工编辑**的元数据（schema 里 editable 的那几个），
-                #   重建时被"清空再写"冲掉是纯损失：实测标签器写了 7,475 份 usertag，
-                #   一次 finalize 就全没了（要靠事后重跑标签器才补回来）。
-                #   注意：这条只在**同名对得上**时生效（`safe` 名一致），对不上号的不硬塞。
-                for _m in re.finditer(r"^((?:todo|usertag|artist|alias|link|MBID)=.*|preferred=\d+)$",
+                # ⚠ 行尾要容忍 `\r`：旧文件在 Windows 上是 CRLF，`$` 在 `(?m)` 下匹配的是 `\n` 之前，
+                #   而 CRLF 在 `\n` 前面还有个 `\r` —— 写成 `...$` 时 `preferred=\d+` 这种**整行匹配
+                #   会整条落空**(隔离测试打印合并结果时抓到的：usertag 进去了、preferred 没进)。
+                for _m in re.finditer(r"^((?:todo|usertag|artist|alias|link|MBID)=.*|preferred=\d+)\r?$",
                                       _old, re.M):
-                    if _m.group(1) not in _txt:
-                        _txt = _txt.replace("%--", _m.group(1) + "\n%--", 1)
+                    # CRLF 的旧文件里 `(.*)$` 会把 `\r` 也吃进来 -> 值尾巴上挂一个回车,
+                    # 写进新文件就成了 `usertag=毛不易\r`(隔离测试抓到的)。
+                    _line = _m.group(1).rstrip("\r")
+                    _fld, _val = _line.split("=", 1)
+                    if not _val.strip():                       # 旧文件那一栏也是空的 -> 无事可做
+                        continue
+                    if re.search(r"(?m)^" + _fld + r"=[ \t]*\S", _txt):
+                        continue                               # 新文件已经有值 -> 不动
+                    if re.search(r"(?m)^" + _fld + r"=[ \t]*\r?$", _txt):
+                        _txt = re.sub(r"(?m)^" + _fld + r"=[ \t]*\r?$", _line, _txt, count=1)
+                    else:
+                        _txt = _txt.replace("%--", _line + "\n%--", 1)
             except Exception:
                 pass
         with open(f"{OUTDIR}/{safe}.txt", "w", encoding="utf-8") as g:
