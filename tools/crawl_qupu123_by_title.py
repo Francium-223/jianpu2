@@ -18,6 +18,7 @@ import sys
 import time
 import urllib.parse
 import urllib.request
+import tlsfetch                                              # 证书过期兜底(qupu123 的证书 2026-09-23 到期)
 from guard import guard_help        # noqa: E402  `--help` 守卫(唯一实现见 tools/guard.py)
 guard_help(__doc__)
 
@@ -54,7 +55,7 @@ WANTN = {w: norm(w) for w in WANT}
 def get(url, binary=False):
     req = urllib.request.Request(url, headers={"User-Agent": UA,
                                                "Referer": "https://www.qupu123.com/"})
-    with urllib.request.urlopen(req, timeout=30) as r:
+    with tlsfetch.urlopen(req, timeout=30) as r:
         raw = r.read()
     return raw if binary else raw.decode("utf-8", "replace")
 

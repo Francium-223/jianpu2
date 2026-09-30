@@ -14,6 +14,7 @@ import sys
 import time
 import urllib.parse
 import urllib.request
+import tlsfetch                                              # 证书过期兜底(qupu123 的证书 2026-09-23 到期)
 from guard import guard_help        # noqa: E402  `--help` 守卫(唯一实现见 tools/guard.py)
 guard_help(__doc__)
 
@@ -33,7 +34,7 @@ if not WANT:
 
 def get(u, to=25):
     req = urllib.request.Request(u, headers=HDR)
-    with urllib.request.urlopen(req, timeout=to) as r:
+    with tlsfetch.urlopen(req, timeout=to) as r:
         return r.read()
 
 
