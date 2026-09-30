@@ -590,7 +590,14 @@ def main():
         if os.path.exists(_oldp):
             try:
                 _old = open(_oldp, encoding="utf-8", errors="replace").read()
-                for _m in re.finditer(r"^(todo=.*|preferred=\d+)$", _old, re.M):
+                # **保留的字段**（2026-09-30 扩过一次）：
+                #   `todo=`/`preferred=` 是老两位；新加 **`usertag=`/`artist=`/`alias=`/`link=`/`MBID=`** ——
+                #   这几条是页面上**可人工编辑**的元数据（schema 里 editable 的那几个），
+                #   重建时被"清空再写"冲掉是纯损失：实测标签器写了 7,475 份 usertag，
+                #   一次 finalize 就全没了（要靠事后重跑标签器才补回来）。
+                #   注意：这条只在**同名对得上**时生效（`safe` 名一致），对不上号的不硬塞。
+                for _m in re.finditer(r"^((?:todo|usertag|artist|alias|link|MBID)=.*|preferred=\d+)$",
+                                      _old, re.M):
                     if _m.group(1) not in _txt:
                         _txt = _txt.replace("%--", _m.group(1) + "\n%--", 1)
             except Exception:
