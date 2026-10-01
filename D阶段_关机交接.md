@@ -47,3 +47,18 @@ D:\Documents_D\jianpu2\tools\tunnel_up.cmd
 
 匹配核心 **Rust→Wasm** 或 embedding+ANN（语义/哼唱相似度）。当前基线:
 查询中位 **139.9 ms**、索引就绪 **179–201 ms**（`node tools/bench_search.mjs 40`）。
+
+---
+
+## 更新（2026-10-01 晚，D 阶段收尾）
+
+* **CI 五条全绿** ✓ `checks`（web node20/22 · python 3.11/3.13 · docker build）+ `Deploy to GitHub Pages`。
+  **`docker build` 绿了** —— 镜像可构建性终于有 CI 背书（本机没装 Docker，只做了步骤等价性验证）。
+* 写路径已恢复（`tools\tunnel_up.py` 修了三处恢复路径上的 bug，见 jianpu2 提交 `cb74de35`）：
+  域名 `<https://jianpu-db.org/api/health>` 现在 `{"api":true,"upstreamOk":true,"og":11495}`。
+* D 阶段文档已同步（`TECH_STACK.md` 加了 Docker/Compose、ruff+mypy、pre-commit、`/metrics`、Actions 矩阵，
+  以及 STAR 第 10、11 条）。**D 阶段完成**。
+* **下一阶段: E（算法侧）**。本机**没有 Rust 工具链**（cargo/rustc/wasm-pack 都没有，装齐要 ~1GB 下载，
+  而这台机器现在只剩 ~3GB 空闲内存），所以 E 阶段选 **TS 里的倒排/ngram 预筛剪枝**：
+  当前基线 `查询中位 144.6 ms / p90 169.7 ms / 索引就绪 213 ms`（`node tools/bench_search.mjs 40`），
+  要求"剪枝后金曲四榜的 Top-1/3/5 **一格不掉**"才算成功（用现成的 `eval_golden.py` 验）。
