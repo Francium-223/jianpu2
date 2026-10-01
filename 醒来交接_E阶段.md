@@ -101,3 +101,9 @@ cmd /c D:\Documents_D\jianpu2\tools\night_qa.cmd      # 手动跑一次
 
 **一条会咬人的坑**：`tools/*.cmd` 必须是 **CRLF** 行尾。LF 时 cmd 会把 `rem` 行的首字母吃掉，
 报 `'ightly' is not recognized` 这种莫名其妙的错。仓库 `.gitattributes` 已锁 `*.cmd/*.bat/*.ps1 text eol=crlf`。
+
+3. **精确重复旋律 1,023 组 / 牵涉 2,128 行（18.5%）** —— 分类明细在 `_analysis/dup_melody.txt`：
+   * 同曲名/不同源 **654 组**：排名已按"source 去重版本"算一份，**不用动**；
+   * **标题互相包含 187 组**：爬虫把速度/情绪标注拼进了曲名（`1=F4_4_深` / `牧羊姑娘` / `牧羊姑娘1=F4_4_深情悠扬地`）；
+   * **标题无关 182 组**：多为占位名（`未命名…`、`谱`、`改编歌曲`）而旋律是对的。
+   这两类正是 `jp_refine_titles` / `jp_tidy_titles` 的输入 —— 我只出证据，没改语料（改标题会动评测口径）。
