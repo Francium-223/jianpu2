@@ -64,6 +64,7 @@ def index_count():
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--json", action="store_true", help="输出 JSON（给别的脚本用）")
+    ap.add_argument("--lists", metavar="DIR", default="", help="把待复核清单写到这个目录（碎片谱 / 低置信度）")
     a = ap.parse_args()
 
     t0 = time.time()
@@ -131,6 +132,24 @@ def main() -> int:
         "tiny_scores": len(tiny), "low_conf_p10": len(lowconf), "source_is_list": source_list,
         "elapsed_s": round(time.time() - t0, 1),
     }
+    if a.lists:
+        # 导出"待复核清单"（**工具自己写**，别用内联 python —— 我被 `\r` 那次转义坑过）
+        os.makedirs(a.lists, exist_ok=True)
+        fp = os.path.join(a.lists, "qa_fragments.txt")
+        lp = os.path.join(a.lists, "qa_lowconf.txt")
+        with io.open(fp, "w", encoding="utf-8", newline="\n") as f:
+            f.write("# 碎片谱（<20 音）%d 份 —— 多半是「多页只转了一页」或转写失败的残片\n" % len(tiny))
+            f.write("# 用法: 挑出真需要重转的，写进 train-work/redo_*.txt，再跑 tools/transcribe_source.py\n")
+            for nn, tt, fl in tiny:
+                f.write("%4d\t%s\t%s\n" % (nn, tt, fl))
+        with io.open(lp, "w", encoding="utf-8", newline="\n") as f:
+            f.write("# 低置信度（conf_p10 < 0.85）%d 份 —— 人工复核优先级最高的一批\n" % len(lowconf))
+            f.write("# conf_p10 = 最低 10% 那批数字的 top-1 概率分位；越低说明个别音越虚\n")
+            for c, tt, fl in lowconf:
+                f.write("%s\t%s\t%s\n" % (c, tt, fl))
+        print("  清单已写: %s (%d) · %s (%d)" % (fp, len(tiny), lp, len(lowconf)))
+        return 0
+
     if a.json:
         print(json.dumps({"summary": out, "tiny_top": tiny[:10], "lowconf_top": lowconf[:10],
                           "junk_top": junk_title[:5], "multi_top": multi}, ensure_ascii=False, indent=2))
