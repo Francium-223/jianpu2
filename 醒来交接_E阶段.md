@@ -85,3 +85,19 @@ npx wrangler deploy         # 把带 -27% 性能改进的前端发上去
 `_analysis/qa_lowconf.txt`（按 `conf_p10` 升序）。它不是"错了"，而是"最低 10% 那批数字里有个别音虚"——
 优先级低于上面第 1 条（那 15 份是真的少转了几页）。建议：等碎片谱修完，再用重转后的 `conf` 对比这批名单，
 筛出"重转后置信度明显回升"的样本，反推转写哪里容易虚。
+
+---
+
+## 新加的夜间自检（一句话就能撤）
+
+注册了计划任务 **jp_night_qa_ext**（每天 08:20，只读、秒级）：查语料↔站点索引一致性、碎片谱分类、
+低置信度、归组重复、近 24 小时增量（用 git 历史，不用 mtime）。它与你原有的"夜班 QA 监视"
+（全丢 / 准入缺口 / %END / 磁盘水位）**互补不重复**，日志在 `_analysis/night_qa_ext.log`。
+
+```powershell
+Unregister-ScheduledTask -TaskName jp_night_qa_ext    # 撤掉
+cmd /c D:\Documents_D\jianpu2\tools\night_qa.cmd      # 手动跑一次
+```
+
+**一条会咬人的坑**：`tools/*.cmd` 必须是 **CRLF** 行尾。LF 时 cmd 会把 `rem` 行的首字母吃掉，
+报 `'ightly' is not recognized` 这种莫名其妙的错。仓库 `.gitattributes` 已锁 `*.cmd/*.bat/*.ps1 text eol=crlf`。
