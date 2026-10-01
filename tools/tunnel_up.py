@@ -84,6 +84,10 @@ def kill_pid(pid):
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--port", type=int, default=8770)
+    # C 阶段: 写后端两个实现。默认 FastAPI 版（`app/api.py`）—— 与标准库版逐项对拍过
+    # （`tools/check_parity_legacy_vs_fastapi.py`，21/21 × 无口令/错口令/对口令三种场景）。
+    ap.add_argument("--impl", choices=["fastapi", "legacy"], default="fastapi",
+                    help="本机写后端用哪份实现（默认 fastapi；legacy = 标准库版 app/server.py）")
     ap.add_argument("--site", default=SITE_DEFAULT)
     ap.add_argument("--cf", default=r"C:\Program Files (x86)\cloudflared\cloudflared.exe")
     ap.add_argument("--timeout", type=int, default=60, help="等隧道地址的秒数")
@@ -115,11 +119,16 @@ def main():
         if not tok:
             tok = "jp" + uuid.uuid4().hex[:20]
             print(f"  没找到 token，新生成一个: {tok}")
-        server = os.path.join(a.site, "app", "server.py")
+        # C 阶段: 写后端有两个实现, 默认起 **FastAPI 版**（`app/api.py`），行为已用
+        # `tools/check_parity_legacy_vs_fastapi.py` 与标准库版逐项对拍过（21/21 × 三种鉴权场景）。
+        # 想回到标准库版: `--impl legacy`（或直接 `py -3.13 app/server.py 8770`）。
+        impl = getattr(a, "impl", "fastapi")
+        fname = "api.py" if impl == "fastapi" else "server.py"
+        server = os.path.join(a.site, "app", fname)
         if not os.path.exists(server):
             print(f"  ! 找不到 {server}（用 --site 指站点仓库）")
             return 1
-        print(f"  本机服务没在跑，起来（带 JPSUBMIT_TOKEN）: {server}")
+        print(f"  本机服务没在跑，起来（{impl} 版 · 带 JPSUBMIT_TOKEN）: {server}")
         env = dict(os.environ, JPSUBMIT_TOKEN=tok)
         subprocess.Popen([sys.executable, server, str(a.port)], cwd=a.site, env=env,
                          creationflags=DETACH,
