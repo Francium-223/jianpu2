@@ -51,3 +51,20 @@ npx wrangler deploy         # 把带 -27% 性能改进的前端发上去
 * Rust 装在 `D:\rust`（`RUSTUP_HOME`/`CARGO_HOME`），用的时候：
   `$env:PATH="D:\rust\cargo\bin;$env:PATH"`。
 * 后台：写路径隧道看护（15 分钟一次，判据 = `api && upstreamOk`）；模型下载在跑。
+
+---
+
+## 更新（同日更晚）
+
+* **ngram 剪枝已落地并接入应用** ✓（`static/search.ts` 的 `ensureGrams` / `candidateMask`，`app.ts` 空闲时建）：
+  * 采用条件**可证明安全**：只在"每段都能精确命中"且"代价 0 的结果够填满榜单"时才用剪枝结果；
+  * 实测：长查询 **69.1 → 48.2 ms/条（-30%）**；短查询/模糊查询退回全扫（不变慢）；
+  * 等价性对拍 `tools/check_prune_parity.mjs`：60 条（含模糊与多段）**结果逐条相同** ✓；
+  * 剪枝索引 ~136 ms，放**空闲时**建 —— "打开就能用"的时间没变（仍 ~200 ms）。
+* **Qwen2.5-VL-3B 已补回** ✓（29 个文件 / **7.52 GB**，`fetch_base_model.py` 走 hf-mirror 断点续传）。
+* 全套自检 10 项 + typecheck + ruff/mypy 门槛**全绿**；`check_prune_parity.mjs` 也挂进了 CI。
+* **Cloudflare 正式站已部署成功** ✓（网络恢复后 wrangler 自己刷新了登录态）：
+  线上已是 `app.3a8cd15f.js` + `search.6cbacf4d.js`（含两处性能改动），`/` 返回的 HTML 也指向新哈希 ✓。
+  （中途我以为"首页 HTML 指向旧哈希"是个构建 bug，先去看本地文件发现**本地是对的** ——
+   其实是边缘缓存滞后几分钟。**又一次"先量再改"**：没确认就动手，就会去修一个不存在的问题。）
+* 镜像（GitHub Pages）会稍后自动跟上：等站点仓库那 3 个提交推上去，CI 就会重建（GitHub 网络时断时续，已挂自动重试）。
