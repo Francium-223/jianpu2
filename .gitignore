@@ -36,3 +36,6 @@ hf_cache/
 deploy/kaggle-*.zip
 # 调转写时的试验散件(截图/PDF, 留档在磁盘但不入库)
 _analysis/_scratch/
+
+# E 阶段: Rust 构建产物
+wasm-matcher/target/

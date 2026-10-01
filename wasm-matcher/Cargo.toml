@@ -1,0 +1,22 @@
+[package]
+name = "jianpu-matcher"
+version = "0.1.0"
+edition = "2021"
+description = "简谱旋律匹配的内层代价循环（Rust -> wasm32），给前端检索用"
+license = "MIT"
+
+# 只出 cdylib（wasm 模块）。**不引 wasm-bindgen**：
+#   ① 项目调性是"零运行时依赖"，wasm-bindgen 会带来 JS glue + 额外工具链；
+#   ② 我们要传的数据形状很简单（几个 typed array），用 `extern "C"` + 线性内存 + `alloc` 就够。
+[lib]
+crate-type = ["cdylib"]
+
+[profile.release]
+opt-level = 3
+lto = true
+codegen-units = 1
+panic = "abort"      # wasm 里 panic 会膨胀体积；出错就让 JS 兜底（revert 到 TS 实现）
+strip = true
+
+[dependencies]
+# 故意为空：连 serde 都不引。
