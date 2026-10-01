@@ -97,6 +97,8 @@ def main() -> int:
     #   第一版写成 `os.path.dirname(WS)`，于是拼出 `D:\_analysis\...`（不存在）。
     ap.add_argument("--in", dest="src", default=os.path.join(WS, "_analysis", "qa_fragments.txt"))
     ap.add_argument("--out", dest="dst", default=os.path.join(WS, "_analysis", "qa_fragments_triaged.txt"))
+    ap.add_argument("--redo-out", dest="redo", default=os.path.join(ROOT, "train-work", "redo_fragments_v1.txt"),
+                    help="把**该重转**的目录名写到这里（transcribe_source.py 的输入格式）")
     a = ap.parse_args()
 
     if not os.path.exists(a.src):
@@ -149,11 +151,32 @@ def main() -> int:
             for notes, title, fname, nimg, dropped in sorted(buckets[k]):
                 f.write("%d\t%s\t%s\t%d\t%d\n" % (notes, title, fname, nimg, dropped))
 
+    # **该重转的名单由工具自己写** —— 我手工从分类文件里抽过一次，越过了段落边界，
+    #   把 80 份（含"找不到原图"和"本来就短"的）全写进了重转名单。这类"手抽"错误不该再有。
+    redo = []
+    for k in ("丢页(判据)", "多页未转全"):
+        for notes, title, fname, nimg, dropped in sorted(buckets[k]):
+            stem = os.path.splitext(os.path.basename(fname))[0]
+            dd = dirs.get(stem) or dirs.get("~" + stem) or []
+            if len(dd) > 1:
+                want = srcmap.get(stem, "")
+                pref = [x for x in dd if want and want in os.path.basename(x)]
+                if pref:
+                    dd = pref
+            redo.append(os.path.basename(dd[0]) if dd else stem)
+    if redo:
+        os.makedirs(os.path.dirname(a.redo), exist_ok=True)
+        with io.open(a.redo, "w", encoding="utf-8", newline="\n") as f:
+            f.write("# 该重转的碎片谱目录（%d 个）—— 输入 transcribe_source.py\n" % len(redo))
+            f.write("# 判据: 原图 ≥2 张（多页只转了第一页）或 sidecar 里有 dropped_pages\n")
+            for n in redo:
+                f.write(n + "\n")
+
     print("=== 碎片谱分类（%d 份）===" % len(rows))
     for k in ("丢页(判据)", "多页未转全", "找不到原图", "本来就是短曲"):
         print("  %-12s %3d" % (k, len(buckets[k])))
     need = len(buckets["丢页(判据)"]) + len(buckets["多页未转全"])
-    print("  -> **该重转 %d 份**；清单写到: %s" % (need, a.dst))
+    print("  -> **该重转 %d 份**；分类清单: %s；重转名单: %s" % (need, a.dst, a.redo))
     for k in ("丢页(判据)", "多页未转全"):
         for notes, title, fname, nimg, dropped in sorted(buckets[k])[:4]:
             print("       %4d 音  %-22s 原图 %d 张 丢页 %d" % (notes, title[:22], nimg, dropped))
