@@ -8,13 +8,75 @@
                   默认关闭 = 老行为(只挑一张页)。
   为什么: `爱错（简和谱）__qupu123-350544` 有两页, 老行为成品只有 `1 7 - 3 6 5 1` 六个音。
 """
-import glob, json, os, sys, time, traceback
+import glob, json, os, subprocess, sys, time, traceback
 from guard import guard_help        # noqa: E402  `--help` 守卫(唯一实现见 tools/guard.py)
 guard_help(__doc__)
 sys.path.insert(0, "tools"); os.chdir(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 sys.stdout.reconfigure(encoding="utf-8")
 import jp_transcribe as JP
 import batch_transcribe as BT
+
+# ══════════════════════════════════════════════════════════════════════════════
+# GPU 让路闸（2026-10-01 加，血的教训）
+#
+# 起因: 我的队列在 07:52:50 检查"外部计划任务没在跑"→ 07:54 开始转 jp114；而用户的计划任务
+# **07:53 正好触发**（它每 6 小时一次）。两个进程各加载一份模型：显存用到 **7867/8188 MiB**，
+# 我那份**4.5 小时一行输出都没有**（在显存里来回颠簸），外部任务也被拖慢 —— 白白耗掉半天。
+#
+# 所以把"别抢 GPU"做成**工具自己的纪律**，而不是只靠外面那层 `Wait-WritersClear`：
+#   ① 同目录写一个锁文件 `train-work/.transcribe.lock`（里面是 PID）—— 另一个转录进程活着就不开工；
+#   ② 顺带查一下用户的计划任务 `jp_mandopop_absorb3` 是不是 Running（`schtasks /query`）；
+#   ③ 让路时每 60 秒重查一次，并打印一行说明（别让人以为卡死了）。
+# 想强行不等: `JP_NO_WAIT=1`。
+# ══════════════════════════════════════════════════════════════════════════════
+LOCK = os.path.join("train-work", ".transcribe.lock")
+
+
+def _pid_alive(pid):
+    try:
+        out = subprocess.run(["tasklist", "/FI", f"PID eq {pid}", "/NH"],
+                             capture_output=True, text=True, encoding="utf-8", errors="replace")
+        return str(pid) in (out.stdout or "")
+    except Exception:
+        return False
+
+
+def _who_is_using_gpu():
+    """谁在占 GPU —— 返回一句人话, 没有就返回空串。"""
+    try:
+        if os.path.exists(LOCK):
+            txt = open(LOCK, encoding="utf-8", errors="replace").read().strip()
+            pid = int(txt) if txt.isdigit() else 0
+            if pid and pid != os.getpid():
+                if _pid_alive(pid):
+                    return f"另一个转录进程 (pid={pid})"
+                os.remove(LOCK)                     # 上次崩了留下的死锁 -> 清掉
+    except Exception:
+        pass
+    try:
+        r = subprocess.run(["schtasks", "/query", "/tn", "jp_mandopop_absorb3", "/fo", "list"],
+                           capture_output=True, text=True, encoding="utf-8", errors="replace")
+        if "Running" in (r.stdout or ""):
+            return "用户的计划任务 jp_mandopop_absorb3"
+    except Exception:
+        pass
+    return ""
+
+
+if os.environ.get("JP_NO_WAIT") != "1":
+    while True:
+        who = _who_is_using_gpu()
+        if not who:
+            break
+        print(f"[让路] {who} 正在用 GPU —— 等它跑完再开工（想强行不等: JP_NO_WAIT=1）", flush=True)
+        time.sleep(60)
+try:
+    os.makedirs("train-work", exist_ok=True)
+    open(LOCK, "w").write(str(os.getpid()))
+except Exception:
+    pass
+import atexit                                          # noqa: E402
+atexit.register(lambda: os.path.exists(LOCK) and os.remove(LOCK))
 
 SRC = sys.argv[1] if len(sys.argv) > 1 else "images-prep/jianpucn-pop"
 LIMIT = int(sys.argv[2]) if len(sys.argv) > 2 and sys.argv[2].isdigit() else 100000
