@@ -9,6 +9,9 @@
 $root = "D:\Documents_D\jianpu2"
 Set-Location $root
 $env:JP_PURITY2 = "1"
+# 2026-10-01: 让 transcribe_source 的"让路闸"知道**我在任务里** —— 否则它会查到
+# "jp_mandopop_absorb3 正在 Running"(就是本任务的爹) 然后永远等下去, 把自己的任务锁死。
+$env:JP_NO_WAIT = "1"
 $log = "train-work\mandopop_absorb3.log"
 function Say([string]$m) {
     $line = "{0}  {1}" -f (Get-Date).ToString("yyyy-MM-dd HH:mm:ss"), $m

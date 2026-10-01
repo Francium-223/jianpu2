@@ -63,13 +63,32 @@ def _who_is_using_gpu():
     return ""
 
 
-if os.environ.get("JP_NO_WAIT") != "1":
+# ⚠ **别让计划任务等到自己头上**（2026-10-01 当天就踩了，而且是我自己造成的）:
+#   计划任务的脚本里 `py tools/transcribe_source.py …` 是它自己的子进程 —— 加了让路闸之后，
+#   它一查 `schtasks` 发现"jp_mandopop_absorb3 正在 Running"（就是它爹），于是**永远等下去**:
+#   日志里一行行 `[让路] 用户的计划任务 …`, 而 GPU 占用 0%。用户的整轮任务就这么被卡住。
+#   两道保险:
+#     ① 计划任务脚本自己会设 `JP_PURITY2=1`（脚本第 9 行）——子进程**继承**它，见到就知道"我在任务里"；
+#        同时 `mandopop_absorb3.ps1` 现在也显式设 `JP_NO_WAIT=1`（下一轮起更直白）。
+#     ② 就算没这两个变量，"等计划任务"也有**上限**（默认 20 分钟，`JP_WAIT_MAX_MIN` 可调），
+#        到点就开工并打一行警告 —— 宁可偶尔抢一下 GPU，也不能把谁锁死。
+INSIDE_TASK = os.environ.get("JP_PURITY2") == "1" or os.environ.get("JP_NO_WAIT") == "1"
+TASK_WAIT_MAX = int(os.environ.get("JP_WAIT_MAX_MIN", "20")) * 60
+
+if not INSIDE_TASK:
+    waited = 0
     while True:
         who = _who_is_using_gpu()
         if not who:
             break
-        print(f"[让路] {who} 正在用 GPU —— 等它跑完再开工（想强行不等: JP_NO_WAIT=1）", flush=True)
+        if "计划任务" in who and waited >= TASK_WAIT_MAX:
+            print(f"[让路] 已经等了 {waited // 60} 分钟, 计划任务还没结束 —— 先开工（上限见 JP_WAIT_MAX_MIN）",
+                  flush=True)
+            break
+        print(f"[让路] {who} 正在用 GPU —— 等它跑完再开工"
+              f"（第 {waited // 60} 分钟；想强行不等: JP_NO_WAIT=1）", flush=True)
         time.sleep(60)
+        waited += 60
 try:
     os.makedirs("train-work", exist_ok=True)
     open(LOCK, "w").write(str(os.getpid()))
