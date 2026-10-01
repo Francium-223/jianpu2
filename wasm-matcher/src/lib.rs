@@ -43,12 +43,19 @@ unsafe impl GlobalAlloc for Bump {
         let align = layout.align().max(8);
         let mut p = if BUMP == 0 { heap_base() } else { BUMP };
         p = (p + align - 1) & !(align - 1);
-        let end = p + layout.size();
-        // 超出线性内存就返回 null（JS 侧会看到并退回 TS 实现）
-        if end > wasm_memory_end() {
-            return core::ptr::null_mut();
+        let need = p + layout.size();
+        // ⚠ 真实语料是 2.5M 音符（音高 2.5 MB + 变音 2.5 MB + 偏移 46 KB），**远超** wasm 的初始
+        //   线性内存（1 MiB 左右）。第一版只做了"超界返回 null" -> 前端会直接退回 TS 实现，
+        //   而我自己的对拍脚本会看到"每首都是 null"，很难一眼看出是内存没长。
+        //   这里自己 grow: 不够就按需扩页（64 KiB 一页），扩不动才返回 null。
+        if need > wasm_memory_end() {
+            let deficit = need - wasm_memory_end();
+            let pages = (deficit + 65535) / 65536;
+            if core::arch::wasm32::memory_grow(0, pages) == usize::MAX {
+                return core::ptr::null_mut();
+            }
         }
-        BUMP = end;
+        BUMP = need;
         p as *mut u8
     }
 
