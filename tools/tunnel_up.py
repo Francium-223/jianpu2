@@ -129,8 +129,17 @@ def main():
             print(f"  ! 找不到 {server}（用 --site 指站点仓库）")
             return 1
         print(f"  本机服务没在跑，起来（{impl} 版 · 带 JPSUBMIT_TOKEN）: {server}")
+        # ⚠ 2026-10-01: 优先用**站点仓库的 .venv**（uv 装的），别用 sys.executable。
+        #   原因: D 阶段给写后端加了 prometheus_client 等依赖，它们装在 .venv 里；
+        #   用系统 Python 起会 ImportError 直接死掉，而这里 stdout/stderr 都丢进 DEVNULL，
+        #   表现成"服务起不来"却看不到原因（这次就是这么卡住的）。
+        pyexe = os.path.join(a.site, ".venv", "Scripts" if os.name == "nt" else "bin",
+                             "python.exe" if os.name == "nt" else "python")
+        if not os.path.exists(pyexe):
+            pyexe = sys.executable
+            print(f"  （没找到 {a.site}\\.venv，退回系统 Python: {pyexe}）")
         env = dict(os.environ, JPSUBMIT_TOKEN=tok)
-        subprocess.Popen([sys.executable, server, str(a.port)], cwd=a.site, env=env,
+        subprocess.Popen([pyexe, server, str(a.port)], cwd=a.site, env=env,
                          creationflags=DETACH,
                          stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
         for _ in range(15):
@@ -208,20 +217,42 @@ def main():
                   "Variables and Secrets，加 API_UPSTREAM / API_TOKEN")
         else:
             for name, val in (("API_UPSTREAM", url), ("API_TOKEN", tok)):
+                # ⚠ 2026-10-01 修: 原来带 `shell=WIN` 传 list 参数 —— 实测那次
+                #   `API_UPSTREAM` 没写进去（输出被截成 "npm not…"），而脚本靠"输出里有没有
+                #   Success 字样"判断成功，于是**表面上两项都 ✓**，域名却还指着旧隧道
+                #   （health 里 upstreamOk=false + HTTP 530，是我手工再 put 一次才好的）。
+                #   现在: 不带 shell、明确用 npx.cmd；失败把完整输出打出来；
+                #   最后**回读域名 health 里的 upstream 是否等于新地址** —— 用结果验，不用字样验。
                 r = subprocess.run([npx, "wrangler", "secret", "put", name], cwd=a.site,
                                    input=val + "\n", text=True, encoding="utf-8",
-                                   errors="replace", capture_output=True, shell=WIN)
-                out = (r.stdout or "") + (r.stderr or "")
-                ok = ("Success" in out) or (r.returncode == 0 and "ERROR" not in out)
-                print(f"  {'✓' if ok else '✗'} {name}" + ("" if ok else f"  <- {out.strip()[:200]}"))
+                                   errors="replace", capture_output=True)
+                out = ((r.stdout or "") + (r.stderr or "")).strip()
+                ok = r.returncode == 0 and "Success" in out
+                print(f"  {'✓' if ok else '✗'} {name}")
+                if not ok:
+                    print("     退出码 %s；完整输出:\n%s" % (r.returncode, out[:1200]))
 
     # ── 5) 验域名 + 记状态 ────────────────────────────────────────────────
-    time.sleep(6)
-    dh = http_json(a.domain + "/api/health", 20)
+    # 用**结果**验: 域名 health 里的 upstream 必须等于这次的新地址，且 upstreamOk=true。
+    # （只验"secret put 输出里有 Success"是不够的 —— 2026-10-01 就是那样漏过去的。）
+    # 新隧道的 DNS/secret 生效实测要 2–3 分钟（90 秒那次就误报"取不到"），给 4 分钟。`n    deadline = time.time() + 240
+    dh = None
+    while time.time() < deadline:
+        dh = http_json(a.domain + "/api/health", 20)
+        if dh and dh.get("upstream") == url and dh.get("upstreamOk"):
+            break
+        time.sleep(6)
     if dh:
-        print(f"  域名 health: api={dh.get('api')} upstream={dh.get('upstream')} og={dh.get('og')}")
-        if not dh.get("api"):
-            print("  ! api 还是 false —— secret 可能没生效或没写，稍等再验一次")
+        print(f"  域名 health: api={dh.get('api')} upstream={dh.get('upstream')} "
+              f"upstreamOk={dh.get('upstreamOk')} og={dh.get('og')}")
+        if dh.get("upstream") != url:
+            print("  ! **Worker 里的 API_UPSTREAM 不是这次的新地址** —— 投稿会打到旧隧道去。"
+                  "\n    手工修:  echo %s|npx wrangler secret put API_UPSTREAM   (在站点仓库下)" % url)
+        elif not dh.get("upstreamOk"):
+            print("  ! 地址对了但上游不通（upstreamErr=%s）—— 等一会儿再看，或检查隧道进程"
+                  % dh.get("upstreamErr"))
+        else:
+            print("  ✓ 写路径通（域名 -> Worker -> 隧道 -> 本机 FastAPI）")
     else:
         print(f"  ! {a.domain}/api/health 取不到")
     with open(secret_file, "w", encoding="utf-8", newline="\n") as f:
