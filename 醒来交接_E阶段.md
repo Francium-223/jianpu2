@@ -29,6 +29,20 @@
    30/60 秒采一次基本抓不住 → 改成 **每 15 秒**采一次，每 20 次（约 5 分钟）往日志写一行。
 4. **到点不硬开**：8 小时到点若转写还在跑，就**安全退出**并写清原因（再点一次即可），
    绝不 OOM 掉一半输出。
+### ⭐ 醒来第一件事：一条命令推三个库（脚本已修好，2026-10-03 凌晨）
+
+```powershell
+& "C:\Program Files\Git\bin\bash.exe" -lc "bash /d/Documents_D/_analysis/推送.sh --check"   # ① 体检：只读
+& "C:\Program Files\Git\bin\bash.exe" -lc "bash /d/Documents_D/_analysis/推送.sh"           # ② 真推（要凭据）
+```
+
+* 脚本原件在 `jianpu-db/misc/records/推送.sh`，同时放了一份到**它自己说的用法路径** `_analysis/推送.sh`（原先那里没有 ✗，照文档跑会 "No such file"）。
+* **原先的仓库列表是错的** ✗：写的是 `jianpu-web` —— 那是 `D:\Documents_D\jianpu-web`，一个**没有远端**的旧快照（最后提交 09-23），推不了；真正的站点仓库是 **`jianpu-db.github.io`**（远端 `github.com/jianpu-db/jianpu-db.github.io.git`）。已改成 `jianpu-db jianpu2 jianpu-db.github.io`，`--check` 已跑通。
+* **推出去的副作用（实测自各仓库的 `.github/workflows`）**：
+  * `jianpu2` —— **没有任何 workflow**，推了就是备份，零副作用；
+  * `jianpu-db` —— 触发 `parse.yaml`（校验）+ **`publish-hf.yaml`（发布 HuggingFace 数据集）**；
+  * `jianpu-db.github.io` —— 触发 `checks.yml` + **`pages.yml`（部署 GitHub Pages）**。
+* 我这边**只尝试推过 `jianpu2`**（零副作用那个），结果是网络不通：`curl 28 Failed to connect to github.com:443 after 21080 ms` —— 与交接里"GitHub 网络时断时续"一致；带发布/部署后果的两个仓库**我一次都没推**。
 ### 三仓库 / 两处线上：现在到底差什么（2026-10-03 凌晨实测）
 
 | 位置 | 曲数 | 音符 | **组数** | 说明 |
