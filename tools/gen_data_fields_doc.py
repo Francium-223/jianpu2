@@ -30,59 +30,124 @@ CHECK = "--check" in sys.argv
 
 BEGIN, END = "<!-- data-fields:begin -->", "<!-- data-fields:end -->"
 
-# 含义: 数据字段 -> (类型, 说明)。说明与 schema.py 的解释保持一致（那里是给人看的权威口径）。
+# 含义: 数据字段 -> 说明。**类型不写在这里** —— 类型是从数据里推的（见 types_of），
+# 因为手写类型实测会错：`file`/`bars`/`source`/`transcriber` 都是 list、`beats_per_bar` 是 float、
+# `confidence`/`conf_p10` 是 str（2026-10-03 实测 11495 行的类型画像）。
 MEAN = [
-    ("file", "str", "文件名（入库时按曲名生成；改名会牵动 `by_*` 与前端链接，不由人手改）"),
-    ("title", "str", "曲名（在曲谱头里是 `title=`；站上叫“曲名/分组键”，同名多版本靠它归组）"),
-    ("artist", "list[str]", "歌手/演奏者（从原谱站页面抽，也可人工补；通用曲名靠它消歧）"),
-    ("status", "str", "`ok`=人工校对过 / `ocr`=图片机器转写（发布白名单见上一节）"),
-    ("n_notes", "int", "音符数（jptok 唯一 token 口径，不含 `-`/`~`/`|`）"),
-    ("bars", "int", "小节数（由拍号与音符时值推出）"),
-    ("beats_per_bar", "int", "每小节拍数（拍号的分母部分）"),
-    ("source", "str", "出处 `<站>-<站内 id>`（例 `qupu123-268596`；那一页的确切 URL 在 `link`）"),
-    ("transcriber", "str", "转写者：`jianpu2-auto`=流水线转的；人工投稿由投稿流程写入"),
-    ("confidence", "float", "转写置信度：每个数字 top-1 概率的平均（0~1；老谱没有此字段，前端按中性 0.5 处理）"),
-    ("conf_p10", "float", "置信度最低那 10% 的分位 —— 平均看着还行、个别音很虚时靠它发现"),
-    ("tag", "list[str]", "标签闭包（由 `usertag` 按 `tags.json` 推导，别直接手写；站上叫 tags）"),
-    ("usertag", "list[str]", "人写的原始标签（叶子；分类写 `分类/儿歌` 这种既有约定）"),
-    ("alias", "list[str]", "别名（同一首歌的别的叫法，检索时一起归组）"),
-    ("MBID", "str", "MusicBrainz **work** 的 UUID（注意不是 recording）"),
-    ("link", "list[str]", "该曲在某一站的收录页 URL（人工核对过，可多个；搜索页不进数据）"),
-    ("sections", "list[dict]", "分段：`[{\"subtitle\": \"chorus\", \"score\": \"…\"}]`"),
-    ("score", "str", "全文旋律（各段用 ` | ` 连接），记法见「规范/曲谱文件」一节"),
+    ("file", "文件名列表（入库时按曲名生成；改名会牵动 `by_*` 与前端链接，不由人手改）"),
+    ("title", "曲名（在曲谱头里是 `title=`；站上叫“曲名/分组键”，同名多版本靠它归组）"),
+    ("artist", "歌手/演奏者（从原谱站页面抽，也可人工补；通用曲名靠它消歧）"),
+    ("status", "`ok`=人工校对过 / `ocr`=图片机器转写（发布白名单见上一节）"),
+    ("n_notes", "音符数（jptok 唯一 token 口径，不含 `-`/`~`/`|`）"),
+    ("bars", "各段的小节数（逐段一个数，故是列表）"),
+    ("beats_per_bar", "每小节拍数（拍号的分母部分；实测是浮点）"),
+    ("source", "出处列表，元素形如 `<站>-<站内 id>`（例 `qupu123-268596`；那一页的确切 URL 在 `link`）"),
+    ("transcriber", "转写者列表：`jianpu2-auto`=流水线转的；人工投稿由投稿流程写入"),
+    ("confidence", "转写置信度：每个数字 top-1 概率的平均（0~1；老谱没有此字段，前端按中性 0.5 处理；实测以字符串存放）"),
+    ("conf_p10", "置信度最低那 10% 的分位 —— 平均看着还行、个别音很虚时靠它发现"),
+    ("tag", "标签闭包列表（由 `usertag` 按 `tags.json` 推导，别直接手写；站上叫 tags）"),
+    ("usertag", "人写的原始标签列表（叶子；分类写 `分类/儿歌` 这种既有约定）"),
+    ("alias", "别名列表（同一首歌的别的叫法，检索时一起归组）"),
+    ("MBID", "MusicBrainz **work** 的 UUID（注意不是 recording）"),
+    ("link", "该曲在某一站的收录页 URL 列表（人工核对过，可多个；搜索页不进数据）"),
+    ("sections", "分段：`[{\"subtitle\": \"chorus\", \"score\": \"…\"}]`"),
+    ("score", "全文旋律（各段用 ` | ` 连接），记法见「规范/曲谱文件」一节"),
 ]
+
+_SCALAR = {str: "str", int: "int", float: "float", bool: "bool", type(None): "null"}
+
+
+def _type_name(v):
+    """把一个值渲染成类型名（只认到"标量 / list[标量] / list[dict]"这一层，够用）。
+
+    **空列表不当类型证据** —— 否则会出现 `list|list[str]` 这种噪声（有些行是空列表而已）。
+    "有多少行是空的"由**非空率**那一列回答，类型列只说元素是什么。
+    """
+    if isinstance(v, list):
+        if not v:
+            return "list"
+        inner = {_type_name(x) for x in v if x is not None}
+        inner.discard("null")
+        return "list[%s]" % "|".join(sorted(inner)) if inner else "list"
+    return _SCALAR.get(type(v), type(v).__name__)
+
+
+def types_of():
+    """每个字段的**实测类型**（同一字段出现多种类型时用 `|` 连起来，不掩盖）。"""
+    per = collections.defaultdict(collections.Counter)
+    for line in io.open(DATA, encoding="utf-8"):
+        if not line.strip():
+            continue
+        for k, v in json.loads(line).items():
+            t = _type_name(v)
+            if t == "list":            # 空列表：先记着，但**别用它**盖过有内容的那些行
+                per[k].setdefault("(空列表)", 0)
+                per[k]["(空列表)"] += 1
+                continue
+            per[k][t] += 1
+    out = {}
+    for k, c in per.items():
+        names = [t for t, _n in c.most_common() if t != "(空列表)"]
+        out[k] = "|".join(names) or "list"
+    return out
 
 
 def coverage():
+    """返回 (行数, 出现次数, 非空次数)。
+
+    **为什么要分"覆盖"和"非空"**: 字段存在不等于有内容。实测 `link` 在 11495 行里
+    **全部是空列表**（曲谱文件头里压根没有 `link=` 这一项，它只可能由人工投稿流程写入）——
+    只报覆盖率的话，表上会写"link 100%"，等于把"这个字段现在没数据"藏起来了。
+    """
     cnt = collections.Counter()
+    nonempty = collections.Counter()
     n = 0
     for line in io.open(DATA, encoding="utf-8"):
         if not line.strip():
             continue
         n += 1
-        for k in json.loads(line):
+        for k, v in json.loads(line).items():
             cnt[k] += 1
-    return n, cnt
+            if v is None:
+                continue
+            if isinstance(v, (list, dict, str)):
+                if len(v.strip() if isinstance(v, str) else v) > 0:
+                    nonempty[k] += 1
+            else:
+                nonempty[k] += 1
+    return n, cnt, nonempty
 
 
-def table(n, cnt):
-    out = ["", "**`data.jsonl` 字段**（%d 行；覆盖率是按当前文件实测的，重跑本脚本会自动更新）:" % n, "",
-           "| 字段 | 类型 | 覆盖 | 含义 |", "|---|---|---|---|"]
-    unknown = sorted(set(cnt) - {k for k, _, _ in MEAN})
-    for k, ty, note in MEAN:
+def table(n, cnt, nonempty, tys):
+    out = ["", "**`data.jsonl` 字段**（%d 行；覆盖率、非空率与类型都是按当前文件**实测**的，重跑本脚本会自动更新）:" % n, "",
+           "| 字段 | 类型 | 覆盖 | 非空 | 含义 |", "|---|---|---|---|---|"]
+    unknown = sorted(set(cnt) - {k for k, _ in MEAN})
+    empty_but_documented = []
+    for k, note in MEAN:
         if k not in cnt:
             continue
-        out.append("| `%s` | %s | %.1f%% | %s |" % (k, ty, cnt[k] * 100.0 / n, note))
+        ne = nonempty[k]
+        if ne == 0:
+            empty_but_documented.append(k)
+        out.append("| `%s` | %s | %.1f%% | %.1f%% | %s |"
+                   % (k, tys.get(k, "?"), cnt[k] * 100.0 / n, ne * 100.0 / n, note))
     if unknown:
-        out.append("| %s | — | — | ⚠ 数据里有但本表没写：请补 `tools/gen_data_fields_doc.py` 的 MEAN |"
+        out.append("| %s | — | — | — | ⚠ 数据里有但本表没写：请补 `tools/gen_data_fields_doc.py` 的 MEAN |"
                    % " ".join("`%s`" % u for u in unknown))
+    if empty_but_documented:
+        out.append("")
+        out.append("> ⚠ **非空 0.0%%** 的字段：%s —— 字段在、但当前语料里没有内容，"
+                   "别按「已经有数据」来读（`link` 只由人工核对过的投稿流程写入，"
+                   "曲谱文件头里根本没有 `link=` 这一项）。"
+                   % "、".join("`%s`" % k for k in empty_but_documented))
     out.append("")
     return "\n".join(out)
 
 
 def main() -> int:
-    n, cnt = coverage()
-    block = BEGIN + "\n" + table(n, cnt) + END
+    n, cnt, nonempty = coverage()
+    tys = types_of()
+    block = BEGIN + "\n" + table(n, cnt, nonempty, tys) + END
     txt = io.open(README, encoding="utf-8").read()
     if BEGIN in txt and END in txt:
         new = re.sub(re.escape(BEGIN) + r".*?" + re.escape(END), lambda _m: block, txt, flags=re.S)
