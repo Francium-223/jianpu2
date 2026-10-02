@@ -49,6 +49,11 @@ bash /d/Documents_D/_analysis/推送.sh             # 真推
   2. **先暂停转写链再跑**：停掉 `jp_mandopop_absorb3`，然后 `schtasks /run /tn jp_refine_titles` / `pwsh -NoProfile -File tools\run_title_refine.ps1`，跑完再恢复链（链是**断点续传**，停一下不丢活）。
 * **CPU 这条路走不通**（实测，别再试）：脚本把 `device_map="cuda:0"` 写死；且当前**空闲物理内存只有 0.7 GB**，1.7B bf16 要 ~3.4 GB —— 硬上会把机器拖垮。
 * 真跑起来约 **93 分钟 / 25110 条**；跑完只写 `train-work/title_clean.tsv`（**只出建议**）。
+* **跑完怎么验（照这个看，不用猜）**：日志 `train-work/refine_titles.log` 会写一行
+  `完成 N 条: 有改动 M, 未通过校验 K -> train-work/title_clean.tsv`（2026-09-22 那轮是 `完成 1349 条: 有改动 642, 未通过校验 0`）；
+  再核三样：`(Get-Content train-work/title_clean.tsv | Measure-Object -Line).Lines - 1`（应 ≈ 本次真跑的条数 + 上次的 1492）、
+  `part.tsv` 行数应随之增长、以及**未通过校验应为 0**（>0 说明模型输出没按格式走，要抽看）。
+  抽查几条：`part.tsv` 的表头是 `目录名 | 原始名 | 模型曲名 | 有变化 | 原文输出`，挑"有变化=1"的看模型给的曲名是否像人话。
 * 生效方式见下方"后半段"表：`to_jianpu_db` 重建时会读它，**不需要额外命令**。
 
 
