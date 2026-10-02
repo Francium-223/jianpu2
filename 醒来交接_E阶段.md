@@ -271,13 +271,23 @@ cmd /c D:\Documents_D\jianpu2\tools\night_qa.cmd      # 手动跑一次
 建议的落地方式（**只移不删**，与你的口径一致）：命中者不写进语料，而是移进 `_analysis/lowdensity/`
 并留 manifest；站上/语料里不再出现。**要不要开、阈值取 10 还是 15，等你定**（我没动流水线）。
 
-**一条命令就能开（现成的模板，本轮没写）**：仓库里已经有一模一样的先例 ——
-`tools/quarantine_lowdigits.py`（dry-run 先报数，`--apply` 才移，只移不删 + manifest）
-+ `tools/lowdigits_cleanup.ps1`（等空闲 → 隔离 → `finalize.py` → 评测重跑 → `verify_deliverable.py`）。
-照这两个写一份 `quarantine_lowdensity.py` + `lowdensity_cleanup.ps1` 即可；
-⚠ 注意 `lowdigits_cleanup.ps1` 的等待判据里**本来就含 `transcribe_source`**（我这轮给
-`run_title_refine.ps1` 补的就是它），照抄时别漏。
-你说"做"，我就照这两份写出来，先只跑 dry-run 给你看命中名单。
+**一条命令就能开（本轮已经写好，只跑过 dry-run）**：照仓库里现成的先例
+（`tools/quarantine_lowdigits.py` + `tools/lowdigits_cleanup.ps1`）写了这两份：
+
+* `tools/quarantine_lowdensity.py` —— 判据「每页 <15 音 且 页数 ≥2」，**默认 dry-run**；
+  `--apply` 才把 `../jianpu-db/scores/<名>.txt/.json` 移进 `../jianpu-db/scores-lowdensity/`
+  并写 `manifest.tsv`（文件名/曲名/出处/音节数/页数/密度/时间）；`--restore` 按 manifest 原样移回。
+  **判据只读 `fragment_census.py` 的输出**（单真源）：清单与普查报告永远一致。
+* `tools/lowdensity_cleanup.ps1` —— 等空闲（判据里**含转写**，见下面那条教训）→ dry-run → apply →
+  `finalize.py` → 评测重跑 → `qa_corpus.py` / `source_map.py` / `verify_deliverable.py`。
+
+**本轮 dry-run 实测**（没打 `--apply`，语料一个字节没动，`jianpu-db` 的 `git status` 空）：
+`普查可疑 133 → 命中 115 份`、`没命中 18 份（全是只 1 页的）`、`命中但找不到文件 0 份`、
+`占全库 1.00%（data.jsonl 实测 11495 行）` —— 与上面手算的 115 完全一致 ✓。
+要开就一条（任选）：手工 `pwsh -NoProfile -File tools\lowdensity_cleanup.ps1`，
+或只跑搬移那一步 `py -3.13 tools/quarantine_lowdensity.py --apply`。
+⚠ 这两个脚本**都没有注册计划任务**，不开就等于不存在。
+
 
 产物：`_analysis/fragments_133.txt`（133 份清单：每页密度/音节数/页数/曲名/source）、
 `_analysis/fragments_133_triaged.txt`（分类：丢页 0 / 多页未转全 35 / 找不到原图 92 / 本来就是短曲 6）、
