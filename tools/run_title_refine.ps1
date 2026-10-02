@@ -51,13 +51,19 @@ if ($waited -ge 120) { Say "等模型超时(实为 2 小时), 放弃"; exit 1 }
 $deadline = (Get-Date).AddHours(8)
 $tick = 0
 while ((Get-Date) -lt $deadline) {
-    $busy = @(Get-CimInstance Win32_Process -Filter "Name like '%python%'" |
-              Where-Object { $_.CommandLine -match $busyPat }).Count
+    $busyProcs = @(Get-CimInstance Win32_Process -Filter "Name like '%python%'" |
+                   Where-Object { $_.CommandLine -match $busyPat })
+    $busy = $busyProcs.Count
     if ($busy -eq 0) { Say "重建/转写都已结束, 开始清洗"; break }
+    # 记下**是谁**在挡着（只报个数看不出"真在转写"还是"别的收尾脚本"）
+    $who = ($busyProcs | ForEach-Object {
+        $cmd = $_.CommandLine -replace '\s+', ' '
+        if ($cmd -match '([A-Za-z0-9_\.\-]+\.py)') { $matches[1] } else { 'python' }
+    } | Sort-Object -Unique) -join ','
     # 每 20 次（约 5 分钟）往日志写一行，好让日志看得出"还活着、还差多久"
     if ($tick % 20 -eq 0) {
         $left = [int](( $deadline - (Get-Date) ).TotalMinutes)
-        Say ("  还在跑($busy 个进程: 重建或转写), 已等 {0} 分钟, 上限还剩 {1} 分钟" -f ($tick / 4), $left)
+        Say ("  还在跑($busy 个进程: $who), 已等 {0} 分钟, 上限还剩 {1} 分钟" -f ($tick / 4), $left)
     }
     $tick += 1
     Start-Sleep -Seconds 15
