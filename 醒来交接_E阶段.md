@@ -193,6 +193,9 @@ refresh 又赶上网络抽风 → wrangler 当时要求 `CLOUDFLARE_API_TOKEN`�
 另加一个随手可跑的文档体检（只读，2026-10-03）：`py -3.13 tools/docs_link_check.py` —— 扫三仓库 markdown 的内部相对链接。
 首跑结果 1 / 27 / 0 条断链、已全修（jianpu-db README 那 26 条见其仓库提交）；现在 **0 / 0 / 0**。
 唯一豁免是上游 vendored 的 `transformers_multimodal.md`（它自带的 `./transformers.md` 本仓库没有），在检查器里显式列名跳过。
+另一个只读检查：`py -3.13 tools/gen_data_fields_doc.py`（+ `--check`）—— 按**实际数据**生成/更新 `jianpu-db/README.md` 的 `data.jsonl` 字段表。
+首跑发现 README 只讲了"曲谱文件头"的字段，而 data.jsonl 有 **11 个字段查不到**（`file`/`status`/`artist`/`n_notes`/`bars`/`beats_per_bar`/`confidence`/`conf_p10`/`score`/`sections`/`source`），已补齐（18 个字段 + 实测覆盖率）。
+反方向的 5 个（`KeepLength`/`NextScore`/`subtitle`/`tagroute`/`type`）确认是**文件头指令**、不是数据字段，已在检查器输出里点明以免误读。
 
 ```powershell
 Unregister-ScheduledTask -TaskName jp_night_qa_ext    # 撤掉
