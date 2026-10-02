@@ -198,6 +198,15 @@ refresh 又赶上网络抽风 → wrangler 当时要求 `CLOUDFLARE_API_TOKEN`�
 反方向的 5 个（`KeepLength`/`NextScore`/`subtitle`/`tagroute`/`type`）确认是**文件头指令**、不是数据字段，已在检查器输出里点明以免误读。
 
 **字段表还得看"非空率"**（2026-10-03 又补）：只报"覆盖率"会把"字段在、但没数据"藏起来。实测非空率 ——
+### JSON 体检（2026-10-03 凌晨，只读）
+
+* **12020 个 `scores/*.json` 全部可解析** ✓；根目录 `data.json` / `source_pages.json` / `tags.json`、`misc/touhou-all.json` 也都合法 ✓；
+* 全库**唯一**解析不了的是 **`misc/data_old.json`**（尾随逗号 `"东方幻想麻将",]`，6232 行）—— 它是 571 条目的旧快照、
+  **没有任何代码引用**；已**只删那 1 个逗号**修好（`git diff` 就一行），修后 571 条全部可读 ✓。
+* 顺带回答了上一节那个 `link` 问题：**这份旧快照里一个 `link` 键都没有（0/571）** ——
+  所以 `data.jsonl` 的 `link` 全空**不是"某次重建丢了数据"**，而是该字段从设计上就只由
+  **人工核对过的投稿流程**写入、至今没有内容。要填就填真链接（不能猜）。
+
 `link` **0.0%**（全量扫 11991 个曲谱文件，带 `link=` 的 **0 个**；该字段只由人工核对过的投稿流程写入）、`alias`/`MBID` 0.3%、`artist` 11.7%、`tag`/`usertag` 74.6%、`confidence`/`conf_p10` 4.0%，其余 100%。
 ⚠ 另外我自己第一版把**类型**手写错了 6 处（`file`/`bars`/`source`/`transcriber` 其实是 list、`beats_per_bar` 是 float、`confidence`/`conf_p10` 是 str）—— 现在类型也**从数据推**，不再手写。
 
