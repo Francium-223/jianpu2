@@ -19,6 +19,10 @@ bash /d/Documents_D/_analysis/推送.sh             # 真推
   （含 gh-pages 产物断言、剪枝/wasm 对拍、排名金标准）、`check_docs_numbers.py` **通过** ✓
   → 也就是说站点那两个提交推上去，`checks` 与 `pages` 两道应该都是绿的。
   （注：我改过的站点仓库的 `tools/build_web_data.py` 属"历史脚本"，**不在 lint 门槛的 5 个文件里**，所以它不会绊门禁。）
+* **推 `jianpu-db` 之后 CI 会做什么（2026-10-03 读 workflow 核实）**：`parse.yaml` 会重跑 `parse_scores.py`
+  并**自动提交**它生成的东西（只写 `data.json` / `data.jsonl`，源码里**完全没有 README 相关代码** ✓
+  —— 所以我在 `README.md` 里补的字段表、修的死链**不会被 CI 冲掉**）；`publish-hf.yaml` 会 `export_hf.py --out hf`
+  再上传 HF（`github-actions[bot]` 自己的提交会被跳过，避免无限套娃）。
 
 **② 碎片守卫要不要开（③ 的开关是你的）** —— 我已把"开下去会怎样"算出来：
 
