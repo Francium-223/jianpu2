@@ -43,6 +43,18 @@ bash /d/Documents_D/_analysis/推送.sh             # 真推
 
 ## 决策清单（每项都给了一条命令 + 预期效果）
 
+> **验收清单（2026-10-03 06:1x 全部重跑过；每条都给了可重跑的命令）**
+>
+> | 主张 | 怎么验 | 结果 |
+> |---|---|---|
+> | ① 归组归一化已生效 | 站点仓库 `node tools/qa_snapshot.mjs --compare <旧快照>`、`node tools/check_dup_groups.mjs` | 组数 **8602**、同名拆组 **0**、快照自评「没有变差的项 ✓」；独立检查器「剥后缀后同名却分成多个组的 **0 组**」✓ |
+> | ③ 守卫只列清单、不动语料 | `py -3.13 tools/quarantine_lowdensity.py`（不打 `--apply`） | 命中 **115 份**；`jianpu-db` 工作树 **0 改动**、`scores-lowdensity/` 未创建 ✓ |
+> | 语料自检 | `jianpu-db` 里 `py -3.13 tools/check_data_sane.py` | **11495 行 · 产物断言全部通过 ✓** |
+> | 站点文档数字 | 站点仓库 `py -3.13 tools/check_docs_numbers.py` | **通过：文档数字与语料一致** ✓ |
+> | 语料 ↔ 站点逐行一致 | `py -3.13 tools/check_corpus_vs_site.py` | 两边各 **11495 行**、**0 重复**、**0 独有**（音符数按口径不同，见下） |
+> | 文档链接 / 文档里的命令 | `py -3.13 tools/docs_link_check.py`、`py -3.13 tools/check_handover_commands.py` | 三仓库 **0 断链** ✓；25 个 `tools/` 引用全部存在、跨仓库都写明仓库 ✓ |
+> | 三仓库干净 | 各仓库 `git status --porcelain` | 全 **0**（本地领先 41 / 10 / 3，未推） |
+
 > 下面这张表是最初的四项；① 已落实、③ 的开关等你点、② 在等待、④ 按结论不需要。
 
 | # | 待决 | 一条命令 | 预期效果（已实测） |
