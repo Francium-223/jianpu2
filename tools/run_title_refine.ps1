@@ -37,19 +37,27 @@ while ($waited -lt 120) {
 # ⚠ 这个写法是 0.5/轮 × 30 秒 = **2 小时**上限，原来的提示写"60 分钟"是错的（2026-10-03 实测核对）
 if ($waited -ge 120) { Say "等模型超时(实为 2 小时), 放弃"; exit 1 }
 
-# 等流水线空闲: 上限 8 小时（480 轮 × 60 秒）。与 tools/lowdigits_cleanup.ps1 同一套口径。
-# ⚠ 到点**不硬开**：显存里还有转写时，1.7B 模型(~3.5GB)叠上去就是 OOM，
-#   宁可退出让人/看护再点一次（转写批之间总有空档），也不要一份 OOM 掉一半的输出。
-$waited = 0
-while ($waited -lt 480) {
+# 等流水线空闲: 上限 8 小时，**每 15 秒采一次**。
+# 为什么采这么密: 实测夜里驱动转写的是 `mandopop_absorb3`（一次 489 项的批次），
+#   批与批之间的空档只有**约 1 分钟**（04:21 上一个结束、04:22 下一个就起来了）——
+#   60 秒采一次基本会错过去，15 秒才有机会抓住。
+# ⚠ 到点**不硬开**：显存里还有转写时，1.7B 模型(~3.5GB)叠上去就是 OOM（实测转写已占 5.7/8.2GB），
+#   宁可退出让人/看护再点一次，也不要一份 OOM 掉一半的输出。
+$deadline = (Get-Date).AddHours(8)
+$tick = 0
+while ((Get-Date) -lt $deadline) {
     $busy = @(Get-CimInstance Win32_Process -Filter "Name like '%python%'" |
               Where-Object { $_.CommandLine -match $busyPat }).Count
     if ($busy -eq 0) { Say "重建/转写都已结束, 开始清洗"; break }
-    Say "  还在跑($busy 个进程: 重建或转写), 等 60 秒"
-    Start-Sleep -Seconds 60
-    $waited += 1
+    # 每 20 次（约 5 分钟）往日志写一行，好让日志看得出"还活着、还差多久"
+    if ($tick % 20 -eq 0) {
+        $left = [int](( $deadline - (Get-Date) ).TotalMinutes)
+        Say ("  还在跑($busy 个进程: 重建或转写), 已等 {0} 分钟, 上限还剩 {1} 分钟" -f ($tick / 4), $left)
+    }
+    $tick += 1
+    Start-Sleep -Seconds 15
 }
-if ($waited -ge 480) {
+if ((Get-Date) -ge $deadline) {
     Say "等空闲超时(8 小时), 转写仍在跑 —— 为免 OOM **不开始**；等它结束再跑一次本任务"
     exit 1
 }
