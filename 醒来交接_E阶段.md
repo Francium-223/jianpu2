@@ -56,7 +56,8 @@ bash /d/Documents_D/_analysis/推送.sh             # 真推
 * 想让它现在就跑，两条路（都要你按一下）：
   1. **等这条链结束**（`jp_mandopop_absorb3` 当前 **263/463**，之后可能还有别的计划任务接手 —— 看 `schtasks /query /tn jp_mandopop_absorb3 /v`）；
   2. **先暂停转写链再跑**：停掉 `jp_mandopop_absorb3`，然后 `schtasks /run /tn jp_refine_titles` / `pwsh -NoProfile -File tools\run_title_refine.ps1`，跑完再恢复链（链是**断点续传**，停一下不丢活）。
-* **CPU 这条路走不通**（实测，别再试）：脚本把 `device_map="cuda:0"` 写死；且当前**空闲物理内存只有 0.7 GB**，1.7B bf16 要 ~3.4 GB —— 硬上会把机器拖垮。
+* **CPU 这条路走不通**（实测，别再试）：脚本把 `device_map="cuda:0"` 写死；且**空闲物理内存只有 0.6–0.7 GB**（总 15.2 GB），1.7B bf16 要 ~3.4 GB —— 硬上会把机器拖垮。
+* **系统水位（2026-10-03 06:1x 实测）**：C 盘空闲 **10.09 GB**、D 盘 **42.59 GB**；物理内存空闲 **0.62 GB / 15.2 GB**（紧张，但流水线一直这么跑）；GPU **6.5 / 8.2 GB**。D 盘占用前三：`jianpu2` 43 GB、`musicbrain` 37.5 GB、`th_old` 31.6 GB。
 * 真跑起来约 **93 分钟 / 25110 条**；跑完只写 `train-work/title_clean.tsv`（**只出建议**）。
 * **跑完怎么验（照这个看，不用猜）**：日志 `train-work/refine_titles.log` 会写一行
   `完成 N 条: 有改动 M, 未通过校验 K -> train-work/title_clean.tsv`（2026-09-22 那轮是 `完成 1349 条: 有改动 642, 未通过校验 0`）；
