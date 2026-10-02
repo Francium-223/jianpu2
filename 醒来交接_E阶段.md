@@ -46,24 +46,26 @@
 * 记录在 [models删除记录_20261001.md](models删除记录_20261001.md)（含"事后核查"与教训：判断能不能删
   要查**谁引用它**，不能只看文档怎么描述它）。
 
-## 四、需要你做的一件事（一条命令）
+## 四、~~需要你做的一件事~~（**已完成，留作记录**）
 
-Cloudflare 正式站的部署**卡在 wrangler 登录态**上：
+> ✅ **2026-10-02 已解决**：网络恢复后 wrangler 的 OAuth 自己刷新成功了，正式域名已部署新构建
+> （`app.3a8cd15f.js` + `search.6cbacf4d.js`，含两处性能优化）。**这一节不需要你做任何事**，
+> 留着只是为了记下当时的判据（怎么判断是登录态而不是代码问题）。
+
+当时的现象：Cloudflare 正式站的部署**卡在 wrangler 登录态**上：
 `C:\Users\qinxi\AppData\Roaming\xdg.config\.wrangler\config\default.toml` 里凭据在，但已过期，
-refresh 又赶上网络抽风 → wrangler 现在要求 `CLOUDFLARE_API_TOKEN`。
+refresh 又赶上网络抽风 → wrangler 当时要求 `CLOUDFLARE_API_TOKEN`。
 
 ```powershell
-cd D:\Documents_D\jianpu-db.github.io
-npx wrangler login          # 浏览器点一下授权
-npx wrangler deploy         # 把带 -27% 性能改进的前端发上去
+# 当时需要跑的两条（**现在不用跑了**）：
+# cd D:\Documents_D\jianpu-db.github.io
+# npx wrangler login
+# npx wrangler deploy
 ```
-
-在此之前：**镜像（https://jianpu-db.github.io/）会先吃到新构建**（CI 每次 push 都重建），
-正式域名还是旧产物 —— 功能一样，只是慢一点。另外**写路径不受影响**（Worker 没动）。
 
 ## 五、磁盘与后台
 
-* D 盘空闲 **51.5 GB**（删实验模型 24.9 GB + 缓存/临时 0.57 GB）；C 盘 11.6 GB。
+* D 盘空闲 **44.2 GB**（删实验模型 24.9 GB + 缓存/临时 0.57 GB；后来又补回 Qwen2.5-VL-3B 7.5 GB）；C 盘 11.0 GB。
 * Rust 装在 `D:\rust`（`RUSTUP_HOME`/`CARGO_HOME`），用的时候：
   `$env:PATH="D:\rust\cargo\bin;$env:PATH"`。
 * 后台：写路径隧道看护（15 分钟一次，判据 = `api && upstreamOk`）；模型下载在跑。
@@ -86,9 +88,13 @@ npx wrangler deploy         # 把带 -27% 性能改进的前端发上去
 * 镜像（GitHub Pages）会稍后自动跟上：等站点仓库那 3 个提交推上去，CI 就会重建（GitHub 网络时断时续，已挂自动重试）。
 ---
 
-## 待你定（我不擅自动手的两件）
+## 待你定（**已被顶部"⭐ 决策清单"取代 —— 这一节保留的是当时的推理，别照这里的旧结论做**）
 
-1. **15 份"多页未转全"的碎片谱**（真数据损失 ✓）—— 名单在 `train-work/redo_fragments_v1.txt`，
+> ⚠ 下面第 1 条里的"**15 份真数据损失**"**已被我后面的看图结论推翻** ✗ ——
+> 真实情况见文末"碎片谱：我看过图了"与"133 份 = 1.2%"两节。
+> 第 2 条的结论没变（归组归一化 ✓），但操作方式已改成 `JP_GROUP_NORM=1` 开关（顶部清单第 1 项）。
+
+1. **15 份"多页未转全"的碎片谱**（**旧结论，已被推翻** ✗）—— 名单在 `train-work/redo_fragments_v1.txt`，
    等流水线空闲会自动重转（看护任务已挂：计划任务不跑 + 显存 < 1.5 GB + 内存 > 3 GB 才动手），
    日志 `_analysis/redo_fragments_run.log`。分类依据：`_analysis/qa_fragments_triaged.txt`。
 2. **23 个组名被拆成 46 个组的"用户可见重复"** —— 大小写（`Amani`/`AMANI`、`Love`/`love`、`THE`/`The`）
