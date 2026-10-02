@@ -73,8 +73,8 @@
 | dupMelodyGroups / Rows | 1023 / 2128 | 不变 | 无副作用 |
 | placeholderTitles | 233 | 不变 | 无副作用 |
 
-- 快照工具自己给的结论：**「没有变差的项 ✓」**（`tools/qa_snapshot.mjs --compare`）。
-- 独立检查器 `tools/check_dup_groups.mjs`：**剥后缀后同名却分成多个组的：0 组** ✓。
+- 快照工具自己给的结论：**「没有变差的项 ✓」**（在 `jianpu-db.github.io` 下跑 `tools/qa_snapshot.mjs --compare`）。
+- 独立检查器（在 `jianpu-db.github.io` 里）`tools/check_dup_groups.mjs`：**剥后缀后同名却分成多个组的：0 组** ✓。
 - 显示名规则：出现次数最多 → 优先不带下划线/标点 → 更短（`AMANI` 2 次 会赢过 `Amani` 1 次）。
 - **同一套口径也同步到了发布的 skill**：`jianpu-db/skill/jianpu-melody-lookup/lookup.py` 原先用自己的分组（不归一时报"库 8625 首"），现在 5 音查询报 **8602 首**、与站点逐字一致 ✓；HF 那份已重出并实测跑出同样的 8602 ✓。
   （该 skill 要能单独拷进 HF 数据集，所以归一化口径是从 `build_web_data.py` 抄一份进去的，注释里写明两边一起改。）
@@ -101,7 +101,7 @@
 | 教训 | **先量再改**：我以为瓶颈是"11,495 首的匹配扫描"，实际是排序比较器。加速器只有在**它替换的部分确实是瓶颈**时才有意义 |
 
 产物：`jianpu2/wasm-matcher/`（Rust crate + 冒烟测试）、站点仓库 `tools/check_wasm_parity.mjs`（逐首 + 端到端对拍）、
-`tools/bench_wasm.mjs`（端到端对照）、`tools/_wasm_prune_diag.mjs`（诊断"最小代价成员有几个"）。
+在 `jianpu-db.github.io` 里的 `tools/bench_wasm.mjs`（端到端对照）、`tools/_wasm_prune_diag.mjs`（诊断"最小代价成员有几个"）。
 
 ## 三、模型：4B 与误删
 
@@ -155,7 +155,7 @@ refresh 又赶上网络抽风 → wrangler 当时要求 `CLOUDFLARE_API_TOKEN`�
 * **ngram 剪枝已落地并接入应用** ✓（`static/search.ts` 的 `ensureGrams` / `candidateMask`，`app.ts` 空闲时建）：
   * 采用条件**可证明安全**：只在"每段都能精确命中"且"代价 0 的结果够填满榜单"时才用剪枝结果；
   * 实测：长查询 **69.1 → 48.2 ms/条（-30%）**；短查询/模糊查询退回全扫（不变慢）；
-  * 等价性对拍 `tools/check_prune_parity.mjs`：60 条（含模糊与多段）**结果逐条相同** ✓；
+  * 等价性对拍（站点仓库）`tools/check_prune_parity.mjs`：60 条（含模糊与多段）**结果逐条相同** ✓；
   * 剪枝索引 ~136 ms，放**空闲时**建 —— "打开就能用"的时间没变（仍 ~200 ms）。
 * **Qwen2.5-VL-3B 已补回** ✓（29 个文件 / **7.52 GB**，`fetch_base_model.py` 走 hf-mirror 断点续传）。
 * 全套自检 10 项 + typecheck + ruff/mypy 门槛**全绿**；`check_prune_parity.mjs` 也挂进了 CI。
@@ -180,10 +180,10 @@ refresh 又赶上网络抽风 → wrangler 当时要求 `CLOUDFLARE_API_TOKEN`�
    修法在 `build_web_data.py` 的归组口径（大小写不敏感 + 去标点/下划线/空格，显示名取出现次数最多的写法），
    **要重建索引** —— 我没在流水线跑着的时候动它（会跟它自己的"空闲重建"打架）。你点头我就做。
    > **已经实现好了、默认关闭**（`build_web_data.py` 里 `JP_GROUP_NORM=1` 才生效）：
-   > 启用就一条命令 `JP_GROUP_NORM=1 py -3.13 tools/build_web_data.py`。
+   > 启用就一条命令（**在 `jianpu-db.github.io` 里**）`JP_GROUP_NORM=1 py -3.13 tools/build_web_data.py`。
    > 实测（构建到临时目录，没碰线上索引）：默认关闭时**组数一字不变（8625）** ✓；
    > 开启后 **8625 → 8602（-23）** ✓、24 行换组名、**音符/变音/id 完全一致** ✓。
-> 用 `tools/qa_snapshot.mjs --compare` 做过前后快照 ✓：**同名拆组 23 → 0**（彻底消除）、
+> 用（`jianpu-db.github.io` 的）`tools/qa_snapshot.mjs --compare` 做过前后快照 ✓：**同名拆组 23 → 0**（彻底消除）、
 > 标题互含 187 → 184（顺带 -3）、重复旋律与占位名**不变**（无副作用）✓。
    > 显示名规则：出现次数最多 → 优先不带下划线/标点 → 更短。
 
@@ -206,6 +206,8 @@ refresh 又赶上网络抽风 → wrangler 当时要求 `CLOUDFLARE_API_TOKEN`�
 
 另加一个随手可跑的文档体检（只读，2026-10-03）：`py -3.13 tools/docs_link_check.py` —— 扫三仓库 markdown 的内部相对链接。
 首跑结果 1 / 27 / 0 条断链、已全修（jianpu-db README 那 26 条见其仓库提交）；现在 **0 / 0 / 0**。
+还有一个同类的：`py -3.13 tools/check_handover_commands.py` —— 查**本文件里每个 `tools/...` 引用**是否真存在、`只存在于别的仓库` 的那些有没有写明仓库。
+首跑抓出 1 处笔误（`night_qa_cmd`）与 6 处"没写明仓库"（`build_web_data.py`/`qa_snapshot.mjs`/`check_dup_groups.mjs`/`check_prune_parity.mjs`/`bench_wasm.mjs`/`_wasm_prune_diag.mjs` 都在站点仓库），已逐条改到 **25 个引用全部 ✓**。
 唯一豁免是上游 vendored 的 `transformers_multimodal.md`（它自带的 `./transformers.md` 本仓库没有），在检查器里显式列名跳过。
 另一个只读检查：`py -3.13 tools/gen_data_fields_doc.py`（+ `--check`）—— 按**实际数据**生成/更新 `jianpu-db/README.md` 的 `data.jsonl` 字段表。
 首跑发现 README 只讲了"曲谱文件头"的字段，而 data.jsonl 有 **11 个字段查不到**（`file`/`status`/`artist`/`n_notes`/`bars`/`beats_per_bar`/`confidence`/`conf_p10`/`score`/`sections`/`source`），已补齐（18 个字段 + 实测覆盖率）。
@@ -214,7 +216,7 @@ refresh 又赶上网络抽风 → wrangler 当时要求 `CLOUDFLARE_API_TOKEN`�
 **字段表还得看"非空率"**（2026-10-03 又补）：只报"覆盖率"会把"字段在、但没数据"藏起来。实测非空率 ——
 ### 夜间自检的"重复旋律"数字：**自洽，且不是失败噪声**（2026-10-03 手动跑了一遍）
 
-`cmd /c tools\night_qa_cmd`（实为 `tools/night_qa.cmd`）手动跑完 exit 0，报告在
+`cmd /c tools\night_qa.cmd`（jianpu2 里；手滑写成 night_qa_cmd 是错的）手动跑完 exit 0，报告在
 `D:\Documents_D\_analysis\night_qa_ext.log` + `dup_melody.txt`。核对结果：
 
 * **1023 = 658 + 184 + 181** ✓（同曲名不同源 / 标题互相包含 / 标题无关），与小节标题逐个对上；
