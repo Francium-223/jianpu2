@@ -109,7 +109,14 @@ refresh 又赶上网络抽风 → wrangler 当时要求 `CLOUDFLARE_API_TOKEN`�
 * D 盘空闲 **44.2 GB**（删实验模型 24.9 GB + 缓存/临时 0.57 GB；后来又补回 Qwen2.5-VL-3B 7.5 GB）；C 盘 11.0 GB。
 * Rust 装在 `D:\rust`（`RUSTUP_HOME`/`CARGO_HOME`），用的时候：
   `$env:PATH="D:\rust\cargo\bin;$env:PATH"`。
-* 后台：写路径隧道看护（15 分钟一次，判据 = `api && upstreamOk`）；模型下载在跑。
+* 后台：写路径隧道看护（15 分钟一次，判据 = `api && upstreamOk`）。
+  **2026-10-03 04:2x 实测**：隧道这阵子在抽 ✗ —— 最近 4000 行日志里 **200 条 error**，
+  其中 **145 条是 `lookup region1.v2.argotunnel.com: i/o timeout`**（DNS/网络，不是配置），
+  另有 29 条 QUIC 拨号超时；最后一次连上是 **03:21 本地**（`lax13` 节点）。看护在按 15 分钟重试，不用人工干预。
+  ⚠ 日志路径更正：交接原来写 `_analysis/night_qa_ext.log`，在那份文档所在的目录下读会指向
+  `jianpu2\_analysis\…`（**那里没有**）；实际是 **`D:\Documents_D\_analysis\night_qa_ext.log`** 与
+  **`D:\Documents_D\_analysis\tunnel.log`** —— `tools/night_qa.cmd` 里是 `set ANA=%ROOT%\..\_analysis`，
+  `tools/tunnel_up.py` 也写同一处。
 
 ---
 
@@ -162,7 +169,10 @@ refresh 又赶上网络抽风 → wrangler 当时要求 `CLOUDFLARE_API_TOKEN`�
 
 注册了计划任务 **jp_night_qa_ext**（每天 08:20，只读、秒级）：查语料↔站点索引一致性、碎片谱分类、
 低置信度、归组重复、近 24 小时增量（用 git 历史，不用 mtime）。它与你原有的"夜班 QA 监视"
-（全丢 / 准入缺口 / %END / 磁盘水位）**互补不重复**，日志在 `_analysis/night_qa_ext.log`。
+（全丢 / 准入缺口 / %END / 磁盘水位）**互补不重复**，日志在
+`D:\Documents_D\_analysis\night_qa_ext.log`（注意是**上级目录**的 `_analysis`，见第五节那条更正）。
+最近一次（10-02 08:20，exit 0）末尾报的正是**归组重复**那几对（`今天_你如此精彩` / `北京我爱你` /
+`吉祥草原草原吉祥` / `同一个世界同一个梦想`…）—— 也就是第 1 项归一化现在**已经合并掉**的那些 ✓。
 
 ```powershell
 Unregister-ScheduledTask -TaskName jp_night_qa_ext    # 撤掉
