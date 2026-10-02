@@ -27,11 +27,20 @@ bash /d/Documents_D/_analysis/推送.sh             # 真推
 * 两个脚本**都没注册计划任务**，不开就等于不存在；**可逆性已在临时副本上真跑验证过**（apply/restore/manifest 全对）。
 * ⚠ 开了要同时更新站点文档数字（曲数/音符/曲谱文件 11991→11876），`check_docs_numbers.py` 会因此报过期。
 
+**③ 曲名清洗：不用你动手，它在等 GPU 空档 —— 但实测"空档"在转写链跑着时不存在**
+
+* 已点着（`jp_refine_titles`，等待窗口到 ~13:25）；每次 15 秒采样，**实测挡路的是 `transcribe_source.py`**。
+* **2026-10-03 05:57 连采 10 次（每 12 秒）全是 `1 个 transcribe_source.py`** → 那条"没有转写进程"的判据
+  在链子跑着时**根本不可能成立**；它会在 13:25 到点后**安全退出**（不会硬开、不会 OOM）。
+* 想让它现在就跑，两条路（都要你按一下）：
+  1. **等这条链结束**（`jp_mandopop_absorb3` 当前 **263/463**，之后可能还有别的计划任务接手 —— 看 `schtasks /query /tn jp_mandopop_absorb3 /v`）；
+  2. **先暂停转写链再跑**：停掉 `jp_mandopop_absorb3`，然后 `schtasks /run /tn jp_refine_titles` / `pwsh -NoProfile -File tools\run_title_refine.ps1`，跑完再恢复链（链是**断点续传**，停一下不丢活）。
+* **CPU 这条路走不通**（实测，别再试）：脚本把 `device_map="cuda:0"` 写死；且当前**空闲物理内存只有 0.7 GB**，1.7B bf16 要 ~3.4 GB —— 硬上会把机器拖垮。
+* 真跑起来约 **93 分钟 / 25110 条**；跑完只写 `train-work/title_clean.tsv`（**只出建议**）。
+* 生效方式见下方"后半段"表：`to_jianpu_db` 重建时会读它，**不需要额外命令**。
 **③ 曲名清洗：不用你动手，它在等 GPU 空档**
 
-* 已点着（`jp_refine_titles`，等待窗口到 ~13:25）；每次 15 秒采样，**实测挡路的是 `transcribe_source.py`**（转写链一直在跑）。
-* 真跑起来约 **93 分钟 / 25110 条**（实测候选 29016、`--resume` 跳过 1341）；跑完只写 `train-work/title_clean.tsv`（**只出建议**）。
-* 生效方式见下方"后半段"表：`to_jianpu_db` 重建时会读它，**不需要额外命令**。
+
 
 ## 决策清单（每项都给了一条命令 + 预期效果）
 
