@@ -4,6 +4,10 @@
 # 等待条件刻意用**文件/进程**判断, 不用日志 sentinel —— 之前用 sentinel 卡过一次(实例白等一小时) ✓
 #   ① 模型: 出现 *.safetensors、没有 *.incomplete、且 20 秒内大小不变(下完的标志)
 #   ② 重建: 没有 to_jianpu_db / run.py / finalize 的 python 在跑(避免抢 GPU 与文件)
+#   ③ **转写**: 也别有 transcribe_source / batch_transcribe / jp_transcribe —— 2026-10-02 晚补:
+#      实测转写在跑时显存已占 5.1/8.2 GB, 而 1.7B 模型约 3.5 GB -> 会抢显存甚至 OOM。
+#      原来只挡"重建", 于是最常见的忙(转写)漏掉了, 判据等于没拦住。
+$busyPat = 'to_jianpu_db|run\.py|finalize|transcribe_source|batch_transcribe|jp_transcribe'
 $root = "D:\Documents_D\jianpu2"
 Set-Location $root
 $log = "train-work\refine_titles.log"
@@ -35,13 +39,13 @@ if ($waited -ge 120) { Say "等模型超时(60 分钟), 放弃"; exit 1 }
 $waited = 0
 while ($waited -lt 120) {
     $busy = @(Get-CimInstance Win32_Process -Filter "Name like '%python%'" |
-              Where-Object { $_.CommandLine -match 'to_jianpu_db|run\.py|finalize' }).Count
-    if ($busy -eq 0) { Say "scores 重建已结束, 开始清洗"; break }
-    Say "  还在重建($busy 个进程), 等 30 秒"
+              Where-Object { $_.CommandLine -match $busyPat }).Count
+    if ($busy -eq 0) { Say "重建/转写都已结束, 开始清洗"; break }
+    Say "  还在跑($busy 个进程: 重建或转写), 等 30 秒"
     Start-Sleep -Seconds 30
     $waited += 0.5
 }
-if ($waited -ge 120) { Say "等重建超时(60 分钟), 仍开始清洗"; }
+if ($waited -ge 120) { Say "等空闲超时(60 分钟), 仍开始清洗"; }
 
 Say "--- 跑 refine_titles_llm.py (单条并行批 par=48) ---"
 py -3.13 tools/refine_titles_llm.py --par 48 --resume *>> $log
