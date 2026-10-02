@@ -14,11 +14,11 @@ bash /d/Documents_D/_analysis/推送.sh             # 真推
 * **推出去的副作用**（实测自各仓库的 `.github/workflows`）：`jianpu2` 无 CI（纯备份）；`jianpu-db` 会**发布 HF 数据集**；`jianpu-db.github.io` 会**部署 GitHub Pages**。
 * 站点那 3 个提交推上去后，线上与镜像的**组数会从 8625 变成 8602**（其余逐项不变，见下方同步现状表）。
 * ⚠ 脚本原先的仓库列表写的是 `jianpu-web`（一个**没有远端**的旧快照），会漏掉站点仓库 —— **已修**，并把脚本放到它自己说的 `_analysis/推送.sh`。
-* **推之前我本地把 CI 的门禁跑过一遍**（2026-10-03 06:1x）：站点仓库 `npm run typecheck` **通过** ✓、
+* **推之前我本地把 CI 的门禁跑过一遍**（2026-10-03 06:1x，**都在站点仓库里跑**）：`npm run typecheck` **通过** ✓、
   `python tools/lint_python.py`（ruff 5 文件 + mypy 1 文件）**门槛通过** ✓、`bash tools/check_all.sh` 早前**全绿** ✓
   （含 gh-pages 产物断言、剪枝/wasm 对拍、排名金标准）、`check_docs_numbers.py` **通过** ✓
   → 也就是说站点那两个提交推上去，`checks` 与 `pages` 两道应该都是绿的。
-  （注：我改过的 `tools/build_web_data.py` 属"历史脚本"，**不在 lint 门槛的 5 个文件里**，所以它不会绊门禁。）
+  （注：我改过的站点仓库的 `tools/build_web_data.py` 属"历史脚本"，**不在 lint 门槛的 5 个文件里**，所以它不会绊门禁。）
 
 **② 碎片守卫要不要开（③ 的开关是你的）** —— 我已把"开下去会怎样"算出来：
 
