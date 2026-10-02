@@ -11,6 +11,8 @@ import io
 import os
 import re
 import sys
+from guard import guard_help        # noqa: E402  仓库约定: --help 必须安全退出
+guard_help(__doc__)
 
 ROOTS = [r"D:\Documents_D\jianpu2", r"D:\Documents_D\jianpu-db", r"D:\Documents_D\jianpu-db.github.io"]
 SKIP = re.compile(r"(node_modules|\\\.git\\|\\dist|by_|\\scores|\\misc|images|_analysis|train-work|__pycache__|\\.venv|hf\\)")
