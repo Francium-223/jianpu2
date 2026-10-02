@@ -15,6 +15,16 @@
 | 3 | **碎片守卫**（133 份 / 1.2% 的错谱进不了语料）**→ 已重新普查（数字一致）** | 先看：`py -3.13 tools\fragment_census.py --per-page 15` | 依据：可疑组 `bars` 中位 **5** vs 正常 **40**；**必须按每页密度、不能用标题或绝对音节数**。本轮实测：可疑 **133** 份 = qupu123 102 / jianpujia 17 / jianpucn 14。**集成与否由你定**（我没动流水线） |
 | 4 | **重做某些谱**（若真要重转） | `py -3.13 tools\redo_move_aside.py --list <名单> --apply` → 转写 → 让 `rebuild_when_idle.py` 提升 | ⚠ 先读文末那条：`batch_transcribe` 是**断点续传且没有 `--force`**，不移开旧产物就等于**什么都没做** |
 
+### 曲名清洗的**后半段**：建议产出之后怎么生效（2026-10-03 查清，不用再翻代码）
+
+| 步骤 | 谁做 | 说明 |
+|---|---|---|
+| ① 出建议 | `run_title_refine.ps1` → `train-work/title_clean.tsv` | 约 25110 条，**只出建议、不改谱子** |
+| ② **生效** | **无需额外命令** | `delivery_report.py` 里写明：**`to_jianpu_db` 重建时读 `train-work/title_clean.tsv`** —— 所以下一次重建（`finalize.py`，或等 `rebuild_when_idle.py`）曲名自动变干净 |
+| ③ 后处理 | `run_tidy_titles.ps1`（计划任务 `jp_tidy_titles`，按需） | 它自己等 `refine_titles_llm` 结束，然后**去掉书名号**《》 |
+| ④ 查效果 | `py -3.13 tools/delivery_report.py` | 报告里会写"清名已接进重建管线"及当次数字 |
+
+⚠ 别手工改 `title_clean.tsv` 之外的地方去"修曲名"：重建会把没进缓存的改动冲刷掉（`fix_artist_titles.py` 的注释里就写了这个坑）。
 ### 曲名清洗的**起飞前检查**（2026-10-03，只读）
 
 轮到它之前先确认不会"一启动就失败"：
