@@ -197,6 +197,10 @@ refresh 又赶上网络抽风 → wrangler 当时要求 `CLOUDFLARE_API_TOKEN`�
 首跑发现 README 只讲了"曲谱文件头"的字段，而 data.jsonl 有 **11 个字段查不到**（`file`/`status`/`artist`/`n_notes`/`bars`/`beats_per_bar`/`confidence`/`conf_p10`/`score`/`sections`/`source`），已补齐（18 个字段 + 实测覆盖率）。
 反方向的 5 个（`KeepLength`/`NextScore`/`subtitle`/`tagroute`/`type`）确认是**文件头指令**、不是数据字段，已在检查器输出里点明以免误读。
 
+**字段表还得看"非空率"**（2026-10-03 又补）：只报"覆盖率"会把"字段在、但没数据"藏起来。实测非空率 ——
+`link` **0.0%**（全量扫 11991 个曲谱文件，带 `link=` 的 **0 个**；该字段只由人工核对过的投稿流程写入）、`alias`/`MBID` 0.3%、`artist` 11.7%、`tag`/`usertag` 74.6%、`confidence`/`conf_p10` 4.0%，其余 100%。
+⚠ 另外我自己第一版把**类型**手写错了 6 处（`file`/`bars`/`source`/`transcriber` 其实是 list、`beats_per_bar` 是 float、`confidence`/`conf_p10` 是 str）—— 现在类型也**从数据推**，不再手写。
+
 ```powershell
 Unregister-ScheduledTask -TaskName jp_night_qa_ext    # 撤掉
 cmd /c D:\Documents_D\jianpu2\tools\night_qa.cmd      # 手动跑一次
