@@ -10,7 +10,7 @@
 bash /d/Documents_D/_analysis/推送.sh --check     # 体检：只读
 bash /d/Documents_D/_analysis/推送.sh             # 真推
 ```
-* 现在**本地领先**：`jianpu2` **38**、`jianpu-db` **10**、`jianpu-db.github.io` **3**（都是干净工作树）。
+* 现在**本地领先**（2026-10-03 06:2x 快照：`jianpu2` **52** / `jianpu-db` **10** / 站点 **4**，工作树都干净）。⚠ 这个数**随时会变**，别信文档里的旧值 —— 用 `git status -sb` 看。
 * **推出去的副作用**（实测自各仓库的 `.github/workflows`）：`jianpu2` 无 CI（纯备份）；`jianpu-db` 会**发布 HF 数据集**；`jianpu-db.github.io` 会**部署 GitHub Pages**。
 * 站点那 3 个提交推上去后，线上与镜像的**组数会从 8625 变成 8602**（其余逐项不变，见下方同步现状表）。
 * ⚠ 脚本原先的仓库列表写的是 `jianpu-web`（一个**没有远端**的旧快照），会漏掉站点仓库 —— **已修**，并把脚本放到它自己说的 `_analysis/推送.sh`。
@@ -80,7 +80,7 @@ bash /d/Documents_D/_analysis/推送.sh             # 真推
 > | 站点文档数字 | 站点仓库 `py -3.13 tools/check_docs_numbers.py` | **通过：文档数字与语料一致** ✓ |
 > | 语料 ↔ 站点逐行一致 | `py -3.13 tools/check_corpus_vs_site.py` | 两边各 **11495 行**、**0 重复**、**0 独有**（音符数按口径不同，见下） |
 > | 文档链接 / 文档里的命令 | `py -3.13 tools/docs_link_check.py`、`py -3.13 tools/check_handover_commands.py` | 三仓库 **0 断链** ✓；25 个 `tools/` 引用全部存在、跨仓库都写明仓库 ✓ |
-> | 三仓库干净 | 各仓库 `git status --porcelain` | 全 **0**（本地领先 41 / 10 / 3，未推） |
+> | 三仓库干净 | 各仓库 `git status --porcelain` | 全 **0**（未推；领先数用 `git status -sb` 看，别信旧值） |
 
 > 下面这张表是最初的四项；① 已落实、③ 的开关等你点、② 在等待、④ 按结论不需要。
 
@@ -215,7 +215,7 @@ bash /d/Documents_D/_analysis/推送.sh             # 真推
 
 * **除了组数，其余逐项相同**（`with_accidental` 20 / `with_raw` 11495 / `with_images` 11449 /
   `image_pages` 16315）—— 所以"推上去会发生什么"是可预期的：**只把 8625 变成 8602**。
-* 三个仓库本地都**干净**，只是**没推**：`jianpu2` ahead 8、`jianpu-db` ahead 1、`jianpu-db.github.io` ahead 2。
+* 三个仓库本地都**干净**，只是**没推**（写这行时的快照是 `jianpu2` ahead 8 / `jianpu-db` 1 / 站点 2；当前实况见顶部 —— 这类数字会变，以 `git status -sb` 为准）。
   站点仓库那两个提交一推，CI（Cloudflare + Pages）就会部署上面那行新数据。
 * HF 数据集（`Caesium-132/chinese-jianpu-corpus`）的**线上状态这次没量到**（连 huggingface.co 超时，
   仓库里本来就用 hf-mirror 拉模型）；本地暂存件已重出并验证：`hf/data.jsonl` **11495 条 / 18.7 MB**、
