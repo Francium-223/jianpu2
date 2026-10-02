@@ -271,6 +271,14 @@ cmd /c D:\Documents_D\jianpu2\tools\night_qa.cmd      # 手动跑一次
 建议的落地方式（**只移不删**，与你的口径一致）：命中者不写进语料，而是移进 `_analysis/lowdensity/`
 并留 manifest；站上/语料里不再出现。**要不要开、阈值取 10 还是 15，等你定**（我没动流水线）。
 
+**一条命令就能开（现成的模板，本轮没写）**：仓库里已经有一模一样的先例 ——
+`tools/quarantine_lowdigits.py`（dry-run 先报数，`--apply` 才移，只移不删 + manifest）
++ `tools/lowdigits_cleanup.ps1`（等空闲 → 隔离 → `finalize.py` → 评测重跑 → `verify_deliverable.py`）。
+照这两个写一份 `quarantine_lowdensity.py` + `lowdensity_cleanup.ps1` 即可；
+⚠ 注意 `lowdigits_cleanup.ps1` 的等待判据里**本来就含 `transcribe_source`**（我这轮给
+`run_title_refine.ps1` 补的就是它），照抄时别漏。
+你说"做"，我就照这两份写出来，先只跑 dry-run 给你看命中名单。
+
 产物：`_analysis/fragments_133.txt`（133 份清单：每页密度/音节数/页数/曲名/source）、
 `_analysis/fragments_133_triaged.txt`（分类：丢页 0 / 多页未转全 35 / 找不到原图 92 / 本来就是短曲 6）、
 `_analysis/fragments_133_redo_candidates.txt`（有原图、查得下去的那 35 份）。
