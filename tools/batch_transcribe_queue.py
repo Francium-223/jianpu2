@@ -42,6 +42,19 @@ IMG = re.compile(r"\.(jpg|jpeg|png|gif|webp)$", re.I)
 TRANS = "jianpu-vlm(v15)+crawl2026-09-25"
 
 
+def rel_to_ws(p):
+    """相对工作区的路径（只为打印好看）。
+
+    ⚠ Windows 上 `os.path.relpath` **跨盘会抛 ValueError**（`path is on mount 'C:', start on 'D:'`）——
+    于是"活干完了、打印时炸掉"，工具退出码非 0（`check_tools.sh` 的隔离功能自检就是这么红的，2026-10-03 实测）。
+    跨盘时直接给绝对路径，别为了好看把活儿搞崩。
+    """
+    try:
+        return os.path.relpath(p, WS)
+    except ValueError:
+        return p
+
+
 def read_queue(path):
     rows = []
     with io.open(path, encoding="utf-8") as f:
@@ -174,7 +187,7 @@ def main():
             dst = os.path.join(SCORES, safe(r.get("曲名") or "") + ".txt")
             if os.path.exists(dst):
                 dst = os.path.join(SCORES, safe(r.get("曲名") or "") + "_%s.txt" % key)
-            print("   ->", os.path.relpath(dst, WS))
+            print("   ->", rel_to_ws(dst))
             if not a.dry_run:
                 io.open(dst, "w", encoding="utf-8", newline="\n").write(text)
                 n_im += 1

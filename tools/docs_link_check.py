@@ -11,6 +11,13 @@ import io
 import os
 import re
 import sys
+
+def _rel(p, base):
+    """相对路径（只为打印）—— Windows 上跨盘 relpath 会抛 ValueError，退化成绝对路径。"""
+    try:
+        return os.path.relpath(p, base)
+    except ValueError:
+        return p
 from guard import guard_help        # noqa: E402  仓库约定: --help 必须安全退出
 guard_help(__doc__)
 
@@ -45,7 +52,7 @@ for root in ROOTS:
                     continue
                 tgt = os.path.normpath(os.path.join(dirpath, t.replace("/", os.sep)))
                 if not os.path.exists(tgt):
-                    bad.append((os.path.relpath(p, root), t))
+                    bad.append((_rel(p, root), t))
     total_bad += len(bad)
     print("%-24s 扫 %d 个 md，断链 %d 条" % (os.path.basename(root), n, len(bad)))
     for f, t in bad[:12]:

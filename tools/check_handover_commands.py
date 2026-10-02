@@ -14,6 +14,13 @@ import io
 import os
 import re
 import sys
+
+def _rel(p, base):
+    """相对路径（只为打印）—— Windows 上跨盘 relpath 会抛 ValueError，退化成绝对路径。"""
+    try:
+        return os.path.relpath(p, base)
+    except ValueError:
+        return p
 from guard import guard_help        # noqa: E402
 guard_help(__doc__)
 
@@ -80,7 +87,7 @@ for doc in DOCS:
             refs.setdefault(m.group(1), []).append((i, line))
     if not refs:
         continue
-    rel = os.path.relpath(doc, WS)
+    rel = _rel(doc, WS)
     own = repo_of(doc)
     hist = bool(HISTORICAL.search(os.path.basename(doc)))
     print("── %s（引用 %d 个%s%s）" % (rel, len(refs), "，本仓库 " + own if own else "", "，**历史报告**（跳过跨仓库判定）" if hist else ""))
