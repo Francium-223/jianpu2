@@ -53,6 +53,14 @@ def argv(name, default=None):
     return default
 
 
+# 三个可注入项 —— 为了**能在临时副本上把 --apply / --restore 真跑一遍**（默认仍是真路径）。
+# 给了 --scores 就认为是"演练模式"：跳过"流水线在跑就别动"的检查（那条是保护**真语料**的）。
+SCORES_IN = argv("--scores", "")
+SCORES = SCORES_IN or SCORES
+QUAR = argv("--quarantine", QUAR)
+MANIFEST = os.path.join(QUAR, "manifest.tsv")
+CENSUS_IN = argv("--census", "")      # 给了就直接读这份普查 TSV, 不再现场跑 fragment_census.py
+DRILL = bool(SCORES_IN)
 APPLY = "--apply" in sys.argv
 RESTORE = "--restore" in sys.argv
 PER_PAGE = float(argv("--per-page", 15))
@@ -61,17 +69,22 @@ THRESH = float(argv("--thresh", PER_PAGE))
 
 
 def census_rows():
-    """跑普查拿清单（**同一个判据**，不另写一套密度算法）。"""
-    out = os.path.join(ROOT, "_analysis", "lowdensity_census.tsv")
-    os.makedirs(os.path.dirname(out), exist_ok=True)
-    cmd = [sys.executable, os.path.join(HERE, "fragment_census.py"),
-           "--per-page", str(PER_PAGE), "--out", out]
-    print("跑普查: " + " ".join(os.path.basename(c) for c in cmd))
-    r = subprocess.run(cmd, capture_output=True, text=True, encoding="utf-8", cwd=ROOT)
-    if r.returncode != 0:
-        sys.exit("普查失败:\n" + (r.stderr or r.stdout or "")[-800:])
+    """跑普查拿清单（**同一个判据**，不另写一套密度算法）；`--census` 给了就直接读。"""
+    if CENSUS_IN:
+        src = CENSUS_IN
+        print("读现成普查清单: " + src)
+    else:
+        out = os.path.join(ROOT, "_analysis", "lowdensity_census.tsv")
+        os.makedirs(os.path.dirname(out), exist_ok=True)
+        cmd = [sys.executable, os.path.join(HERE, "fragment_census.py"),
+               "--per-page", str(PER_PAGE), "--out", out]
+        print("跑普查: " + " ".join(os.path.basename(c) for c in cmd))
+        r = subprocess.run(cmd, capture_output=True, text=True, encoding="utf-8", cwd=ROOT)
+        if r.returncode != 0:
+            sys.exit("普查失败:\n" + (r.stderr or r.stdout or "")[-800:])
+        src = out
     rows = []
-    for line in io.open(out, encoding="utf-8"):
+    for line in io.open(src, encoding="utf-8"):
         if line.startswith("#") or not line.strip():
             continue
         p = line.rstrip("\n").split("\t")
@@ -119,7 +132,7 @@ def main() -> int:
          "(Get-CimInstance Win32_Process -Filter \"name like '%python%'\").CommandLine"],
         capture_output=True, text=True).stdout.splitlines()
         if any(k in p for k in ("finalize.py", "to_jianpu_db", "transcribe_source"))]
-    if busy and APPLY:
+    if busy and APPLY and not DRILL:
         sys.exit("语料流水线在跑（%d 个进程），先等它结束再 --apply" % len(busy))
 
     rows = census_rows()
