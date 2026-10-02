@@ -15,6 +15,21 @@
 | 3 | **碎片守卫**（133 份 / 1.2% 的错谱进不了语料）**→ 已重新普查（数字一致）** | 先看：`py -3.13 tools\fragment_census.py --per-page 15` | 依据：可疑组 `bars` 中位 **5** vs 正常 **40**；**必须按每页密度、不能用标题或绝对音节数**。本轮实测：可疑 **133** 份 = qupu123 102 / jianpujia 17 / jianpucn 14。**集成与否由你定**（我没动流水线） |
 | 4 | **重做某些谱**（若真要重转） | `py -3.13 tools\redo_move_aside.py --list <名单> --apply` → 转写 → 让 `rebuild_when_idle.py` 提升 | ⚠ 先读文末那条：`batch_transcribe` 是**断点续传且没有 `--force`**，不移开旧产物就等于**什么都没做** |
 
+### 三仓库 / 两处线上：现在到底差什么（2026-10-03 凌晨实测）
+
+| 位置 | 曲数 | 音符 | **组数** | 说明 |
+|---|---|---|---|---|
+| 本地 `jianpu-db.github.io/data`（**已重建 · 未推**） | 11495 | 2,282,964 | **8602** | 组名归一化已生效（默认开） |
+| 线上 `https://jianpu-db.org/data/stats.json` | 11495 | 2,282,964 | **8625** | 还是旧数据（未推 = 未部署） |
+| 镜像 `https://jianpu-db.github.io/data/stats.json` | 11495 | 2,282,964 | **8625** | 同上 |
+
+* **除了组数，其余逐项相同**（`with_accidental` 20 / `with_raw` 11495 / `with_images` 11449 /
+  `image_pages` 16315）—— 所以"推上去会发生什么"是可预期的：**只把 8625 变成 8602**。
+* 三个仓库本地都**干净**，只是**没推**：`jianpu2` ahead 8、`jianpu-db` ahead 1、`jianpu-db.github.io` ahead 2。
+  站点仓库那两个提交一推，CI（Cloudflare + Pages）就会部署上面那行新数据。
+* HF 数据集（`Caesium-132/chinese-jianpu-corpus`）的**线上状态这次没量到**（连 huggingface.co 超时，
+  仓库里本来就用 hf-mirror 拉模型）；本地暂存件已重出并验证：`hf/data.jsonl` **11495 条 / 18.7 MB**、
+  卡片 `size_categories` 已修正为 `10K<n<100K`。要传：`py -3.13 publish_hf.py`（需令牌）。
 ### 归组归一化落实记录（第 1 项）
 
 开关本来就有（`jianpu-db.github.io/tools/build_web_data.py` 的 `norm_group_key` / `canonical_group_names`），
