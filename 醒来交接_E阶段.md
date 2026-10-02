@@ -188,6 +188,10 @@ refresh 又赶上网络抽风 → wrangler 当时要求 `CLOUDFLARE_API_TOKEN`�
 最近一次（10-02 08:20，exit 0）末尾报的正是**归组重复**那几对（`今天_你如此精彩` / `北京我爱你` /
 `吉祥草原草原吉祥` / `同一个世界同一个梦想`…）—— 也就是第 1 项归一化现在**已经合并掉**的那些 ✓。
 
+另加一个随手可跑的文档体检（只读，2026-10-03）：`py -3.13 tools/docs_link_check.py` —— 扫三仓库 markdown 的内部相对链接。
+首跑结果 1 / 27 / 0 条断链、已全修（jianpu-db README 那 26 条见其仓库提交）；现在 **0 / 0 / 0**。
+唯一豁免是上游 vendored 的 `transformers_multimodal.md`（它自带的 `./transformers.md` 本仓库没有），在检查器里显式列名跳过。
+
 ```powershell
 Unregister-ScheduledTask -TaskName jp_night_qa_ext    # 撤掉
 cmd /c D:\Documents_D\jianpu2\tools\night_qa.cmd      # 手动跑一次
