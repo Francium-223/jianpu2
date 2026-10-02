@@ -34,18 +34,25 @@ while ($waited -lt 120) {
     Start-Sleep -Seconds 30
     $waited += 0.5
 }
-if ($waited -ge 120) { Say "等模型超时(60 分钟), 放弃"; exit 1 }
+# ⚠ 这个写法是 0.5/轮 × 30 秒 = **2 小时**上限，原来的提示写"60 分钟"是错的（2026-10-03 实测核对）
+if ($waited -ge 120) { Say "等模型超时(实为 2 小时), 放弃"; exit 1 }
 
+# 等流水线空闲: 上限 8 小时（480 轮 × 60 秒）。与 tools/lowdigits_cleanup.ps1 同一套口径。
+# ⚠ 到点**不硬开**：显存里还有转写时，1.7B 模型(~3.5GB)叠上去就是 OOM，
+#   宁可退出让人/看护再点一次（转写批之间总有空档），也不要一份 OOM 掉一半的输出。
 $waited = 0
-while ($waited -lt 120) {
+while ($waited -lt 480) {
     $busy = @(Get-CimInstance Win32_Process -Filter "Name like '%python%'" |
               Where-Object { $_.CommandLine -match $busyPat }).Count
     if ($busy -eq 0) { Say "重建/转写都已结束, 开始清洗"; break }
-    Say "  还在跑($busy 个进程: 重建或转写), 等 30 秒"
-    Start-Sleep -Seconds 30
-    $waited += 0.5
+    Say "  还在跑($busy 个进程: 重建或转写), 等 60 秒"
+    Start-Sleep -Seconds 60
+    $waited += 1
 }
-if ($waited -ge 120) { Say "等空闲超时(60 分钟), 仍开始清洗"; }
+if ($waited -ge 480) {
+    Say "等空闲超时(8 小时), 转写仍在跑 —— 为免 OOM **不开始**；等它结束再跑一次本任务"
+    exit 1
+}
 
 Say "--- 跑 refine_titles_llm.py (单条并行批 par=48) ---"
 py -3.13 tools/refine_titles_llm.py --par 48 --resume *>> $log
