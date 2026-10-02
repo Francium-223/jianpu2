@@ -50,11 +50,43 @@ if ($waited -ge 120) { Say "等模型超时(实为 2 小时), 放弃"; exit 1 }
 #   宁可退出让人/看护再点一次，也不要一份 OOM 掉一半的输出。
 $deadline = (Get-Date).AddHours(8)
 $tick = 0
+# 本任务自己大约要跑多久（实测: 25110 条 x 上一轮 1349 条/5 分钟 ≈ 93 分钟）—— 留点余量按 100 分钟算
+$NEED_MIN = 100
+# 会抢显存的循环任务: 它的 Next Run 若离现在不足 $NEED_MIN 分钟，就别开跑（开了也会被它撞掉）
+$RIVAL = "jp_mandopop_absorb3"
+
+function Next-RunMinutes {
+    param([string]$Name)
+    $q = schtasks /query /tn $Name /v /fo LIST 2>$null
+    $line = ($q | Select-String -Pattern 'Next Run Time' | Select-Object -First 1).Line
+    if (-not $line) { return $null }
+    $val = ($line -split ':', 2)[1].Trim()
+    if ($val -eq 'N/A' -or -not $val) { return $null }
+    try {
+        $t = [datetime]::ParseExact($val, 'yyyy/M/d H:mm:ss', $null)
+        return [int](($t - (Get-Date)).TotalMinutes)
+    } catch { return $null }
+}
+
 while ((Get-Date) -lt $deadline) {
     $busyProcs = @(Get-CimInstance Win32_Process -Filter "Name like '%python%'" |
                    Where-Object { $_.CommandLine -match $busyPat })
     $busy = $busyProcs.Count
-    if ($busy -eq 0) { Say "重建/转写都已结束, 开始清洗"; break }
+    if ($busy -eq 0) {
+        # 空闲是必要条件、不是充分条件: 还得有一段够长的窗口，否则会被下一个循环任务撞掉显存
+        $nxt = Next-RunMinutes -Name $RIVAL
+        if ($nxt -ne $null -and $nxt -lt $NEED_MIN) {
+            if ($tick % 20 -eq 0) {
+                Say ("  空闲了，但 $RIVAL 还有 $nxt 分钟就起来（本任务要约 $NEED_MIN 分钟）-> 继续等更长的窗口")
+            }
+            $tick += 1
+            Start-Sleep -Seconds 15
+            continue
+        }
+        if ($nxt -eq $null) { Say "  （读不到 $RIVAL 的下次时间，按'窗口够'处理）" }
+        Say "重建/转写都已结束且窗口够长, 开始清洗"
+        break
+    }
     # 记下**是谁**在挡着（只报个数看不出"真在转写"还是"别的收尾脚本"）
     $who = ($busyProcs | ForEach-Object {
         $cmd = $_.CommandLine -replace '\s+', ' '
@@ -63,7 +95,9 @@ while ((Get-Date) -lt $deadline) {
     # 每 20 次（约 5 分钟）往日志写一行，好让日志看得出"还活着、还差多久"
     if ($tick % 20 -eq 0) {
         $left = [int](( $deadline - (Get-Date) ).TotalMinutes)
-        Say ("  还在跑($busy 个进程: $who), 已等 {0} 分钟, 上限还剩 {1} 分钟" -f ($tick / 4), $left)
+        $nxt = Next-RunMinutes -Name $RIVAL
+        $nxtTxt = if ($nxt -eq $null) { '?' } else { "$nxt" }
+        Say ("  还在跑($busy 个进程: $who), 已等 {0} 分钟, 上限还剩 {1} 分钟; $RIVAL 下次在 {2} 分钟后" -f ($tick / 4), $left, $nxtTxt)
     }
     $tick += 1
     Start-Sleep -Seconds 15
