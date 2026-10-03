@@ -17,6 +17,9 @@
 * **两个徽章数字无法随手复核，记在这儿**：`找歌 Top-1 98.9%` 是**离线 Python 口径**在金曲四榜上的
   历史实测（`jianpu2/tools/melody_retrieval_eval.py`，参数与当次是 L=15/错0；默认跑出来是 L=9，别混淆）；
   `查询 107 ms` 是 `jianpu-db.github.io` 仓库里 `node tools/bench_search.mjs 40` 的中位。别的徽章数字都来自检查器，能一键复核。
+* **一处对不上，留给你定**：夜间同步写进 skill 的 `SKILL.md` 说"全库已转写曲谱 **8956 首歌 / 11495 份谱**"，
+  而同一晚 `melody_retrieval_eval.py` 报 skill 里那份索引是 **9194 首歌 / 12609 份谱** —— 两个口径不同源，
+  我没擅自改（不知道哪个才是你要对外说的数）。
 * **一个待办**：`jianpu-db` 还有 1 个提交没推上去（GitHub 又是 `curl 52`），后台在重试。
 
 ## ⭐ 醒来先做这三件事
