@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""一键出"覆盖率报告"(markdown): 三口径严格覆盖 + 质量分层 + 缺口名单 + 检索评测数字。
+"""出"覆盖率报告"(markdown): 三口径严格覆盖 + 质量分层 + 缺口名单 + 检索评测数字。
 
 用法: py -3.13 tools/coverage_report.py   -> train-work/coverage_report.md
 """

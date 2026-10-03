@@ -191,6 +191,6 @@ py -3.13 tools/eval_gt_images.py
 | `tools/crawl_pop.py` | jianpu.cn 歌手页爬虫（流行歌）|
 | `tools/kind_detect2.py` | 纯简谱检测（nline + wide）|
 | `tools/pick_best.py` | 同名版本择优 |
-| `tools/finalize.py` | 收尾流水线（一键）|
+| `tools/finalize.py` | 收尾流水线 |
 | `tools/autopilot.py` | 无人值守：等转写 → 收尾 → 评测 → 再爬 → 转写 → 再收尾 |
 | `tools/eval_gt_images.py` | GT 评测（正确口径：转 GT 自带的那张图）|

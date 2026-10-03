@@ -8,7 +8,7 @@
     chdir_root()          # 切到仓库根, 并把 <root>/tools 加进 sys.path
 
 配置(模型路径、外部仓库、阈值)从 <root>/pipeline.toml 读; 没有该文件时用默认值,
-所以**开箱即用**, 迁移时只改 pipeline.toml。
+迁移时只改 pipeline.toml。
 """
 import os
 import sys
