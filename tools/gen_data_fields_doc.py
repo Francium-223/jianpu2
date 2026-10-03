@@ -32,15 +32,15 @@ BEGIN, END = "<!-- data-fields:begin -->", "<!-- data-fields:end -->"
 
 # 含义: 数据字段 -> 说明。**类型不写在这里** —— 类型是从数据里推的（见 types_of），
 # 因为手写类型实测会错：`file`/`bars`/`source`/`transcriber` 都是 list、`beats_per_bar` 是 float、
-# `confidence`/`conf_p10` 是 str（2026-10-03 实测 11495 行的类型画像）。
+# `confidence`/`conf_p10` 是 str（2026-10-03 实测该语料的类型画像）。
 MEAN = [
     ("file", "文件名列表（入库时按曲名生成；改名会牵动 `by_*` 与前端链接，不由人手改）"),
     ("title", "曲名（在曲谱头里是 `title=`；站上叫“曲名/分组键”，同名多版本靠它归组）"),
     ("artist", "歌手/演奏者（从原谱站页面抽，也可人工补；通用曲名靠它消歧）"),
     ("status", "`ok`=人工校对过 / `ocr`=图片机器转写（发布白名单见上一节）"),
     ("n_notes", "音符数 = jptok 判为音符的 token 数 —— **含休止 `0` 与念白 `x`**；不含 `-`/`~`/`|`。"
-                "⚠ 站点索引的 `n` 只数**真音高**（`parse_token` 对 `0`/`x` 返回空），所以同一份谱两边会差 —— "
-                "全库合计：语料 **2,532,332** vs 站点 **2,282,964**（90.2%）；差值 249,368 里休止 159,915 + 念白 69,120 = 229,035（2026-10-03 实测）"),
+                "⚠ 站点索引的 `n` 只数**真音高**（`parse_token` 对 `0`/`x` 返回空），所以同一份谱在语料与站点两边会差 —— 具体数见 README 顶部徽章（由检查器算）"
+                "具体数见 README 顶部徽章（由 check_docs_numbers.py 现算）"),
     ("bars", "各段的小节数（逐段一个数，故是列表）"),
     ("beats_per_bar", "每小节拍数（拍号的分母部分；实测是浮点）"),
     ("source", "出处列表，元素形如 `<站>-<站内 id>`（例 `qupu123-268596`；那一页的确切 URL 在 `link`）"),
@@ -97,7 +97,7 @@ def types_of():
 def coverage():
     """返回 (行数, 出现次数, 非空次数)。
 
-    **为什么要分"覆盖"和"非空"**: 字段存在不等于有内容。实测 `link` 在 11495 行里
+    **为什么要分"覆盖"和"非空"**: 字段存在不等于有内容。实测 `link` 在整个语料里
     **全部是空列表**（曲谱文件头里压根没有 `link=` 这一项，它只可能由人工投稿流程写入）——
     只报覆盖率的话，表上会写"link 100%"，等于把"这个字段现在没数据"藏起来了。
     """
@@ -160,13 +160,13 @@ def main() -> int:
             print("✗ README 里找不到插入锚点"); return 1
         new = txt[:m.end()] + "\n" + block + txt[m.end():]
     if new == txt:
-        print("✓ README 的字段表已是最新（%d 行数据 / %d 个字段）" % (format(n, ","), len(cnt)))
+        print("✓ README 的字段表已是最新（%s 行数据 / %d 个字段）" % (format(n, ","), len(cnt)))
         return 0
     if CHECK:
         print("✗ README 的字段表与实际数据不一致（--check 不写盘）")
         return 1
     io.open(README, "w", encoding="utf-8", newline="").write(new)
-    print("✓ 已更新 README 的字段表：%d 行数据 / %d 个字段" % (format(n, ","), len(cnt)))
+    print("✓ 已更新 README 的字段表：%s 行数据 / %d 个字段" % (format(n, ","), len(cnt)))
     return 0
 
 
