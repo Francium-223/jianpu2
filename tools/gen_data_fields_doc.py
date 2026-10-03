@@ -121,7 +121,7 @@ def coverage():
 
 
 def table(n, cnt, nonempty, tys):
-    out = ["", "**`data.jsonl` 字段**（%d 行；覆盖率、非空率与类型都是按当前文件**实测**的，重跑本脚本会自动更新）:" % n, "",
+    out = ["", "**`data.jsonl` 字段**（%s 行；覆盖率、非空率与类型都是按当前文件**实测**的，重跑本脚本会自动更新）:" % n, "",
            "| 字段 | 类型 | 覆盖 | 非空 | 含义 |", "|---|---|---|---|---|"]
     unknown = sorted(set(cnt) - {k for k, _ in MEAN})
     empty_but_documented = []
@@ -160,13 +160,13 @@ def main() -> int:
             print("✗ README 里找不到插入锚点"); return 1
         new = txt[:m.end()] + "\n" + block + txt[m.end():]
     if new == txt:
-        print("✓ README 的字段表已是最新（%d 行数据 / %d 个字段）" % (n, len(cnt)))
+        print("✓ README 的字段表已是最新（%d 行数据 / %d 个字段）" % (format(n, ","), len(cnt)))
         return 0
     if CHECK:
         print("✗ README 的字段表与实际数据不一致（--check 不写盘）")
         return 1
     io.open(README, "w", encoding="utf-8", newline="").write(new)
-    print("✓ 已更新 README 的字段表：%d 行数据 / %d 个字段" % (n, len(cnt)))
+    print("✓ 已更新 README 的字段表：%d 行数据 / %d 个字段" % (format(n, ","), len(cnt)))
     return 0
 
 
