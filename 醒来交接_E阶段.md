@@ -9,7 +9,7 @@
 * **语料 11,380 → 11,381 首**（`scores/*.txt` 仍 11,876 份）。`jianpu-db` 侧由 CI 自动提交，已同步。
 * **站点索引重建并推**：11,381 首 / **8,547 组** / **2,280,039 音符**；`wrangler deploy` 后
   **正式站 jianpu-db.org 也是 11,381**（Version `8768ffdc-440a-4bf3-914c-79ccefdebd10`），与只读镜像一致。
-* **两处徽章的数字改成"由检查器算"**：`py -3.13 tools/check_docs_numbers.py` 通过（11,381 / 2,528,904 /
+* **两处徽章的数字改成"由检查器算"**：在站点仓库跑 `py -3.13 tools/check_docs_numbers.py` 通过（11,381 / 2,528,904 /
   551,947 / 索引 4.87 MB gz / 查询 107 ms）。以后别手写这些数 —— 工具改好了，字段表生成器也带千分位了。
 * **自查全过**：工具链自检、查歌自检、语料不变式（11381 首结构不变量全过）、总验收「全部通过」；
   站点侧 typecheck / check_ui / check_page / check_jptok_js / check_og_meta / check_worker_routes /
