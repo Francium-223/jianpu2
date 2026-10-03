@@ -16,7 +16,7 @@
   check_recall / check_gh_pages 全 0。
 * **两个徽章数字无法随手复核，记在这儿**：`找歌 Top-1 98.9%` 是**离线 Python 口径**在金曲四榜上的
   历史实测（`jianpu2/tools/melody_retrieval_eval.py`，参数与当次是 L=15/错0；默认跑出来是 L=9，别混淆）；
-  `查询 107 ms` 是 `node tools/bench_search.mjs 40` 的中位。别的徽章数字都来自检查器，能一键复核。
+  `查询 107 ms` 是 `jianpu-db.github.io` 仓库里 `node tools/bench_search.mjs 40` 的中位。别的徽章数字都来自检查器，能一键复核。
 * **一个待办**：`jianpu-db` 还有 1 个提交没推上去（GitHub 又是 `curl 52`），后台在重试。
 
 ## ⭐ 醒来先做这三件事
