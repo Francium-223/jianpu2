@@ -2,7 +2,7 @@
 
 从简谱网站批量下载简谱图片，用本地大模型（Ollama + Qwen2.5-VL）识别，
 批量生成 **jianpu-db 格式**的规范化简谱曲谱文件（基于 [jianpu-ly](https://github.com/ssb22/jianpu-ly) 语法），
-可直接并入 [jianpu-db](https://github.com/) 数据集流水线。
+可直接并入 [jianpu-db](https://github.com/Francium-223/jianpu-db) 数据集流水线。
 
 ```
 简谱网站 ──crawler.py──> 图片目录(每首歌一个子目录) ──convert.py──> jianpu-db 格式 .txt
