@@ -40,9 +40,17 @@ py -3.13 tools/quarantine_lowdensity.py --apply *>> $log
 Say "quarantine 退出码 $LASTEXITCODE"
 if ($LASTEXITCODE -ne 0) { Say "守卫失败, 停下不动语料"; exit 1 }
 
-Say "--- 3) 重建语料 ---"
+Say "--- 3) 重建语料（**两步**：先语料元数据，再交付物）---"
+# ⚠ 2026-10-03 实测踩到：这一步原来只跑 `finalize.py`，而 finalize 重建的是**交付物** ——
+#   语料元数据（`jianpu-db/data.jsonl`）不会动，于是跑完是"115 个文件已移走、data.jsonl 还列着它们"。
+#   语料元数据由 `jianpu-db/parse_scores.py` 重建（`jianpu-db` 的 CI `parse.yaml` 跑的也是它）。
+#   实测：修好后 data.jsonl 11495 -> 11380 行、音符 2532332 -> 2528861（与开守卫前的 what-if 预估一致）。
+Push-Location (Join-Path $PSScriptRoot '..\..\jianpu-db')
+py -3.13 parse_scores.py *>> $log
+Say "parse_scores 退出码 $LASTEXITCODE（语料元数据）"
+Pop-Location
 py -3.13 tools/finalize.py *>> $log
-Say "finalize 退出码 $LASTEXITCODE"
+Say "finalize 退出码 $LASTEXITCODE（交付物）"
 
 Say "--- 4) 评测重跑（与 lowdigits_cleanup 同一套）---"
 py -3.13 tools/melody_retrieval_eval.py --sweep *>> $log
