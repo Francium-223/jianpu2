@@ -155,7 +155,7 @@ py -3.13 tools/verify_deliverable.py                               # 交付物�
 
 ---
 
-## 本次自动同步（tools/sync_docs.py，2026-10-04 19:49）
+## 本次自动同步（tools/sync_docs.py，2026-10-05 02:08）
 
 - 成品谱 **11876** / `source=` **11342** / JSONL **11381 首 2,280,039 音符** / 索引 **8895 首歌 11381 份谱**
 - 覆盖率（`train-work/coverage_report.md`）：
