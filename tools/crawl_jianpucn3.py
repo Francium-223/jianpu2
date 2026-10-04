@@ -27,6 +27,27 @@ def safe(s):
     s = re.sub(r'[\\/:*?"<>|\x00-\x1f\x7f-\x9f]', "_", s)
     return re.sub(r"_{2,}", "_", s)[:60] or "untitled"
 
+
+# 本文件所在目录(tools/) —— 取共用模块 `corpus_index` 用(不依赖 cwd)
+_TOOLS = os.path.dirname(os.path.abspath(__file__))
+
+
+def _corpus_index():
+    """语料索引(避抓判据) —— 见 `tools/corpus_index.py`。
+
+    本脚本原来只按"图目录在不在"判已抓过, 而图目录与语料是两套账: 从别的源抓回来的同一首歌、
+    或者转过写之后目录被挪过的, 都会再抓一遍再进一次转写队列(2026-10-04 实测那一轮 1764 条
+    队列几乎全是重复, 净增 1 首)。导入失败照常抓 —— 宁可多下, 不要因为索引坏了整轮空转。
+    """
+    try:
+        if _TOOLS not in sys.path:
+            sys.path.insert(0, _TOOLS)
+        import corpus_index
+        return corpus_index
+    except Exception as e:
+        print(f"  [语料索引不可用, 按老办法抓] {type(e).__name__}: {e}", flush=True)
+        return None
+
 urls = []
 for cat in CATS:
     for p in range(1, PAGES + 1):
@@ -44,16 +65,32 @@ for cat in CATS:
 
 print(f"候选 {len(urls)}, 开始下载 {TARGET}")
 done = fail = 0
+_ci = _corpus_index()
+skipped = _ci.SkipCounter() if _ci is not None else None
 for u in urls:
     if done >= TARGET:
         break
     sid = re.search(r"/(\d+)\.htm", u).group(1)
+    # 语料里已有 -> 跳过(站内 id 或曲名), 不去请求曲谱页 —— 省一次抓站, 也免得白下几张图
+    if _ci is not None:
+        r = _ci.skip_reason("jianpucn", sid, "")
+        if r:
+            skipped.count(r)
+            done += 1                 # 已抓过的也算"这一轮不用再管的", 免得为了凑 TARGET 无限往后扫
+            continue
     try:
         html = fetch("http://www.jianpu.cn" + u)
     except Exception:
         continue
     m1 = re.search(r"<h1[^>]*>(.*?)</h1>", html, re.S)
     title = safe(m1.group(1)) if m1 else safe(u)
+    if _ci is not None:
+        r = _ci.skip_reason("", "", title)
+        if r:
+            skipped.count(r)
+            skipped.note_title_skip(title[:44])
+            done += 1                 # 同上: 已抓过的计入"这一轮不用再管", 否则会一直往后扫凑数
+            continue
     d = os.path.join(OUT, f"{title}__jianpucn-{sid}")
     if os.path.isdir(d) and any(f.endswith(".jpg") for f in os.listdir(d)):
         done += 1; continue
@@ -79,3 +116,5 @@ for u in urls:
     time.sleep(0.25)
 
 print(f"\n完成: {done} 个 (无图 {fail}) -> {OUT}")
+if skipped is not None:
+    print(skipped.summary())

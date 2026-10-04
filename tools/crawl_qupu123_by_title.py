@@ -49,9 +49,6 @@ def norm(s):
     return DROP.sub("", s.translate(ZW)).casefold()
 
 
-WANTN = {w: norm(w) for w in WANT}
-
-
 def get(url, binary=False):
     req = urllib.request.Request(url, headers={"User-Agent": UA,
                                                "Referer": "https://www.qupu123.com/"})
@@ -73,6 +70,24 @@ def sid_of(path):
     return os.path.basename(path)[:-5]
 
 
+def _corpus_index():
+    """语料索引(避抓判据) —— 见 `tools/corpus_index.py`。
+
+    为什么必须按语料判: 扫一遍目录要 40 分钟, 而这一轮的目标曲名里**大多语料里早就有**
+    (2026-10-04 实测: 1764 条转写队列几乎全是重复), 光靠"图目录在不在"判会白扫白下。
+    导入失败也要照常抓(宁可多下, 不要因为索引坏了整轮空转)。
+    """
+    try:
+        tools = os.path.dirname(os.path.abspath(__file__))
+        if tools not in sys.path:
+            sys.path.insert(0, tools)
+        import corpus_index
+        return corpus_index
+    except Exception as e:
+        print(f"  [语料索引不可用, 按老办法抓] {type(e).__name__}: {e}", flush=True)
+        return None
+
+
 def matched(title_norm, want, want_norm):
     """短标题(<=3 字)必须**精确相等**才认 —— 否则《红豆》会命中《红豆杉》《红豆情》,
     《大海》会命中《大海啊故乡》(2026-09-22 实测), 白下载一堆无关谱还污染语料。
@@ -83,6 +98,19 @@ def matched(title_norm, want, want_norm):
         return False
     return want_norm in title_norm
 
+
+# **先按语料剪目标**: 曲名已经在语料里的, 连目录都不用扫(扫一遍 40 分钟) —— 这是"避抓"最省的一刀。
+# 必须放在 `_corpus_index` 定义之后(函数才存在), 也不能放进被 import 的模块顶层 —— 本文件是模块级脚本。
+_ci = _corpus_index()
+SKIP = [w for w in WANT if _ci.title_in_corpus(w)] if _ci is not None else []
+if SKIP:
+    print("语料里已有 %d 首, 不再扫目录/下载: %s%s"
+          % (len(SKIP), "、".join(SKIP[:8]), " ..." if len(SKIP) > 8 else ""), flush=True)
+WANT = [w for w in WANT if w not in set(SKIP)]
+WANTN = {w: norm(w) for w in WANT}
+if not WANT:
+    print("\n%d 首目标全在语料里, 无事可做(跳过 %d 条)" % (len(SKIP), len(SKIP)))
+    sys.exit(0)
 
 print(f"目标 {len(WANT)} 首 -> 扫 {len(CATS)} 个通俗分类\n", flush=True)
 found = {}

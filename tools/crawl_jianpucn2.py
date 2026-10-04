@@ -33,6 +33,26 @@ def safe(name):
     name = re.sub(r'[\\/:*?"<>|\x00-\x1f\x7f-\x9f]', "_", name)
     return re.sub(r"_{2,}", "_", name)[:60] or "untitled"
 
+
+# 本文件所在目录(tools/) —— 取共用模块 `corpus_index` 用(不依赖 cwd)
+_TOOLS = os.path.dirname(os.path.abspath(__file__))
+
+
+def _corpus_index():
+    """语料索引(避抓判据) —— 见 `tools/corpus_index.py`。
+
+    本脚本原来只按"图目录里有没有 .jpg"判已抓过, 而图目录与语料是两套账(2026-10-04 实测那一轮
+    1764 条转写队列几乎全是重复, 净增 1 首)。导入失败照常抓 —— 宁可多下, 别因为索引坏了空转。
+    """
+    try:
+        if _TOOLS not in sys.path:
+            sys.path.insert(0, _TOOLS)
+        import corpus_index
+        return corpus_index
+    except Exception as e:
+        print(f"  [语料索引不可用, 按老办法抓] {type(e).__name__}: {e}", flush=True)
+        return None
+
 # 1) 收集 [简谱] 条目
 items = {}
 for cat in CATS:
@@ -56,10 +76,21 @@ for cat in CATS:
 
 print(f"共收集 {len(items)} 条简谱链接, 开始下载前 {TARGET} 个")
 done = 0
+_ci = _corpus_index()
+skipped = _ci.SkipCounter() if _ci is not None else None
 for url, title in items.items():
     if done >= TARGET:
         break
     sid = re.search(r"/(\d+)\.htm", url).group(1)
+    # 语料里已有 -> 跳过(站内 id 或曲名), 连曲谱页都不请求
+    if _ci is not None:
+        r = _ci.skip_reason("jianpucn", sid, title)
+        if r:
+            skipped.count(r)
+            if r == "title":
+                skipped.note_title_skip(title[:44])
+            done += 1                 # 已抓过的也算"这一轮不用再管", 否则会一直往后扫凑数
+            continue
     d = os.path.join(OUT, f"{title}__jianpucn-{sid}")
     if os.path.isdir(d) and any(f.endswith(".jpg") for f in os.listdir(d)):
         done += 1
@@ -90,3 +121,5 @@ for url, title in items.items():
     time.sleep(0.3)
 
 print(f"\n完成: {done} 个曲谱 -> {OUT}")
+if skipped is not None:
+    print(skipped.summary())

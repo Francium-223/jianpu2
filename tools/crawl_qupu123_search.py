@@ -42,8 +42,36 @@ def safe(s):
     return re.sub(r"\s+", " ", re.sub(r'[\\/:*?"<>|\x00-\x1f]', "_", s)).strip()[:60] or "untitled"
 
 
+# 本文件所在目录(tools/) —— 取共用模块 `corpus_index` 用(不依赖 cwd)
+_TOOLS = os.path.dirname(os.path.abspath(__file__))
+
+
+def _corpus_index():
+    """语料索引(避抓判据) —— 见 `tools/corpus_index.py`。
+
+    本脚本原来只按"图目录在不在"判已抓过, 而图目录与语料是两套账: 同一首歌从别的源抓过、
+    或转过写之后目录被挪过的都会再抓一遍(2026-10-04 实测: 一轮 1764 条转写队列几乎全是重复)。
+    导入失败照常抓 —— 宁可多下, 不要因为索引坏了整轮空转。
+    """
+    try:
+        if _TOOLS not in sys.path:
+            sys.path.insert(0, _TOOLS)
+        import corpus_index
+        return corpus_index
+    except Exception as e:
+        print(f"  [语料索引不可用, 按老办法抓] {type(e).__name__}: {e}", flush=True)
+        return None
+
+
 ok = 0
+_ci = _corpus_index()
+skipped = _ci.SkipCounter() if _ci is not None else None
 for t in WANT:
+    # 曲名已在语料里 -> 连搜索都省了
+    if _ci is not None and _ci.title_in_corpus(t):
+        skipped.count("title")
+        skipped.note_title_skip(t)
+        continue
     u = "https://www.qupu123.com/Search?keys=" + urllib.parse.quote(t)
     try:
         h = get(u).decode("utf-8", "replace")
@@ -59,6 +87,14 @@ for t in WANT:
         continue
     got = 0
     for path, sid, ti in keep[:PER]:
+        # 命中结果的站内 id / 标题在语料里 -> 跳过这一条
+        if _ci is not None:
+            r = _ci.skip_reason("qupu123", sid, ti)
+            if r:
+                skipped.count(r)
+                if r == "title":
+                    skipped.note_title_skip(ti[:44])
+                continue
         d = os.path.join(OUT, f"{safe(ti)}__qupu123-{sid}")
         if os.path.isdir(d) and os.listdir(d):
             got += 1
@@ -93,3 +129,5 @@ for t in WANT:
     time.sleep(0.4)
 
 print(f"\n完成: 共下载 {ok} 个谱页 -> {OUT}")
+if skipped is not None:
+    print(skipped.summary())

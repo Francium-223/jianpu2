@@ -65,6 +65,29 @@ def safe(s):
     return re.sub(r"\s+", " ", s).strip()[:60]
 
 
+# 本文件所在目录(tools/) —— 取共用模块 `corpus_index` 用; 上面那行 `sys.path.insert(0, "tools")`
+# 是靠"先 chdir 到仓库根"才对上的, 这里不依赖 cwd。
+_TOOLS = os.path.dirname(os.path.abspath(__file__))
+
+
+def _corpus_index():
+    """语料索引(避抓判据) —— 见 `tools/corpus_index.py`。
+
+    本爬虫原来只按"图目录在不在"判已抓过(`os.path.isdir(d) and os.listdir(d)`), 而图目录与语料
+    是两套账: 同一首歌从别的源抓过、或者转过写之后目录被挪过的, 都会再抓一遍再进一次转写队列
+    (2026-10-04 实测那一轮 1764 条队列几乎全是重复, 净增 1 首)。曲名/站内 id 命中语料就跳过。
+    导入失败照常抓 —— 宁可多下, 不要因为索引坏了整轮空转。
+    """
+    try:
+        if _TOOLS not in sys.path:
+            sys.path.insert(0, _TOOLS)
+        import corpus_index
+        return corpus_index
+    except Exception as e:
+        print(f"  [语料索引不可用, 按老办法抓] {type(e).__name__}: {e}", flush=True)
+        return None
+
+
 # 1) 检索并翻页
 items = []
 for page in range(1, 12):
@@ -88,7 +111,17 @@ items = items[:TARGET]
 print(f"\n{KEY}: {len(items)} 个曲谱页, 开始下载")
 
 ok = 0
+_ci = _corpus_index()
+skipped = _ci.SkipCounter() if _ci is not None else None
 for i, (path, sid, title) in enumerate(items, 1):
+    # 语料里已有 -> 跳过(站内 id 或曲名), 连曲谱页都不请求
+    if _ci is not None:
+        r = _ci.skip_reason("qupu123", sid, title)
+        if r:
+            skipped.count(r)
+            if r == "title":
+                skipped.note_title_skip(title[:44])
+            continue
     d = os.path.join(OUT, f"{safe(title)}__qupu123-{sid}")
     if os.path.isdir(d) and os.listdir(d):
         ok += 1
@@ -136,3 +169,5 @@ for i, (path, sid, title) in enumerate(items, 1):
     time.sleep(0.25)
 
 print(f"\n完成: {ok} 首 -> {OUT}")
+if skipped is not None:
+    print(skipped.summary())

@@ -17,6 +17,7 @@ TOOLS="add_link propose_tags harvest_artists refine_titles_from_pages audit_corp
        crawl_jianpujia crawl_jianpucn crawl_qupu123 crawl_batch_jianpujia
        crawl_jianpucn_by_title crawl_jianpujia_search check_source_links
        queue_from_crawl batch_transcribe_queue fix_residual_titles
+       corpus_index check_corpus_index
        detect_sections tlsfetch propose_title_cleanup fix_image_dir_entities"
 # 2026-09-25: 这份清单是**手写**的, 于是烂了两个口子:
 #   ① `batch_pipeline`/`make_score`/`mbz_lookup` 三个文件早就没了, 循环里 `|| continue` 直接跳过,
@@ -43,6 +44,15 @@ if [ -f tools/check_melody_search.py ]; then
   echo
   echo "=== 功能: 查歌 melody_search(机器人用) ==="
   python3 tools/check_melody_search.py | tail -3 || fail=1
+fi
+
+# 功能自测: 爬虫的"避抓"判据(按语料里的曲谱文件判) —— 已存在->跳过 / 不存在->抓。
+# 为什么非验不可: 2026-10-04 之前爬虫只看 images/ 目录在不在, 结果一轮 1764 条转写队列里
+# 几乎全是语料里早有的曲子(净增 1 首)。判据这种东西最容易在改动里悄悄漂掉, 所以拿临时语料钉住。
+if [ -f tools/check_corpus_index.py ]; then
+  echo
+  echo "=== 功能: 爬虫避抓判据(临时语料) ==="
+  python3 tools/check_corpus_index.py | tail -4 || fail=1
 fi
 
 # 静态检查: "调用了但没定义"的名字 —— 专抓"重构删了函数、调用还留着"

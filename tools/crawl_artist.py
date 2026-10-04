@@ -33,6 +33,28 @@ def safe(s):
     return re.sub(r"\s+", " ", s).strip()[:60]
 
 
+# 本文件所在目录(tools/) —— 取共用模块 `corpus_index` 用(不依赖 cwd)
+_TOOLS = os.path.dirname(os.path.abspath(__file__))
+
+
+def _corpus_index():
+    """语料索引(避抓判据) —— 见 `tools/corpus_index.py`。
+
+    本脚本原来那句"已存在则跳过(按 id 判)"是 `any(sid in name for name in os.listdir(OUT))` ——
+    拿 sid 去**子串**匹配目录名, 既会被别的 id 里的数字蹭到, 也与语料无关。现在改成语料判据:
+    站内 id 或曲名在语料里就跳过(2026-10-04 实测: 只按目录判会反复重抓语料里早有的曲子)。
+    导入失败照常抓 —— 宁可多下, 不要因为索引坏了整轮空转。
+    """
+    try:
+        if _TOOLS not in sys.path:
+            sys.path.insert(0, _TOOLS)
+        import corpus_index
+        return corpus_index
+    except Exception as e:
+        print(f"  [语料索引不可用, 按老办法抓] {type(e).__name__}: {e}", flush=True)
+        return None
+
+
 os.makedirs(OUT, exist_ok=True)
 print(f"歌手页: {URL}\n输出目录: {OUT}")
 try:
@@ -43,28 +65,41 @@ links = list(dict.fromkeys(re.findall(r"href='(/pu/\d+/\d+\.htm)'", html)))
 print(f"该页曲谱链接: {len(links)} 个, 目标抓 {TARGET}")
 
 done = 0
+_ci = _corpus_index()
+skipped = _ci.SkipCounter() if _ci is not None else None
 for path in links:
     if done >= TARGET:
         break
     sid = re.search(r"/(\d+)\.htm", path).group(1)
-    d = os.path.join(OUT, f"tmp-{sid}")
-    if any(x.startswith(f"{sid}") for x in os.listdir(OUT) if False):
-        pass
-    # 已存在则跳过(按 id 判)
-    if any(sid in name for name in os.listdir(OUT)):
-        done += 1
-        continue
+    # 语料里已有 -> 跳过(站内 id 或曲名); 比原来那句 `any(sid in name ...)` 的子串匹配准
+    if _ci is not None:
+        r = _ci.skip_reason("jianpucn", sid, "")
+        if r:
+            skipped.count(r)
+            done += 1
+            continue
     try:
         h = fetch("http://www.jianpu.cn" + path)
     except Exception:
         continue
     m1 = re.search(r"<h1[^>]*>(.*?)</h1>", h, re.S)
     title = safe(m1.group(1)) if m1 else f"untitled-{sid}"
+    if _ci is not None:
+        r = _ci.skip_reason("", "", title)
+        if r:
+            skipped.count(r)
+            skipped.note_title_skip(title[:44])
+            done += 1
+            continue
     imgs = [x for x in re.findall(r"<img[^>]+src=['\"](/img/[^'\"]+\.(?:jpg|gif|png))['\"]", h, re.I)
             if "logo" not in x.lower()]
     if not imgs:
         continue
     dd = os.path.join(OUT, f"{title}__jianpucn-{sid}")
+    # 保持原有的"目录已在"幂等性(与语料判据不冲突: 目录在 = 这一首下过了)
+    if os.path.isdir(dd) and os.listdir(dd):
+        done += 1
+        continue
     os.makedirs(dd, exist_ok=True)
     ok = 0
     for i, iu in enumerate(imgs[:2]):
@@ -82,3 +117,5 @@ for path in links:
             print(f"  [{done}/{TARGET}] {title[:36]}", flush=True)
     time.sleep(0.25)
 print(f"\n完成: {done} 首 -> {OUT}")
+if skipped is not None:
+    print(skipped.summary())

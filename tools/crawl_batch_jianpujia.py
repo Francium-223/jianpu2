@@ -124,6 +124,22 @@ def load_state(path):
         return {}
 
 
+def _corpus_index():
+    """语料索引 —— 见 `tools/corpus_index.py`(爬虫侧避抓的唯一口径)。
+
+    这里只用它**报个数**: 每个分类实际跳过了多少条是子进程 `crawl_jianpujia.py` 打的,
+    驱动这边拿不到(子进程输出是 `capture_output` 收走的), 所以汇总时说明"跳过数在子进程输出里"。
+    """
+    try:
+        if HERE not in sys.path:
+            sys.path.insert(0, HERE)
+        import corpus_index
+        return corpus_index
+    except Exception as e:
+        print(f"[语料索引不可用, 爬虫会按老办法判重] {type(e).__name__}: {e}", flush=True)
+        return None
+
+
 def save_state(path, st):
     os.makedirs(os.path.dirname(path), exist_ok=True)
     tmp = path + ".tmp"
@@ -142,6 +158,13 @@ def main():
     ap.add_argument("--redo", action="store_true", help="连跑过的分类也重跑")
     a = ap.parse_args()
     sys.stdout.reconfigure(encoding="utf-8", line_buffering=True)
+
+    # 语料规模先亮出来: 这一轮到底有多少是"语料里早有的", 看这个数心里有底
+    # (真正的跳过发生在子进程 `crawl_jianpujia.py` 里, 那边会打"跳过 N 条")
+    _ci = _corpus_index()
+    have = len(_ci.existing_sources()) if _ci is not None else 0
+    if _ci is not None:
+        print(f"语料里已有 {have} 个 source(爬虫会按站内 id 与曲名跳过这些)", flush=True)
 
     st = load_state(a.state)
     only = {x.strip() for x in a.only.split(",") if x.strip()}
@@ -175,7 +198,9 @@ def main():
         print(f"  {'✓' if ok else '✗'} {note}  ({time.time() - t0:.0f}s)", flush=True)
         if i < len(todo):
             time.sleep(a.sleep)
-    print("\n批量爬结束。", flush=True)
+    print("\n批量爬结束。")
+    if _ci is not None:
+        print("(每个分类跳过了多少条, 见子进程输出里那行“跳过 N 条(语料里已有…)”)", flush=True)
     return 0
 
 

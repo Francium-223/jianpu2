@@ -53,8 +53,24 @@ for line in io.open("train-work/mandopop_missing.txt", encoding="utf-8"):
     if t in done and not REDO:
         continue
     titles.append((t, p[1].strip() if len(p) > 1 else ""))
+
+# 语料里已有的先摘掉 —— 这份"缺口清单"是历史的, 里面的歌可能早被别的源补齐了,
+# 再跑一遍只会白爬一遍再进一次转写队列(2026-10-04 实测: 一轮 1764 条队列几乎全是重复)。
+# `--redo` 时不摘: 那个开关的意思就是"明知有也要重来一遍"。
+skipped_titles = []
+if not REDO:
+    try:
+        import corpus_index as _ci
+        skipped_titles = [t for t, _a in titles if _ci.title_in_corpus(t)]
+        if skipped_titles:
+            _skipset = set(skipped_titles)
+            titles = [(t, a) for t, a in titles if t not in _skipset]
+    except Exception as e:
+        print(f"[语料索引不可用, 按老办法爬] {type(e).__name__}: {e}", flush=True)
+
 titles = titles[:CAP]
-print(f"待爬 {len(titles)} 首 (日志已有 {len(done)}, redo={REDO}), 每首最多 {PER} 张\n", flush=True)
+print(f"待爬 {len(titles)} 首 (日志已有 {len(done)}, redo={REDO}, 语料里已有跳过 {len(skipped_titles)}), "
+      f"每首最多 {PER} 张\n", flush=True)
 
 log = io.open(LOG, "a", encoding="utf-8")
 tot = 0
@@ -84,3 +100,6 @@ for k, (title, artist) in enumerate(titles, 1):
     tot += max(n, 0)
 
 print(f"\n完成: 共 {tot} 张 -> images-prep/qupu123-mp*/, 记录 {LOG}")
+if skipped_titles:
+    print(f"语料里已有、本次没爬 {len(skipped_titles)} 首: "
+          + "、".join(skipped_titles[:8]) + (" ..." if len(skipped_titles) > 8 else ""))

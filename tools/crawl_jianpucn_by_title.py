@@ -67,9 +67,38 @@ def norm(s):
     return DROP.sub("", s.translate(ZW)).casefold()
 
 
+def _corpus_index():
+    """语料索引(避抓判据) —— 见 `tools/corpus_index.py`。
+
+    为什么必须按语料判: 这个工具是"逐页扫目录"的, 扫一遍 6 个分类要 ~40 分钟; 而目标曲名里
+    很多语料里早就有(实测 1764 条转写队列几乎全是重复), 光靠"图目录在不在"判会白扫一场。
+    导入失败也照常抓(宁可多下, 不要因为索引坏了整轮空转)。
+    """
+    try:
+        if HERE not in sys.path:
+            sys.path.insert(0, HERE)
+        import corpus_index
+        return corpus_index
+    except Exception as e:
+        print(f"  [语料索引不可用, 按老办法抓] {type(e).__name__}: {e}", flush=True)
+        return None
+
+
 WANTN = {w: norm(w) for w in WANT}
 if not WANT:
     sys.exit(__doc__)
+
+# **先按语料剪目标**: 曲名已经在语料里的, 连目录都不用扫。
+_ci = _corpus_index()
+SKIP = [w for w in WANT if _ci.title_in_corpus(w)] if _ci is not None else []
+if SKIP:
+    print("语料里已有 %d 首, 不再扫目录/下载: %s%s"
+          % (len(SKIP), "、".join(SKIP[:8]), " ..." if len(SKIP) > 8 else ""), flush=True)
+WANT = [w for w in WANT if w not in set(SKIP)]
+WANTN = {w: norm(w) for w in WANT}
+if not WANT:
+    print("\n%d 首目标全在语料里, 无事可做(跳过 %d 条)" % (len(SKIP), len(SKIP)))
+    sys.exit(0)
 
 
 def get(url):
@@ -151,10 +180,19 @@ else:
 
 print(f"\n命中 {sum(len(v) for v in found.values())} 个谱页, 开始下载")
 ok = 0
+skipped = _ci.SkipCounter() if _ci is not None else None
 fails = {}          # 失败原因 -> 次数 (别再静默吞异常了)
 for w, lst in found.items():
     for path, title in lst:
         sid = re.search(r"/(\d+)\.htm", path).group(1)
+        # 语料里已有 -> 跳过(站内 id 或曲名)。放在**下载前**, 免得白下几百张图再被判重。
+        if _ci is not None:
+            r = _ci.skip_reason("jianpucn", sid, title)
+            if r:
+                skipped.count(r)
+                if r == "title":
+                    skipped.note_title_skip("%s (%s)" % (title[:40], w))
+                continue
         d = os.path.join(OUT, f"{safe(title)}__jianpucn-{sid}")
         if os.path.isdir(d) and os.listdir(d):
             ok += 1
@@ -188,6 +226,8 @@ for w, lst in found.items():
         time.sleep(0.2)
 
 print(f"\n完成: 下载 {ok} 个谱页 -> {OUT}")
+if skipped is not None:
+    print(skipped.summary())
 if fails:
     print("失败原因统计(以前这里是静默 `except: continue`, 所以只会看到\"下载 0\"):")
     for k, v in sorted(fails.items(), key=lambda kv: -kv[1]):

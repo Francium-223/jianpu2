@@ -67,6 +67,24 @@ def img_of(html):
     return [x for x in m if "logo" not in x.lower()]
 
 
+def _corpus_index():
+    """语料索引(避抓判据) —— 见 `tools/corpus_index.py`。
+
+    本爬虫原来只按"图文件在不在"判已抓过, 而图文件与语料是两套账: 同一首歌从别的源抓过、
+    或转过写之后目录被挪过的, 都会再抓一遍再进一次转写队列(2026-10-04 实测那一轮 1764 条
+    队列几乎全是重复, 净增 1 首)。曲名/站内 id 命中语料就整条跳过。
+    导入失败照常抓 —— 宁可多下, 不要因为索引坏了整轮空转。
+    """
+    try:
+        if HERE not in sys.path:
+            sys.path.insert(0, HERE)
+        import corpus_index
+        return corpus_index
+    except Exception as e:
+        print(f"  [语料索引不可用, 按老办法抓] {type(e).__name__}: {e}", flush=True)
+        return None
+
+
 def corpus_seed_pages(limit):
     """语料里 source=jianpucn-<id> 的页面当种子 —— 保证是"我们要的那类歌"。"""
     out, p = [], os.path.join(DB, "data.jsonl")
@@ -121,6 +139,8 @@ def main():
                   io.open(STATE, "w", encoding="utf-8"), ensure_ascii=False)
 
     got = 0
+    _ci = _corpus_index()
+    skipped = _ci.SkipCounter() if _ci is not None else None
     while (song_q or artist_q) and got < target:
         if song_q:
             url = song_q.pop(0)
@@ -134,6 +154,14 @@ def main():
             mt = re.search(r"<title>(.*?)</title>", html, re.S)
             title = safe(re.sub(r"\s*歌谱简谱网\s*$", "", mt.group(1)).strip()) if mt else "untitled"
             sid = re.search(r"/(\d+)\.htm", url).group(1)
+            # 语料里已有 -> 跳过(站内 id 或曲名), 不建目录、不下图
+            if _ci is not None:
+                r = _ci.skip_reason("jianpucn", sid, title)
+                if r:
+                    skipped.count(r)
+                    if r == "title":
+                        skipped.note_title_skip(title[:44])
+                    continue
             imgs = img_of(html)
             if imgs:
                 d = os.path.join(OUT, f"{title}__jianpucn-{sid}")
@@ -191,6 +219,8 @@ def main():
     save()
     print(f"\n本次新下 {got} 首(累计 {done}); 已访问 曲谱 {len(seen_songs)} / 歌手 {len(seen_artists)}; "
           f"队列还剩 曲谱 {len(song_q)} / 歌手 {len(artist_q)}", flush=True)
+    if skipped is not None:
+        print(skipped.summary())
     return 0
 
 

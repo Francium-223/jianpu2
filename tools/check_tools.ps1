@@ -24,6 +24,7 @@ $Curated = @(
     'crawl_jianpujia', 'crawl_jianpucn', 'crawl_qupu123', 'crawl_batch_jianpujia',
     'crawl_jianpucn_by_title', 'crawl_jianpujia_search', 'check_source_links',
     'queue_from_crawl', 'batch_transcribe_queue', 'fix_residual_titles',
+    'corpus_index', 'check_corpus_index',
     'detect_sections', 'propose_title_cleanup', 'fix_image_dir_entities',
     'check_tools', 'check_sideeffects', 'check_jptok_parity', 'verify_taglogic_all',
     'audit_dupes', 'audit_purity2', 'qa_corpus', 'experiment_impure_sample'
@@ -93,4 +94,19 @@ if ($fail.Count) {
     exit 1
 }
 Write-Host "全部通过(语法 + 声明了 --help 的那些)"
+
+# 功能自测: 爬虫"避抓"判据(与 check_tools.sh 里那条同一目的) —— 临时语料里验
+# "已存在->跳过 / 不存在->抓"。2026-10-04 之前只看 images/ 目录, 一轮 1764 条转写队列
+# 几乎全是语料里早有的曲子(净增 1 首), 所以把这条判据钉在冒烟自检里。
+if (Test-Path (Join-Path $Here 'check_corpus_index.py')) {
+    Write-Host ""
+    Write-Host "=== 功能: 爬虫避抓判据(临时语料) ==="
+    $c = & py -3.13 (Join-Path $Here 'check_corpus_index.py') 2>&1
+    ($c | Select-Object -Last 1) | Write-Host
+    if ($LASTEXITCODE -ne 0) {
+        Write-Host "**避抓判据自检失败**"
+        $c | Select-Object -Last 8 | Write-Host
+        exit 1
+    }
+}
 exit 0
