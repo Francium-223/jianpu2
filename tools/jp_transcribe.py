@@ -119,7 +119,16 @@ def _digits_of_batch(crops, batch_size=None):
     _init()
     if not crops:
         return []
-    B = batch_size or int(os.environ.get("JP_BATCH", "8"))
+    # JP_BATCH 默认 8 -> **16**(2026-10-06 实测, 12 页真实谱 / 1524 个 crop):
+    #   8->16 前向次数 191->96, 墙钟 16.12->14.69 s/页 (223->245 首/小时, **+8~10%**),
+    #   峰值显存 4375->4540 MiB (上限 8188, 4 档全部无 OOM); 两次复跑逐 token 完全一致,
+    #   与改动前 10/12 页逐字节相同、音符数 +0。
+    #   **为什么不再往上**: 16->24 收益 <1.5%; 且 B 只摊薄"每次前向的固定开销"——
+    #   processor 按图各自缩放到最短边 256px(不整批对齐), 每个 crop 恒定 ~287 patch,
+    #   所以总 patch 数与 B 无关, 真正的算力瓶颈是总 patch 数, B 的天花板很低。
+    #   另两处调用点(_recheck_x/_classify_bands)输入是整条行带(1200x~70), 未改。
+    #   详见 _analysis/README_转写吞吐调优.md (含 JP_MINPIX 那条更大的线索)。
+    B = batch_size or int(os.environ.get("JP_BATCH", "16"))
     try:
         _proc.tokenizer.padding_side = "left"
     except Exception:
