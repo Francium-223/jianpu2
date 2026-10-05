@@ -118,22 +118,78 @@ def corpus():
 
 
 def read_state(p):
-    """独立状态文件: 一行 `last_id\tok\tn_imgs\tbytes`。损坏就从头(不赌)。"""
+    """独立状态文件。第 1 行是计量 `last_id\tok\tn_imgs\tbytes`; 之后是**空段留档**行
+    `seg\t<段号>\tempty\t<采样数>\t<命中数>\t<时间>\t<采样id逗号分隔>`。
+
+    返回 `(last, ok, n_imgs, n_bytes, empty_segments)`; 文件损坏/缺失就当作全新(不赌)。
+    老格式(只有第 1 行)照常能读 —— 空段表为空。
+    """
     if not os.path.exists(p):
-        return 0, 0, 0, 0
+        return 0, 0, 0, 0, {}
+    last = ok = n = nb = 0
+    empty = {}
     try:
-        f = io.open(p, encoding="utf-8").read().split("\t")
-        return int(f[0]), int(f[1]), int(f[2]), int(f[3])
+        with io.open(p, encoding="utf-8") as f:
+            for i, line in enumerate(f):
+                parts = line.rstrip("\n").split("\t")
+                if i == 0:
+                    last, ok, n, nb = int(parts[0]), int(parts[1]), int(parts[2]), int(parts[3])
+                elif len(parts) >= 6 and parts[0] == "seg" and parts[2] == "empty":
+                    empty[int(parts[1])] = {"n": int(parts[3]), "hit": int(parts[4]),
+                                            "at": parts[5], "ids": parts[6] if len(parts) > 6 else ""}
     except Exception:
-        return 0, 0, 0, 0
+        return 0, 0, 0, 0, {}
+    return last, ok, n, nb, empty
 
 
-def write_state(p, last, ok, n, nb):
-    """**原子写**(.part -> os.replace): 被硬止损直接杀进程时不留半个状态文件。"""
+def write_state(p, last, ok, n, nb, empty_segments=None):
+    """**原子写**(.part -> os.replace): 被硬止损直接杀进程时不留半个状态文件。
+
+    空段留档一并落盘, 而且是**可复核、可重探**的: 每次记住"段号 / 采样数 / 命中数 / 采样时刻 /
+    采样了哪些 id"。**不是**"连续 N 个 404 就永久放弃"那种不可逆规则 —— 想重探就带
+    `--recheck`(见 main), 或者把状态文件里对应那行删掉。
+    """
     t = p + ".part"
     with io.open(t, "w", encoding="utf-8") as g:
         g.write("%d\t%d\t%d\t%d\n" % (last, ok, n, nb))
+        for seg in sorted((empty_segments or {})):
+            d = empty_segments[seg]
+            g.write("seg\t%d\tempty\t%d\t%d\t%s\t%s\n"
+                    % (seg, d["n"], d["hit"], d["at"], d.get("ids", "")))
     os.replace(t, p)
+
+
+def seg_of(sid, segsize):
+    return sid // segsize
+
+
+def probe_segment(seg, segsize, start, end, nprobe, say):
+    """探测一个 id 段是否**整段都没有曲谱**, 返回 `(is_empty, hits)`。
+
+    为什么这么做(2026-10-06 实测): jianpujia 的 id 空间是**分段分配**的 ——
+      * `200000–206000` 段 101 个 id **全部 404**(0% 命中);
+      * `440000–446000` 段 101 个 id **全部 200**(100% 命中)。
+    线性把 45 万个 id 逐个走一遍, 有一大半是纯空段, 约 26 小时的请求白扔。所以进入一个新段之前
+    先均匀采样 `nprobe` 个 id: 全 404 就整段跳过(留档, 可重探); 只要有一个命中就照常逐 id 扫。
+
+    采样用**同一份 `fetch()`**(先 `throttle()`), 所以这些请求也计入 >=1 秒/请求的节奏, 不会
+    给站点加压。命中的那 8 个 id 会被上层**并入正式扫描**, 避免"采样过了又扫一遍"的浪费。
+    """
+    lo = max(start, seg * segsize)
+    hi = min(end, (seg + 1) * segsize - 1)
+    if hi < lo:
+        return True, []
+    span = hi - lo + 1
+    step = max(1, span // max(1, nprobe))
+    sids = list(range(lo, hi + 1, step))[:nprobe]
+    hits = []
+    for sid in sids:
+        if fetch("%s/jianpu/%d.html" % (BASE, sid)) is not None:
+            hits.append(sid)
+    is_empty = not hits
+    say("  [段 %d 探测] id %d..%d 采样 %d 个 -> 命中 %d 个 => %s"
+        % (seg, lo, hi, len(sids), len(hits), "整段空, 跳过" if is_empty else "有货, 照常扫"))
+    return is_empty, hits
 
 
 def main():
@@ -149,6 +205,12 @@ def main():
     ap.add_argument("--probe", action="store_true",
                     help="只探测 id 命中率(逐 id 发请求、不下图、写 id 区间分桶统计)")
     ap.add_argument("--max-min", type=float, default=0, help="本次最多跑几分钟(0=不限)")
+    ap.add_argument("--seg", type=int, default=5000,
+                    help="**空段探测**的段宽(默认 5000)。进入新段前先均匀采样 --seg-probe 个 id, "
+                         "全 404 就整段跳过(留档进状态文件, 可 --recheck 重探)")
+    ap.add_argument("--seg-probe", type=int, default=8, help="每段采样几个 id(默认 8)")
+    ap.add_argument("--recheck", action="store_true",
+                    help="**重探**: 忽略状态文件里的空段留档(旧档先备份成 .recheck-<时刻>.bak), 重新探测")
     a = ap.parse_args()
 
     if a.shards < 1 or not (0 <= a.shard < a.shards):
@@ -221,7 +283,19 @@ def main():
         log.close()
         return 0
 
-    last, ok, n_imgs, n_bytes = read_state(STATE)
+    last, ok, n_imgs, n_bytes, empty_segments = read_state(STATE)
+    if a.recheck:
+        n_old = len(empty_segments)
+        empty_segments = {}
+        # 重探是**可逆**的: 旧留档先另存成 .recheck-<时刻>.bak, 想回溯还在
+        try:
+            bak = STATE + ".recheck-%s.bak" % time.strftime("%Y%m%d_%H%M%S")
+            io.open(bak, "w", encoding="utf-8").write("# recheck at %s, 清掉的空段留档 %d 条\n"
+                                                     % (time.strftime("%F %T"), n_old))
+            say("--recheck: 清掉 %d 条空段留档(旧档备份到 %s), 下一轮重新探测"
+                % (n_old, os.path.basename(bak)))
+        except Exception as e:
+            say("--recheck: 备份失败但继续(%s)" % e)
     if last:
         ids = [i for i in ids if i > last]
         say("续爬: 从状态文件跳过 id <= %d, 剩 %d 个" % (last, len(ids)))
@@ -229,26 +303,23 @@ def main():
     ci = corpus()
     skipped = ci.SkipCounter() if ci is not None else None
     fails = {}
-    n404 = n_dup = n_new = n_big = 0
+    n404 = n_dup = n_new = n_big = n_skipped_segs = 0
     stop_reason = ""
+    seg_done = set()                 # 本次已"整段处理过"的段号
+    seg_cursor = {}                  # 本次处理到段内哪个 id(给下一轮推进用)
+    # 按段推进的重排: 段内保持原序(片 k 走 id≡k mod 3 -> 段内仍是稀疏序列)
+    by_seg = {}
+    for i in ids:
+        by_seg.setdefault(seg_of(i, a.seg), []).append(i)
+    say("共 %d 个 id 落在 %d 个段(段宽 %d); 状态里已有 %d 个空段留档"
+        % (len(ids), len(by_seg), a.seg, len(empty_segments)))
 
-    for k, sid in enumerate(ids, 1):
-        if n_new >= a.quota:
-            stop_reason = "到配额 %d" % a.quota
-            break
-        if a.max_min and (time.time() - t0) > a.max_min * 60:
-            stop_reason = "到 --max-min"
-            break
-        if k % 20 == 0:
-            okf, freef, msgf = check(OUT_ROOT)
-            if not okf:
-                say("!! " + msgf + " -> 立即收工")
-                stop_reason = "磁盘止损"
-                break
-        ph = fetch("%s/jianpu/%d.html" % (BASE, sid))
-        if ph is None:
-            n404 += 1                      # 404 / 网络抖动: 都算"这一个 id 没看成"
-            continue
+    def save(sid):
+        write_state(STATE, sid, ok, n_imgs, n_bytes, empty_segments)
+
+    def scan_one(sid, ph):
+        """处理一个**详情页已经取到**的 id。返回 True 表示这首算"新下"。"""
+        nonlocal ok, n_imgs, n_bytes, n_dup
         title = song_title(ph, sid)
         if ci is not None:
             r = ci.skip_reason("jianpujia", str(sid), title)
@@ -257,26 +328,23 @@ def main():
                 if r == "title":
                     skipped.note_title_skip(title[:44])
                 n_dup += 1
-                write_state(STATE, sid, ok, n_imgs, n_bytes)
-                continue
+                return False
         d = os.path.join(OUT, "%s__jianpujia-%d" % (safe(title), sid))
         if os.path.isdir(d) and any(f.lower().endswith((".jpg", ".jpeg", ".png", ".gif", ".webp"))
                                     for f in os.listdir(d)):
             n_dup += 1
-            write_state(STATE, sid, ok, n_imgs, n_bytes)
-            continue
+            return False
         imgs = img_of(ph)
         if not imgs:
             fails["页面里没匹配到谱图"] = fails.get("页面里没匹配到谱图", 0) + 1
-            write_state(STATE, sid, ok, n_imgs, n_bytes)
-            continue
+            return False
         os.makedirs(d, exist_ok=True)
         n = 0
-        for j, iu in enumerate(dict.fromkeys(imgs)):
+        for iu in dict.fromkeys(imgs):
             full = iu if iu.startswith("http") else "http:" + iu
             data = fetch(full, binary=True, timeout=30)
             if data is None:
-                fails["图片下载失败: HTTPError"] = fails.get("图片下载失败: HTTPError", 0) + 1
+                fails["图片下载失败"] = fails.get("图片下载失败", 0) + 1
                 continue
             if len(data) < 3000:
                 fails["图太小(<3KB)"] = fails.get("图太小(<3KB)", 0) + 1
@@ -292,19 +360,75 @@ def main():
         if n:
             ok += 1
             n_imgs += n
-            n_new += 1
-            n_big += 1 if n > 1 else 0
-            if n_new % 10 == 0 or n_new <= 3:
-                say("  + %s (id=%d, %d 张) 新下 %d 首, 跳过 %d, 404 %d"
-                    % (title[:36], sid, n, n_new, n_dup, n404))
-        else:
-            fails["一首图都没下到"] = fails.get("一首图都没下到", 0) + 1
-        write_state(STATE, sid, ok, n_imgs, n_bytes)
+            return True
+        fails["一首图都没下到"] = fails.get("一首图都没下到", 0) + 1
+        return False
+
+    for seg in sorted(by_seg):
+        if n_new >= a.quota or (a.max_min and (time.time() - t0) > a.max_min * 60):
+            break
+        if seg in empty_segments and not a.recheck and seg not in seg_done:
+            # 留档说这整段没有曲谱 -> 跳过整段(留档可复核、可 --recheck 重探)
+            n_skipped_segs += 1
+            d = empty_segments[seg]
+            say("  [段 %d] 跳过(留档 %s 采样 %d 个命中 %d 个)" % (seg, d["at"], d["n"], d["hit"]))
+            continue
+
+        probe_hits = []
+        if seg not in seg_done:
+            seg_done.add(seg)
+            is_empty, probe_hits = probe_segment(seg, a.seg, a.start, a.end, a.seg_probe, say)
+            if is_empty:
+                empty_segments[seg] = {
+                    "n": a.seg_probe, "hit": 0,
+                    "at": time.strftime("%F %T"),
+                    "ids": ",".join(str(seg * a.seg + j) for j in range(min(a.seg_probe, 3)))}
+                n_skipped_segs += 1
+                say("      -> 整段空, 已写进状态文件(可 --recheck 重探)")
+                continue
+            if seg in empty_segments:        # --recheck 发现"其实有货" -> 撤销旧留档
+                empty_segments.pop(seg, None)
+                say("      -> 段 %d 旧留档说空, 本次实测有货, 已撤销该留档" % seg)
+
+        # 探测命中的那 8 个 id **优先处理**(复用采样结果, 不再重复请求)
+        rest = [i for i in by_seg[seg] if i not in set(probe_hits)]
+        for sid in list(probe_hits) + rest:
+            if n_new >= a.quota:
+                stop_reason = "到配额 %d" % a.quota
+                break
+            if a.max_min and (time.time() - t0) > a.max_min * 60:
+                stop_reason = "到 --max-min"
+                break
+            if sid in probe_hits:
+                ph = fetch("%s/jianpu/%d.html" % (BASE, sid))
+                if ph is None:
+                    continue
+            else:
+                okf, _f, msgf = check(OUT_ROOT)
+                if not okf:
+                    say("!! " + msgf + " -> 立即收工")
+                    stop_reason = "磁盘止损"
+                    break
+                ph = fetch("%s/jianpu/%d.html" % (BASE, sid))
+                if ph is None:
+                    n404 += 1                  # 404 / 网络抖动: 这个 id 没看成
+                    continue
+            if scan_one(sid, ph):
+                n_new += 1
+                if n_new % 10 == 0 or n_new <= 3:
+                    say("  + id=%d 新下 %d 首, 跳过 %d, 404 %d" % (sid, n_new, n_dup, n404))
+            save(sid)
+        if stop_reason:
+            break
+    if not stop_reason:
+        stop_reason = "走完 id 段"
 
     el = time.time() - t0
-    say("结束(%s): 处理 %d 个 id -> 新下 %d 首 / %d 张 / %.1f MiB; 跳过(语料或已有) %d; 404 %d"
-        % (stop_reason or "走完 id 段", k if ids else 0, n_new, n_imgs,
+    say("结束(%s): 本片候选 %d 个 id -> 新下 %d 首 / %d 张 / %.1f MiB; 跳过(语料或已有) %d; 未取到 %d"
+        % (stop_reason or "走完 id 段", len(ids), n_new, n_imgs,
            n_bytes / 1048576.0, n_dup, n404))
+    say("空段: 本次跳过 %d 个段(段宽 %d), 状态文件里留档 %d 条(可 --recheck 重探)"
+        % (n_skipped_segs, a.seg, len(empty_segments)))
     if n_new:
         say("吞吐: %.2f 首/分钟, %.2f MiB/分钟, %.1f KB/首 (用时 %.0f 分)"
             % (n_new / (el / 60.0), n_bytes / 1048576.0 / (el / 60.0),
