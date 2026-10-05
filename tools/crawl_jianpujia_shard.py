@@ -64,7 +64,15 @@ def safe(s):
 
 
 def fetch(url, binary=False, timeout=25, log=None):
-    """唯一网络出口 —— 每个请求**前**都过 `throttle()`(>=1 秒/请求)。"""
+    """唯一网络出口 —— 每个请求**前**都过 `throttle()`(>=1 秒/请求)。
+
+    失败一律返回 `None`, **绝不往上抛**。为什么(2026-10-06 实测踩到): 这里原来只捕
+    `HTTPError`(即 4xx/5xx), 而**连接超时**抛的是 `URLError(WinError 10060)` ——
+    分片 2 跑到第 7.8 分钟时遇到一次超时, 整个进程直接崩掉(退出码 1), 那一片当时已抓的
+    162 首靠状态文件保住了, 但这一轮的剩余配额白扔(靠计划任务 5 分钟后再拉起)。
+    抓取是长跑, 单次网络抖动不该打断整片, 所以 `URLError` / `OSError` / `TimeoutError`
+    一并按"这一次没取到"处理, 由调用方记进失败统计。
+    """
     throttle()
     req = urllib.request.Request(url, headers={"User-Agent": UA, "Referer": BASE + "/"})
     try:
@@ -73,6 +81,10 @@ def fetch(url, binary=False, timeout=25, log=None):
     except urllib.error.HTTPError as e:
         if log is not None:
             log.write("%d\t%d\tHTTP %s\n" % (int(time.time()), 0, e.code))
+        return None
+    except (urllib.error.URLError, OSError, TimeoutError) as e:
+        if log is not None:
+            log.write("%d\t%d\t网络 %s\n" % (int(time.time()), 0, type(e).__name__))
         return None
     return raw if binary else raw.decode("utf-8", errors="replace")
 
@@ -235,7 +247,7 @@ def main():
                 break
         ph = fetch("%s/jianpu/%d.html" % (BASE, sid))
         if ph is None:
-            n404 += 1
+            n404 += 1                      # 404 / 网络抖动: 都算"这一个 id 没看成"
             continue
         title = song_title(ph, sid)
         if ci is not None:
