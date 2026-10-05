@@ -17,7 +17,8 @@ TOOLS="add_link propose_tags harvest_artists refine_titles_from_pages audit_corp
        crawl_jianpujia crawl_jianpucn crawl_qupu123 crawl_batch_jianpujia
        crawl_jianpucn_by_title crawl_jianpujia_search check_source_links
        queue_from_crawl batch_transcribe_queue fix_residual_titles
-       corpus_index check_corpus_index
+       corpus_index check_corpus_index rejected_index check_rejected_index
+       census_images_prep
        detect_sections tlsfetch propose_title_cleanup fix_image_dir_entities"
 # 2026-09-25: 这份清单是**手写**的, 于是烂了两个口子:
 #   ① `batch_pipeline`/`make_score`/`mbz_lookup` 三个文件早就没了, 循环里 `|| continue` 直接跳过,
@@ -209,6 +210,42 @@ if [ -f tools/queue_from_crawl.py ] && [ -f tools/batch_transcribe_queue.py ]; t
     echo "  ✗ batch_transcribe_queue 跑失败"; tail -5 "$TMP/imp.log"; fail=1
   fi
   rm -rf "$TMP"
+fi
+
+# 功能: 拒绝名单 —— 队列该不该跳过"已经判过不合格"的图目录。
+# 为什么必须单列(2026-10-05): 这一轮 3412 条队列净增 +1、1764 条净增 0, 根因就是**判过不合格不留档**,
+# 下一轮又被当新目录拉进队列重转。名单修好的标志是"队列真的少转" —— 这条接线一旦坏掉
+# (路径写错 / 键对不上 / 名单缺失时抛异常), 症状是**净增又变回 0 而没有任何报错**, 看不出来。
+# 自检全程临时目录, 自己会设 JIANPU_REJECTED / JIANPU_IMAGES / JIANPU_DB, 不碰真名单与真图库。
+if [ -f tools/check_rejected_index.py ]; then
+  echo
+  echo "=== 功能: 拒绝名单(内部跳过 / 外部不跳 / 缺失安静返回空) ==="
+  if out=$(timeout 180 python3 tools/check_rejected_index.py 2>&1); then
+    echo "$out" | tail -3 | sed 's/^/  /'
+  else
+    echo "  ✗ 自检失败"; echo "$out" | tail -8 | sed 's/^/      /'; fail=1
+  fi
+fi
+
+# 功能: 名单文件本身没了(路径写错/被删)时, 拒绝名单要安静返回空 —— 记账工具不该变成流水线的新单点故障
+if [ -f tools/rejected_index.py ]; then
+  echo
+  echo "=== 功能: 拒绝名单缺失时不拖垮队列 ==="
+  if out=$(JIANPU_REJECTED="/nonexistent/没有这份名单.tsv" timeout 60 python3 - <<'PYEOF' 2>&1
+import sys
+sys.path.insert(0, "tools")
+import rejected_index as R
+print("OK", R.is_rejected("任意歌__qupu123-1"), repr(R.reason_of("任意歌__qupu123-1")))
+PYEOF
+); then
+    if echo "$out" | grep -q "OK False ''"; then
+      echo "  ✓ 名单不存在 -> is_rejected()=False / reason_of()='' (不抛异常)"
+    else
+      echo "  ✗ 缺名单时的行为不对: $out"; fail=1
+    fi
+  else
+    echo "  ✗ 跑失败: $out"; fail=1
+  fi
 fi
 
 # 功能: 段落权重泛化(重复度)探测器 —— 它的价值是**否定结论**, 所以要保证它随时跑得动、

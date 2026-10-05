@@ -22,18 +22,42 @@ import argparse
 import glob
 import io
 import os
-
-HERE = os.path.dirname(os.path.abspath(__file__))
-sys_path_tools = os.path.dirname(HERE)
-if sys_path_tools not in __import__('sys').path:
-    __import__('sys').path.insert(0, sys_path_tools)
-from jp_root import images_root
 import re
 import subprocess
 import sys
 import time
 
 HERE = os.path.dirname(os.path.abspath(__file__))
+if HERE not in sys.path:
+    sys.path.insert(0, HERE)
+
+
+def _images_root():
+    """图库根(唯一口径见 `tools/jp_root.py: images_root()`)。**延迟 import**。
+
+    ⚠ 为什么不在模块级 `from jp_root import images_root`: `jp_root` 顶部有 `guard_help(__doc__)`,
+    它在 import 期就看 `sys.argv` —— 于是 `batch_transcribe_queue.py --help` 会打出**jp_root 的**
+    用法并退出 0(实测: 上面那段"可迁移的根路径与配置中心"就是 jp_root 的 docstring, 不是本工具的)。
+    冒烟自检只看退出码, 所以这个错**一直没被抓住**。放到函数里, `--help` 已被 argparse 正常处理并退出。
+    """
+    from jp_root import images_root
+    return images_root()
+
+
+def _rejected_api():
+    """取拒绝名单的两个函数(唯一实现见 `tools/rejected_index.py`)。
+
+    ⚠ 同样必须延迟 import(理由与 `_images_root()` 一样, 见上)。
+    名单文件不存在/读不动时 `is_rejected()` 安静返回 False —— 记账工具绝不该变成流水线的新单点故障。
+    """
+    try:
+        from rejected_index import is_rejected, reason_of
+        return is_rejected, reason_of
+    except Exception as e:                                  # noqa: BLE001
+        print("[队列] ⚠ 拒绝名单读不到, 本轮**不跳**任何条目: %s" % e, file=sys.stderr)
+        return (lambda _d: False), (lambda _d: "")
+
+
 ROOT = os.path.dirname(HERE)                       # jianpu2
 WS = os.path.dirname(ROOT)
 DB = os.environ.get("JIANPU_DB") or os.path.join(WS, "jianpu-db")
@@ -87,7 +111,7 @@ def existing_sources():
 
 def pages_of(row):
     d = row.get("目录", "")
-    root = images_root()
+    root = _images_root()
     # ⚠ 只 escape **目录名本身**, 不能把 `**` 也 escape 了(那样递归通配就失效, 一个都找不到 —— 实测踩过)。
     #   目录名里有 `【】[]《》` 这类字符, 不 escape 也会匹配错。
     found = [x for x in glob.glob(os.path.join(root, "**", glob.escape(d)), recursive=True)
@@ -132,6 +156,7 @@ def main():
     ap.add_argument("--dry-run", action="store_true")
     a = ap.parse_args()
     sys.stdout.reconfigure(encoding="utf-8", line_buffering=True)
+    is_rejected, reason_of = _rejected_api()
 
     rows = read_queue(a.queue)
     have = existing_sources()
@@ -139,15 +164,29 @@ def main():
     print(f"队列 {len(rows)} 首 · 已入库 source {len(have)} 个 · 产物目录 {a.work}")
 
     todo = []
+    n_rej = 0
+    rej_by = {}
     for r in rows:
         key = "%s-%s" % (r.get("站", ""), r.get("页面id", ""))
         if key in have:
             continue
         if a.only and a.only not in (r.get("曲名") or ""):
             continue
+        # 拒绝名单: 已经判过不合格的(非纯简谱 / 解析失败 / 无可用图片 / 互为重复版本 ...)别再转一遍。
+        # ⚠ 放在 `key in have` **之后**: "已在语料"那类 existing_sources 已经拦掉了, 所以这一行报出来的
+        #   数字是**真正少转的条数**。放在前面只会把已有行为重复计一遍, 读数虚高。
+        # ⚠ 对"已在语料"的现有行为**一个字没改** —— `have` 那段原样保留, 上面这个 continue 也一样。
+        if is_rejected(r.get("目录", "")):
+            n_rej += 1
+            why = reason_of(r.get("目录", "")) or "(未记判定)"
+            rej_by[why] = rej_by.get(why, 0) + 1
+            continue
         todo.append(r)
     if a.limit:
         todo = todo[:a.limit]
+    if n_rej:
+        print(f"跳过 {n_rej} 条（拒绝名单）"
+              + " · " + " + ".join("%s %d" % (k, v) for k, v in sorted(rej_by.items(), key=lambda x: -x[1])))
     print(f"待处理 {len(todo)} 首" + (" (dry-run)" if a.dry_run else ""))
 
     n_tx = n_im = 0
