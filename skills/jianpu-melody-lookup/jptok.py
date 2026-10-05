@@ -7,9 +7,16 @@
 
 token 形态(变音与**时值**都前后可能, 末尾可带 `]` 分组闭记号):
     [时值 cqsdh]* [,']* [#b♯♭]? [1-7x0] [,']* [#b♯♭]? [时值 cqsdh]* [.]* \\]?
+**和弦 token**: 多个音**连写成一个** token(见文件末的第四次事故记录):
+    [时值 cqsdh]* ( [,']* [#b♯♭]? [1-7x0] ){2,} [,']* [#b♯♭]? [时值 cqsdh]* [.]* \\]?
 变音: # ♯ -> +1;  b ♭ -> -1;  无 -> 0
-八度: 逗号 -1, 撇 +1, 逐字累加
+八度: 逐字累加, 但**方向与简谱书面方向相反** —— 代码算的是 `逗号 - 撇`(见 parse_token),
+      实测 `parse_token("1'")` 得 `(1, 0, -1)`, 即撇 = 低八度。检索口径不看八度(代价表只用音级+变音),
+      无实际影响; 而改它会让**每一条带八度记号的单音 token 输出都变**, 破坏"单音 token 逐字节不变"
+      的硬要求(还要同步 JS/Rust 两份实现与全库指纹) —— 所以这里选择**把文档改成描述代码**,
+      不反向改代码。真要改方向, 单开一次全链路改动 + 重建索引。
 休止 0 / 念白 x 不参与音高(但算 token)
+和弦 token: 每个音各自带自己的八度/变音(写在**它自己的音级左边**), `parse_token_all()` 逐音返回。
 
 ⚠ 2026-09-23 第二次踩同一个坑: 上面的说明一直写着「时值前后都可能」, 但正则**只实现了前缀**。
    手工录入的 36 首(东方曲 + 校歌, status=ok)大量使用后缀形(`6c.` / `5s` / `3q` / `,6q` / `q3[`),
@@ -26,6 +33,23 @@ token 形态(变音与**时值**都前后可能, 末尾可带 `]` 分组闭记�
    修法: 末尾只允许 `]`, **不允许 `[`**(开记号永远不是音符)。
    注: 这只保证**音高/音数**正确; 连音组内部的 2/3 时值压缩没实现(那些音按各自写明的时值计时),
    影响面是那 4 首的**小节线显示**, 不影响检索。
+
+⚠ 2026-10-05 第四次踩同一个坑(**和弦 token 被整批丢掉**): 语料里 223 首(status=midi)用和弦写法
+   —— 多个音**连写成一个** token, 八度/变音写在**各自音级左边**。实测(全库 11,876 份, 2026-10-05 当天语料):
+   和弦 token **261,647 个**、写明 **646,747 个音**(其中**有音高**、该进索引的 **646,710 个**,
+   另 37 个是和弦里的休止 `0`/念白 `x`), 而改动前 `TOKEN` 正则**一个和弦 token 都匹配不上** ->
+   `pitched()/seq()/toks_of()` 把它们**整批丢掉**, 这 646,710 个发声的音从来没进过检索索引。
+   写法不是我推的, 是抄参考实现(项目自己的 vendored 副本): vendor/jianpu_ly/__init__.py:1860
+   `chordNotes_markup()` 调 :1802 `grace_octave_fix()`, 后者把写在数字**右边**的时值/变音/八度搬到**左边**
+   (中文歧义位置要头里声明 `OctavesBefore`, 见 :1819 `Ambiguous octave marks` 那条报错)。
+   真实例子(出处见 `tools/check_chord_tokens.py` 的用例表):
+       `d,4,,b5,,3,,1`(th03_04.txt: 低八度 4 ＋ 低两个八度降 5/3/1)
+       `q'16`(th02_14.txt)      `s6,5.`(th03_08.txt)
+   修法: 新增 `parse_token_all()`, 一个和弦 token 产出**它包含的每个音**; `seq()` 不再丢音。
+   兼容性怎么保证的: 单音 token 仍然**先**走原来那条 `TOKEN` 正则, 命中就直接返回 ——
+   于是它的输出**逐字节不可能变**; 只有 `TOKEN` 匹配不上(说明有 ≥2 个音级)才走和弦分支。
+   实测对拍: `tools/check_chord_tokens.py` 拿全库 11,876 份 / 21,193 个不同 token 做前后逐项比对,
+   差异**全部**落在和弦 token 与含和弦的那 223 份文件里(单音 token 变了 0 个、消失 0 个)。
 """
 import re
 
@@ -45,34 +69,88 @@ TOKEN = re.compile(
 )
 # 旧名字保留(曾有脚本引用); 口径已合并成上面唯一一份, 不再有 strict/loose 之分
 TOKEN_LOOSE = TOKEN
+
+# 和弦 token(**只在 TOKEN 匹配不上时才试它**, 见 parse_token_all): 时值字母在最前, 之后
+# **连写**若干"八度/变音 + 音级", 每个音的记号紧挨在它自己的音级左边(参考实现把右边记号搬到左边),
+# 附点在最末。`{2,}` 是硬性的: 只有**一个**音级的写法归上面那条 TOKEN 管 —— 这样"和弦分支"
+# 永远不会改变单音 token 的判定(这是本次改动的兼容性保证)。
+# 末尾游离的 oct2/acc2 归**最后一个**音, 与 TOKEN 里 oct2/acc2 归同一个音是同一套处理。
+CHORD = re.compile(
+    r"^(?P<pre>[cqsdh]*)"
+    r"(?P<body>(?:[,']*[#b♯♭]?[1-7x0]){2,})"
+    r"(?P<oct2>[,']*)(?P<acc2>[#b♯♭]?)"
+    r"(?P<post>[cqsdh]*)(?P<dot>[.]*)(?P<mark>\]?)$"
+)
+# 和弦体里切出每一个音: 八度记号 + 变音 + 音级
+_NOTE = re.compile(r"([,']*)([#b♯♭]?)([1-7x0])")
 BAR = ("-", "|", "~")
 
 
-def parse_token(t):
-    """-> (音级 int|None, 变音 -1/0/1, 八度 int) ; 不是音符返回 None。
+def _acc_join(*marks):
+    """多个变音记号 -> +1/-1/0(升号优先, 与 TOKEN 分支原来的算法逐字一致)。"""
+    s = "".join(x for x in marks if x)
+    return 1 if any(c in ("#", "♯") for c in s) else (-1 if any(c in ("b", "♭") for c in s) else 0)
 
-    音级对 0(休止)/x(念白) 返回 None(音高层面忽略), 但调用方仍可用 is_note() 判断它是不是 token。
+
+def _oct_join(*marks):
+    """多个八度记号 -> 偏移(逗号 -1、撇 +1, 逐字累加; 方向见文件头说明)。"""
+    s = "".join(marks)
+    return s.count(",") - s.count("'")
+
+
+def _sound(dig, acc, octs, acc2="", oct2=""):
+    """一个音级 + 它的记号 -> (音级 int|None, 变音, 八度)。"""
+    a, off = _acc_join(acc, acc2), _oct_join(octs, oct2)
+    return (None, a, off) if dig in "0x" else (int(dig), a, off)
+
+
+def parse_token_all(t):
+    """-> [(音级, 变音, 八度), ...]; **不是 token 返回 []**。
+
+    单音 token 返回 1 项(与旧 parse_token 的元组逐字节相同); **和弦 token** 返回它包含的
+    **每一个音**各一项, 顺序照 token 里的书写顺序(不排序)。
+    这是"和弦 token 不再丢音"的落点: 调用方遍历所有 token 时应当用它, 而不是只取第一项。
     """
     m = TOKEN.match(t or "")
+    if m:                                  # 单音(token)走原路: 命中就直接返回, 输出不可能变
+        g = m.groupdict()
+        return [_sound(g["dig"], g["acc"], g["oct1"], g["acc2"], g["oct2"])]
+    m = CHORD.match(t or "")
     if not m:
-        return None
+        return []
     g = m.groupdict()
-    acc, acc2 = g["acc"], g["acc2"]
-    a = 1 if (acc in ("#", "♯") or acc2 in ("#", "♯")) else (-1 if (acc in ("b", "♭") or acc2 in ("b", "♭")) else 0)
-    off = (g["oct1"] + g["oct2"]).count(",") - (g["oct1"] + g["oct2"]).count("'")
-    if g["dig"] in "0x":
-        return (None, a, off)
-    return (int(g["dig"]), a, off)
+    parts = _NOTE.findall(g["body"])        # [(八度记号, 变音, 音级), ...]
+    out = []
+    for i, (octs, acc, dig) in enumerate(parts):
+        last = (i == len(parts) - 1)
+        out.append(_sound(dig, acc, octs, g["acc2"] if last else "", g["oct2"] if last else ""))
+    return out
+
+
+def parse_token(t):
+    """-> (音级 int|None, 变音 -1/0/1, 八度 int) | [(...), ...] | None。
+
+    **单音 token** 返回元组(与 2026-10-05 之前**逐字节相同**); **和弦 token** 返回
+    `[(...), ...]`(≥2 项, 每个音一项); 不是 token 返回 None。
+    音级对 0(休止)/x(念白) 返回 None(音高层面忽略), 但调用方仍可用 is_note() 判断它是不是 token。
+
+    ⚠ 和弦分支返回的是**列表**: 老代码若写 `d, a, o = parse_token(t)` 遇到列表会**当场报错**
+    (而不是悄悄只取第一个音) —— 这是故意的, 免得又出现"整批丢音还没人发现"。要覆盖和弦请用
+    `parse_token_all()`。
+    """
+    got = parse_token_all(t)
+    if not got:
+        return None
+    return got[0] if len(got) == 1 else got
 
 
 def is_note(t):
-    return parse_token(t) is not None
+    return len(parse_token_all(t)) > 0
 
 
 def is_pitch(t):
-    """是音符(有音高), 排除休止/念白。"""
-    p = parse_token(t)
-    return p is not None and p[0] is not None
+    """是音符(有音高), 排除休止/念白。和弦 token 里只要有**一个**有音高的音就算真。"""
+    return any(p[0] is not None for p in parse_token_all(t))
 
 
 def pitched(score, merge_ties=True):
@@ -84,8 +162,13 @@ def pitched(score, merge_ties=True):
     判据只用**音级 + 变音**(不看八度): 检索口径本来就不看八度; 而且实测语料 14661 个 `~` 里
     13207 个两侧完全相同、1452 个只差八度记号(转写把八度标歪了的连音线), 只有 **2 个**是真圆滑线
     (音级不同 -> 不并, 保留两个音)。
+    (⚠ 上面这句"不看八度"说的是**连音线的判据**; 解析出来的八度照样原样带在结果里。)
     `~` 自己永远不是音符(`parse_token('~') is None`), 这里只管两个音头要不要并。
     想要"记谱上有几个音头"就传 `merge_ties=False`。
+
+    ⚠ 2026-10-05: **一个和弦 token 产出它包含的每个音**(以前整批丢掉)。连音线只可能并**第一个**
+    音头(`~` 后面紧跟的那一个); 和弦内部同时发声、互不相并 —— 那个"重复音"是**两个音头**,
+    不是延长(实测语料里有 `'#1#1` 这种写法)。
     """
     out, tie, last_note = [], False, False
     for t in (score or "").split():
@@ -95,15 +178,14 @@ def pitched(score, merge_ties=True):
         if t == "-" or re.match(r"^[cqsdh]+-$", t or ""):
             # `-` = **延长**前一个音: 它不打断连音线(`'1 - ~ '1` = 一个长音, 实测 th01_10 那种写法)
             continue
-        p = parse_token(t)
-        if not p or p[0] is None:
+        notes = [p for p in parse_token_all(t) if p[0] is not None]
+        if not notes:
             tie, last_note = False, False  # 休止/念白/别的记号都会打断连音线
             continue
-        if merge_ties and tie and out and (out[-1][0], out[-1][1]) == (p[0], p[1]):
-            last_note = True
-            tie = False                   # 并掉这个音头(时值由前一个音承担)
-            continue
-        out.append(p)
+        for i, p in enumerate(notes):
+            if merge_ties and i == 0 and tie and out and (out[-1][0], out[-1][1]) == (p[0], p[1]):
+                continue                   # 并掉这个音头(时值由前一个音承担)
+            out.append(p)
         tie, last_note = False, True
     return out
 
@@ -259,19 +341,21 @@ def recover_bars(sections, beats_per_bar, keep_explicit=True):
                 #   th07_13 5 / th02_05 4 / th02_01 1)。
                 acc += beat(t) * ratio
                 continue
-            p = parse_token(t)
-            if not p:
+            p_all = parse_token_all(t)
+            if not p_all:
                 tie, last_note = False, False  # 别的记号 -> 打断连音线
                 continue                      # 根本不是 token(升降号之外的记号等)
-            merged = False
-            if p[0] is not None:
-                if tie and n > 0 and prev_pitch and prev_pitch[:2] == (p[0], p[1]):
-                    merged = True                 # 连音线的第二个音头: 不推进"第几个音符"
+            # ⚠ 2026-10-05: 和弦 token 要**逐音**推进"第几个音符"(与 pitched() 同一口径),
+            #   否则前端按音符下标插的小节线在这 223 首里会整体错位。时值只在 token 上加一次。
+            pitches = [q for q in p_all if q[0] is not None]
+            for i, p in enumerate(pitches):
+                if i == 0 and tie and n > 0 and prev_pitch and prev_pitch[:2] == (p[0], p[1]):
+                    pass                          # 连音线的第二个音头: 不推进"第几个音符"
                 else:
                     n += 1                        # 只有**有音高**的音才推进"第几个音符"
                 prev_pitch = p
             acc += beat(t) * ratio            # 休止/念白同样占拍: 不记时会让小节线前漂
-            tie, last_note = False, (p[0] is not None)
+            tie, last_note = False, bool(pitches)
             if left > 0:
                 left -= 1                     # 连音组内: 装满就自动收组(语料里没有 `]` 的写法)
                 if left == 0:

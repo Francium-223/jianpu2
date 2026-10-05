@@ -45,6 +45,33 @@ def load_fallback():
     raise SystemExit("score.py 里找不到 _FallbackJptok（兜底被删了？那就把本测试也删掉）")
 
 
+def check_chord_sync(FB):
+    """兜底类**必须**跟着唯一实现一起认和弦 token(否则 CI 会按旧口径改写 223 首)。
+
+    为什么单独钉一下: CI(`.github/workflows/parse.yaml`)显式设 `JIANPU_ALLOW_FALLBACK_JTOK=1`,
+    再 `git add -A` + 自动提交 —— 兜底与 jptok 漂了不是"红了就算", 是**真的会改写数据**。
+    2026-09-28 那次 3044 首重复小节线就是这么来的。这里的用例是**抄 jptok 的实测口径**:
+    每个和弦 token 要逐音给对(音级/变音/八度), 顺序照书写顺序。
+    """
+    cases = [
+        ("64", [(6, 0, 0), (4, 0, 0)]),
+        (",4,,b5,,3,,1", [(4, 0, 1), (5, -1, 2), (3, 0, 2), (1, 0, 2)]),   # 八度记号在各自音级左边
+        ("q'16", [(1, 0, -1), (6, 0, 0)]),
+        ("s6,5.", [(6, 0, 0), (5, 0, 1)]),
+        ("64x0", [(6, 0, 0), (4, 0, 0), (None, 0, 0), (None, 0, 0)]),       # 和弦里有念白/休止
+        ("0", [(None, 0, 0)]),
+    ]
+    bad = []
+    for tok, want in cases:
+        if not hasattr(FB, "parse_token_all"):
+            bad.append((tok, want, "兜底类没有 parse_token_all"))
+            continue
+        got = FB.parse_token_all(tok)
+        if got != want:
+            bad.append((tok, want, got))
+    return bad
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--scores", default=os.path.join(DB, "scores"))
@@ -67,7 +94,10 @@ def main():
         # ① 逐 token 的四个函数
         for t in body.split():
             n_tok += 1
-            for fn_name in ("is_note", "parse_token", "duration_letter", "beat"):
+            # ⚠ 2026-10-05: 拿 `parse_token_all` 比, **不再拿 `parse_token`** —— 和弦 token 在
+            #   唯一实现那边返回**列表**(逐音), 而兜底类复刻它要再写一套和弦正则(就是"第三份口径")。
+            #   `parse_token_all` 是两边的公共口径: 兜底类没有它就当场红(见下面 load_fallback 的说明)。
+            for fn_name in ("is_note", "parse_token_all", "duration_letter", "beat"):
                 x = getattr(jptok, fn_name)(t)
                 y = getattr(FB, fn_name)(t)
                 if x != y:
