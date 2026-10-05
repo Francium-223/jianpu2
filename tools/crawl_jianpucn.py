@@ -52,6 +52,7 @@ from guard import guard_help        # noqa: E402
 guard_help(__doc__)
 
 from jp_root import images_root     # noqa: E402
+from crawl_limits import pages      # noqa: E402  谱图页数上限 + 统一限速(见 tools/crawl_limits.py)
 
 ROOT = os.path.dirname(HERE)                        # jianpu2
 WS = os.path.dirname(ROOT)                          # 工作区
@@ -256,7 +257,10 @@ def main():
                 d = os.path.join(OUT, f"{title}__jianpucn-{sid}")
                 os.makedirs(d, exist_ok=True)
                 ok = 0
-                for i, iu in enumerate(imgs[:3]):
+                # 2026-10-06 修: 原来写死 `imgs[:3]` —— 实测 `http://www.jianpu.cn/pu/19/194129.htm`
+                # (《93海阔天空》)有 **6 张**, 老写法只存 3 张, 其余 3 页**永远不会被下**(谱子是残的)。
+                # 现在默认全部(可用 `JIANPU_MAX_PAGES` 给上限), 见 tools/crawl_limits.py。
+                for i, iu in enumerate(pages(imgs)):
                     if _has_image(d, i + 1):
                         ok += 1
                         continue

@@ -21,6 +21,7 @@ import urllib.request
 import tlsfetch                                              # 证书过期兜底(qupu123 的证书 2026-09-23 到期)
 from guard import guard_help        # noqa: E402  `--help` 守卫(唯一实现见 tools/guard.py)
 guard_help(__doc__)
+from crawl_limits import pages, throttle     # noqa: E402  谱图页数上限 + 统一限速(>=1 秒/请求)
 
 os.chdir(r"D:\Documents_D\jianpu2")
 sys.stdout.reconfigure(encoding="utf-8")
@@ -50,6 +51,7 @@ def norm(s):
 
 
 def get(url, binary=False):
+    throttle()                   # 统一限速: >=1 秒/请求(原来本族是 0.15/0.2 秒)
     req = urllib.request.Request(url, headers={"User-Agent": UA,
                                                "Referer": "https://www.qupu123.com/"})
     with tlsfetch.urlopen(req, timeout=30) as r:
@@ -182,7 +184,9 @@ for w, lst in found.items():
             continue
         os.makedirs(d, exist_ok=True)
         n = 0
-        for iu in imgs[:6]:
+        # 2026-10-06 修: 原来写死 `imgs[:6]` —— 硬截断会缺页, 默认改成全部
+        # (可用 `JIANPU_MAX_PAGES` 给上限), 见 tools/crawl_limits.py。
+        for iu in pages(imgs):
             try:
                 data = get(iu, binary=True)
             except Exception:

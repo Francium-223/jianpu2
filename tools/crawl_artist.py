@@ -13,6 +13,7 @@ from guard import guard_help        # noqa: E402  `--help` 守卫(唯一实现�
 guard_help(__doc__)
 sys.path.insert(0, "tools")
 os.chdir(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+from crawl_limits import pages       # noqa: E402  谱图页数上限: 默认不截断(见 tools/crawl_limits.py)
 sys.stdout.reconfigure(encoding="utf-8")
 
 URL = sys.argv[1] if len(sys.argv) > 1 else "http://www.jianpu.cn/g/zh/zhoujielun.htm"
@@ -104,7 +105,9 @@ for path in links:
         continue
     os.makedirs(dd, exist_ok=True)
     ok = 0
-    for i, iu in enumerate(imgs[:2]):
+    # 2026-10-06 修: 原来写死 `imgs[:2]` —— 实测详情页最多有 6 张(《93海阔天空》), 只存 2 张
+    # 会让后面几页**永远下不到**。默认全部(可用 `JIANPU_MAX_PAGES` 给上限)。
+    for i, iu in enumerate(pages(imgs)):
         try:
             req = urllib.request.Request("http://www.jianpu.cn" + iu, headers={"User-Agent": UA})
             with urllib.request.urlopen(req, timeout=25) as r, open(os.path.join(dd, f"00{i+1}.jpg"), "wb") as g:

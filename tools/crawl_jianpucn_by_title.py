@@ -47,6 +47,7 @@ ROOT = os.path.dirname(HERE)                      # jianpu2/
 WS = os.path.dirname(ROOT)                        # 工作区
 sys.path.insert(0, HERE)
 from jp_root import images_root
+from crawl_limits import pages                    # noqa: E402  谱图页数上限: 默认不截断
 import tlsfetch                                   # noqa: E402  取页 + 证书过期兜底
 
 sys.stdout.reconfigure(encoding="utf-8")
@@ -242,7 +243,9 @@ for w, lst in found.items():
             continue
         os.makedirs(d, exist_ok=True)
         n = 0
-        for iu in imgs[:3]:
+        # 2026-10-06 修: 原来写死 `imgs[:3]` —— 实测详情页最多有 6 张(《93海阔天空》), 只存 3 张
+        # 会让后面几页**永远下不到**。默认全部(可用 `JIANPU_MAX_PAGES` 给上限)。
+        for iu in pages(imgs):
             try:
                 req = urllib.request.Request("http://www.jianpu.cn" + iu,
                                              headers={"User-Agent": UA})

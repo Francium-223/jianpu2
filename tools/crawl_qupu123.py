@@ -26,6 +26,7 @@ sys.path.insert(0, "tools")
 sys.stdout.reconfigure(encoding="utf-8")
 os.chdir(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import tlsfetch                                     # noqa: E402  取页 + 证书过期兜底
+from crawl_limits import pages, throttle            # noqa: E402  谱图页数上限 + 统一限速(>=1 秒/请求)
 
 # --help 保护: 这三个爬虫没有 argparse, 万一被当冒烟测试跑起来会**真的开始下载** —— 直接打文档退出。
 if any(a in ("-h", "--help") for a in sys.argv[1:]):
@@ -42,15 +43,21 @@ TARGET = int(sys.argv[2]) if len(sys.argv) > 2 and sys.argv[2].isdigit() else 12
 _slug = sys.argv[3] if len(sys.argv) > 3 else re.sub(r"[^0-9A-Za-z]", "", KEY)
 SLUG = _slug[:24] or "kw"
 # 图库落在**工作区**的 `images-prep/`(旧的 8.9GB 图库就在那儿, 单一存储);
-# 用 JIANPU_IMAGES 可以指到别处。以前是相对 cwd 的 "images-prep" —— 而本脚本会 chdir 到 jianpu2/,
-# 于是新爬的图跑进 jianpu2/images-prep/, 跟工作区那份**劈成了两个库**(2026-09-25 发现并修)。
-_WS = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))   # 工作区(三个 dirname: tools/x.py -> tools -> jianpu2 -> 工作区)
-IMG_ROOT = os.environ.get("JIANPU_IMAGES") or os.path.join(_WS, "images-prep")
+# 用 JIANPU_IMAGES 可以指到别处。
+# ⚠ 2026-10-06 修: 这里原来自己算 `dirname(dirname(dirname(__file__)))` 当"工作区", 得出的是
+# `D:\Documents_D` —— **仓库外面**, 而图库一直在 `jianpu2/images-prep`(`jp_root.images_root()`
+# 的注释里记着同一件事, 当时修了别的 7 个脚本, 漏了这个)。于是本爬虫一旦跑起来, 新图会散到
+# 仓库外面去, 或对着一堆不存在的目录空转。改成与全仓**同一口径**的唯一入口。
+from jp_root import images_root                     # noqa: E402
+IMG_ROOT = images_root()
 OUT = os.path.join(IMG_ROOT, f"qupu123-{SLUG}")
 os.makedirs(OUT, exist_ok=True)
 
 
 def get(url, binary=False, timeout=30):
+    # 统一限速: >=1 秒/请求(见 tools/crawl_limits.py)。原来本族是 0.15/0.25 秒, 而 jianpucn
+    # 族是 1.0 秒 —— 同一个项目里两套节奏, 这里收敛到一处。
+    throttle()
     req = urllib.request.Request(url, headers={"User-Agent": UA,
                                                "Referer": "https://www.qupu123.com/"})
     # tlsfetch: qupu123 的证书 2026-09-23 到期, 严格校验会直接失败(以前被误当成"站点反爬/打不开")。
@@ -105,7 +112,7 @@ for page in range(1, 12):
     print(f"  检索第 {page} 页: +{len(new)} (累计 {len(items)})", flush=True)
     if len(items) >= TARGET:
         break
-    time.sleep(0.3)
+    # 限速已由 get() 里的 throttle() 统一负责。
 
 items = items[:TARGET]
 print(f"\n{KEY}: {len(items)} 个曲谱页, 开始下载")
@@ -141,7 +148,9 @@ for i, (path, sid, title) in enumerate(items, 1):
         continue
     os.makedirs(d, exist_ok=True)
     n = 0
-    for iu in imgs[:6]:
+    # 2026-10-06 修: 原来写死 `imgs[:6]` —— 硬截断会缺页(实测 jianpu.cn 的详情页最多 6 张,
+    # qupu123 这边也见过 6 张以上的目录)。默认全部, 可用 `JIANPU_MAX_PAGES` 给上限。
+    for iu in pages(imgs):
         try:
             data = get(iu, binary=True)
         except Exception:
@@ -161,12 +170,11 @@ for i, (path, sid, title) in enumerate(items, 1):
         with open(os.path.join(d, f"00{n+1}{ext}"), "wb") as g:
             g.write(data)
         n += 1
-        time.sleep(0.15)
     if n:
         ok += 1
         if ok % 20 == 0:
             print(f"  [{ok}/{len(items)}] {title[:40]}", flush=True)
-    time.sleep(0.25)
+    # 限速已由 get() 里的 throttle() 统一负责(原来这里还各自 sleep 0.25 秒)。
 
 print(f"\n完成: {ok} 首 -> {OUT}")
 if skipped is not None:
