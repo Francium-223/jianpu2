@@ -439,8 +439,14 @@ def cmd_fetch(a):
                 if not data or len(data) < 1024:      # 实测谱图 185–418KB; <1KB 必然是错误页
                     continue
                 gp = os.path.join(d, "%03d%s" % (k, ext_of(data)))
-                with open(gp, "wb") as g:
+                # 原子落盘(.part -> replace): 看门狗的硬止损闸是**直接杀进程**的, 直接写目标名的话,
+                # 杀在写一半时会在图目录里留一张截断的 jpg —— 续爬时 `dir_has_images` 只按"有图且
+                # 大小>0"判, 会把半张图当成品收下且永不重下。先写 .part(不匹配图片后缀, 续爬不认),
+                # 写完再 rename, 于是被杀时最多留一个 .part, 下次照常重抓。
+                part = gp + ".part"
+                with open(part, "wb") as g:
                     g.write(data)
+                os.replace(part, gp)
                 n += 1
                 sz += len(data)
             if not n:

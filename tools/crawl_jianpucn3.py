@@ -158,8 +158,12 @@ for u in urls:
             with urllib.request.urlopen(req, timeout=25) as r:
                 data = r.read()
             # 后缀按魔数定(不抄 URL 后缀): 站点上老页多是 .gif, 新页是 .jpg
-            with open(os.path.join(d, f"00{i+1}{ext_of(data)}"), "wb") as g:
+            # 原子落盘(.part -> os.replace): 硬止损杀进程时只留 .part, 不留截断图(口径同 crawl_jianpucn.py)
+            fn = os.path.join(d, f"00{i+1}{ext_of(data)}")
+            part = fn + ".part"
+            with open(part, "wb") as g:
                 g.write(data)
+            os.replace(part, fn)
             ok += 1
         except Exception as e:
             fails["图片下载失败: " + type(e).__name__] = fails.get("图片下载失败: " + type(e).__name__, 0) + 1

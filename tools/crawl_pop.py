@@ -70,8 +70,12 @@ def save_song(url, title):
     for i, iu in enumerate(pages(imgs)):
         try:
             req = urllib.request.Request("http://www.jianpu.cn" + iu, headers={"User-Agent": UA})
-            with urllib.request.urlopen(req, timeout=25) as r, open(os.path.join(d, f"00{i+1}.jpg"), "wb") as g:
+            # 原子落盘(.part -> os.replace): 硬止损杀进程时只留 .part, 不留截断图(口径同 crawl_jianpucn.py)
+            fn = os.path.join(d, f"00{i+1}.jpg")
+            part = fn + ".part"
+            with urllib.request.urlopen(req, timeout=25) as r, open(part, "wb") as g:
                 g.write(r.read())
+            os.replace(part, fn)
             ok += 1
         except Exception:
             pass

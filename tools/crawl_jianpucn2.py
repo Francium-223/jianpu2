@@ -153,8 +153,13 @@ for url, title in items.items():
             req = urllib.request.Request("http://www.jianpu.cn" + iu, headers={"User-Agent": UA})
             with urllib.request.urlopen(req, timeout=25) as r:
                 data = r.read()
-            with open(os.path.join(d, f"00{i+1}{ext_of(data)}"), "wb") as g:
+            # 原子落盘(.part -> os.replace): 抓取可能被磁盘硬止损直接杀进程, 直接写目标名会留一张
+            # 截断图, 而续爬只按"文件名在不在"判 ⇒ 半张图被当成品收下、永不重下。口径同 crawl_jianpucn.py。
+            fn = os.path.join(d, f"00{i+1}{ext_of(data)}")
+            part = fn + ".part"
+            with open(part, "wb") as g:
                 g.write(data)
+            os.replace(part, fn)
             ok += 1
         except Exception:
             pass

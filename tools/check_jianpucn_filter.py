@@ -75,6 +75,74 @@ EXPECTED_FAMILY = {"crawl_artist.py", "crawl_jianpucn.py", "crawl_jianpucn2.py",
                    "crawl_jianpucn3.py", "crawl_jianpucn_by_title.py", "crawl_pop.py",
                    "get_yequ.py"}
 
+# ---- jianpujia 那一族(2026-10-06 纳入) ----------------------------------------
+# 同一类毛病: **判据要求属性值带引号, 而页面把它写成没有引号**。实测页面真身
+# (`/jianpu/157673.html`, 大东北我的家乡):
+#     <p style="text-align: center;"><img alt="…" width="760" border=0
+#         src=https://image.jianpujia.com/jianpudq/jianpu30/<hash>.png></p>
+# 老判据 `<img[^>]+src="((?:https?:)?//image\.jianpujia\.com/[^"]+)"` 对这种页 **0 命中**
+# ⇒ 每首都静默 `continue`, 跑完"完成: 0 首"而退出码仍是 0。实测: 老判据 0 条 / 新判据 1 条。
+JIANPUJIA_UNQUOTED = ('<p style="text-align: center;"><img alt="大东北我的家乡简谱" width="760" border=0 '
+                      'src=https://image.jianpujia.com/jianpudq/jianpu30/'
+                      'e9bd539773757e49ae2b3ce257b6a88d.png></p>')
+JIANPUJIA_QUOTED_ABS = '<img src="https://image.jianpujia.com/jianpudq/jianpu40/abc.png">'
+JIANPUJIA_QUOTED_REL = '<img src="//image.jianpujia.com/jianpudq/jianpu40/abc.png">'
+# 这一族有哪些(自动发现的结果; 对不上只警告, 因为新增同类本来就要人复核)
+EXPECTED_JIANPUJIA_FAMILY = {"crawl_jianpujia.py", "crawl_jianpujia_search.py",
+                             "crawl_jianpujia_by_artist.py", "crawl_jianpujia_category.py"}
+
+
+def _urls(rx, html):
+    """把一条判据在一段 HTML 上匹配到的东西取出来(有捕获组就取第一个非空组, 否则取整段匹配)。
+
+    为什么不能用 `findall` 判断: 新判据是**三个引号形态的交替**, `findall` 会返回三元组,
+    "有没有命中"不能只看返回值真假。
+    """
+    out = []
+    for m in rx.finditer(html):
+        gs = [g for g in m.groups() if g]
+        out.append(gs[0] if gs else m.group(0))
+    return out
+
+
+def jianpujia_img_judges(path):
+    """jianpujia 那族**认谱图地址**的正则(`image.jianpujia.com` 图床, 或通用的 `<img … src=…>`)。
+
+    注意域名在正则里通常写成 `image\\.jianpujia\\.com`(点号转义), 所以判"是不是图床判据"不能直接
+    做子串匹配 —— 这里只要求"提到 jianpujia"**或**是 `<img …>` 形态, 且带图片后缀。
+    """
+    out = []
+    for ln, p in re_literals(path):
+        low = p.lower()
+        if not ("jianpujia" in low or "<img" in low):
+            continue
+        if not ("<img" in low or "png" in low or "jpg" in low or "gif" in low):
+            continue
+        out.append((ln, p))
+    return out
+
+
+def jianpujia_family():
+    """jianpujia 那族爬虫 = tools/ 下 (a) 源码提到 `jianpujia.com` **且** (b) 用一条正则取谱图的脚本。"""
+    me = os.path.basename(__file__)
+    found = []
+    for p in sorted(glob.glob(os.path.join(HERE, "crawl_*.py")) + glob.glob(os.path.join(HERE, "get_*.py"))):
+        base = os.path.basename(p)
+        if base == me:
+            continue
+        try:
+            src = open(p, encoding="utf-8").read()
+        except OSError:
+            continue
+        if "jianpujia.com" not in src:
+            continue
+        try:
+            if jianpujia_img_judges(p):
+                found.append(base)
+        except SyntaxError:
+            print("   ⚠ %s 语法都过不了, 跳过" % base)
+    return found
+
 
 def get(url):
     req = urllib.request.Request(url, headers={"User-Agent": UA, "Referer": BASE + "/"})
@@ -247,6 +315,13 @@ def main():
     if set(fam) != EXPECTED_FAMILY:
         print("   ⚠ 与 2026-10-06 的清单不一致: 新增 %s / 消失 %s"
               % (sorted(set(fam) - EXPECTED_FAMILY), sorted(EXPECTED_FAMILY - set(fam))))
+    jfam = jianpujia_family()
+    print("   —— jianpujia 那一族(提到 jianpujia.com 且用正则取谱图的): %s"
+          % (("、".join(jfam)) if jfam else "⚠ 一个都没找到"))
+    if set(jfam) != EXPECTED_JIANPUJIA_FAMILY:
+        print("   ⚠ 与 2026-10-06 的 jianpujia 清单不一致: 新增 %s / 消失 %s"
+              % (sorted(set(jfam) - EXPECTED_JIANPUJIA_FAMILY),
+                 sorted(EXPECTED_JIANPUJIA_FAMILY - set(jfam))))
 
     # ---- ② 每个爬虫真在用的判据(静态读源码) + ③ 离线断言 ----
     print("\n=== ② 每个爬虫真在用的谱图判据(ast 静态读源码, 不 import) ===")
@@ -261,6 +336,11 @@ def main():
         if cs:
             print("   %-28s 分类清单 %d 个, 含 hechangpu=%s"
                   % ("", len(cs), "hechangpu" in cs))
+    jjudges = {}
+    for name in jfam:
+        for ln, pat in jianpujia_img_judges(os.path.join(HERE, name)):
+            jjudges.setdefault(name, []).append((ln, pat))
+            print("   %-28s L%-4d %s" % (name, ln, pat))
 
     print("\n=== ③ 离线断言(不联网) ===")
     bad_new, bad_old = [], []
@@ -313,11 +393,30 @@ def main():
             print("   ⚠ %s 拿 `<title>` 当曲名且没用 `<h1>` —— 实测 `<title>` 从 2025 起把歌手"
                   "追在曲名后面(`推车歌 焦阳  歌谱简谱网`), 会污染目录名/语料判重" % name)
 
+    # ---- ③-jianpujia: 谱图判据必须认得**没有引号的 `src=`**(页面真身) ----
+    print("\n=== ③-jianpujia 离线断言: 判据认得没有引号的 `src=` 吗(实测页面真身) ===")
+    jbad = []
+    for name in jfam:
+        for ln, pat in jjudges.get(name, []):
+            rx = re.compile(pat, re.I)
+            if not any("image.jianpujia.com" in u.lower() for u in _urls(rx, JIANPUJIA_UNQUOTED)):
+                jbad.append("%s:%d %s" % (name, ln, pat))
+            elif not _urls(rx, JIANPUJIA_QUOTED_ABS):
+                print("   ⚠ %s:%d 认不出带引号的绝对地址(老页/别处写法)" % (name, ln))
+            if not _urls(rx, JIANPUJIA_QUOTED_REL):
+                print("   ⚠ %s:%d 不认 `//image.jianpujia.com/…` 这种协议相对写法"
+                      "(若老页还在用就是漏收)" % (name, ln))
+    assert not jbad, (
+        "**jianpujia 的谱图判据认不出没有引号的 `src=`** —— 页面真身就是\n"
+        "     `<img … border=0 src=https://image.jianpujia.com/jianpudq/jianpu30/<hash>.png>`,\n"
+        "     只认带引号的老判据会静静收 0 张(`完成: 0 首`而退出码 0):\n     " + "\n     ".join(jbad))
+    print("   ✓ 断言通过: jianpujia %d 个爬虫共 %d 条谱图判据, 条条认得**无引号 src**"
+          % (len(jfam), sum(len(v) for v in jjudges.values())))
+
     if a.offline:
         print("\n(--offline: 只跑了 ①②③, 没联网)")
         print("\n结论: 这一族 %d 个爬虫的**静态判据**都还合格。" % len(fam))
         return 0
-
     # ---- ④ 联网复核 ----
     print("\n=== ④-1 列表页: 按分类判简谱(新) vs 标题 startswith('[简谱]')(旧) ===")
     old_tot = new_tot = 0

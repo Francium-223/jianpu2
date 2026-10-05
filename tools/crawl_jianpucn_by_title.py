@@ -229,7 +229,9 @@ for w, lst in found.items():
                     skipped.note_title_skip("%s (%s)" % (title[:40], w))
                 continue
         d = os.path.join(OUT, f"{safe(title)}__jianpucn-{sid}")
-        if os.path.isdir(d) and os.listdir(d):
+        # 判"已在"要**忽略 `.part`**: 原子落盘(见下面的图片写入)被杀进程时只留 `00N.jpg.part`,
+        # 那不是成品图。不排除的话这种目录会被当成"下过了", 那一页就**永远补不回来**。
+        if os.path.isdir(d) and [x for x in os.listdir(d) if not x.endswith(".part")]:
             ok += 1
             continue
         try:
@@ -252,8 +254,12 @@ for w, lst in found.items():
                 with tlsfetch.urlopen(req, timeout=25) as r:
                     data = r.read()
                 # 扩展名按**魔数**定: 站点上不少谱图是 .gif/.png, 老写法一律存成 .jpg(假后缀)
-                with open(os.path.join(d, f"00{n+1}{ext_of(data)}"), "wb") as g:
+                # 原子落盘(.part -> os.replace): 硬止损杀进程时只留 .part, 不留截断图(口径同 crawl_jianpucn.py)
+                fn = os.path.join(d, f"00{n+1}{ext_of(data)}")
+                part = fn + ".part"
+                with open(part, "wb") as g:
                     g.write(data)
+                os.replace(part, fn)
                 n += 1
             except Exception as e:
                 fails["图片下载失败: " + type(e).__name__] = fails.get("图片下载失败: " + type(e).__name__, 0) + 1

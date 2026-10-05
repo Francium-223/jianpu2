@@ -221,9 +221,15 @@ def main():
           f"已访问 曲谱 {len(seen_songs)} / 歌手 {len(seen_artists)} · 输出 {OUT}", flush=True)
 
     def save():
-        json.dump({"songs_seen": sorted(seen_songs)[-40000:], "artists_seen": sorted(seen_artists)[-5000:],
-                   "song_q": song_q[:8000], "artist_q": artist_q[:2000], "done": done},
-                  io.open(STATE, "w", encoding="utf-8"), ensure_ascii=False)
+        # **原子写**(临时文件 + os.replace): 抓取被硬止损杀进程时, 直接覆写状态文件会留下**半截
+        # JSON**; 下次启动时 `json.load` 失败会被上面那个 `except` 吞掉, 于是队列/已访问全部退化
+        # 成空 —— 断点续爬等于丢了(还会从语料种子重头再来一遍)。写临时文件再 rename 就没有半截态。
+        tmp = STATE + ".tmp"
+        with io.open(tmp, "w", encoding="utf-8") as f:
+            json.dump({"songs_seen": sorted(seen_songs)[-40000:], "artists_seen": sorted(seen_artists)[-5000:],
+                       "song_q": song_q[:8000], "artist_q": artist_q[:2000], "done": done},
+                      f, ensure_ascii=False)
+        os.replace(tmp, STATE)
 
     got = 0
     fails = {}                     # 失败/空手的原因 -> 次数(跑完打一行, 别再"悄悄收 0 张图"还退出 0)
@@ -270,8 +276,15 @@ def main():
                             # 站点上的占位/广告图只有 1~3KB; 谱图实测 130KB 上下
                             continue
                         # 后缀按魔数定(不抄 URL 后缀): 老页的谱图多是 .gif, 新页是 .jpg
-                        with open(os.path.join(d, "00%d%s" % (i + 1, ext_of(data))), "wb") as g:
+                        # **原子落盘**(.part -> os.replace): 抓取随时可能被磁盘硬止损**直接杀进程**,
+                        # 直接写目标名会在图目录里留一张截断图 —— 而 `_has_image()` 只按"文件名在不在"
+                        # 判, 会把半张图当成品收下、永不重下。先写 .part(续爬不认这个后缀), 写完再 rename;
+                        # 被杀时最多留一个 .part, 下次照常重抓。口径与 `crawl_fysongs.py` 一致。
+                        gp = os.path.join(d, "00%d%s" % (i + 1, ext_of(data)))
+                        part = gp + ".part"
+                        with open(part, "wb") as g:
                             g.write(data)
+                        os.replace(part, gp)
                         ok += 1
                     except Exception as e:
                         fails["图片下载失败: " + type(e).__name__] = \

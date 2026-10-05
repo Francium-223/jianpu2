@@ -113,13 +113,24 @@ def pick(title, artist, cands):
 
 
 def score_images(html):
-    imgs = re.findall(r'https://image\.jianpujia\.com/[^"\'\s>]+?\.(?:png|jpg|jpeg|gif)', html, re.I)
+    # 2026-10-06: 协议写成可选 —— 站点现在给的是**绝对**地址且 `src=` 不带引号
+    # (`<img … border=0 src=https://image.jianpujia.com/…png>`), 老页可能还是协议相对写法
+    # (`//image.jianpujia.com/…`); 两种都要认。判据口径与 `crawl_jianpujia.py:IMG_RE` 一致,
+    # 断言见 `tools/check_jianpucn_filter.py` 的 jianpujia 段。
+    imgs = re.findall(r'(?:https?:)?//image\.jianpujia\.com/[^"\'\s>]+?\.(?:png|jpg|jpeg|gif)', html, re.I)
     out, seen = [], set()
     for u in imgs:
         if u not in seen:
             seen.add(u)
             out.append(u)
     return out
+
+
+def has_images(d):
+    """目录里有没有**成品图**(忽略原子写的 `.part` 半成品) —— 见下面原子落盘那段。"""
+    if not os.path.isdir(d):
+        return False
+    return any(f.lower().endswith((".jpg", ".jpeg", ".png", ".gif", ".webp")) for f in os.listdir(d))
 
 
 def main():
@@ -178,9 +189,9 @@ def main():
         print("    命中 %d 个谱页" % len(hits), flush=True)
         for sid, txt in hits[:a.per]:
             d = os.path.join(OUT, "%s__jianpujia-%s" % (safe(txt), sid))
-            log.write("%s\t%s\t%s\t%s\n" % (name, txt, sid, "skip" if os.path.isdir(d) and os.listdir(d) else "get"))
+            log.write("%s\t%s\t%s\t%s\n" % (name, txt, sid, "skip" if has_images(d) else "get"))
             log.flush()
-            if os.path.isdir(d) and os.listdir(d):
+            if has_images(d):
                 print("      = 已有 %s" % os.path.basename(d)[:44], flush=True)
                 continue
             if a.dry:
@@ -199,10 +210,17 @@ def main():
             os.makedirs(d, exist_ok=True)
             n = 0
             for u in imgs[:5]:
+                if not u.startswith("http"):        # 协议相对写法 -> 补上 scheme, 否则取不到
+                    u = "https:" + u
                 ext = os.path.splitext(urllib.parse.urlsplit(u).path)[1] or ".png"
                 try:
-                    with open(os.path.join(d, "%03d%s" % (n + 1, ext)), "wb") as g:
+                    # **原子落盘**(.part -> os.replace): 硬止损直接杀进程时只留 `.part`, 不留截断图
+                    # (半张图会被续爬当成品收下)。口径与 `crawl_fysongs.py` / `crawl_jianpucn.py` 一致。
+                    gp = os.path.join(d, "%03d%s" % (n + 1, ext))
+                    part = gp + ".part"
+                    with open(part, "wb") as g:
                         g.write(get(u))
+                    os.replace(part, gp)
                     n += 1
                 except Exception as e:
                     print("      ✗ 图下载失败: %s" % type(e).__name__, flush=True)

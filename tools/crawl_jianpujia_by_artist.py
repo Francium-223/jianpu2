@@ -57,6 +57,13 @@ def safe(s):
     return re.sub(r"\s+", " ", s).strip()[:60] or "untitled"
 
 
+def has_images(d):
+    """目录里有没有**成品图**(忽略原子写的 `.part` 半成品) —— 见下面原子落盘那段。"""
+    if not os.path.isdir(d):
+        return False
+    return any(f.lower().endswith((".jpg", ".jpeg", ".png", ".gif", ".webp")) for f in os.listdir(d))
+
+
 def mainl(h):
     """只取 <div class="mainl">…<!--@ mainl--> 这一段 —— 右侧 <div class="mainr"> 是每页都重复的
     推荐侧栏(实测每页都混着《回忆的阁楼》《西海情歌》等无关条目), 不切掉会把侧栏当列表,
@@ -96,7 +103,7 @@ for path, title in items:
         continue
     sid = re.search(r"/(\d+)\.html", path).group(1)
     d = os.path.join(OUT, f"{safe(title)}__jianpujia-{sid}")
-    if os.path.isdir(d) and os.listdir(d):
+    if has_images(d):
         ok += 1
         hit.append((matched[0], title, sid, "已有"))
         continue
@@ -104,7 +111,12 @@ for path, title in items:
         ph = fetch(BASE + path)
     except Exception:
         continue
-    imgs = re.findall(r'<img[^>]+src="((?:https?:)?//image\.jianpujia\.com/[^"]+)"', ph, re.I)
+    # 2026-10-06 修(与 `crawl_jianpujia.py` 同一处实测): 曲谱页把谱图写成**没有引号的** src ——
+    # `<img … border=0 src=https://image.jianpujia.com/jianpudq/jianpu30/<hash>.png>`。老判据要求
+    # `src="…"` 且值是 `//image.jianpujia.com/…`, 对这种页 **0 命中** ⇒ 静默"完成: 0 首", 退出码还是 0。
+    # 改成"一个捕获组 + 引号可选", `findall` 仍返回字符串(下游用法不变); 断言见
+    # `tools/check_jianpucn_filter.py` 的 jianpujia 那一段(实测: 老判据 0 条 / 新判据 1 条)。
+    imgs = re.findall(r"""<img[^>]+\bsrc\s*=\s*["']?((?:https?:)?//image\.jianpujia\.com/[^\s>"']+)""", ph, re.I)
     if not imgs:
         continue
     os.makedirs(d, exist_ok=True)
@@ -118,8 +130,14 @@ for path, title in items:
         if len(data) < 3000:
             continue
         ext = ".png" if data[:4] == b"\x89PNG" else (".gif" if data[:3] == b"GIF" else ".jpg")
-        with open(os.path.join(d, f"00{n+1}{ext}"), "wb") as g:
+        # **原子落盘**(.part -> os.replace): 硬止损是直接杀进程的, 直接写目标名会留一张截断图, 而续爬
+        # 只看"目录非空"就会把半张图永久当成品。先写 `.part`(不在图片后缀白名单里, `has_images` 不认),
+        # 写完再 rename; 被杀时最多留一个 .part。口径与 `crawl_fysongs.py` / `crawl_jianpucn.py` 一致。
+        gp = os.path.join(d, f"00{n+1}{ext}")
+        part = gp + ".part"
+        with open(part, "wb") as g:
             g.write(data)
+        os.replace(part, gp)
         n += 1
         time.sleep(0.15)
     if n:

@@ -100,7 +100,9 @@ for path in links:
         continue
     dd = os.path.join(OUT, f"{title}__jianpucn-{sid}")
     # 保持原有的"目录已在"幂等性(与语料判据不冲突: 目录在 = 这一首下过了)
-    if os.path.isdir(dd) and os.listdir(dd):
+    # ⚠ 但要**忽略 `.part`**: 原子落盘被杀进程时只留 `00N.jpg.part`, 那不是成品图; 不排除的话
+    # 这种目录会被当成"下过了", 那一页永远补不回来。
+    if os.path.isdir(dd) and [x for x in os.listdir(dd) if not x.endswith(".part")]:
         done += 1
         continue
     os.makedirs(dd, exist_ok=True)
@@ -110,8 +112,13 @@ for path in links:
     for i, iu in enumerate(pages(imgs)):
         try:
             req = urllib.request.Request("http://www.jianpu.cn" + iu, headers={"User-Agent": UA})
-            with urllib.request.urlopen(req, timeout=25) as r, open(os.path.join(dd, f"00{i+1}.jpg"), "wb") as g:
+            # 原子落盘(.part -> os.replace): 抓取可能被磁盘硬止损直接杀进程, 直接写目标名会留一张
+            # 截断图, 而续爬只按"文件名在不在"判 ⇒ 半张图被当成品收下、永不重下(口径同 crawl_jianpucn.py)。
+            fn = os.path.join(dd, f"00{i+1}.jpg")
+            part = fn + ".part"
+            with urllib.request.urlopen(req, timeout=25) as r, open(part, "wb") as g:
                 g.write(r.read())
+            os.replace(part, fn)
             ok += 1
         except Exception:
             pass

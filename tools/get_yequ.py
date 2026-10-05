@@ -52,10 +52,12 @@ for path, label in PAGES:
     n = 0
     for i, iu in enumerate(imgs[:2]):
         fn = os.path.join(d, f"00{i+1}.jpg")
+        part = fn + ".part"          # 原子落盘: 硬止损杀进程时只留 .part, 不留截断图(口径同 crawl_jianpucn.py)
         try:
             req = urllib.request.Request("http://www.jianpu.cn" + iu, headers={"User-Agent": UA})
-            with urllib.request.urlopen(req, timeout=25) as r, open(fn, "wb") as g:
+            with urllib.request.urlopen(req, timeout=25) as r, open(part, "wb") as g:
                 g.write(r.read())
+            os.replace(part, fn)
             n += 1
         except Exception:
             pass
