@@ -28,6 +28,25 @@ def safe(s):
     s = re.sub(r'[\\/:*?"<>|\x00-\x1f\x7f-\x9f]', "_", s)
     return re.sub(r"_{2,}", "_", s)[:60] or "untitled"
 
+
+# 相关曲谱的锚点正文里, 方括号装的是**分类名**(2026-10-06 实测):
+#   `[三字歌谱]推车歌  焦洋`、`[十字及以上]…`、`[钢琴谱]夜曲  肖邦`、`[吉他谱]夜曲  周杰伦`
+# (`<a href='/pu/47/475917.htm' >[三字歌谱]推车歌&nbsp;&nbsp;焦洋</a>`)。
+# 注意**分类页列表**里方括号装的是歌手(`[邓紫棋] 画`), 两处不是一回事。
+# 旧判据 `"简谱" in txt` 找的是改版前的 `[简谱]` 类型标签 —— 实测一条都筛不出来
+# (整页出现 5 次 "简谱" 全在正文别处), 于是 discover 队列永远不增长、跑几首就"结束"。
+# 中文名与路径的对应取自站点首页一级导航(一字歌谱..九字歌谱/十字及以上/合唱谱/英文歌谱)。
+REL_CAT = re.compile(r"^\s*\[([^\]]+)\]")
+JIANPU_CATS_CN = ("一字歌谱", "二字歌谱", "三字歌谱", "四字歌谱", "五字歌谱", "六字歌谱",
+                  "七字歌谱", "八字歌谱", "九字歌谱", "十字及以上", "合唱谱", "英文歌谱")
+
+
+def is_jianpu_rel(txt):
+    """相关曲谱锚点正文 -> 是不是**简谱类**的谱(`[三字歌谱]推车歌  焦洋` -> True)。"""
+    m = REL_CAT.match(txt or "")
+    return bool(m) and m.group(1) in JIANPU_CATS_CN
+
+
 def save_song(url, title):
     sid = re.search(r"/(\d+)\.htm", url).group(1)
     d = os.path.join(OUT, f"{title}__jianpucn-{sid}")
@@ -37,7 +56,9 @@ def save_song(url, title):
         html = fetch(url)
     except Exception:
         return False
-    imgs = [x for x in re.findall(r"<img[^>]+src=['\"](/img/[^'\"]+\.(?:jpg|gif|png))['\"]", html, re.I)
+    # 谱图地址(2026-10-06 实测): 老页 `/img/8f/bc/<hash>.gif`, 2025 起新页 `/img9/2/kv/<hash>.jpg`
+    # —— 旧写法 `/img/` 对新页 **0 命中**, 于是保存函数一律返回 False("保存不了"却看不出原因)。
+    imgs = [x for x in re.findall(r"<img[^>]+src=['\"](/img\d*/[^'\"]+\.(?:jpg|gif|png))['\"]", html, re.I)
             if "logo" not in x.lower()]
     if not imgs:
         return False
@@ -98,9 +119,10 @@ while done < TARGET and (artist_q or discover):
             # (实测: 陈奕迅 319 首全已存在 -> 只拿到 3 首新歌就结束了)。
             if _exists:
                 for m in re.finditer(r"href='(/pu/\d+/\d+\.htm)'[^>]*>([^<]{0,60})", h2):
-                    if "简谱" in m.group(2) and m.group(1) not in seen_s:
+                    if is_jianpu_rel(m.group(2)) and m.group(1) not in seen_s:
                         discover.append("http://www.jianpu.cn" + m.group(1))
-                for a in re.findall(r"href='(/g/[a-z]{2}/[a-z0-9]+\.htm)'", h2):
+                # 歌手链接有 `/g/BE/BEYOND.htm` 这种大写形态(2026-10-06 实测), 必须带 re.I
+                for a in re.findall(r"href='(/g/[a-z]{2}/[a-z0-9]+\.htm)'", h2, re.I):
                     if a not in seen_a and len(artist_q) < MAX_ART:
                         artist_q.append("http://www.jianpu.cn" + a)
                 time.sleep(0.25)
@@ -121,15 +143,16 @@ while done < TARGET and (artist_q or discover):
             html = fetch(u)
         except Exception:
             continue
-        for a in re.findall(r"href='(/g/[a-z]{2}/[a-z0-9]+\.htm)'", html):
+        # 歌手链接有 `/g/BE/BEYOND.htm` 这种大写形态(2026-10-06 实测), 必须带 re.I
+        for a in re.findall(r"href='(/g/[a-z]{2}/[a-z0-9]+\.htm)'", html, re.I):
             if a not in seen_a and len(artist_q) < MAX_ART:
                 artist_q.append("http://www.jianpu.cn" + a)
-        # 相关曲谱只用来继续发现歌手。**只跟 [简谱] 类型** —— 相关列表里每条都带
-        # 类型标签(如 "[简谱]富士山下"); 跟着钢琴谱/吉他谱走会漂到古典
-        # (实测顺着陈奕迅的钢琴伴奏谱滚到了莫扎特 185 部)。
+        # 相关曲谱只用来继续发现歌手。**只跟简谱类的谱** —— 相关列表里每条都带**分类名**
+        # (实测 `[三字歌谱]推车歌  焦洋`); 跟着钢琴谱/吉他谱走会漂到古典
+        # (实测顺着陈奕迅的钢琴伴奏谱滚到了莫扎特 185 部), 所以按分类名白名单筛, 见 `is_jianpu_rel`。
         for m in re.finditer(r"href='(/pu/\d+/\d+\.htm)'[^>]*>([^<]{0,60})", html):
             s, txt = m.group(1), m.group(2)
-            if "简谱" not in txt:
+            if not is_jianpu_rel(txt):
                 continue
             if s not in seen_s:
                 discover.append("http://www.jianpu.cn" + s)

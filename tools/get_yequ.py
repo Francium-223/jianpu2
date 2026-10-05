@@ -40,7 +40,9 @@ for path, label in PAGES:
         continue
     m1 = re.search(r"<h1[^>]*>(.*?)</h1>", html, re.S)
     title = safe(m1.group(1)) if m1 else label
-    imgs = [x for x in re.findall(r"<img[^>]+src=['\"](/img/[^'\"]+\.(?:jpg|gif|png))['\"]", html, re.I)
+    # 谱图地址(2026-10-06 实测): 老页 `/img/8f/bc/<hash>.gif`, 2025 起新页 `/img9/2/kv/<hash>.jpg`
+    # —— 旧写法 `/img/` 对新页 **0 命中**, 于是每首都报"页面上没有谱图"。`\d*` 两种都认。
+    imgs = [x for x in re.findall(r"<img[^>]+src=['\"](/img\d*/[^'\"]+\.(?:jpg|gif|png))['\"]", html, re.I)
             if "logo" not in x.lower()]
     if not imgs:
         print(f"  {label}: 页面上没有谱图")

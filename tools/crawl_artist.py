@@ -91,7 +91,9 @@ for path in links:
             skipped.note_title_skip(title[:44])
             done += 1
             continue
-    imgs = [x for x in re.findall(r"<img[^>]+src=['\"](/img/[^'\"]+\.(?:jpg|gif|png))['\"]", h, re.I)
+    # 谱图地址(2026-10-06 实测): 老页 `/img/8f/bc/<hash>.gif`, 2025 起新页 `/img9/2/kv/<hash>.jpg`
+    # —— 旧写法 `/img/` 对新页 **0 命中**, 于是整轮"下载 0 张"却退出 0。`\d*` 两种都认。
+    imgs = [x for x in re.findall(r"<img[^>]+src=['\"](/img\d*/[^'\"]+\.(?:jpg|gif|png))['\"]", h, re.I)
             if "logo" not in x.lower()]
     if not imgs:
         continue
