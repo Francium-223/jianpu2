@@ -1508,7 +1508,8 @@ def _canon_lines(text):
     return sorted(out)
 
 
-def do_regress_cc0(manifest, samples_dir, scores_dir, limit=None, verbose=True):
+def do_regress_cc0(manifest, samples_dir, scores_dir, limit=None, verbose=True,
+                   account=None):
     """已入库的 492 首: 拿**原始 ABC 文件**按入库时那套参数重跑, 与库里现存文件对拍。
 
     为什么这是"移进仓库没弄坏"的硬证据: 这批 492 首(`status=converted`)是转换器进仓库**之前**
@@ -1521,13 +1522,44 @@ def do_regress_cc0(manifest, samples_dir, scores_dir, limit=None, verbose=True):
       ② 入库之后补的 `link=<原始文件直链>` 一行(转换器输出里没有它)。
     -> 四个数一起看: `same_tokens` / `same_canon`(忽略上面两件事) / `same_comments`(注释集合相同,
        顺序不计) / `same_bytes`(生字节, 预期 0)。
+
+    还能再强一层: 如果手上有那次转换的**账号 JSON**(`_abc_fix_account.py` 的产物, 它把每个候选的
+    token 原样存了下来 —— 那是**搬运之前**那版实现的输出), 传 `--account` 就能拿它做第二份独立
+    素材回归: 覆盖面比 492 更宽(CC0 那批是 511 首), 而且比的是**裸 token**(没经过平台 write_buf)。
     """
     import csv
     rows = list(csv.DictReader(open(manifest, encoding='utf-8'), delimiter='\t'))
     if limit:
         rows = rows[:limit]
     n = same_tokens = same_canon = same_comments = same_bytes = missing = 0
+    acc_same = acc_n = 0
+    acc_bad = []
     detail = []
+    if account:
+        acc = json.load(open(account, encoding='utf-8'))
+        want_acc = {(c['file'], int(c['idx'])): c for c in acc.get('candidates', [])}
+        by_file = {}
+        for (fn, idx) in want_acc:
+            by_file.setdefault(fn, []).append(idx)
+        for fn, idxs in sorted(by_file.items()):
+            path = os.path.join(samples_dir, fn)
+            if not os.path.isfile(path):
+                continue
+            with open(path, encoding='utf-8', errors='replace') as f:
+                tunes = split_tunes(f.read())
+            for idx in sorted(idxs):
+                c = want_acc[(fn, idx)]
+                if 'tokens' not in c or idx > len(tunes):
+                    continue
+                res = convert_tune(tunes[idx - 1][1], fn)
+                acc_n += 1
+                if list(res.tokens) == list(c['tokens']):
+                    acc_same += 1
+                elif len(acc_bad) < 6:
+                    a, b = list(c['tokens']), list(res.tokens)
+                    i = next((k for k in range(min(len(a), len(b))) if a[k] != b[k]),
+                             min(len(a), len(b)))
+                    acc_bad.append((fn, idx, a[i:i + 2], b[i:i + 2], len(a), len(b)))
     for row in rows:
         fn = row['file']
         abc_path = os.path.join(samples_dir, row['abc_file'])
@@ -1575,18 +1607,24 @@ def do_regress_cc0(manifest, samples_dir, scores_dir, limit=None, verbose=True):
         if db_text == text:
             same_bytes += 1
     if verbose:
-        print('== 真素材回归: 492 首已入库 ABC 产物 ==')
+        print('== 真素材回归: 已入库 ABC 产物 + (可选)账号 JSON 里的旧 token ==')
         print('清单 %d 行 / 比对 %d 首(库里缺 %d)' % (len(rows), n, missing))
         print('逐 token 一致: %d/%d' % (same_tokens, n))
         print('字段+正文逐字节一致(顺序不计, 已忽略平台搬走的 `%%` 注释与 `link=`): %d/%d'
               % (same_canon, n))
         print('注释集合一致(顺序不计): %d/%d' % (same_comments, n))
         print('生字节一致(含 write_buf 的字段/注释重排, 预期 0): %d/%d' % (same_bytes, n))
+        if account:
+            print('账号 JSON 里搬运前那版算出的 token 逐 token 一致: %d/%d' % (acc_same, acc_n))
+            for fn, idx, a, b, la, lb in acc_bad:
+                print('  !! %s#%d: 旧 %r / 新 %r (共 %d/%d)' % (fn, idx, a, b, la, lb))
         for fn, why in detail:
             print('  !! %s: %s' % (fn, why))
     return {'rows': len(rows), 'compared': n, 'missing': missing,
             'same_tokens': same_tokens, 'same_canon': same_canon,
-            'same_comments': same_comments, 'same_bytes': same_bytes, 'detail': detail}
+            'same_comments': same_comments, 'same_bytes': same_bytes,
+            'account_tokens_same': acc_same, 'account_tokens_total': acc_n,
+            'detail': detail}
 
 
 # --------------------------------------------------------------------------
@@ -1653,6 +1691,8 @@ def main(argv=None):
     ap.add_argument('--regress-cc0', metavar='MANIFEST',
                     help='真素材回归: 按清单重跑已入库那批 ABC, 与 jianpu-db/scores 现存文件对拍')
     ap.add_argument('--samples-dir', default=None, help='--regress-cc0 用的原始 .abc 目录')
+    ap.add_argument('--account', default=None,
+                    help='--regress-cc0 可加: 那次转换的账号 JSON(里面存着搬运前那版算的 token)')
     ap.add_argument('--scores-dir', default=None,
                     help='--regress-cc0 比的语料目录(默认 $JIANPU_DB/scores 或 ../jianpu-db/scores)')
     a = ap.parse_args(argv)
@@ -1663,11 +1703,14 @@ def main(argv=None):
 
     if a.regress_cc0:
         sd = a.scores_dir or os.path.join(cc.DB_DIR, 'scores')
-        r = do_regress_cc0(a.regress_cc0, a.samples_dir or '.', sd, a.limit)
+        r = do_regress_cc0(a.regress_cc0, a.samples_dir or '.', sd, a.limit, account=a.account)
         if a.json:
             print(json.dumps(r, ensure_ascii=False, indent=2))
-        return 0 if (r['compared'] and r['same_tokens'] == r['compared']
-                     and r['same_canon'] == r['compared']) else 1
+        ok = (r['compared'] and r['same_tokens'] == r['compared']
+              and r['same_canon'] == r['compared']
+              and (not a.account or r['account_tokens_total'] == 0
+                   or r['account_tokens_same'] == r['account_tokens_total']))
+        return 0 if ok else 1
 
     if a.run:
         if not a.outdir:

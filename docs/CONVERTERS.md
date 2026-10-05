@@ -197,6 +197,21 @@ py -3.13 tools/midi_to_jianpu.py --selftest
    `alias=` 各项的空格重新拼掉 —— 每次解析都会做；
 2. 入库之后补的那行 `link=<原始文件直链>`（转换器输出里没有它）。
 
+**更强的一份回归（覆盖面 511 > 492）**：那次转换的账号 JSON（`_abc_fix_account.py` 的产物）
+把**每个候选的 token 原样存了下来**，而它是**搬运之前**那版实现算的。加 `--account` 对拍：
+
+```bash
+py -3.13 tools/abc_to_jianpu.py --regress-cc0 <_cc0_ingest_manifest.tsv> \
+    --samples-dir <abc_samples/cc0_all> --account <_abc_fix_account.json>
+# -> 账号 JSON 里搬运前那版算出的 token 逐 token 一致: 511/511
+```
+
+**492 与 511 的差**（免得下次有人当成"丢了 19 首"）：那批先写出 **511** 份，随后
+`_analysis/_cc0_prune.py` 拿 `parse_scores.py` 的 `to_record()` 逐首严比对，**剔除 19 份**
+（平台侧的 token 切分与正文对不上，例如曲名尾部的 `041`/`1665` 被 `to_record` 当成正文 token），
+剩下 492 份入库。所以"511 首 token 全同"证明的是：**搬运没有改口径**；"
+492 首在库里逐字节一致"证明的是：**入库产物也没被碰**。
+
 ### 5.2 MIDI 侧的真素材
 
 POP909 **不在本机**（`--selftest` 的选轨策略依据的是它公开的轨道命名）。本机能用的真素材是

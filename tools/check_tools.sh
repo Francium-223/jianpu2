@@ -422,9 +422,13 @@ if [ -f tools/convert_common.py ] && [ -f tools/abc_to_jianpu.py ] && [ -f tools
   if [ -f "$MAN" ] && [ -d "$SAMPLES" ] && [ "$SKIP_SCORE" = 0 ]; then
     echo
     echo "=== 功能: 真素材回归(492 首已入库 ABC 产物, 逐 token) ==="
+    # 账号 JSON(如果还在)里存着**搬运之前**那版算出的 token, 覆盖面 511 首 > 492 —— 一起对
+    ACCT="${JIANPU_CC0_ACCOUNT:-../_analysis/_abc_fix_account.json}"
+    ACCT_ARG=""
+    [ -f "$ACCT" ] && ACCT_ARG="--account $ACCT"
     if out=$(timeout 300 python3 tools/abc_to_jianpu.py --regress-cc0 "$MAN" \
-               --samples-dir "$SAMPLES" 2>&1); then
-      echo "$out" | sed -n '2,5p' | sed 's/^/  /'
+               --samples-dir "$SAMPLES" $ACCT_ARG 2>&1); then
+      echo "$out" | sed -n '2,7p' | sed 's/^/  /'
     else
       echo "  !! 回归失败"; echo "$out" | tail -8 | sed 's/^/      /'; fail=1
     fi
