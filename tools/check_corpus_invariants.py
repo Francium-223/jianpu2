@@ -10,7 +10,9 @@
 检查项(都与 field 的真实语义对齐, 见 jianpu-db/score.py):
   1. `file` 唯一 + 在 `scores/` 里存在
   2. `title` 非空
-  3. `status` 在发布白名单 `{ok, ocr}` 里
+  3. `status` 在发布白名单 `{ok, ocr, converted}` 里
+     (`converted` = 2026-10-04 作者定的"由 ABC 等记谱格式机械转换而来", 与 `midi` 区分开;
+      口径同步于 `jianpu-db/parse_scores.py` 的 `OK_STATUS`)
   4. `source` 形如 `<站点>-<数字>` 或空
   5. `MBID` 空或 UUID 形
   6. `tag` ⊇ `usertag`(蕴涵标签只能多不能少)
@@ -91,7 +93,9 @@ def main():
             fail("file 在 scores/ 里不存在", f)
         if not (r.get("title") or "").strip():
             fail("title 空", f)
-        if r.get("status") not in ("ok", "ocr"):
+        if r.get("status") not in ("ok", "ocr", "converted"):
+            # converted: 2026-10-04 作者定 —— ABC 等记谱格式机械转换来的(自动)。
+            # 口径与 jianpu-db/parse_scores.py 的 OK_STATUS 必须一致, 改一处就要改两处。
             fail("status 不在白名单", f, str(r.get("status")))
         s = ((r.get("source") or [""]) or [""])[0]
         if s and not SRC.match(s):
