@@ -19,7 +19,8 @@ TOOLS="add_link propose_tags harvest_artists refine_titles_from_pages audit_corp
        queue_from_crawl batch_transcribe_queue fix_residual_titles
        corpus_index check_corpus_index rejected_index check_rejected_index
        census_images_prep
-       detect_sections tlsfetch propose_title_cleanup fix_image_dir_entities"
+       detect_sections tlsfetch propose_title_cleanup fix_image_dir_entities
+       convert_common abc_to_jianpu midi_to_jianpu"
 # 2026-09-25: 这份清单是**手写**的, 于是烂了两个口子:
 #   ① `batch_pipeline`/`make_score`/`mbz_lookup` 三个文件早就没了, 循环里 `|| continue` 直接跳过,
 #      清单看着覆盖了其实没有(已换成真实存在的 `mbid_lookup`);
@@ -384,6 +385,51 @@ if [ -f tools/tlsfetch.py ]; then
     echo "$out" | sed 's/^/  /'
   else
     echo "  ✗ tlsfetch 自检失败"; echo "$out" | tail -5; fail=1
+  fi
+fi
+
+# 功能: 转换器口径(ABC / MIDI -> 简谱) —— 三条自检 + (本机有真素材时)492 首逐 token 回归。
+# 为什么值得单列: 这两种输入**必须共用一份口径**(`tools/convert_common.py`) ——
+#   口径一旦在两边各写一份, 转换出来的简谱迟早不是同一种谱(带 `#` 的音整段丢、和弦 token 整批丢
+#   都是这么发生的)。三条自检里都钉着同一条底线: 每个 token 过 jptok 白名单, 且整份语料交给
+#   `jianpu-db/score.py` 真解析一遍后读回来的正文与输出逐 token 相同。
+if [ -f tools/convert_common.py ] && [ -f tools/abc_to_jianpu.py ] && [ -f tools/midi_to_jianpu.py ]; then
+  echo
+  echo "=== 功能: 转换器口径(ABC/MIDI 共用 convert_common.py) ==="
+  DB0="${JIANPU_DB:-$(cd .. && pwd)/jianpu-db}"
+  if [ -f "$DB0/score.py" ]; then
+    SKIP_SCORE=0
+  else
+    SKIP_SCORE=1
+    echo "  (本机没有 $DB0/score.py -> 跳过 score.py 真解析那一步, 只验 token 白名单)"
+  fi
+  for spec in "convert_common.py|--selfcheck|公共口径" \
+              "abc_to_jianpu.py|--selfcheck|ABC 转换器" \
+              "midi_to_jianpu.py|--selftest|MIDI 转换器"; do
+    T_NAME="${spec%%|*}"; T_REST="${spec#*|}"; T_ARG="${T_REST%%|*}"; T_LABEL="${T_REST#*|}"
+    printf '%-24s ' "$T_LABEL"
+    if out=$(JIANPU_DB="$DB0" JIANPU_SKIP_SCORE_CHECK="$SKIP_SCORE" \
+             timeout 180 python3 "tools/$T_NAME" "$T_ARG" 2>&1); then
+      echo "OK  ($(echo "$out" | tail -1 | sed 's/^-- //;s/ --$//'))"
+    else
+      echo "!! 失败"; echo "$out" | tail -6 | sed 's/^/      /'; fail=1
+    fi
+  done
+  # 真素材回归: 492 首已入库那批 ABC(`status=converted`)的原始文件重跑, 与库里现存文件对拍。
+  # 没有真素材的机器上**明确跳过并说明**, 不伪装成通过。
+  MAN="${JIANPU_CC0_MANIFEST:-../_analysis/_cc0_ingest_manifest.tsv}"
+  SAMPLES="${JIANPU_CC0_SAMPLES:-../_analysis/abc_samples/cc0_all}"
+  if [ -f "$MAN" ] && [ -d "$SAMPLES" ] && [ "$SKIP_SCORE" = 0 ]; then
+    echo
+    echo "=== 功能: 真素材回归(492 首已入库 ABC 产物, 逐 token) ==="
+    if out=$(timeout 300 python3 tools/abc_to_jianpu.py --regress-cc0 "$MAN" \
+               --samples-dir "$SAMPLES" 2>&1); then
+      echo "$out" | sed -n '2,5p' | sed 's/^/  /'
+    else
+      echo "  !! 回归失败"; echo "$out" | tail -8 | sed 's/^/      /'; fail=1
+    fi
+  else
+    echo "  (本机没有 492 首真素材/清单 -> 跳过逐 token 回归; 见 docs/CONVERTERS.md §5.1)"
   fi
 fi
 
