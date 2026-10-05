@@ -23,7 +23,11 @@ MIDI 比 ABC 少两样东西, 所以必须**明确写出依据**, 不许硬猜:
      其它策略: `--melody 2`(第 2 轨, 含它所有通道)、`--melody name:PIANO`、`top`/`most`/`all`。
   ③ **调号**: MIDI 的 `FF 59` 调号 meta 有就**照用**(它是源里写死的, 不是猜的);
      没有就用 Krumhansl-Schmuckler 音级分布相关(Krumhansl 1990)推断并记 `key_inferred`,
-     想稳就用 `--key Am` 直接指定(记 `key_forced`)。
+     想稳就用 `--key Gb` 直接指定(记 `key_forced`)。
+     ⚠ **`--key` 收的是"参考音 / `1=` 的音名", 不是"曲子主音"** —— 于是 `--key Am` 与
+     `--key C` 是同一个 `1=C`,`--key Eb` 给 `1=Eb`。想按**主音 + 调式**写(ABC 的 `K:` 语法,
+     如 `--key Eb:min`)也认: 那时按"Eb 是主音的小调"解释成 `1=Gb`, 并记一条
+     `key_mode_expanded` 说明它被展开成了哪个参考音 —— **绝不静默当大调**。
 
 口径(与 ABC 侧同一份, 见 `docs/CONVERTERS.md`)
 ============================================
@@ -67,6 +71,62 @@ ACCOMP_NAMES = re.compile(r'(?i)(piano|accomp|chord|bass|drum|perc|bridge|pad|gu
 
 class MidiError(cc.ConvertError):
     pass
+
+
+def resolve_key_arg(raw):
+    """`--key` 的值 -> (交给 `cc.parse_key` 的字符串, 调参说明 flag|None)。
+
+    语义(**与自动路径一致**): `--key` 收的是**参考音 / `1=` 的音名** —— `Am`、`Gb`、`Eb`
+    都直接就是"`1=` 在那个音上"。这与 `cc.parse_key()` 的口径天然一致(`K:Am` 给的也是
+    `1=C`), 所以不带调式词时**原样透传**, 不改任何既有行为。
+
+    ⚠ 带调式词时**必须解释, 不许静默当大调**(2026-10-07 实测踩到的坑):
+      `--key Eb:min` 落到 `cc.parse_key()` 里 mode='min' 但 `ref_letter` 仍是 **Eb**(主音),
+      于是 `1=Eb` —— 那是**大调**的写法, 与"Eb 小调"应有的 `1=Gb`(关系大调)差一个小三度,
+      整首音级会错一格。这里把它按"Eb 是主音的小调"展开成参考音 `Gb`, 并记
+      `key_mode_expanded` 说明展开了什么, 报告里看得见。
+    """
+    s = (raw or '').strip()
+    if ':' not in s:
+        return s, None                       # 没有调式词: 原样透传(既有行为不变)
+    bare, _, word = s.partition(':')
+    bare, word = bare.strip(), word.strip().lower()
+    if not bare or not word:
+        raise MidiError('--key 的调式写法要写成 `<音名>:<调式>`(如 `Eb:min`); '
+                        '只想给参考音就直接写音名(如 `Gb`)。收到: %r' % raw)
+    m = re.match(r'^([A-Ga-g])([#b]?)$', bare)
+    if not m:
+        raise MidiError('--key 的音名不认识: %r(形如 Eb / F# / C)' % bare)
+    if word not in cc.MODE_STEPS:
+        raise MidiError('--key 的调式词不认识: %r(可用: %s; 如 --key Eb:min 或 --key Gb)'
+                        % (word, '/'.join(sorted(set(cc.MODE_STEPS) - {''}))))
+    li = cc.LETTER_IDX[m.group(1).upper()]
+    acc = 1 if m.group(2) == '#' else (-1 if m.group(2) == 'b' else 0)
+    mode_steps, mode_semis = cc.MODE_STEPS[word]        # (往下数几个音名字母, 往下几个半音)
+    if word in ('', 'maj', 'major', 'ion', 'ionian'):   # 大调族: 参考音就是主音自己
+        return cc.key_label(li, acc, 'major'), None
+    # 大调主音 pc 必须对得上"往回数 mode_semis 个半音的那个音名字母" —— parse_key 里
+    # 同一条断言(差 2~10 个半音时算不出关系大调的变音, 那种调式这里不猜)。
+    tonic_pc = (cc.NATURAL_PC[li] + acc) % 12
+    maj_letter = (li - mode_steps) % 7
+    d = ((tonic_pc - mode_semis) % 12 - cc.NATURAL_PC[maj_letter]) % 12
+    if d not in (0, 1, 11):
+        raise MidiError(
+            "--key 的调式词 %r 本工具没定义参考音(关系大调算不出音名拼写): 请直接给参考音"
+            "(如 --key %s), 或改用 --key <音名>:<maj|min>"
+            % (word, cc.fifths_label(cc.major_fifths(tonic_pc))))
+    if word not in ('minor', 'min', 'm', 'aeolian', 'aeo', 'dorian', 'dor',
+                    'phrygian', 'phry', 'locrian', 'loc'):
+        raise MidiError(
+            "--key 的调式词 %r 本工具没定义参考音: 本侧只按“关系大调主音”定义了小调族; "
+            "请直接给参考音(如 --key %s), 或改用 --key <音名>:<maj|min>"
+            % (word, cc.fifths_label(cc.major_fifths(tonic_pc))))
+    # 小调族: 参考音 = 主音上方小三度(= 关系大调主音)。与 key_from_tonic_midi(minor=True)
+    # 同一口径 —— 实测两者给出的参考音 pc 完全相同(Am->C、Gm->Bb、Ebm->Gb)。
+    ref = (tonic_pc + 3) % 12
+    ref_label = cc.fifths_label(cc.major_fifths(ref))
+    return ref_label, ('key_mode_expanded', '%s:%s -> 参考音 1=%s(小调 La-based; %s)'
+                       % (bare, word, ref_label, '如只需要 1= 就写 --key ' + ref_label))
 
 
 # ==========================================================================
@@ -560,6 +620,8 @@ class TuneResult(cc.TuneResult):
         self.leading_silence = 0.0
         self.n_notes_src = 0
         self.track_name = ''
+        self.key_arg_raw = ''            # `--key` 原样(用户写的)
+        self.key_arg = ''                # 展开成"参考音"之后真正交给 parse_key 的
 
     def to_dict(self, name=''):
         return {
@@ -630,7 +692,12 @@ def convert_midi_bytes(data, name='', melody='auto', key=None, spell='degree',
         if JUMP_NAMES.search(t):
             r.flag('jump_mark', t)
     keysig = cand['keysig'] or (smf['tracks'][0].get('keysig') if smf['tracks'] else None)
-    k, how, kflags = key_from_smf(keysig, cand['notes'], forced=key, spell=spell)
+    key_arg, key_note = resolve_key_arg(key)
+    r.key_arg_raw = key or ''
+    r.key_arg = key_arg or ''
+    k, how, kflags = key_from_smf(keysig, cand['notes'], forced=key_arg, spell=spell)
+    if key_note:
+        r.flag(key_note[0], key_note[1])
     flags.extend(kflags)
     r.key = k
     r.key_label = k.label
@@ -700,6 +767,11 @@ def corpus_text(res, name, source, midi_ref, transcriber=ABOUT_TRANSCRIBER,
     if res.leading_silence:
         comments.append('%%前导静音=%.3f 拍(未写成休止: 它不是谱面上的休止)'
                         % res.leading_silence)
+    # 只在 `--key` 写了**调式词**时多一条: 那时的"调号来源"必须写清它被展开成了哪个参考音
+    # (否则日后看到 `1=Gb` 无法知道用户写的是 `--key Eb:min`)。裸音名的既有输出**逐字节不变**。
+    if res.key_arg_raw and res.key_arg and res.key_arg_raw != res.key_arg:
+        comments.append('%%--key=%s 按"主音+调式"展开成参考音 1=%s(小调 La-based)'
+                        % (res.key_arg_raw, res.key_arg))
     if midi_ref:
         comments.append('%MIDI 文件=' + midi_ref)
     return cc.corpus_text(title=res.title or name, source=source, name=name,
@@ -952,6 +1024,32 @@ def run_selftest(verbose=True):
     r = convert_midi_bytes(data, name='nokey.mid', key='Em')
     chk('⑨ --key Em: La-based(1=G), 主音记 `,6`', r.la_based and r.key_1 == 'G',
         '1=%s la=%s' % (r.key_1, r.la_based))
+    # ---- ⑨b `--key` 的调式写法(2026-10-07 定案): 收"参考音", 带调式词必须**解释**不许静默当大调 ----
+    chk('⑨ `--key` 收的是参考音: --key Am 与 --key C 给同一个 1=(C), 音级序列全同',
+        convert_midi_bytes(data, key='Am').tokens
+        == convert_midi_bytes(data, key='C').tokens,
+        'Am=%r C=%r' % (convert_midi_bytes(data, key='Am').tokens,
+                        convert_midi_bytes(data, key='C').tokens))
+    _min = convert_midi_bytes(data, name='nokey.mid', key='Eb:min')
+    _ref = convert_midi_bytes(data, name='nokey.mid', key='Gb')
+    chk('⑨ `--key Eb:min` 解释成"Eb 是主音的小调" -> 与 `--key Gb` 同一参考音, '
+        '音级+八度逐 token 相同(绝不静默当大调 `1=Eb`)',
+        _min.key_1 == 'Gb' and _min.key_1 == _ref.key_1
+        and _min.tokens == _ref.tokens
+        and any(k == 'key_mode_expanded' for k in _min.unsupported),
+        'Eb:min 1=%s / Gb 1=%s; eb=%r gb=%r' % (_min.key_1, _ref.key_1,
+                                                _min.tokens, _ref.tokens))
+    chk('⑨ `--key Eb:min` 与 `--key Eb` 不是同一件事(前者按小调展开成 1=Gb, 后者 1=Eb)',
+        _min.key_1 == 'Gb' and convert_midi_bytes(data, key='Eb').key_1 == 'Eb'
+        and _min.tokens != convert_midi_bytes(data, key='Eb').tokens,
+        'min 1=%s maj 1=%s' % (_min.key_1, convert_midi_bytes(data, key='Eb').key_1))
+    try:
+        convert_midi_bytes(data, key='Eb:lyd')
+        _bad = ''
+    except MidiError as e:
+        _bad = str(e)
+    chk('⑨ 未定义参考音的调式词(如 --key Eb:lyd)响亮报错, 不静默当大调',
+        bool(_bad) and '--key' in _bad, 'err=%r' % _bad)
 
     # ---- ⑩ 小节线按拍号合成; 总音数/休止数零丢失 ----
     r = conv([{'keysig': C_MAJ, 'timesig': (3, 4), 'notes':

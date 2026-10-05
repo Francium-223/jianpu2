@@ -162,6 +162,18 @@ py -3.13 tools/midi_to_jianpu.py *.mid --corpus --outdir <dir>   # 批量
 py -3.13 tools/midi_to_jianpu.py --selftest
 ```
 
+**`--key` 收的是「参考音 / `1=` 的音名」，不是「曲子主音」**（2026-10-07 定案）。于是
+`--key Am` 与 `--key C` 是同一个 `1=C`（`Am` 走 `cc.parse_key` 的 La-based 记法，音级位置相同）；
+`--key Eb` 给 `1=Eb`。想按**主音 + 调式**写（ABC 的 `K:` 语法，如 `--key Eb:min`）也认：那时按
+「Eb 是主音的小调」展开成参考音 `1=Gb`，并记一条 `key_mode_expanded`、在语料头部多写一行
+`%--key=Eb:min 按"主音+调式"展开成参考音 1=Gb`。本侧只定义了**小调族**
+（`min/m/aeolian/dorian/phrygian/locrian`，参考音 = 关系大调主音，与
+`convert_common.key_from_tonic_midi(minor=True)` 同一口径）；其它调式词（如 `--key Eb:lyd`）
+**响亮报错**并提示直接给参考音 —— 绝不静默当大调。裸音名（`--key Gb`）**逐字节原样透传**。
+
+⚠ `原调=` 字段里 `m` 与 `min` 两种写法都会有：`K:Gm` 记成 `Gm`、`K:Gmin` 记成 `Gmin`——
+**照抄源里的调式词**是既有约定，别统一它。
+
 **纪律：这两个工具都不会往 `jianpu-db/scores/` 写任何文件。** 入库是另一个动作（例如
 `_analysis/_cc0_ingest.py` 那种一次性的写盘脚本），要写也得由人明确决定。
 
@@ -171,7 +183,7 @@ py -3.13 tools/midi_to_jianpu.py --selftest
 | --- | --- | --- |
 | 公共口径本身 | `convert_common.py --selfcheck` | **31/31 通过** |
 | ABC 转换器（原有 53 条 + 新增 3 条） | `abc_to_jianpu.py --selfcheck` | **56/56 通过** |
-| MIDI 转换器（合成用例） | `midi_to_jianpu.py --selftest` | **33/33 通过** |
+| MIDI 转换器（合成用例） | `midi_to_jianpu.py --selftest` | **37/37 通过** |
 | 入库产物没被搬运弄坏 | `abc_to_jianpu.py --regress-cc0 <清单> --samples-dir <cc0_all>` | **492 首逐 token 一致 492/492** |
 | 工具链整体 | `bash tools/check_tools.sh` | 见该脚本输出 |
 
