@@ -5,13 +5,13 @@
 `score.py:to_record()` 里 `%END` 判定原来写成 `startswith('%end')`, 而每个文件首行都是
 `%<文件名>.txt` 注释 —— 文件名以 `end` 开头的谱(`Endless_Love_无尽的爱.txt`)
 **在第一行就 break**, 整首旋律变成空 score; 又因为 `parse_scores.py` 的准入是
-`status ∈ {ok,ocr} and score 非空`, 它连 data.jsonl 都进不去, 日志里只留一句"待整理已跳过"。
+`status ∈ {ok,ocr,converted} and score 非空`, 它连 data.jsonl 都进不去, 日志里只留一句"待整理已跳过"。
 **三道自检都看不见**: 不变量查的是进了库的数据、自检门查的是库内一致性、CI 查的是产物。
 
 判据(全部走唯一实现: `jianpu-db/score.py` 的 `Score` + `skills/.../jptok.py`):
   ① **全丢**: 正文(第一条 `%--` 之后)里有 >= MIN_PITCH 个有音高的 token, 但 `to_record()['score']`
      里一个都没有 -> 一定是解析/标记判定出错(不是"歌本来就短")。
-  ② **准入缺口**: status ∈ {ok, ocr}、正文有 >= MIN_PITCH 个音, 但**不在 data.jsonl 里**。
+  ② **准入缺口**: status ∈ {ok, ocr, converted}、正文有 >= MIN_PITCH 个音, 但**不在 data.jsonl 里**。
   ③ 提醒项: 没有**精确的** `%END` 行(只有近似行, 如 `%Endless_...`)。
 
 用法:
@@ -38,7 +38,9 @@ sys.path.insert(0, HERE)
 import jptok                                # noqa: E402
 sys.stdout.reconfigure(encoding="utf-8")
 
-OK_STATUS = ("ok", "ocr")
+# 与 parse_scores 的白名单同一份口径(`converted` = 2026-10-06 作者定的 ABC 等机械转换, 也进检索)。
+# 漏了这一档, 判据②会把刚入库的那些谱全报成"不在 data.jsonl" —— 假警报会把真缺口淹掉。
+OK_STATUS = ("ok", "ocr", "converted")
 EXACT_END = re.compile(r"%end\s*$", re.I)
 
 

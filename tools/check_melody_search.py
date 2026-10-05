@@ -204,6 +204,11 @@ def main():
     ok(ms.digits_of("1=C 1 2 3") == "123", "调号 `1=C` 不进数字串")
     ok(ms.digits_of(",5 5' q,6") == "556", "八度记号不影响音高")
     ok(ms.digits_of("") == "" and ms.split_query("abc") == [], "空/无数字输入不炸")
+    # 2026-10-06: 和弦 token(一个 token 里好几个音, ABC 转换产物里的 `,31`/`q13`)。老代码
+    #   写 `tok[0], tok[2]` —— jptok 对和弦返回**列表**, 于是建索引时 IndexError; 实测 492 首
+    #   converted 里 30 首因此整首进不了索引。断言"音全部展开、一个不丢"。
+    ok(ms.digits_of(",31 q13 2") == "31132", "和弦 token 的每个音都展开(` ,31` -> 3,1; `q13` -> 1,3)")
+    ok(ms.digits_of(",31") == "31" and ms.digits_of("1,1") == "11", "和弦 token 不再打崩 digits_of")
 
     print("\n查歌自检 " + ("通过" if not fail else "失败 %d 项" % fail))
     return 1 if fail else 0

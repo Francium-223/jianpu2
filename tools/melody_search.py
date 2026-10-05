@@ -13,7 +13,7 @@
 
 ⚠ 2026-09-24 换掉语料来源: 老版本搜的是 `batch-out/*.txt`(旧流水线的中间产物,
   8495 个文件, 里面**没有 th10_06**, 连 `33565653253` 这种确定存在的查询都返回"命中 0 首")。
-  现在直接搜 `jianpu-db/data.jsonl`(唯一真源, 7321 首, status ∈ {ok,ocr})——顺带能给出
+  现在直接搜 `jianpu-db/data.jsonl`(唯一真源, 11384 首, status ∈ {ok,ocr,converted})——顺带能给出
   曲名/歌手/出处/记谱文件, 机器人回话才有用。
 
 速度: 冷启(读 13MB jsonl + jptok 切 130 万个 token)约 6 秒; 所以默认在
@@ -47,9 +47,16 @@ ROOT = os.path.dirname(HERE)                      # jianpu2
 WS = os.path.dirname(ROOT)                        # 工作区(三个仓库的上一层)
 DB = os.environ.get("JIANPU_DB") or os.path.join(WS, "jianpu-db")
 DATA = os.path.join(DB, "data.jsonl")
-OK_STATUS = ("ok", "ocr")                         # 与 parse_scores 的白名单同一份口径
-TOKVER = 4                                        # 切 token / 行结构 / **索引字段**改了就 +1(缓存自动失效)
+# 与 parse_scores 的白名单同一份口径。2026-10-06 作者定: `converted`(**ABC 等记谱格式机械转换**
+#   来的)也进检索, 与 `midi`(MIDI 硬转)区分开 —— 它带完整音高记录, 且转换器已按本仓库首调口径
+#   (大调 Do-based / 小调 La-based, 主音 `,6`)写出来源与调号。
+# 为什么必须加: 漏了这一档, 刚入库的 492 首**建索引时被整行跳过**, 用户查歌永远查不到它们,
+#   而且不报错 —— 正是 2026-09-23 "索引丢音" 事故同一类静默缺口。
+OK_STATUS = ("ok", "ocr", "converted")
+TOKVER = 5                                        # 切 token / 行结构 / **索引字段**改了就 +1(缓存自动失效)
                                                   # v4: 索引多了 `sec`(段落权重用), 老缓存没这个键
+                                                  # v5: 白名单加 `converted` + 和弦 token 不再打崩 digits_of,
+                                                  #     索引内容变了 -> 老缓存必须作废(否则指纹不变、仍旧索引)
 MAX_GAP = 8                                       # 整句对齐时, 段与段之间最多允许夹几个音(空格=记不清)
 # 段落权重(用户 2026-09 定的规格, 见 jianpu2/README_PIPELINE.md §六「段落加权」):
 #   chorus/refrain 1.6 · verse 1.25 · pre-chorus/bridge/interlude 1.10 · score 1.00 ·
@@ -134,13 +141,22 @@ def digits_of(text):
 
 
 def _tokens(text):
-    """token 流 -> [(音高数字, 八度偏移), ...]"""
+    """token 流 -> [(音高数字, 八度偏移), ...]
+
+    ⚠ 2026-10-06: `jptok.parse_token()` 对**和弦 token**(一个 token 里写了好几个音, 如 ABC 转换
+      产物里的 `,31`/`q13`)返回的是**列表**(每音一项), 老代码写 `str(tok[0]), int(tok[2])` 会在
+      建索引时**当场 IndexError** —— 实测: 492 首 converted 里 30 首因此进不了索引。
+      所以这里走 `parse_token_all()`(jptok 文档指定的"覆盖和弦"接口), 把 token 里的音**全部**展开。
+      token 里的休止/念白(`0`/`x`, 音级解出 None)**不进数字串**: 口径是"休止不算断开"(见文件头),
+      若把 None 记成 `"None"` 或占位, 数字串会被污染、段落下标也会跟着错位。
+    """
     out = []
     for t in (text or "").split():
         if jptok is not None:
-            if jptok.is_pitch(t):
-                tok = jptok.parse_token(t)
-                out.append((str(tok[0]), int(tok[2])))
+            for dig, _acc, off in jptok.parse_token_all(t):   # 单音 token -> 1 项; 和弦 token -> 每音 1 项
+                if dig is None:                              # 休止 0 / 念白 x
+                    continue
+                out.append((str(dig), int(off)))
             continue
         if "=" in t:                              # 调号 `1=C` 里的 1 不是音符
             continue
