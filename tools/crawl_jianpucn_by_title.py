@@ -8,6 +8,18 @@
 实测规模(2026-09-22): 四字歌谱 ~1260 页 x 30 条; 分页 URL = /<cat>/<页>.htm (页号越大越新,
 基址 /<cat> 即最新一页)。
 
+判据(2026-10-06 复核):
+  * **本脚本从来就没有 `[简谱]` 那条过滤**(它是按**分类**扫的 —— 分类本身就等于"是简谱":
+    一~九字歌谱/十字及以上/合唱谱/英文歌谱都是简谱, 而 jitapu/gangqinpu/zongpu 这些专用谱类
+    根本不在 `CATS` 里)。改版后列表页方括号里装的是**歌手/词曲作者**而不是 `[简谱]`,
+    对本脚本**没有影响** —— `norm()` 与 `safe()` 本来就会把方括号连同内容一起砍掉。
+  * 但它有一个**同样在悄悄收 0 的判据**: 谱图地址。老页是 `/img/...`, 2025 起的新页改成了
+    `/img9/...`, 而这里写死 `^/img/` ⇒ 新页一律报"页面里没匹配到 /img/ 谱图",
+    跑完就是"下载 0 个谱页"而退出码还是 0。已改成 `/img\\d*/`(见 `IMG_RE`)。
+  * 另修: 一字曲名原来被兜到 `shizijiyishang` 分类(那里一个字的名字一条都没有),
+    改成走 `yizigepu`; `hechangpu`(合唱谱)原来整类没被扫, 补进清单 —— 实测该分类 186 页,
+    合唱谱只有这里才有。
+
 用法:
   py -3.13 tools/crawl_jianpucn_by_title.py <曲名1,曲名2,...> [每个分类最多扫几页=1400]
 """
@@ -17,6 +29,15 @@ import re
 import sys
 import time
 import urllib.request
+
+# `--help` 保护: 本文件是**模块级脚本**, 没有 argparse —— 不拦的话 `--help` 会被当成
+# "要爬的曲名", 真的开始扫几万页目录。(同 2026-09-24 给另外三个爬虫加的那道保护。)
+# 2026-10-06 修: 这段原来在 `from jp_root import ...` **之后**, 而 `jp_root` 自己也有
+# `guard_help(__doc__)` —— 于是 `--help` 打出来的是 jp_root 的文档, 不是本脚本的用法。
+# 挪到所有项目内 import 之前, 谁先拦谁说了算。
+if any(a in ("-h", "--help") for a in sys.argv[1:]):
+    print(__doc__)
+    raise SystemExit(0)
 
 # 2026-09-25 修: 这里原来硬编码着作者 Windows 机器的 `os.chdir(r"D:\Documents_D\jianpu2")`,
 # 在 Linux 上**直接 FileNotFoundError 崩掉** —— 而这个工具不在 check_tools.sh 的冒烟清单里,
@@ -28,12 +49,6 @@ sys.path.insert(0, HERE)
 from jp_root import images_root
 import tlsfetch                                   # noqa: E402  取页 + 证书过期兜底
 
-# `--help` 保护: 本文件是**模块级脚本**, 没有 argparse —— 不拦的话 `--help` 会被当成
-# "要爬的曲名", 真的开始扫几万页目录。(同 2026-09-24 给另外三个爬虫加的那道保护。)
-if any(a in ("-h", "--help") for a in sys.argv[1:]):
-    print(__doc__)
-    raise SystemExit(0)
-
 sys.stdout.reconfigure(encoding="utf-8")
 UA = ("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
       "(KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36")
@@ -41,8 +56,12 @@ ZW = dict.fromkeys(map(ord, "\u200b-\u200f\u202a-\u202e\u2060\ufeff"), None)
 DROP = re.compile(r"[\s《》〈〉（）()\[\]【】、，,。.!！？:：;；·・\-—_…~～'\"“”‘’/\\|&]+")
 ENT = re.compile(r"&[a-zA-Z]{2,8};|&#\d+;")          # `绿光&nbsp;&nbsp;` -> `绿光`
 PAREN = re.compile(r"[（(【\[][^)）】\]]*[)）】\]]|[（(【\[].*$")   # `红茶馆(粤语)` -> `红茶馆`
-CATS = ["erzigepu", "sanzigepu", "sizigepu", "wuzigepu", "liuzigepu",
-        "qizigepu", "bazigepu", "jiuzigepu", "shizijiyishang"]
+CATS = ["yizigepu", "erzigepu", "sanzigepu", "sizigepu", "wuzigepu", "liuzigepu",
+        "qizigepu", "bazigepu", "jiuzigepu", "shizijiyishang", "hechangpu"]
+# 谱图地址(2026-10-06 实测): 老页 `/img/xx/yy/<hash>.jpg|gif`, 2025 起的新页 `/img9/N/xx/<hash>.jpg|png`。
+# 旧写法 `^/img/` 匹配不到 `/img9/` —— 60 条样本(六个分类各取新旧两页)旧判据只中 30 条(全是老页),
+# 新页 **0 命中**, 于是每首歌都记成"页面里没匹配到 /img/ 谱图", 跑完"下载 0 个谱页"却不报错。
+IMG_RE = re.compile(r"<img[^>]+src=['\"](/img\d*/[^'\"]+\.(?:jpg|gif|png))['\"]", re.I)
 # 图库统一落工作区 `images-prep/`(JIANPU_IMAGES 可覆盖), 不再写相对路径靠 cwd 对上
 IMG_ROOT = images_root()
 OUT = os.path.join(IMG_ROOT, "jianpucn-title")
@@ -116,6 +135,17 @@ def safe(s):
     return re.sub(r"\s+", " ", re.sub(r"\[[^\]]*\]", "", s)).strip()[:60] or "untitled"
 
 
+def ext_of(data):
+    """按**魔数**定扩展名 —— 站点上的谱图既有 .jpg 也有 .gif/.png, 不能一律存成 .jpg。"""
+    if data[:4] == b"\x89PNG":
+        return ".png"
+    if data[:3] == b"GIF":
+        return ".gif"
+    if data[:4] == b"RIFF" and data[8:12] == b"WEBP":
+        return ".webp"
+    return ".jpg"
+
+
 def matched(title_norm, want_norm):
     """短标题(<=3 字)必须精确相等 —— 否则《红豆》会命中《红豆杉》《红豆情》这类无关谱。"""
     if want_norm == title_norm:
@@ -126,11 +156,15 @@ def matched(title_norm, want_norm):
 
 
 # 只扫需要的分类(按目标曲名字数)
+# 2026-10-06 修两处: ① 一字曲名原来落进 `shizijiyishang`(那里的曲名都是十字以上, 一条都命不中),
+# 改成 `yizigepu`; ② `hechangpu`(合唱谱)整类没被扫过 —— 合唱谱只有这个分类里才有, 补进来。
 need_cat = set()
 for w in WANT:
     ln = len(re.findall(r"[\u4e00-\u9fff]", w))
-    need_cat.add({2: "erzigepu", 3: "sanzigepu", 4: "sizigepu", 5: "wuzigepu", 6: "liuzigepu",
-                  7: "qizigepu", 8: "bazigepu", 9: "jiuzigepu"}.get(ln, "shizijiyishang"))
+    need_cat.add({1: "yizigepu", 2: "erzigepu", 3: "sanzigepu", 4: "sizigepu", 5: "wuzigepu",
+                  6: "liuzigepu", 7: "qizigepu", 8: "bazigepu", 9: "jiuzigepu",
+                  10: "shizijiyishang"}.get(min(ln, 10), "shizijiyishang"))
+need_cat.add("hechangpu")
 print(f"目标 {len(WANT)} 首 -> 需扫分类 {sorted(need_cat)}\n", flush=True)
 
 found = {}          # 曲名 -> [(url, title)]
@@ -202,10 +236,9 @@ for w, lst in found.items():
         except Exception as e:
             fails["页面取不到: " + type(e).__name__] = fails.get("页面取不到: " + type(e).__name__, 0) + 1
             continue
-        imgs = [x for x in re.findall(r"<img[^>]+src=['\"](/img/[^'\"]+\.(?:jpg|gif|png))['\"]",
-                                      ph, re.I) if "logo" not in x.lower()]
+        imgs = [x for x in IMG_RE.findall(ph) if "logo" not in x.lower()]
         if not imgs:
-            fails["页面里没匹配到 /img/ 谱图"] = fails.get("页面里没匹配到 /img/ 谱图", 0) + 1
+            fails["页面里没匹配到谱图(/img\\d*/)"] = fails.get("页面里没匹配到谱图(/img\\d*/)", 0) + 1
             continue
         os.makedirs(d, exist_ok=True)
         n = 0
@@ -213,9 +246,11 @@ for w, lst in found.items():
             try:
                 req = urllib.request.Request("http://www.jianpu.cn" + iu,
                                              headers={"User-Agent": UA})
-                with tlsfetch.urlopen(req, timeout=25) as r, \
-                        open(os.path.join(d, f"00{n+1}.jpg"), "wb") as g:
-                    g.write(r.read())
+                with tlsfetch.urlopen(req, timeout=25) as r:
+                    data = r.read()
+                # 扩展名按**魔数**定: 站点上不少谱图是 .gif/.png, 老写法一律存成 .jpg(假后缀)
+                with open(os.path.join(d, f"00{n+1}{ext_of(data)}"), "wb") as g:
+                    g.write(data)
                 n += 1
             except Exception as e:
                 fails["图片下载失败: " + type(e).__name__] = fails.get("图片下载失败: " + type(e).__name__, 0) + 1
