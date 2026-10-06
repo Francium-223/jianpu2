@@ -76,6 +76,7 @@ param(
     [switch]$Force,
     [int]$WaitTranscribeMin = 45,
     [int]$HoldoffMin = 90,
+    [int]$FinalizeMinBacklog = 600,
     [string]$LogDir = 'D:\Documents_D\_analysis\ingest_stock',
     [string]$Python = ''
 )
@@ -276,17 +277,26 @@ Say ("现状: batch-out {0} 份 · 成品 {1} 份 · 语料 {2} 份 · data.json
         $batchBefore, $finBefore, $dbBefore, $linesBefore, $(if ($null -eq (Get-GpuUsedMiB)) { '?' } else { Get-GpuUsedMiB }))
 
 $needFinalize = ($hashNow -ne $st.batch_hash)
+# ① 值不值得跑: `batch-out` 比成品多出来的部分 = "还没变成成品的新产物"。mandopop 链每一轮收尾
+# **自己就会 finalize**(实测轮长 1h21m~6h41m), 所以成品平时是新的; 我们的 ① 是"它没干/落后太多"
+# 时的补位。一次 ① 实测 48~91 分钟, 而这段时间 GPU 本可以转 100~200 份 —— 每小时都跑一次 ①
+# 就是拿转写换"成品提前几小时变新", 不划算。所以加这道闸: 只有积压够大才跑。
+$backlog = $batchBefore - $finBefore
+$finalizeWorth = ($backlog -ge $FinalizeMinBacklog)
 $importable = Count-Importable
 $needImport = ($importable -gt 0)
 
-# ── 秒退: 没有新产物、成品也没有待入库的、且没有欠着的提交 ───────────────────────
-if (-not $Force -and -not $DryRun -and -not $needFinalize -and -not $needImport -and -not $st.pending_push) {
-    Say ("秒退: batch-out 无变化(指纹一致) 且 成品可导入 0 份 —— 本轮无事。({0} 秒)" -f [int]((Get-Date) - $t00).TotalSeconds)
+# ── 秒退: ① 不划算(成品还新)、成品也没有待入库的、且没有欠着的提交 ────────────────
+if (-not $Force -and -not $DryRun -and -not $finalizeWorth -and -not $needImport -and -not $st.pending_push) {
+    Say ("秒退: 成品还新(积压 {0} < 门槛 {1}) 且 成品可导入 0 份 且 无欠提交 —— 本轮无事。({2} 秒)" -f `
+            $backlog, $FinalizeMinBacklog, [int]((Get-Date) - $t00).TotalSeconds)
     Say '=== JianpuIngest 结束(退出码 0) ==='
     exit 0
 }
 Say ("判据: 需要 finalize = {0} (指纹 {1} vs 记账 {2}) · 成品可导入 {3} 份 · 欠提交 = {4}" -f `
         $needFinalize, $hashNow.Substring(0, 8), "$($st.batch_hash)".PadRight(8).Substring(0, 8), $importable, $st.pending_push)
+Say ("  ① 值不值得: 积压(batch-out {0} - 成品 {1}) = {2} 份, 门槛 {3} 份 -> {4}" -f `
+        $batchBefore, $finBefore, $backlog, $FinalizeMinBacklog, $(if ($finalizeWorth) { '值得' } else { '**不值得(跳过 ①, 成品还新)**' }))
 
 # ── 单实例(照 `rebuild_when_idle.py` 的 .lock 先例): 两个实例同时 parse 会写坏 data.jsonl ──
 $lp = Get-LockPid $Lock
@@ -294,10 +304,11 @@ if (Test-PidAlive $lp) { Say "跳过: 已有一个入库实例在跑(PID $lp) �
 if ($lp) { Say "锁里 PID $lp 已死 = 陈旧锁, 清掉"; Remove-Item -Path $Lock -Force -ErrorAction SilentlyContinue }
 
 $canFinalize = $false
-if ($needFinalize -or $Force) {
+if (($needFinalize -and $finalizeWorth) -or $Force) {
     Say '--- 判 ① 的窗口 ---'
     $canFinalize = Test-FinalizeWindow
 }
+elseif ($needFinalize) { Say "① 本轮跳过: 积压 $backlog 份 < 门槛 $FinalizeMinBacklog 份(成品还新, 留给它自己的 finalize)" }
 else { Say '① 本轮不需要(成品已跟上 batch-out), 只做 ②③' }
 
 if ($DryRun) {
