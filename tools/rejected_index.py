@@ -198,14 +198,20 @@ def _load():
                     if not (site and sid):
                         site, sid = split_name(nm)
                     if site and sid:
-                        key = "%s-%s" % (site, sid)
-                        idx["by_src"].add(key)
+                        # ⚠ **别叫 `key`** (2026-10-06 实测的缓存失效 bug): 函数开头 `key` 是
+                        #   **名单文件的绝对路径**(缓存的主键), 这里若复用同名变量, 循环结束时
+                        #   `key` 已经是**最后一行**的 `站-id`, 于是 `_cache[key] = ...` 把索引挂到
+                        #   `qupu123-xihuanni` 这种键上 -> 用 **文件路径** 去取永远不命中,
+                        #   **每一次 `is_rejected()` 都重读一遍 3.3 MB 名单**(实测 200 次调用 12.5 秒
+                        #   = 62 ms/次; 队列 17,870 行判一遍要 ~18 分钟, 而它本该是内存查表)。
+                        kk = "%s-%s" % (site, sid)
+                        idx["by_src"].add(kk)
                         # ⚠ 判定名也要**按 `站-id` 存一份**: `is_rejected()` 是靠 `站-id` 命中的,
                         #   而 `reason` 的键是完整目录名 —— 队列那行的目录名与名单里记的目录名
                         #   只要差一个字符(改名/同名多目录), 就会变成"跳过了但说不出理由"(实测 6 条)。
                         #   `reason_src.setdefault` 而不是覆盖: 同一 `站-id` 多条证据时保留先到的判定,
                         #   与 `resolve_and_merge` 的优先级口径一致。
-                        idx["reason_src"].setdefault(key, c[i_reason].strip())
+                        idx["reason_src"].setdefault(kk, c[i_reason].strip())
     _cache[key] = (stamp, idx)
     return idx
 

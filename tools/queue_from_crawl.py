@@ -30,7 +30,32 @@ from verify_crawl_matches import ARRANGE          # noqa: E402  同一份"改编
 from eval_golden import norm                      # noqa: E402  同一份曲名口径
 
 IMG = re.compile(r"\.(jpg|jpeg|png|gif|webp)$", re.I)
-SID = re.compile(r"^(.*?)__(jianpujia|qupu123|jianpucn)-(\d+)$")
+
+# 站点白名单(目录名后缀 `曲名__站-id` 里的那个 `站`)。
+# ⚠ 别再把站点名写死在正则里(2026-10-06 的教训): 原来这里是 `(jianpujia|qupu123|jianpucn)`,
+#   于是 **jp114 的 8,400 个图目录**在 `parse_dir()` 里直接返回 None —— 队列扫到它们时
+#   `continue` 掉, 连"库里已有/改编/重复"都不计数, 静默消失("已在盘上却进不了队列"的最大一块)。
+#   现在从 `tools/sources.json` 读, 加/去一个站只改那份 JSON, 队列与普查共用同一份口径。
+SITES_JSON = os.path.join(HERE, "sources.json")
+DEFAULT_SITES = ("jianpujia", "qupu123", "jianpucn")     # 配置缺失时的兜底(与历史口径一致)
+
+
+def allowed_sites():
+    """读 `tools/sources.json` 的 `sites`。读不到就退回 DEFAULT_SITES 并**出声明**(不静默)。"""
+    try:
+        with io.open(SITES_JSON, encoding="utf-8") as f:
+            got = json.load(f).get("sites", [])
+        out = tuple(s for s in got if isinstance(s, str) and s)
+        if out:
+            return out
+        print("⚠ %s 里的 sites 为空 -> 用内置站点表 %s" % (SITES_JSON, DEFAULT_SITES), file=sys.stderr)
+    except Exception as e:                                  # noqa: BLE001
+        print("⚠ 读 %s 失败 -> 用内置站点表 %s: %s" % (SITES_JSON, DEFAULT_SITES, e), file=sys.stderr)
+    return DEFAULT_SITES
+
+
+SITES = allowed_sites()
+SID = re.compile(r"^(.*?)__(" + "|".join(re.escape(s) for s in SITES) + r")-(\d+)$")
 
 
 def corpus_titles(db):
@@ -105,6 +130,11 @@ def main():
     print(f"扫描 {len(roots)} 个来源目录 · 语料 {len(have)} 个曲名")
     for k in ("目录", "库里已有", "改编(不收)", "重复曲名", "新歌(去重)", "可转写(非改编)"):
         print(f"  {k:<14} {stat[k]}")
+    # 站点分布: 让"新接进来的那个站到底贡献了多少条"一眼可读(不靠事后数 TSV)。
+    by_site = collections.Counter(r[1] for r in rows)
+    print("新增候选 %d 条（站点分布: %s）"
+          % (len(rows), " · ".join("%s %d" % (s, n) for s, n in sorted(by_site.items(), key=lambda x: -x[1]))
+             or "无"))
     if a.out:
         os.makedirs(os.path.dirname(os.path.abspath(a.out)), exist_ok=True)
         with io.open(a.out, "w", encoding="utf-8", newline="\n") as f:

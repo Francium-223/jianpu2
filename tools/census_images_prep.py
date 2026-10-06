@@ -46,13 +46,15 @@ if HERE not in sys.path:
     sys.path.insert(0, HERE)
 from jp_root import images_root                                     # noqa: E402
 import corpus_index                                                 # noqa: E402
-from queue_from_crawl import parse_dir                              # noqa: E402  同一份目录名解析
+from queue_from_crawl import parse_dir, SITES                        # noqa: E402  同一份目录名解析 + 站点表
 
 IMG = re.compile(r"\.(jpg|jpeg|png|gif|webp)$", re.I)
 # 目录名后缀 `__站-id`: 站点名允许字母数字(corpus_index 同口径), id 允许字母下划线
 # (to_jianpu_db.py 的拼音别名页就是 `__xxx-ab12` 这种)。
 DIRSID = re.compile(r"__([a-z0-9]+)-([0-9a-z_]+)$")
-SITES = ("qupu123", "jianpucn", "jianpujia")
+# 站点表**不在本文件里另立一份**: 直接复用 `queue_from_crawl.SITES`(读 `tools/sources.json`)。
+# 早先这里写死 `("qupu123", "jianpucn", "jianpujia")`, 于是 jp114 在普查里被归成"其他"
+# (队列侧更狠: 直接扫不到) —— 同一份白名单有两个真源, 迟早对不上。
 
 
 def site_group(site):
