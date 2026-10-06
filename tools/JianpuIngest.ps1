@@ -192,7 +192,7 @@ function Get-BatchHash {
 
 function Read-State {
     $d = @{ batch_hash = ''; pending_push = $false; corpus = 0; fin = 0; at = ''; last_seconds = 0;
-            data_blob = ''; data_lines = 0; data_ci_match = '' }
+            data_blob = ''; data_lines = 0; data_ci_match = ''; pushed_head = '' }
     if (Test-Path $StateFile) {
         try {
             $j = Get-Content $StateFile -Raw -Encoding utf8 | ConvertFrom-Json
@@ -269,8 +269,9 @@ if ($Status) {
     $st = Read-State
     '上次记账: at={0} corpus={1} fin={2} batch_hash={3} pending_push={4} last_seconds={5}' -f `
         $st.at, $st.corpus, $st.fin, $st.batch_hash, $st.pending_push, $st.last_seconds
-    '上次 ③: data.jsonl {0} 行 · blob {1} · 与 CI 重出 {2}' -f `
-        $st.data_lines, $st.data_blob, $(if ($st.data_ci_match) { $st.data_ci_match } else { '(还没核对过)' })
+    '上次 ③: data.jsonl {0} 行 · blob {1} · 与 CI 重出 {2} · 上轮推送 {3}' -f `
+        $st.data_lines, $st.data_blob, $(if ($st.data_ci_match) { $st.data_ci_match } else { '(还没核对过)' }), `
+        $(if ($st.pushed_head) { "$($st.pushed_head)".Substring(0, 8) } else { '(无记录)' })
     Get-Transcriber | ForEach-Object { '转写在跑: PID {0} {1}' -f $_.ProcessId, $_.CommandLine }
     Get-DbWriter | ForEach-Object { 'DB 写者在跑: PID {0} {1}' -f $_.ProcessId, $_.CommandLine }
     $g = Get-GpuUsedMiB
@@ -468,24 +469,31 @@ try {
         if ($pushOk) {
             & git fetch --quiet $Remote 2>&1 | ForEach-Object { Say "  | git $_" }
             # ── ③ 的"与 CI 重出结果一致"核对: 拿**同一个 blob 哈希**比 ─────────────────
-            # 本机 ③ 已经亲手重出 data.jsonl, CI 每次 push 后也会重出一版。这里在 fetch 之后
-            # (远端已刷新)、push 之前比: 相等 = 两份**逐字节一致**(不多不少、格式没漂);
-            # 不等 = 口径漂了, 正是 CI 的 check_data_sane.py / check_jptok_parity.py 要拦的那种事。
-            # 远端还没被 CI 重出过时, 这个哈希就是上一轮我们推的那版(也算"没漂")。
-            if ($rc3 -eq 0) {
-                $localBlob = ("$(& git -C $DB hash-object data.jsonl 2>$null)").Trim()
+            # 比的是**上一轮**本机 ③ 那份 data.jsonl(记账里的 `data_blob`)与 CI 收到那次推送后
+            # 重出的那一版: CI 每收到一次推送都会重出并用 bot 提交推回来(它 `git add -A`,
+            # 而我们不推 by_*), 于是远端 HEAD 会比"我们推的那版"新 —— 这时比 blob 才有意义。
+            # ⚠ **绝不能**拿"本轮刚跑出来的 blob"和推送**前**的远端比: 那两版对应的语料本来就不同
+            #   (本轮 ② 刚并进新谱), 必然不等, 只会误报 —— 2026-10-07 00:58 实测踩到过。
+            if ($st.data_blob -and $st.pushed_head) {
+                $pushedShort = "$($st.pushed_head)".Substring(0, 8)
+                $remoteHead = ("$(& git rev-parse ("{0}/{1}" -f $Remote, $Branch) 2>$null)").Trim()
                 $remoteBlob = ("$(& git rev-parse ("{0}/{1}:data.jsonl" -f $Remote, $Branch) 2>$null)").Trim()
-                $rhead = ("$(& git log -1 --format=%h%x20%an ("{0}/{1}" -f $Remote, $Branch) 2>$null)").Trim()
-                if ($localBlob -and $remoteBlob) {
-                    if ($localBlob -eq $remoteBlob) {
+                if ($remoteHead -and $remoteHead -eq "$($st.pushed_head)") {
+                    # 远端还停在我们上一轮推的那版 -> CI 还没跑完(CI 重出后一定会多一个提交)
+                    $st.data_ci_match = "CI 还没重出(远端仍是上轮推的 $pushedShort)"
+                    Say ("  ③ 与 CI 重出结果核对: 待定 —— 远端 HEAD 仍是上轮推的 {0}, CI 还没推回重出版" -f $pushedShort)
+                }
+                elseif ($remoteBlob) {
+                    if ($remoteBlob -eq "$($st.data_blob)") {
                         $st.data_ci_match = "一致"
-                        Say ("  ③ 与 CI 重出结果核对: 一致(blob {0}) · 远端 HEAD {1}" -f `
-                                $localBlob.Substring(0, 8), $rhead)
+                        Say ("  ③ 与 CI 重出结果核对: **一致** —— 上轮本机 blob {0} == CI 重出 {1}(远端 HEAD {2})" -f `
+                                "$($st.data_blob)".Substring(0, 8), $remoteBlob.Substring(0, 8), `
+                                ("$(& git log -1 --format=%h%x20%an ("{0}/{1}" -f $Remote, $Branch) 2>$null)").Trim())
                     }
                     else {
                         $st.data_ci_match = "**不一致**"
-                        Say ("  !! ③ 与 CI 重出结果核对: **不一致** 本机 {0} vs 远端 {1} —— 别急着推, 先看口径" -f `
-                                $localBlob.Substring(0, 8), $remoteBlob.Substring(0, 8))
+                        Say ("  !! ③ 与 CI 重出结果核对: **不一致** —— 上轮本机 {0} vs CI {1} —— 看是不是 jptok 口径漂了" -f `
+                                "$($st.data_blob)".Substring(0, 8), $remoteBlob.Substring(0, 8))
                     }
                 }
             }
@@ -521,6 +529,8 @@ try {
                     & git push $Remote $Branch 2>&1 | ForEach-Object { Say "  | git $_" }
                 }
                 $pushOk = ($LASTEXITCODE -eq 0)
+                # 记下"我们推上去的是哪个提交" —— 下一轮靠它判断远端有没有被 CI 重出过(见上面的核对)。
+                if ($pushOk) { $st.pushed_head = ("$(& git rev-parse HEAD 2>$null)").Trim() }
             }
         }
         $head = ("$(& git rev-parse --short HEAD)").Trim()
