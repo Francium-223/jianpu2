@@ -5,13 +5,44 @@ import os
 import shutil
 import warnings
 from pathlib import Path
-with open('tag_implications.json', 'r', encoding='utf-8') as f1:
-	imply = json.load(f1)
-with open('tag_equality.json', 'r', encoding='utf-8') as f2:
-	equal = json.load(f2)
+def load_tag_rules(path='tags.json'):
+	"""蕴涵/等同规则: 从 tags.json 派生(单一真源), 不再读 tag_implications.json /
+	tag_equality.json —— 那两份本就是这个文件的冗余副本, 三处各写一份必然漂移
+	(实测"东方同人曲"被错挂在"东方原曲"下: 同人曲不是原曲)。
+	那两份旧文件已归档到 misc/, 仅供查阅, 改了不会生效。
+
+	tags.json 是 **DAG 而非树**: 一个名字可以出现在多处(实测"东方整数作原曲"
+	同时挂在"东方旧作原曲"与"东方新作原曲"下)。不过这类中间节点只是**代码推路线时
+	生成的**, 人写 usertag 时只会写叶子(如 th10), 所以歧义不会从输入进来 ——
+	但仍必须按**路径**递归构造嵌套 dict, 绝不做 名字->父 的映射: 那样后写会覆盖
+	先写, 会把 th01-th05 的"旧作"错算成"新作"(实测 309 份里错 97 份)。
+
+	返回 (imply, equal), 与旧的 tag_implications.json / tag_equality.json 逐项等值:
+	  imply    = 嵌套 dict, 键取每个节点 name[0]
+	  equal[0] = 别名数 >= 2 的节点, 按先序;  equal[1] = [[]] (历史形状, 空)
+	"""
+	with open(path, 'r', encoding='utf-8') as f:
+		raw = f.read()
+	tree = json.loads(raw)
+	imply = {}
+	groups = []
+
+	def walk(nodes, carry):
+		for nd in nodes:
+			names = nd.get('name') or []
+			if not names:
+				continue
+			if len(names) >= 2:
+				groups.append(list(names))
+			here = carry.setdefault(names[0], {})
+			walk(nd.get('child') or [], here)
+
+	walk(tree, imply)
+	return imply, [groups, [[]]]
+
+
+imply, equal = load_tag_rules()
 class NoScoreError(Exception):
-	pass
-class NotMBIDError(Exception):
 	pass
 class NotTitleError(Exception):
 	pass
@@ -76,6 +107,57 @@ def goto_node(p):
 	for i in p:
 		a = a[i]
 	return a
+def expand_keep_length(text):
+	"""把 KeepLength 的"省略时值"补全成显式时值(供计算机直接读取)。
+
+	jianpu-ly 规则(见 jianpu-ly.py 的 addNote: if nBeams==None: nBeams = self.lastNBeams):
+	  出现 KeepLength 后, 凡是"没写时值"的音符沿用上一个音符的时值, 直到出现新的时值标记。
+	时值字母: c=四分 q=八分 s=十六分 d=三十二分 h=二分 (可前可后, 这里统一补到前面)
+
+	例: KeepLength s1 1 1 1 c1  ->  s1 s1 s1 s1 c1
+	"""
+	VAL = 'cqsdh'
+	out_lines = []
+	cur_val = ''          # 当前生效的时值
+	keep = False          # KeepLength 是否生效
+	for line in text.splitlines():
+		s = line.strip()
+		if s == 'KeepLength':
+			keep = True
+			out_lines.append(line)
+			continue
+		# 作用域: KeepLength 到换 subtitle(或 NextScore)即失效 —— 必须重置状态
+		if s.startswith('subtitle=') or s.lower() == 'nextscore':
+			keep = False
+			cur_val = ''
+			out_lines.append(line)
+			continue
+		if not s or s.startswith('%'):
+			out_lines.append(line)
+			continue
+		toks = []
+		for tok in s.split():
+			# 取时值: 可能前置(q1 / q1' / s,6) 或后置(1q / ,6s / 3c.)
+			m_pre = re.match(r'^([cqsdh])(.*)$', tok)
+			m_post = re.match(r'^(.*?)([cqsdh])([.]*)$', tok)
+			val = ''
+			if m_pre and re.match(r"^[,']*[0-9x]", m_pre.group(2)):
+				val = m_pre.group(1)
+			elif m_post:
+				val = m_post.group(2)
+			if val:
+				cur_val = val
+				toks.append(tok)
+			else:
+				# 无时值: KeepLength 生效时补上当前时值, 否则按四分音(不加前缀)
+				if keep and cur_val:
+					toks.append(cur_val + tok)
+				else:
+					toks.append(tok)
+		out_lines.append(' '.join(toks))
+	return '\n'.join(out_lines)
+
+
 def replacer(match):
 	n_str = match.group(1)
 	xxx = match.group(2).strip()
@@ -102,7 +184,6 @@ class Score():
 		self.origtag = []
 		self.nottag = []
 		self.orignottag = []
-		self.mbid = ''
 		self.title = ''
 		self.raw = ''
 		self.raw2 = ''
@@ -218,11 +299,6 @@ class Score():
 				i = i.rstrip('\n')
 				if i.replace(' ', '').startswith('%--') or i.replace(' ', '').startswith('tag=') or i.replace(' ', '').startswith('tagroute='):
 					continue
-				if i.replace(' ', '').lower().startswith('mbid='):
-					self.mbid = i[i.find('=') + 1:].strip(' ')
-					if not re.match('[0123456789abcdef]{8}-[0123456789abcdef]{4}-[0123456789abcdef]{4}-[0123456789abcdef]{4}-[0123456789abcdef]{12}', self.mbid) and False:
-						raise NotMBIDError
-					continue
 				if i.replace(' ', '').startswith('usertag='):
 					self.getusertag(i)
 					continue
@@ -249,10 +325,6 @@ class Score():
 					self.comments.append(i.rstrip('\n'))
 					continue
 				self.getusertag(i)
-		except NotMBIDError:
-			print('Error: no MBID!')
-			print(f'Try adding \'MBID=(what you\'ve found in your address bar after \'https://musicbrainz.org/work/\').\' to {self.score}.')
-			raise
 		except NotTitleError:
 			print(f'Error: no title!')
 			print(f'Try adding \'title=(your preferred title)\' to {self.score}.')
@@ -261,6 +333,8 @@ class Score():
 			print(f'Error: file \'{self.score}\' not found!')
 			raise NoScoreError
 	def process_others(self):
+		# 外部标识(MBID / Wikidata / ...)不做特殊处理 —— 它们和 alias/status/transcriber
+		# 等一样, 在 read() 里按 `键=值` 统一进 others, 由 make_link() 统一建 by_<键>/ 链接。
 		for n in self.all_tag_route:
 			self.tag = safe_add(self.tag, n.split('/'))
 			for i in equal[0]:
@@ -294,11 +368,13 @@ class Score():
 			print('%' + self.score.split('/')[-1], file=f)
 			for i in self.comments:
 				print(i.rstrip('\n'), file=f)
-			print('MBID=' + self.mbid, file=f)
+			# 所有字段统一写: MBID / Wikidata 不再单独提前写, 跟 title/type 之外的一律走 others
 			print('title=' + self.title, file=f)
 			print('type=' + self.type, file=f)
 			for i in self.others.keys():
-				print(i + '=' + (',').join(self.others[i]), file=f)
+				# others 的值: 一般是列表(多值字段), 也可能是字符串
+				_v = self.others[i]
+				print(i + '=' + ((',').join(_v) if isinstance(_v, list) else str(_v)), file=f)
 			self.others['title'] = self.title
 			self.others['type'] = self.type
 			self.others['file'] = self.score.split('/')[-1]
@@ -315,7 +391,9 @@ class Score():
 			self.raw2 = f.read()
 		with open(('.').join(self.score.split('.')[:-1]) + '_buf.json', 'w', encoding='utf-8') as f:
 			self.prioritize_title_and_tag()
-			json.dump({self.mbid : self.others}, f, indent=4, ensure_ascii=False)
+			# key 必须是**文件名**: make_link() 用 file.get(self.score.split('/')[-1]) 取,
+			# 之前写成 {self.mbid: ...} 与读取端对不上, by_* 链接实际拿不到数据。
+			json.dump({self.score.split('/')[-1]: self.others}, f, indent=4, ensure_ascii=False)
 		return 0
 	def move_buf(self):
 		try:
@@ -334,7 +412,8 @@ class Score():
 		try:
 			with open(self.prefix + '.json', 'r', encoding='utf-8') as f:
 				file = json.load(f)
-			attrib = file[self.mbid]
+			# data.json 以"文件名"为 key(不再依赖任何单一主键; 标识可多可无)
+			attrib = file.get(self.score.split('/')[-1], {})
 			for i in attrib.keys():
 				if not attrib[i]:
 					continue
@@ -349,8 +428,6 @@ class Score():
 							filename = 'by_title/' + attrib['title'].replace(' ', '')[0].upper() + '/others/' + attrib['title'] + '/' + self.score.split('/')[-1]
 					else:
 						filename = 'by_title/others/' + attrib['title'] + '/' + self.score.split('/')[-1]
-				elif i == 'mbid':
-					filename = 'by_mbid/' + attrib['mbid'][0] + '/' + attrib['mbid'][1] + '/' + self.mbid
 				else:
 					for j in attrib[i]:
 						filename = f'by_{i}/' + j + '/' + self.score.split('/')[-1]
@@ -372,6 +449,8 @@ class Score():
 	def expand(self):
 		pattern = r"R(\d*)\s*\{\s*(.*?)\s*\}(?:\s*A\s*\{\s*(.*?)\s*\})?"
 		self.raw_expanded = re.sub(pattern, replacer, self.raw2, flags=re.DOTALL)
+		# 再补全 KeepLength 的"省略时值"(jianpu-ly 的 sticky duration) -> 计算机可直接读
+		self.raw_expanded = expand_keep_length(self.raw_expanded)
 		return self.raw_expanded
 	def write_expand(self):
 		with open(('.').join(self.score.split('.')[:-1]) + '_expand.txt', 'w', encoding='utf-8') as f:
