@@ -77,6 +77,7 @@ param(
     [int]$WaitTranscribeMin = 45,
     [int]$HoldoffMin = 90,
     [int]$FinalizeMinBacklog = 600,
+    [int]$FinalizeStaleHours = 8,
     [string]$LogDir = 'D:\Documents_D\_analysis\ingest_stock',
     [string]$Python = ''
 )
@@ -282,7 +283,11 @@ $needFinalize = ($hashNow -ne $st.batch_hash)
 # 时的补位。一次 ① 实测 48~91 分钟, 而这段时间 GPU 本可以转 100~200 份 —— 每小时都跑一次 ①
 # 就是拿转写换"成品提前几小时变新", 不划算。所以加这道闸: 只有积压够大才跑。
 $backlog = $batchBefore - $finBefore
-$finalizeWorth = ($backlog -ge $FinalizeMinBacklog)
+# 兜底那一半: 万一 mandopop 链停了/被改了, "很久没人 finalize"也要能被我们兜住。
+# 判据用 `train-work/pick_best.tsv` 的 mtime —— finalize 第 3 步每次都写它。
+$staleH = -1
+try { $staleH = ((Get-Date) - (Get-Item (Join-Path $Root 'train-work\pick_best.tsv')).LastWriteTime).TotalHours } catch { }
+$finalizeWorth = ($backlog -ge $FinalizeMinBacklog) -or ($staleH -lt 0 -or $staleH -ge $FinalizeStaleHours)
 $importable = Count-Importable
 $needImport = ($importable -gt 0)
 
@@ -295,8 +300,10 @@ if (-not $Force -and -not $DryRun -and -not $finalizeWorth -and -not $needImport
 }
 Say ("判据: 需要 finalize = {0} (指纹 {1} vs 记账 {2}) · 成品可导入 {3} 份 · 欠提交 = {4}" -f `
         $needFinalize, $hashNow.Substring(0, 8), "$($st.batch_hash)".PadRight(8).Substring(0, 8), $importable, $st.pending_push)
-Say ("  ① 值不值得: 积压(batch-out {0} - 成品 {1}) = {2} 份, 门槛 {3} 份 -> {4}" -f `
-        $batchBefore, $finBefore, $backlog, $FinalizeMinBacklog, $(if ($finalizeWorth) { '值得' } else { '**不值得(跳过 ①, 成品还新)**' }))
+Say ("  ① 值不值得: 积压(batch-out {0} - 成品 {1}) = {2} 份(门槛 {3}) · 上次 finalize {4} 小时前(门槛 {5}h) -> {6}" -f `
+        $batchBefore, $finBefore, $backlog, $FinalizeMinBacklog, `
+        $(if ($staleH -lt 0) { '无记录' } else { '{0:N1}' -f $staleH }), $FinalizeStaleHours, `
+        $(if ($finalizeWorth) { '值得' } else { '**不值得(成品还新)**' }))
 
 # ── 单实例(照 `rebuild_when_idle.py` 的 .lock 先例): 两个实例同时 parse 会写坏 data.jsonl ──
 $lp = Get-LockPid $Lock
