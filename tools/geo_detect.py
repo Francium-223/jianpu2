@@ -6,31 +6,22 @@
 输出: {beam, low, voice, dotted}
 """
 import numpy as np
-from collections import deque
 from guard import guard_help        # noqa: E402  `--help` 守卫(唯一实现见 tools/guard.py)
 guard_help(__doc__)
 
 
 def _components(mask):
-    H, W = mask.shape
-    lbl = np.zeros((H, W), dtype=np.int32)
-    comps = []
-    for y in range(H):
-        for x in range(W):
-            if mask[y, x] and lbl[y, x] == 0:
-                q = deque([(y, x)]); lbl[y, x] = 1
-                minx = maxx = x; miny = maxy = y
-                while q:
-                    cy, cx = q.popleft()
-                    minx = min(minx, cx); maxx = max(maxx, cx)
-                    miny = min(miny, cy); maxy = max(maxy, cy)
-                    for dy in (-1, 0, 1):
-                        for dx in (-1, 0, 1):
-                            ny, nx = cy + dy, cx + dx
-                            if 0 <= ny < H and 0 <= nx < W and mask[ny, nx] and lbl[ny, nx] == 0:
-                                lbl[ny, nx] = 1; q.append((ny, nx))
-                comps.append((minx, miny, maxx, maxy, maxx - minx + 1, maxy - miny + 1))
-    return comps
+    """8 邻接连通域 (x0, y0, x1, y1, w, h)。
+
+    2026-10-07: 原来这里自带一份**逐像素 Python BFS**(deque + 9 邻居), 而本函数是逐
+    **crop** 调用的 —— 实测 12395 次/36 页, 占整条转写 CPU 几何路径的 **25%**(见
+    `_analysis/geom_before.json`), 是最大的单点。改为复用 `transcribe._geo_comps`
+    (行程 RLE + 并查集, 同一实现), 返回值逐元素不变(验证见 `_analysis/cc_equiv_changes.py`)。
+    用**函数内 import** 而不是顶层: `geo_detect` 也被 `kind_detect2` 等不依赖
+    `transcribe` 的入口 import, 顶层 import 会连带拉起 PIL/numpy 整条链。
+    """
+    import transcribe as _T
+    return _T._geo_comps(mask)
 
 
 def geo_detect(crop):

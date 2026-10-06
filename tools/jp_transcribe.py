@@ -460,6 +460,20 @@ def is_impure(img_path):
         return False
     return impure_from(nl, st)
 
+def _cc_label_of(stripped):
+    """`T.components` 的替身, **只是把同一份标注复用出去**(返回值逐字段相同)。
+
+    为什么要有它: `T.components(sub)` 在几何路径上是**逐行带**调用的, 而一次转写里
+    同一个行带要被判三次(几何门 / 参考高度 _h_ref / 连音弧候选), 也就是同一个掩码
+    标注三遍。改为在第一次标好、把结果存进 `_plan` 一起传下去。`T.components` 与
+    `T._cc_label` 是同一个实现(前者只是多了末位像素数), 这里**故意不取像素数** ——
+    全生产链没有任何读取点, 少算一次 `np.add.at`。等价性见 `_analysis/cc_equiv.py`
+    的逐 token/中间层比对。
+    """
+    import transcribe as T
+    return T._cc_label(stripped)
+
+
 def transcribe(img_path):
     """谱图 -> (tokens, blocks_meta)。blocks_meta 每项含坐标/token/btype, 供渲染。"""
     import numpy as np
@@ -503,8 +517,12 @@ def transcribe(img_path):
     _head_until = -1      # -1 = 没找到谱头边界 -> 全文用宽松阈值(靠模型判定挡谱头)
     for _i, (_s, _e) in enumerate(bands):
         _sub = content[_s:_e + 1]
-        _st, _ = T.strip_hlines(_sub)
-        _c = [c for c in T.components(_st) if 10 <= c[5] <= 50 and c[4] >= 4]
+        # `strip_hlines` 返回 (抹线后的 mask, 被抹掉的横线列表); 顺带把它内部那次
+        # `_cc_label(sub)` 的结果留着复用 —— 原来这里连着调了**两次** `strip_hlines`
+        # (line 506 与 line 515), 等于把同一个行带标注两遍、抹线两遍。
+        _st_h, _hl_h = T.strip_hlines(_sub)
+        _lab_h = _cc_label_of(_st_h)          # 见 `_cc_label_of`: 与 T.components 同字段
+        _c = [c for c in _lab_h if 10 <= c[5] <= 50 and c[4] >= 4]
         # 音乐起点的判据: 连通域够多(>=15) 且 (严格阈值下瘦高占比>=0.40 或 下划线>=6条)。
         # 只要求 frac 会漏判 —— 《卖报歌》《两只老虎》这类"数字偏扁"的谱, 引子行的
         # 严格 frac(0.15) 甚至低于标题行(0.31), 边界就被跳过, 引子被当谱头丢掉
@@ -512,7 +530,7 @@ def transcribe(img_path):
         # 标题行只有 2 条 —— 用"下划线够多"补上这个判别。
         if _c and len(_c) >= 15:
             _fr4 = sum(1 for c in _c if c[5] >= _TALLR_HEAD * c[4]) / len(_c)
-            _nl4 = sum(1 for h in T.strip_hlines(_sub)[1] if h[4] >= 8)
+            _nl4 = sum(1 for h in _hl_h if h[4] >= 8)
             if _fr4 >= 0.40 or _nl4 >= 6:
                 _head_until = _i
                 break
@@ -528,10 +546,15 @@ def transcribe(img_path):
         # 恒为 0.4-0.6, 整谱真音符会被误丢(实测 275 个真音符只剩 1 个)。
         # 故判据 = "占比高" 或 "瘦高块够多 + 有下划线/延音杠"。
         _stripped, _hlines = (None, [])
+        _lab = None
+        _cs = []
         _accept, _susp = True, False
         if _MODE != "none":
             _stripped, _hlines = T.strip_hlines(sub)
-            _cs = [c for c in T.components(_stripped) if 10 <= c[5] <= 50 and c[4] >= 4]
+            # 标注一次, 后面三处判据(几何门/参考高度/连音弧)全部复用这一份 —— 原来每处各标
+            # 一次 `T.components(_stripped)`, 一个行带要标 3 遍(实测 1029 个行带 x 3)。
+            _lab = _cc_label_of(_stripped)
+            _cs = [c for c in _lab if 10 <= c[5] <= 50 and c[4] >= 4]
             _tall = [c for c in _cs if c[5] >= _R * c[4]]
             _frac = (len(_tall) / len(_cs)) if _cs else 0.0
             if _MODE == "frac":
@@ -562,7 +585,7 @@ def transcribe(img_path):
                   f"{'接受' if _accept else '丢弃'}", file=sys.stderr)
         if not _accept:
             continue
-        _plan.append([s, e, sub, _stripped, _hlines, True, _susp, _R])
+        _plan.append([s, e, sub, _stripped, _hlines, _lab, True, _susp, _R])
     # 第二遍: 可疑行带交模型判"音符行 / 文字行"(几何判据无法区分"标题文字行"与
     # "音符+歌词粘连行带", 但模型看一行是简谱还是汉字文字很容易) -> 剔除文字行。
     if os.environ.get("JP_BANDCLS", "1") == "1":
@@ -581,7 +604,7 @@ def transcribe(img_path):
     if os.environ.get("JP_DEBUGBAND") == "1":
         print(f"  [谱头边界] _head_until={_head_until} / 行带总数={len(bands)}", file=sys.stderr)
     # 第三遍: 从保留的行带里收集音符块
-    for (s, e, sub, _stripped, _hlines, _accept, _susp, _R) in _plan:
+    for (s, e, sub, _stripped, _hlines, _lab, _accept, _susp, _R) in _plan:
         if not _accept:
             continue
         row_gray = arr[s:e + 1]
@@ -592,8 +615,10 @@ def transcribe(img_path):
         # 估计音符行 y 范围 + 数字参考高度 _h_ref, 用于剔除更矮的歌词字母。
         _h_ref = 0
         if _stripped is None:
-            _stripped, _ = T.strip_hlines(sub)
-        _cs2 = [c for c in T.components(_stripped) if 10 <= c[5] <= 45 and c[4] >= 3]
+            _stripped, _hlines = T.strip_hlines(sub)
+        if _lab is None:                     # _MODE=none 时不走第一遍的几何门 -> 这里才标
+            _lab = _cc_label_of(_stripped)
+        _cs2 = [c for c in _lab if 10 <= c[5] <= 45 and c[4] >= 3]
         # 参考高度用"瘦高块的中位数", 不用 max: max 会被少数高竖线/括号(43-45px)
         # 抬飞, 导致真数字(21-22px)被高度门整类误杀(实测幸福花园 255->61)。
         # 参考高度也必须用"按行带的可变阈值" _R, 不能用固定 1.4: 《卖报歌》引子行的

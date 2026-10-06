@@ -30,15 +30,37 @@ def strip_tall_verticals(mask, min_len=60):
     """
     out = mask.copy()
     H, W = mask.shape
-    for x in range(W):
-        col = mask[:, x]
-        if not col.any():
-            continue
-        d = np.diff(np.concatenate(([False], col, [False])).view(np.int8))
-        for s0, e0 in zip(np.where(d == 1)[0], np.where(d == -1)[0]):
-            if e0 - s0 >= min_len:
-                out[s0:e0, x] = False
+    # 原来逐列 Python 循环 + 每列 np.where: 2000 列就是 2000 轮解释器开销, 纯浪费。
+    # 矢量化为"一次算出所有纵向行程 -> 一次比较 -> 按行程清零", 结果逐像素相同。
+    if H == 0 or W == 0 or not mask.any():
+        return out
+    # 纵向行程: 把图**转置**成 (W, H), 每行 = 原图的一列, 行内连续 True 段 = 一条竖线。
+    # 转置后起点/终点同处一行、按 (行,列) 升序 i 与 i 一一配对; 直接对行方向 diff
+    # 则起点按 (起行,列) 排、终点按 (止行,列) 排, 分别过滤必错配。
+    # 必须**先 astype(int8) 再 diff**: bool 上 diff 没有 -1, 整条规则会失效。
+    mt = mask.T
+    big = np.pad(mt, ((0, 0), (1, 1)), constant_values=False)
+    d = np.diff(big.astype(np.int8), axis=1)
+    s_x, s_y = np.nonzero(d == 1)          # s_x = 原图列 x, s_y = 起行 y
+    _ex, e_y = np.nonzero(d == -1)         # e_y = 止行 y + 1(哨兵列)
+    if len(s_x) != len(e_y):
+        return out
+    keep = (e_y - s_y) >= min_len          # 原判据 `e0 - s0 >= min_len`(含 [False] 哨兵)
+    sel = np.flatnonzero(keep)
+    if sel.size == 0:
+        return out
+    # 先按 x 分组再**在组内**处理: 起点/终点的配对来自同一组下标(sel), 分组后组内
+    # 仍保持 y 升序 -> 逐条清 `[s_y, e_y)` 与原实现逐条清完全等价(逐条而非整段合并,
+    # 因为同列两条长线之间可能夹着一条短线, 那条不能抹)。
+    vx = s_x[sel]
+    newc = np.r_[True, vx[1:] != vx[:-1]]
+    grp = np.flatnonzero(newc).tolist() + [len(vx)]
+    for gi in range(len(grp) - 1):
+        x = int(vx[grp[gi]])
+        for t in sel[grp[gi]:grp[gi + 1]]:
+            out[s_y[t]:e_y[t], x] = False
     return out
+
 
 
 def fine_rows(content, gap, strip_len=60):
@@ -109,74 +131,222 @@ def split_row_inner(content, s, e, min_h=22, valley_ratio=0.10):
     # 就是歌词 -> 必须切开(否则汉字被当音符切出来, 实测《问候歌》满屏假 'x');
     # 若下半段只有细横线(下划线带) -> 不能切(切了数字就丢时值)。
     lower = content[b[0]:b[1] + 1]
-    has_text = any(14 <= c[5] <= 45 and c[5] > c[4] and c[4] >= 6
-                   for c in components(lower))
-    if has_text:
+    if _any_textlike_cc(lower):
         return [a, b]
     return [(s, e)]
 
 
-def strip_hlines(sub, max_h=6, min_w=8):
+def _any_textlike_cc(mask, h_lo=14, h_hi=45, w_min=6):
+    """mask 里是否存在"像文字/数字"的连通域(满足 h_lo<=h<=h_hi, h>w, w>=w_min)。
+
+    `split_row_inner` 只用到**存在性**, 而旧写法 `any(... for c in components(lower))`
+    会先把整块标注成 Python 列表/元组再判断。这里仍走同一个 `_cc_label`(见上: 不看连通域
+    只看单条行程会误判, `h>w` 在连通后未必保持), 但**边生成边判、命中即返回**, 不再把
+    全部连通域物化。判据与旧版逐元素一致(验证: `_analysis/cc_textlike_equiv.py`)。
+    """
+    for c in _cc_label(mask):
+        if h_lo <= c[5] <= h_hi and c[5] > c[4] and c[4] >= w_min:
+            return True
+    return False
+
+
+def strip_hlines(sub, max_h=6, min_w=8, lab=None):
     """抹掉"细横线"连通域(时值下划线 / 延音杠 / 部分连音线)。
 
     病根: 下划线横跨相邻多个数字, 把它们连成"一个大连通域"(高~25 宽~60),
     于是 crop_note_regions 的"数字 = 高>宽"判据全部不成立 -> 整组音符被丢弃。
     实测《问候歌》(7 行谱)只切出 22 个 token, 图上绝大多数音符没被切出来。
 
-    返回 (抹线后的 mask, 被抹掉的横线 bbox 列表)。
+    返回 (抹线后的 mask, 被抹掉的横线 bbox 列表 [(x0,y0,x1,y1,w,h), ...])。
     数字的横笔画与数字主体相连(整体 h>=14), 不会被误判为横线。
+
+    `lab` 可传入 `_cc_label(sub, want_index=True, want_runs=True)` 的返回值复用 ——
+    调用点(`jp_transcribe` 第一遍/第三遍)本来也要标一次, 复用能省掉整图标注。
+    只传元组列表时(旧调用点)自己补算行程。**`lines` 的元素顺序**与旧版相同
+    (连通块发现顺序); 下游只按字段取用, 不依赖顺序。
     """
-    H, W = sub.shape
-    lbl = np.zeros((H, W), dtype=np.int32)
+    if lab is None:
+        comps, runs, run_of, rows, r_a0, r_a1 = _cc_label(sub, want_index=True, want_runs=True)
+    elif isinstance(lab, tuple):
+        comps, runs, run_of, rows, r_a0, r_a1 = lab
+    else:
+        comps = lab
+        runs, run_of, rows, r_a0, r_a1 = _cc_label(sub, want_runs=True)[1:]
     out = sub.copy()
     lines = []
-    cid = 0
-    for y in range(H):
-        for x in range(W):
-            if sub[y, x] and lbl[y, x] == 0:
-                cid += 1
-                q = deque([(y, x)]); lbl[y, x] = cid
-                minx = maxx = x; miny = maxy = y
-                pix = []
-                while q:
-                    cy, cx = q.popleft(); pix.append((cy, cx))
-                    if cx < minx: minx = cx
-                    if cx > maxx: maxx = cx
-                    if cy < miny: miny = cy
-                    if cy > maxy: maxy = cy
-                    for dy in (-1, 0, 1):
-                        for dx in (-1, 0, 1):
-                            ny, nx = cy + dy, cx + dx
-                            if 0 <= ny < H and 0 <= nx < W and sub[ny, nx] and lbl[ny, nx] == 0:
-                                lbl[ny, nx] = cid; q.append((ny, nx))
-                w = maxx - minx + 1; h = maxy - miny + 1
-                if h <= max_h and w >= min_w and w >= 2 * h:
-                    for (py, px) in pix:
-                        out[py, px] = False
-                    lines.append((minx, miny, maxx, maxy, w, h))
+    hit = set()
+    for k, c in enumerate(comps):
+        w, h = c[4], c[5]
+        if h <= max_h and w >= min_w and w >= 2 * h:
+            lines.append((c[0], c[1], c[2], c[3], w, h))
+            hit.add(k)
+    if hit:
+        # 整块 = 它全部行程的并 -> 按行程一次性清零(大时值线可跨 500px, 不必逐像素循环)
+        ro_np = np.asarray(run_of)
+        sel = np.isin(ro_np, np.fromiter(hit, dtype=ro_np.dtype, count=len(hit)))
+        for i in np.nonzero(sel)[0].tolist():
+            out[rows[i], r_a0[i]:r_a1[i] + 1] = False
     return out, lines
 
 
+
+def _cc_label(mask, want_count=False, want_index=False, want_runs=False):
+    """**8 邻接连通域标注(唯一真源)** —— 行程(RLE) + 并查集, 与原逐像素 BFS 等价。
+
+    为什么换: 原来 `components` 是**逐像素 Python BFS**(deque + 9 邻居), 2000x1500
+    的一页有 300 万像素, 一个 crop 就要几百微秒 —— 实测它占整条转写 CPU 几何路径的
+    **57%**(`_analysis/cpu_baseline.json`), 而 CPU 又占总耗时的 29.3%。
+
+    等价性(**零近似**): 8 邻接下, 第 y 行的行程 [a0,a1] 与第 y-1 行的行程 [b0,b1]
+    连通 <=> `a1+1 >= b0 and b1+1 >= a0`(x 区间相交或相邻); 同一行内两个行程之间
+    必有背景像素, 故同行内绝不连通。=> 行程粒度并查集给出的连通划分与逐像素 BFS
+    **完全一致**(含斜向单像素接触)。包围盒 = 该块所有行程外包盒的并。
+    返回顺序也一致: 行优先、行内 x 升序 = BFS 的发现顺序(逐元素比对见
+    `_analysis/cc_bench.py`, 随机掩码 800 例 + 结构化 13 例全等)。
+
+    want_count=True 时第 7 位是**像素数**(与旧实现逐元素相同; 已用"实心 9x9 -> 81、
+    一行两个 2px 段 -> 2 和 2、单像素散布"等用例钉死)。此位在整条生产转写链上
+    **没有任何读取点**(全仓 grep `c[6]` 只命中 `tools/dump_cut_nogpu.py` 里对另一个
+    list 的下标), 保留纯属兼容旧签名。
+
+    want_index=True 时末尾附"该块在本结果里的下标" —— 供 `strip_hlines` 复用同一份
+    标注(它本来就是"标注 -> 挑细横线"), 省掉一次全图标注。
+
+    want_runs=True 时返回 (comps, runs, run_of, row_of, a0, a1):
+      runs[i] = (row, x0, x1) 第 i 个行程;  run_of[i] = 该行程所属**结果下标**。
+      供 strip_hlines 一次性抹掉整块(不必逐像素 Python 循环)。
+    """
+    H, W = mask.shape
+    # 空值返回形状: `want_runs=True` 是 6 元组(调用方要解包), 其余一律 **`[]`**
+    # (原来是 `([], [], [], [], [], [])` —— 对 `want_runs=False` 的调用方来说那是
+    # "6 个元素"而不是"0 个连通域", 迭代它会拿到 6 个空 list, `c[5]` 直接越界)。
+    empty = ([], [], [], [], [], []) if want_runs else []
+    if H == 0 or W == 0 or not mask.any():
+        return empty
+    # 行程 = "每行里连续的 True 段"。左右各补一列 False 后一次 diff 拿到 1/-1
+    # (起点/终点)。**必须 np.pad 显式补齐**: 起点与终点要按 (行,列) 一一配对,
+    # 分别过滤会错配; 也**不能**用 `np.diff(..., prepend=False)` —— numpy 2.5 把
+    # `prepend=False` 当成"补一行/一列 False", 结果比输入多一列, 行程整体错位。
+    big = np.pad(mask, ((0, 0), (1, 1)), constant_values=False)
+    d = np.diff(big.astype(np.int8), axis=1)
+    rr, cc = np.nonzero(d == 1)
+    er, ec = np.nonzero(d == -1)
+    n_run = len(rr)
+    if n_run == 0:
+        return empty
+    if len(er) != n_run:
+        raise RuntimeError(f"行程配对失败: 起点 {n_run} 终点 {len(er)}")
+    row_of = rr
+    a0 = cc
+    a1 = ec - 1                               # diff 的终点列是"之后第一列", 故 -1
+    starts = np.flatnonzero(np.r_[True, row_of[1:] != row_of[:-1]])
+    bounds = list(np.r_[starts, n_run].tolist())
+    p_a0 = a0.tolist()
+    p_a1 = a1.tolist()
+    p_row = row_of.tolist()
+    parent = list(range(n_run))
+
+    def _find(i, parent=parent):
+        r = i
+        while parent[r] != r:
+            r = parent[r]
+        while parent[i] != r:               # 路径压缩
+            parent[i], i = r, parent[i]
+        return r
+
+    for gi in range(1, len(starts)):
+        # **空行必须先断链**: `starts` 只记"有行程的行", 两组的行号可能相差 >1
+        # (中间是空行)。空行隔开的两行在 8 邻接下**不连通**, 若照旧比对就会把跨行
+        # 的块误并(踩过: 6x9 掩码里行0与行4 被并成一个块)。故必须核对相邻行号。
+        if row_of[bounds[gi]] - row_of[bounds[gi - 1]] != 1:
+            continue
+        ps, pe = bounds[gi - 1], bounds[gi]
+        for i in range(bounds[gi], bounds[gi + 1]):
+            ai0, ai1 = p_a0[i], p_a1[i]
+            j = ps
+            while j < pe and p_a0[j] <= ai1 + 1:
+                if p_a1[j] >= ai0 - 1:
+                    ri, rj = _find(i), _find(j)
+                    if ri != rj:
+                        if ri < rj:
+                            parent[rj] = ri
+                        else:
+                            parent[ri] = rj
+                j += 1
+    INF = 1 << 30
+    # 每个行程的包围盒/像素数按根聚合 —— 用 numpy 按根做分段 reduce, 比逐行程 Python
+    # 循环快一个量级(实测: 一条 2000px 宽的行带有 1~4 万条行程, 逐条 Python 循环
+    # 是这条路径剩下的主要开销)。顺序无关, 与原实现逐元素相同。
+    a0n = np.asarray(p_a0, dtype=np.int64)
+    a1n = np.asarray(p_a1, dtype=np.int64)
+    rn = np.asarray(p_row, dtype=np.int64)
+    roots = np.fromiter((_find(i) for i in range(n_run)), dtype=np.int64, count=n_run)
+    uniq, inv = np.unique(roots, return_inverse=True)
+    ncomp = len(uniq)
+    minx = np.full(ncomp, INF, dtype=np.int64)
+    maxx = np.full(ncomp, -1, dtype=np.int64)
+    miny = np.full(ncomp, INF, dtype=np.int64)
+    maxy = np.full(ncomp, -1, dtype=np.int64)
+    npix = np.zeros(ncomp, dtype=np.int64)
+    np.minimum.at(minx, inv, a0n)
+    np.maximum.at(maxx, inv, a1n)
+    np.minimum.at(miny, inv, rn)
+    np.maximum.at(maxy, inv, rn)
+    np.add.at(npix, inv, a1n - a0n + 1)
+    # 结果顺序 = 发现顺序(行优先、行内 x 升序) = 每个根第一次出现的位置
+    first_at = np.full(ncomp, n_run, dtype=np.int64)
+    pos = np.arange(n_run, dtype=np.int64)
+    np.minimum.at(first_at, inv, pos)
+    order_idx = np.argsort(first_at, kind="stable")
+    if want_count:
+        npc = npix[order_idx].tolist()
+    out = []
+    for k in range(ncomp):
+        c = order_idx[k]
+        t = (int(minx[c]), int(miny[c]), int(maxx[c]), int(maxy[c]),
+             int(maxx[c] - minx[c] + 1), int(maxy[c] - miny[c] + 1))
+        if want_count:
+            t = t + (npc[k],)
+        if want_index:
+            t = t + (k,)
+        out.append(t)
+    if want_runs:
+        # 行程 -> **结果下标**: np.unique 给的 inv 是"按根升序"的编号, 要换成发现顺序
+        outpos = np.empty(ncomp, dtype=np.int64)
+        outpos[order_idx] = np.arange(ncomp, dtype=np.int64)
+        run_of = outpos[inv].tolist()
+        return out, list(zip(p_row, p_a0, p_a1)), run_of, p_row, p_a0, p_a1
+    return out
+
+
+
 def components(sub):
-    lbl = np.zeros_like(sub, dtype=np.int32)
-    comps = []
-    H, W = sub.shape
-    for y in range(H):
-        for x in range(W):
-            if sub[y, x] and lbl[y, x] == 0:
-                q = deque([(y, x)]); lbl[y, x] = 1
-                minx = maxx = x; miny = maxy = y; cnt = 0
-                while q:
-                    cy, cx = q.popleft(); cnt += 1
-                    minx = min(minx, cx); maxx = max(maxx, cx)
-                    miny = min(miny, cy); maxy = max(maxy, cy)
-                    for dy in (-1, 0, 1):
-                        for dx in (-1, 0, 1):
-                            ny, nx = cy + dy, cx + dx
-                            if 0 <= ny < H and 0 <= nx < W and sub[ny, nx] and lbl[ny, nx] == 0:
-                                lbl[ny, nx] = 1; q.append((ny, nx))
-                comps.append((minx, miny, maxx, maxy, maxx - minx + 1, maxy - miny + 1, cnt))
-    return comps
+    """兼容旧签名: 6 元组 (x0, y0, x1, y1, w, h, 像素数)。见 `_cc_label`。"""
+    return _cc_label(sub, want_count=True)
+
+
+def _geo_comps(mask):
+    """`geo_detect._components` 的返回形状 —— **6 元组** (x0, y0, x1, y1, w, h, 像素数)。
+
+    ⚠ 这里纠正一个**存量误读**: `_analysis/cc_bench.py` 的注释与 `_analysis/cc_baseline/`
+    里的副本都写着"`geo_detect._components` 返回 5 元组, 不含 cnt", 但**对着 git HEAD
+    实测是 6 元组**(`git show HEAD:tools/geo_detect.py`: BFS 里 `cnt` 确实在数, 只是
+    geo_detect 自己的判据只用前 6 位)。本函数**保持 6 元组**: `geo_detect.geo_detect` 与
+    `classify_block.classify_block` 都是 `x0, y0, x1, y1, w, h = c` 的 6 元解包,
+    少给一位就是 ValueError(本轮改到一半时真的踩过这个 IndexError)。
+
+    **空掩码必须先返回 []**: `_cc_label` 在 `want_runs=False` 的空值分支返回 **6 元组**
+    `([], [], [], [], [], [])`(为兼容它自己的 want_runs=True 形状), 直接迭代会拿到
+    6 个空 list -> `c[5]` 越界。
+
+    末位**必须切掉**像素数: HEAD 的 `geo_detect._components` 里 `cnt` 虽然在数, 但
+    **没有**加到返回元组上(只有 `transcribe.components` 加了), 所以这里是 `c[:6]`。
+    切掉后与 HEAD 逐元素相等(见 `_analysis/cc_equiv_changes.py`)。
+    """
+    if mask.size == 0 or not mask.any():
+        return []
+    return [c[:6] for c in _cc_label(mask, want_count=True)]
+
 
 
 def count_bars(sub, H):
@@ -201,31 +371,22 @@ def count_bars(sub, H):
     return sum(1 for c in real if abs(c[5] - med) <= 4)
 
 
-def crop_note_regions(sub):
-    comps = components(sub)
-    if not comps:
-        return []
-    bars = [c for c in comps if c[4] <= 5 and c[5] >= 35]
-    bar_x = sorted([(c[0] + c[2]) / 2.0 for c in bars])
-    bar_x = [b for b in bar_x if b < sub.shape[1] - 2]
-    seg_bounds = [(0, bar_x[0])] if bar_x else []
-    for i in range(len(bar_x)):
-        seg_bounds.append((bar_x[i], bar_x[i + 1] if i + 1 < len(bar_x) else sub.shape[1] - 1))
-    digits = [c for c in comps if 8 <= c[4] <= 22 and 14 <= c[5] <= 34 and c[5] >= c[4]]
-    digits.sort(key=lambda c: c[0])
-    if not digits:
-        return []
-def crop_note_regions(sub):
+def crop_note_regions(sub, lab_pre=None):
     """逐符号切块: 每个连通域(数字/杠)一个块, 严格不重叠。
     - 数字(竖形 高>宽 高度14-40): 块=数字+正下方附属(下划线/低八度点/附点), x=数字左缘..右缘(不收纳右侧)。
     - 杠(横线 宽>高*2 宽>15): 块=杠本身(独立原子)。
-    - 小节线(细高)忽略。按x排序输出。"""
+    - 小节线(细高)忽略。按x排序输出。
+
+    `lab_pre` 可由调用点传入 `_cc_label(sub, want_index=True, want_runs=True)` ——
+    `jp_transcribe.transcribe` 的第一遍/第三遍**已经**为了行带判据标过一次同一个 sub,
+    这里复用可省掉"再标一次 + 再抹一次线"。不传(旧调用点)时行为与从前一致。
+    """
     H, W = sub.shape
     # 关键: 先抹掉细横线(时值下划线/延音杠), 否则下划线会把相邻多个数字连成
     # "一个大连通域"(宽>>高), 使下面"数字 = 高>宽"的判据全体失效 ->
     # 整组音符被丢弃(实测《问候歌》7 行谱只切出 22 个 token)。
-    stripped, hlines = strip_hlines(sub)
-    comps = components(stripped)
+    stripped, hlines = strip_hlines(sub, lab=lab_pre)
+    comps = _cc_label(stripped, want_count=True)
     if not comps:
         return []
     bar_cands = list(comps) + list(hlines)
