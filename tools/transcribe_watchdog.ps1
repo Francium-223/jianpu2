@@ -197,7 +197,16 @@ if ($diskCode -ne 0) {
 # 要么整机换页把转写拖死。所以入库期间转写侧**让路**: 本闸只推迟"下一轮什么时候起",
 # **不打断任何已经在跑的进程**(在场那个转写由入库侧等它自己跑完, 见 JianpuIngest.ps1)。
 $ingLock = Join-Path $Root 'train-work\ingest.lock'
-$ilp = Get-LockPid $ingLock
+# ⚠ 必须**自己读这个文件**, 不能复用上面的 `Get-LockPid` —— 那个函数没有参数, 读的是
+#   脚本级的 `$Lock`(=`train-work\.transcribe.lock`)。2026-10-06 21:01 实测踩过:
+#   传参被忽略, 于是本闸把**转写自己的锁**当成"入库在跑", 每一轮都白跳过。
+$ilp = 0
+if (Test-Path $ingLock) {
+    $itxt = (Get-Content $ingLock -Raw -ErrorAction SilentlyContinue)
+    if ($itxt) { $itxt = $itxt.Trim() }
+    $in = 0
+    if ([int]::TryParse($itxt, [ref]$in)) { $ilp = $in }
+}
 if ($ilp) {
     if (Get-Process -Id $ilp -ErrorAction SilentlyContinue) {
         Say "跳过: 入库看门狗在跑(锁 $ingLock -> PID $ilp) —— 它正在全库重建, 本轮不抢 GPU。"
