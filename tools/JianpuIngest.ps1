@@ -330,6 +330,20 @@ function Release-Lock {
 }
 
 try {
+    # ⚠ **DB 写者闸**(整轮): 上面判 ① 时查过一次, 但 ② 也必须查 ——
+    #   `jp_mandopop_absorb3` 的收尾 `finalize.py` 会把 `jianpu-db-out/scores/` **整体重建**
+    #   (它先 rmtree scores-prev、再把成品全搬走、再重写)。实测它的收尾占它一轮的 ~25% 时间
+    #   (85 分钟 / 4~6.5 小时), 而 ② 是"读成品 -> 拷进语料", 撞上就会**读到写了一半的谱**,
+    #   而导入是"只拷不覆盖" -> 那份残缺谱会**永久留在语料里**。所以见到任何 DB 写者就整轮退出。
+    $w = Get-DbWriter
+    if ($w) {
+        Say ("本轮放弃: 有 DB 写者 {0} 个正在跑, 成品目录可能正被重建 —— 现在导入会读到写了一半的谱。" -f @($w).Count)
+        foreach ($p in $w) { Say ("    PID {0} {1}" -f $p.ProcessId, $p.CommandLine) }
+        Say '=== JianpuIngest 结束(退出码 0, 下一轮再来) ==='
+        Release-Lock
+        exit 0
+    }
+
     if ($canFinalize) {
         # 拿到锁之后转写看门狗不再起新转写; 现在等**已经在场**的那个自己跑完(绝不打断它)。
         $deadline = (Get-Date).AddMinutes($WaitTranscribeMin)
