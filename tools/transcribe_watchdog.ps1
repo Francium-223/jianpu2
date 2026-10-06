@@ -189,6 +189,25 @@ if ($diskCode -ne 0) {
     exit $diskCode
 }
 
+# ── ①b 入库闸: `tools/JianpuIngest.ps1` 正在跑(全库重建) -> 本轮让路 ──────────────
+# 为什么必须有(2026-10-06 实测): 入库的 `finalize.py` 里有一步 `to_jianpu_db.py --meter` ——
+# 它给"拍号认不回旧账本"的新谱 `_model.to("cuda")`, 也就是**往 cuda:0 载第二份 Qwen3-VL-2B**。
+# 实测 9,784 份 batch-out 里有 **149 份**属于这种; 而这台机器的显存只剩 ~250 MiB、内存只剩
+# 0.2~0.8 GiB —— 要么 CUDA OOM(被吞成"拍号识别失败", 新谱拍号默默写成 4/4 并被 scores-prev 固化),
+# 要么整机换页把转写拖死。所以入库期间转写侧**让路**: 本闸只推迟"下一轮什么时候起",
+# **不打断任何已经在跑的进程**(在场那个转写由入库侧等它自己跑完, 见 JianpuIngest.ps1)。
+$ingLock = Join-Path $Root 'train-work\ingest.lock'
+$ilp = Get-LockPid $ingLock
+if ($ilp) {
+    if (Get-Process -Id $ilp -ErrorAction SilentlyContinue) {
+        Say "跳过: 入库看门狗在跑(锁 $ingLock -> PID $ilp) —— 它正在全库重建, 本轮不抢 GPU。"
+        Say "=== 看门狗结束(退出码 0, 未起转写) ==="
+        exit 0
+    }
+    Say "入库锁里 PID $ilp **已死** = 陈旧锁 -> 清掉 $ingLock"
+    Remove-Item -Path $ingLock -Force -ErrorAction SilentlyContinue
+}
+
 # ── ② 互斥 a: 锁文件 PID ────────────────────────────────────────────────────
 $lp = Get-LockPid
 if ($lp) {
