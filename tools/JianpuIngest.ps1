@@ -14,6 +14,16 @@
       ③ `parse_scores.py`(在 jianpu-db 里跑)       重出 `data.jsonl`
     然后**提交并推远端**(作者 Francium-223, 末行 Co-authored-by: deepseek-ai)。
 
+    ⚠ **③ 从"等 CI 重出"改成"本机直接出 data.jsonl"**(2026-10-06 深夜, 实测):
+      * 旧说法"本机 Windows 跑不完 parse_scores"**已过期** —— 病根是 `by_title` 拿"带反斜杠的曲名"
+        当目录名(`os.mkdir("by_title\\A\\C\\A Chinese Aire \\ John...")`), 兄弟仓库 jianpu-db 的
+        `e90937aa7 链接路径逐段清洗` 修掉之后, 本机实测 **exit 0 / 631.8 秒 / 12,085 行**,
+        与 CI 的 `243ee546d` 版 **逐行全同(12085/12085)**。
+      * 所以本轮的 `data.jsonl` 是**本机 ③ 亲手重出的**, CI 退成两层角色: ①**交叉核对**(它重出一版,
+        与本机那版逐字节比对, 见下面 git 段里的 `data.jsonl` blob 核对); ②**兜底**(本机 ③ 万一又失败).
+      * ⚠ **本机绝不 push `by_*`**: Windows 上有 9 条"只差大小写"的路径是**平台固有**的, 本机建出来的
+        与 CI 的不逐字节相同 —— 提交那步只 `git add -- scores data.jsonl`, `by_*` 留给 CI 重建。
+
     ⚠ **为什么 ① 要独占机器**(这是本脚本一半篇幅的由来, 全是实测):
       * `finalize.py` 的 5) 会调 `to_jianpu_db.py --meter`。它**绝大多数**成品名能在
         `jianpu-db-out/scores-prev/` 里认回旧拍号(实测 2026-10-06 20:50: 9,784 份 batch-out 里
@@ -181,7 +191,8 @@ function Get-BatchHash {
 }
 
 function Read-State {
-    $d = @{ batch_hash = ''; pending_push = $false; corpus = 0; fin = 0; at = ''; last_seconds = 0 }
+    $d = @{ batch_hash = ''; pending_push = $false; corpus = 0; fin = 0; at = ''; last_seconds = 0;
+            data_blob = ''; data_lines = 0; data_ci_match = '' }
     if (Test-Path $StateFile) {
         try {
             $j = Get-Content $StateFile -Raw -Encoding utf8 | ConvertFrom-Json
@@ -258,6 +269,8 @@ if ($Status) {
     $st = Read-State
     '上次记账: at={0} corpus={1} fin={2} batch_hash={3} pending_push={4} last_seconds={5}' -f `
         $st.at, $st.corpus, $st.fin, $st.batch_hash, $st.pending_push, $st.last_seconds
+    '上次 ③: data.jsonl {0} 行 · blob {1} · 与 CI 重出 {2}' -f `
+        $st.data_lines, $st.data_blob, $(if ($st.data_ci_match) { $st.data_ci_match } else { '(还没核对过)' })
     Get-Transcriber | ForEach-Object { '转写在跑: PID {0} {1}' -f $_.ProcessId, $_.CommandLine }
     Get-DbWriter | ForEach-Object { 'DB 写者在跑: PID {0} {1}' -f $_.ProcessId, $_.CommandLine }
     $g = Get-GpuUsedMiB
@@ -396,22 +409,30 @@ try {
     finally { Pop-Location }
     Say ("  ② 退出码 {0}" -f $rc2)
 
-    Say '--- ③ 重出 data.jsonl ---'
+    Say '--- ③ 重出 data.jsonl(本机主力; CI 只做交叉核对与兜底) ---'
+    $t3 = Get-Date
     Push-Location $DB
     try {
+        # 全量跑要 ~10 分钟(实测 631.8 秒 / 12,085 行), 所以**只看尾巴**别把几万行刷进日志。
         & $Py -u parse_scores.py 2>&1 | Select-Object -Last 3 | ForEach-Object { Say "  | $_" }
         $rc3 = $LASTEXITCODE
     }
     finally { Pop-Location }
-    Say ("  ③ 退出码 {0}" -f $rc3)
-    if ($rc3 -ne 0) {
-        # ⚠ 2026-10-06 实测: parse_scores.py 在**本机 Windows** 上跑不完, 但**不是**入库造成的 ——
-        #   ABC 那批里有曲名含反斜杠的(`A Chinese Aire \ John Malchair's ...`), by_title 拿曲名当目录名
-        #   -> `os.mkdir("by_title\\A\\C\\A Chinese Aire \\ John...")` 必炸(Windows 里 `\` 是分隔符)。
-        #   CI 跑在 Linux 上, 反斜杠是合法文件名字符, 所以**推送后 CI 会把 data.jsonl 与 by_* 重出**。
-        #   这里能做的只有两件事: 把 parse_scores 半路 rmtree 掉的 by_* 还原(否则工作区挂满删除),
-        #   然后把"没重出"如实记进日志 —— 绝不去改 jianpu-db 的代码或曲谱内容来"凑过"这一步。
-        Say '  !! ③ 没成功: data.jsonl/by_* 本轮没重出(本地 Windows 的已知限制)。语料新增的 scores 照常提交, 由 CI 重出 data.jsonl。'
+    $sec3 = [int]((Get-Date) - $t3).TotalSeconds
+    Say ("  ③ 退出码 {0} · 用时 {1}s" -f $rc3, $sec3)
+    if ($rc3 -eq 0) {
+        # ③ 成功的**证据**要当场落下来(行数 + 内容指纹), 否则几轮之后没人说得清
+        # "本机这一版"和"CI 那一版"是不是同一份。
+        $linesNow = Get-LineCount (Join-Path $DB 'data.jsonl')
+        $sha3 = ("$(& git -C $DB hash-object data.jsonl 2>$null)").Trim()
+        Say ("  << ③ 本机重出成功: data.jsonl {0} -> {1} 行 · blob {2} · 用时 {3}s" -f `
+                $linesBefore, $linesNow, $sha3.Substring(0, [math]::Min(12, $sha3.Length)), $sec3)
+    }
+    else {
+        # 兜底分支(不再是"常态", 是"万一"): 本机又跑不完时, 别去改 jianpu-db 的代码或曲谱内容"凑过"这一步,
+        # 只把 parse_scores 半路 rmtree 掉的 by_* 还原, 然后如实记账 —— data.jsonl 由推送后的 CI 重出。
+        Say '  !! ③ 没成功: data.jsonl/by_* 本轮没重出 —— 语料新增的 scores 照常提交, 由 CI 重出 data.jsonl。'
+        Say '     (先看 $DB\parse_scores 的报错是不是又一次"路径里有反斜杠"这类 Windows 固有限制)'
         Push-Location $DB
         try { & git checkout -- . 2>&1 | Out-Null } finally { Pop-Location }
     }
@@ -420,7 +441,7 @@ try {
     $linesAfter = Get-LineCount (Join-Path $DB 'data.jsonl')
     $finAfter = Count-Files $FinScores '*.txt'
     $seconds = [int]((Get-Date) - $t0).TotalSeconds
-    $lineTxt = if ($rc3 -eq 0) { "$linesBefore -> $linesAfter 行" } else { "$linesBefore 行(未重出, 由 CI 重出)" }
+    $lineTxt = if ($rc3 -eq 0) { "$linesBefore -> $linesAfter 行(本机 ③ 重出)" } else { "$linesBefore 行(本机未重出, 由 CI 重出)" }
     Say ("  << 本轮: 语料 {0} -> {1} 首(+{2}) · data.jsonl {3} · 成品 {4} -> {5} 份 · batch-out 现值 {6} 份 · 用时 {7}s" -f `
             $dbBefore, $dbAfter, ($dbAfter - $dbBefore), $lineTxt, $finBefore, $finAfter, (Count-Files $BatchOut '*.txt'), $seconds)
 
@@ -446,6 +467,28 @@ try {
         }
         if ($pushOk) {
             & git fetch --quiet $Remote 2>&1 | ForEach-Object { Say "  | git $_" }
+            # ── ③ 的"与 CI 重出结果一致"核对: 拿**同一个 blob 哈希**比 ─────────────────
+            # 本机 ③ 已经亲手重出 data.jsonl, CI 每次 push 后也会重出一版。这里在 fetch 之后
+            # (远端已刷新)、push 之前比: 相等 = 两份**逐字节一致**(不多不少、格式没漂);
+            # 不等 = 口径漂了, 正是 CI 的 check_data_sane.py / check_jptok_parity.py 要拦的那种事。
+            # 远端还没被 CI 重出过时, 这个哈希就是上一轮我们推的那版(也算"没漂")。
+            if ($rc3 -eq 0) {
+                $localBlob = ("$(& git -C $DB hash-object data.jsonl 2>$null)").Trim()
+                $remoteBlob = ("$(& git rev-parse ("{0}/{1}:data.jsonl" -f $Remote, $Branch) 2>$null)").Trim()
+                $rhead = ("$(& git log -1 --format=%h%x20%an ("{0}/{1}" -f $Remote, $Branch) 2>$null)").Trim()
+                if ($localBlob -and $remoteBlob) {
+                    if ($localBlob -eq $remoteBlob) {
+                        $st.data_ci_match = "一致"
+                        Say ("  ③ 与 CI 重出结果核对: 一致(blob {0}) · 远端 HEAD {1}" -f `
+                                $localBlob.Substring(0, 8), $rhead)
+                    }
+                    else {
+                        $st.data_ci_match = "**不一致**"
+                        Say ("  !! ③ 与 CI 重出结果核对: **不一致** 本机 {0} vs 远端 {1} —— 别急着推, 先看口径" -f `
+                                $localBlob.Substring(0, 8), $remoteBlob.Substring(0, 8))
+                    }
+                }
+            }
             $behind = 0
             $rv = ("$(& git rev-list --count "$Branch..$Remote/$Branch" 2>$null)").Trim()
             if ($rv -match '^\d+$') { $behind = [int]$rv }
@@ -490,9 +533,13 @@ try {
     $st.fin = $finAfter
     $st.at = (Get-Date).ToString('yyyy-MM-dd HH:mm:ss')
     $st.last_seconds = $seconds
+    $st.data_lines = $linesAfter
+    if ($sha3) { $st.data_blob = $sha3 }
     Write-State $st
     $code = if ($pushOk) { 0 } else { 4 }
-    Say ("=== JianpuIngest 结束(退出码 {0}; 提交{1}) ===" -f $code, $(if ($pushOk) { '已推' } else { '未推, 已记账待重试' }))
+    Say ("=== JianpuIngest 结束(退出码 {0}; 提交{1}; data.jsonl 与 CI 重出{2}) ===" -f `
+            $code, $(if ($pushOk) { '已推' } else { '未推, 已记账待重试' }), `
+            $(if ($st.data_ci_match) { $st.data_ci_match } else { '(本轮没核对)' }))
     if (-not $pushOk) { exit 4 }
 }
 finally {

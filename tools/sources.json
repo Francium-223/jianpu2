@@ -1,9 +1,9 @@
 {
   "_说明": "图目录后缀 `曲名__站-id` 里允许的**站点 token 白名单** —— 队列(queue_from_crawl.py)与普查(census_images_prep.py)共用这一份, 别再往代码里写死站点名。加一个新站 = 只改本文件的 sites 数组。",
-  "sites": ["jianpujia", "qupu123", "jianpucn", "jp114"],
+  "sites": ["jianpujia", "qupu123", "jianpucn", "jp114", "fysongs"],
   "_为什么有jp114": "2026-10-06: images-prep 下 jp114 有 8,400 个图目录(占带 `曲名__站-id` 后缀目录的 29%), 真新曲最集中; 而 queue_from_crawl.py 的正则当时只认 jianpujia|qupu123|jianpucn, 这些目录在 parse_dir() 里被静默丢成 None, 一个都进不了队列。来源: tools/crawl_jp114.py(jp114.com, 图床 imgs.92kk.com)。",
+  "_为什么有fysongs": "2026-10-06 深夜: 与 jp114 完全同病 —— images-prep/fysongs-all 下 945 个 `__fysongs-<id>` 目录(其中 944 个有图)同样进不了队列。实测接上前后的**两次真跑**: 队列 17,943 -> 18,453 条(+510), 站点分布 jianpucn 6778 · jp114 5188 · jianpujia 4968 · fysongs 828 · qupu123 691。净增比 fysongs 自己的 828 少 318, 是因为目录名排序 f < j, fysongs 先扫到就先把重名曲占住了(其余站因此少 318 条)。为排除在场爬虫(3 个 jianpujia 分片 / crawl_jianpucn / crawl_fysongs)造成的时间漂移, 另做了一次**同一份目录快照**下的换白名单对照: 17,951 -> 18,457(+506, fysongs 仍 828, 其余站少 322), 两次读数同形。该站 945 个目录的去向: 1 无图 / 4 库里已有 / 2 改编(不收) / 112 重复曲名 / **828 进队列**; 拒绝名单对 fysongs 命中 0 条(它此前没进过队列, 从没被判定过), 接线由 tools/check_rejected_index.py 自检证明(键就是 `站-id`, 与站无关)。来源: tools/crawl_fysongs.py(风雅颂歌谱网 fysongs.cn, 图床 pic.3zitie.cn, 详情页 /songku_show.asp?id=<id>)。\n⚠ 队列是**累计读数**, 随在场爬虫一起长 —— 复算请认「同一次扫描」的前后差, 别跨天比。",
   "_已知未开": {
-    "fysongs": "images-prep 下一层有 945 个 `__fysongs-<id>` 目录, 同样不在旧白名单里、也同样进不了队列(2026-10-06 发现)。**没**加进 sites: 本任务只接 jp114, 加它会让「新增候选」读数混淆。要接就把它加进 sites 数组, 与 jp114 同一套口径。",
     "qinyipu": "只在 tools/image_window.py 的站点表里出现过, images-prep 下暂无该后缀目录。"
   }
 }

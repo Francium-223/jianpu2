@@ -280,9 +280,25 @@ def to_score(name, toks, transcriber, mbid="", kind="work", meter="4/4", mb_titl
     _ms = re.match(r"^(.*?)__([a-z0-9]+)-([0-9a-z_]+)$", name or "")
     if _ms:
         _site, _sid = _ms.group(2), _ms.group(3)
-        _url = {"jianpucn": "http://www.jianpu.cn/",
+        # 站点 -> URL 模板。`{id}` 用目录名里的站内 id 顶进去 = **那一页的确切地址**, 比站点首页
+        # 更硬(被问出处时能直接跳到谱页)。下面每条的域名与详情页格式都是**从爬虫源码里抄的**,
+        # 不是猜的:
+        #   * jp114   -> tools/crawl_jp114.py: BASE = https://www.jp114.com, 详情页 `/jianpu/<id>.html`
+        #   * fysongs -> tools/crawl_fysongs.py: BASE = http://www.fysongs.cn, DETAIL_URL = `/songku_show.asp?id=<id>`
+        #     (列表页里的 href 写的是 fysongs.com, 但**脚本实际抓详情用的是 fysongs.cn**, 见那边第 56/67 行)
+        #   * 前三站历史上只记到站点首页(那时没回填详情页格式) —— **保持原样**, 免得"补 jp114/fysongs"
+        #     顺手改掉 12,000+ 份既有产物的出处口径。
+        _tpl = {"jianpucn": "http://www.jianpu.cn/",
                 "qupu123": "https://www.qupu123.com/",
-                "jianpujia": "https://www.jianpujia.com/"}.get(_site, "")
+                "jianpujia": "https://www.jianpujia.com/",
+                "jp114": "https://www.jp114.com/jianpu/{id}.html",
+                "fysongs": "http://www.fysongs.cn/songku_show.asp?id={id}"}.get(_site, "")
+        # id 不是纯数字时**不猜**详情页 URL(宁可退回站点首页, 也不写出一个假的谱页地址)。
+        # 这两个站的 id 实测都是纯数字(jp114 来自 `(\d+)` 抓取, fysongs 来自清单里的数字 id)。
+        _url = _tpl
+        if "{id}" in _tpl:
+            _url = _tpl.replace("{id}", _sid) if _sid.isdigit() else \
+                {"jp114": "https://www.jp114.com/", "fysongs": "http://www.fysongs.cn/"}.get(_site, "")
         lines.insert(len(lines) - 1, f"source={_site}-{_sid}")
         if _url:
             lines.insert(len(lines) - 1, f"% 出处 {_url}")
