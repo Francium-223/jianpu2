@@ -117,6 +117,11 @@ else:
     dirs = sorted(d for d in glob.glob(os.path.join(SRC, "*")) if os.path.isdir(d))[:LIMIT]
     print(f"{SRC}: {len(dirs)} 个谱")
 done = 0
+# **织体页 CPU 预筛的每轮账**(2026-10-08 加): 判据/阈值/开关都在 `jp_transcribe.py` 那道门里
+# (`_prescreen_thr` 等)。这里只负责把"这一轮挡掉几页、省了约多少秒"打出来, 并把
+# **整份都被挡掉的条目**判成"没有产物"而不是"写一个空 txt"(空谱进语料是有害的)。
+ps_blocked = 0
+PS_SEC = float(os.environ.get("JP_PRESCREEN_SEC", "27.5"))   # 织体页均耗时(实测基线 27.5s/页)
 # **失败可见性**(2026-10-07 加): 下面把异常吞成一行、**照常退出 0** —— 那是刻意的(非纯简谱/
 # 织体本来就没有产物, 退出语义不能动)。但代价是"一个 TypeError 让 84% 的条目整批报废"在看门狗
 # 那侧只表现为"失败 N 个", 而 N 个失败照样记账、照样退出 0, 谁也发现不了(实测 04:05~13:18 有
@@ -164,11 +169,15 @@ for i, d in enumerate(dirs):
         dropped = 0
         page_notes = []
         page_toks = []
+        ps_gated = 0                 # 本份谱里被预筛挡掉的页(切片)
         # 逐页的置信度(见下面"谱级 confidence"): 每页一定有一个 (confidence, conf_p10, conf_n)
         page_conf = []
         for k, p in enumerate(good):
             side = png if k == 0 else f"{png[:-4]}_m{k}.png"
             tk, meta = BT.transcribe_paged(p, txt, side)
+            _ps = JP.pop_prescreen()                 # 预筛在这页(含切片)挡掉了几页
+            ps_gated += _ps["n"]
+            ps_blocked += _ps["n"]
             nd = sum(1 for t in tk if t.lstrip("qsdh,").rstrip("'.") and t.lstrip("qsdh,").rstrip("'.")[-1] in "1234567")
             page_notes.append(nd)
             page_toks.append(tk)
@@ -176,6 +185,14 @@ for i, d in enumerate(dirs):
             #   不能等循环结束只读 `meta`(那样只拿到最后一页的, 2026-09-30 自查时发现)。
             if meta and isinstance(meta, list) and meta[0].get("confidence") is not None:
                 page_conf.append((meta[0]["confidence"], meta[0].get("conf_p10"), meta[0].get("conf_n") or 0))
+        # **预筛把这一份谱的每一页都挡掉了** -> 不要写空 txt(空谱进语料有害), 也不画标注图。
+        # 注意: 只有"预筛挡掉的"才走这条; 没被挡却本来就没出 token 的页, 口径与此前**完全一致**。
+        if ps_gated and not any(page_toks):
+            if os.path.exists(png):
+                os.remove(png)
+            print(f"[{i+1}/{len(dirs)}] {name[:40]}: 预筛判为织体(挡 {ps_gated} 页), 不喂模型跳过 "
+                  f"({time.time()-t0:.0f}s)", flush=True)
+            continue
         # **织体判据(2026-09-30 重做 —— 上一版把真歌截断了, 见下)**:
         #   上一版是"逐页丢 >300 音", 实测**截断了真歌**: 13 份被丢过页, 丢掉的页是 321~508 音,
         #   而这些谱**每页中位只有 285 音**(旋律谱的 p90 才 265!) —— 也就是把正常流行歌最密的那几页
@@ -248,4 +265,8 @@ if fail_kinds:
           flush=True)
     for _k, _v in sorted(fail_kinds.items(), key=lambda kv: -kv[1]):
         print(f"失败样例[{_k}] 首例: {fail_first[_k]}", flush=True)
+if JP._prescreen_on():
+    print(f"预筛: 挡掉 {ps_blocked} 页 · 省约 {ps_blocked * PS_SEC:.0f} 秒"
+          f"(按织体页均 {PS_SEC:.1f}s/页估) · 清单 train-work/prescreen_blocked.tsv"
+          f" · 阈值 JP_PRESCREEN_THR={JP._prescreen_thr()} (关掉: JP_PRESCREEN=0)", flush=True)
 print(f"完成 {done}/{len(dirs)}")

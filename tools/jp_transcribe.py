@@ -9,7 +9,7 @@
 用法:
   py -3.13 tools/jp_transcribe.py <谱图> [输出图.png]
 """
-import os, sys, re
+import os, sys, re, time
 from guard import guard_help        # noqa: E402  `--help` 守卫(唯一实现见 tools/guard.py)
 guard_help(__doc__)
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
@@ -92,6 +92,184 @@ def pop_conf():
     global _CONF
     out, _CONF = _CONF, []
     return out
+
+
+# ══════════════════════════════════════════════════════════════════════════════
+# 织体页 CPU 预筛（2026-10-08 加）—— **在喂模型之前**用便宜的几何判据挡掉"织体/伴奏"页
+#
+# 为什么要它（实测基线）: 315 条织体页烧掉 **9,036 秒 = 干净轮 GPU 时间的 19.6%**，产出 0；
+# 织体均 27.5 秒/首 > 产物均 15.2 秒/首。而现有的"整份像织体（每页中位 > 400 音）→ 跳过"
+# 判据在 `transcribe_source.py` 里，**跑在模型之后** —— 那时 GPU 已经花掉了。
+#
+# 判据（只用几何阶段本来就有的量，**不新增任何图像处理、不调用模型**）:
+#   `n_digit_strict` = "**严格音乐行**"里、按生产第三遍自己的 digit 判据能算作音符块的个数。
+#     * 严格音乐行 = 第一遍几何里 `frac >= 0.85` 的行带（瘦高块占比 ≥85%）。
+#       为什么必须加这一条：实测正常流行谱每行音乐下面贴着**两行汉字歌词**，歌词行会以
+#       "瘦高块 ≥6 且 下划线 ≥1"（汉字的横笔被当成时值线）混进候选行带；不加这一条时
+#       实测《剑破浮生》真 371 音却被数成 735 —— 代理值被歌词系统性抬高，判据就废了。
+#       只数严格行后，同一页数出 354（与真值差 5%）。
+#     * digit 判据 = `crop_note_regions` -> `bound_to_note_row` -> 块内存在"高≥12 且 宽≥4 且
+#       高>宽"的连通域 -> 主连通域高 ≥ 0.8*本行参考高。与第三遍 `classify_block` 那条等价
+#       （只把 `T._cc_label` 换成更快的 RLE 版，判据不动）。
+#
+# 阈值怎么定的（**误杀 0 是硬指标**，见 `_analysis/_prescreen_analyze3.py` 的实测表）:
+#   122 个织体页 + 300 个正常产物页（都是随机的，不是字母序）:
+#     n_digit_strict 正常页 p50 247 / p95 368 / **max 421**；织体页 p05 340 / p50 450。
+#   代理保真度：正常页 `n_digit_strict / 真实音符数` 比值中位 **1.021**、过计数 p95 49 / max 69
+#   （过计数来自严格行里残留的歌词字）。
+#   阈值选 **450**：在 300 页正常集上误杀 **0**，还能挡掉 **60/122 = 49%** 的织体页
+#   （阈值 421=实测正常 max 时挡 76%，但那一点余量都不留，见报告里的敏感性表）。
+#   想更激进/更保守: `JP_PRESCREEN_THR`。整道门可用 `JP_PRESCREEN=0` 关掉。
+#
+# 挡掉的东西**只记账不删**（`train-work/prescreen_blocked.tsv`，每行一个页，可复核可回捞）。
+# ══════════════════════════════════════════════════════════════════════════════
+PRESCREEN_MANIFEST = os.path.join(_ROOT, "train-work", "prescreen_blocked.tsv")
+_PS_HITS = []          # 本次进程内被挡的页(供调用方打印每轮账)
+_PS_COUNT = 0          # 本次进程内被挡的页数(含已被 pop 走的)
+
+
+def _prescreen_on():
+    return os.environ.get("JP_PRESCREEN", "1") == "1"
+
+
+def _prescreen_thr():
+    return int(os.environ.get("JP_PRESCREEN_THR", "450"))
+
+
+def _prescreen_pre():
+    """Stage-A 免费前置门的阈值（`tall_strict`，见下面 `_prescreen_scan`）。
+
+    它的作用只是**省钱**：Stage-B 要数 digit 块（实测 ~0.9 s/页），不能对每一页都跑。
+    实测（300 正常页）`tall_strict >= 300` 能放过 **98% 的织体页**、只让 31% 的正常页
+    进入 Stage-B —— 级联后挡掉的织体数与单用 Stage-B 完全一样（60/122），误杀仍为 0。
+    """
+    return int(os.environ.get("JP_PRESCREEN_PRE", "300"))
+
+
+def _ps_band_digits(sub, row_gray, R, lab):
+    """一个**严格音乐行**里"会被当数字块送去模型"的块数（生产第三遍 digit 判据的等价物）。
+
+    全程 CPU、不碰模型。判据与 `transcribe()` 第三遍逐条对应:
+      crop_note_regions -> bound_to_note_row -> 块内"高≥12 且 宽≥4 且 高>宽"的连通域
+      -> 主连通域高 ≥ 0.8*本行参考高(剔除更矮的歌词字母)。
+    与第三遍唯一的差别: 这里用 `T._cc_label`(RLE 并查集) 而不是 `classify_block`(内部的
+    `geo_detect._components` 是逐像素 BFS，慢一个量级)；判据本身是同一条（见本节顶部长注释）。
+    """
+    import transcribe as T
+    import transcribe_qwen as Q
+    if lab is None:
+        return 0
+    cs2 = [c for c in lab if 10 <= c[5] <= 45 and c[4] >= 3]
+    tall2 = [c for c in cs2 if c[5] >= R * c[4]]
+    href = 0
+    if tall2:
+        hs = sorted(c[5] for c in tall2)
+        href = hs[len(hs) // 2]
+    be = Q.bar_extent(sub)
+    n = 0
+    for (nx0, nx1, ny0, ny1) in T.crop_note_regions(sub):
+        crop = Q.bound_to_note_row(row_gray, nx0, nx1, ny0, ny1, be)
+        if crop is None or crop.size == 0:
+            continue
+        comps = T._cc_label(crop < T.TOL, want_count=True)
+        big = [c for c in comps if c[5] >= 12 and c[4] >= 4]
+        if not big or not any(c[5] > c[4] for c in big):
+            continue
+        if href and max(c[5] for c in big) < 0.8 * href:
+            continue
+        n += 1
+    return n
+
+
+def _prescreen_scan(arr):
+    """独立跑一遍几何, 返回这道门的两个量（**不加载模型**, 供离线评测/自检用）。
+
+    返回 `{"tall_strict": Stage-A 量, "n_digit_strict": Stage-B 量, "n_band_strict": ...}`。
+    与 `transcribe()` 里那段是**同一条判据**（同一 `_ps_band_digits`、同一 `frac>=0.85`），
+    区别只是这里为了离线评测重新跑了一遍几何 —— 生产里那是第一遍本来就要跑的，不额外花时间。
+    """
+    import numpy as np
+    import transcribe as T
+    content = arr < T.TOL
+    bands = []
+    for s0, e0 in T.fine_rows(content, T.ROW_GAP):
+        bands += T.split_row_inner(content, s0, e0)
+    RH = float(os.environ.get("JP_TALLR_HEAD", "1.4"))
+    RB = float(os.environ.get("JP_TALLR", "1.15"))
+    head_until = -1
+    for i, (s, e) in enumerate(bands):
+        sub = content[s:e + 1]
+        st, hl = T.strip_hlines(sub)
+        c = [x for x in T._cc_label(st) if 10 <= x[5] <= 50 and x[4] >= 4]
+        if c and len(c) >= 15:
+            fr4 = sum(1 for x in c if x[5] >= RH * x[4]) / len(c)
+            if fr4 >= 0.40 or sum(1 for h in hl if h[4] >= 8) >= 6:
+                head_until = i
+                break
+    tall_strict = n_strict = n_dig = 0
+    for i, (s, e) in enumerate(bands):
+        R = RH if i < head_until else RB
+        sub = content[s:e + 1]
+        st, hl = T.strip_hlines(sub)
+        lab = T._cc_label(st)
+        cs = [x for x in lab if 10 <= x[5] <= 50 and x[4] >= 4]
+        if not cs:
+            continue
+        tall = [x for x in cs if x[5] >= R * x[4]]
+        frac = len(tall) / len(cs)
+        nline = sum(1 for h in hl if h[4] >= 8)
+        if not ((frac >= 0.85) or (len(tall) >= 6 and nline >= 1)):
+            continue
+        if frac >= 0.85:
+            tall_strict += len(tall)
+            n_strict += 1
+            n_dig += _ps_band_digits(sub, arr[s:e + 1], R, lab)
+    return {"tall_strict": tall_strict, "n_digit_strict": n_dig, "n_band_strict": n_strict}
+
+
+def prescreen_hit(arr):
+    """这道门的判定: 返回 (是否命中, 统计)。`arr` = `_load_gray` 的灰度数组。"""
+    st = _prescreen_scan(arr)
+    hit = (st["tall_strict"] >= _prescreen_pre()) and (st["n_digit_strict"] > _prescreen_thr())
+    return hit, st
+
+
+def pop_prescreen():
+    """取走并清空"本次进程内被预筛挡掉的页"（调用方用它打每轮账 / 决定不写空 txt）。"""
+    global _PS_HITS, _PS_COUNT
+    out = {"n": _PS_COUNT, "rows": _PS_HITS}
+    _PS_HITS, _PS_COUNT = [], 0
+    return out
+
+
+def _prescreen_record(img_path, st, thr):
+    """命中预筛 -> 只记账(可复核、可回捞), **不删任何东西**。"""
+    global _PS_COUNT
+    _PS_COUNT += 1
+    try:
+        from PIL import Image as _I
+        w, h = _I.open(img_path).size
+    except Exception:
+        w = h = 0
+    row = {"t": time.strftime("%Y-%m-%d %H:%M:%S"), "page": img_path,
+           "item": os.path.basename(os.path.dirname(os.path.abspath(img_path))),
+           "n_digit_strict": st["n_digit_strict"], "thr": thr,
+           "tall_strict": st["tall_strict"], "n_band_strict": st["n_band_strict"],
+           "w": w, "h": h}
+    _PS_HITS.append(row)
+    if len(_PS_HITS) > 500:                 # 只留最近 500 条在内存里(账在 tsv 里)
+        del _PS_HITS[:-500]
+    try:
+        os.makedirs(os.path.dirname(PRESCREEN_MANIFEST), exist_ok=True)
+        new = not os.path.exists(PRESCREEN_MANIFEST)
+        with open(PRESCREEN_MANIFEST, "a", encoding="utf-8") as f:
+            if new:
+                f.write("时间\t页\t条目\t严格行带数\ttall_strict(StageA)\t数字块数(StageB)\t阈值\t宽\t高\n")
+            f.write(f"{row['t']}\t{row['page']}\t{row['item']}\t{st['n_band_strict']}\t"
+                    f"{st['tall_strict']}\t{st['n_digit_strict']}\t{thr}\t{w}\t{h}\n")
+    except Exception:
+        pass
+    print(f"[预筛] 织体页(数字块 {st['n_digit_strict']} > {thr}) -> 不喂模型: {img_path}", flush=True)
 
 
 def _digit_of(crop):
@@ -487,9 +665,6 @@ def transcribe(img_path):
             return [], []
     from classify_block import classify_block
     from geo_detect import geo_detect
-    # JP_DRAWONLY=1 = 只想看切分图, 不要模型 -> 先别加载(省显存, 也不跟别的转写抢卡)
-    if os.environ.get("JP_DRAWONLY") != "1":
-        _init()
     arr, _sc = _load_gray(img_path)
     content = arr < T.TOL
     # 阶段1: 切块(收集 crop + 类型), 数字块留待批量识别
@@ -536,6 +711,9 @@ def transcribe(img_path):
                 break
     # 第一遍: 算每个行带的几何特征 -> "确定接受(frac>=0.85)" / "可疑" / "丢弃"
     _MODE = os.environ.get("JP_ROWFILTER", "frac_abs")
+    # 织体预筛(见本节顶部)的 Stage-A: **只累加第一遍本来就有的量**, 边际 CPU = 0。
+    _ps = _prescreen_on()
+    _ps_tall = 0
     _plan = []          # [s, e, sub, stripped, hlines, lab, accept, suspicious, R]
                         # ⚠ 字段表就是下标契约: 2026-10-07 04:14 的 `4a3dafb4` 在中间插了
                         #   `_lab`, 却漏改下面第二遍的 `p[6]`(该是 `p[7]`)与 `_plan[i][5]`
@@ -590,7 +768,36 @@ def transcribe(img_path):
                   f"{'接受' if _accept else '丢弃'}", file=sys.stderr)
         if not _accept:
             continue
+        # 织体预筛 Stage-A: 严格音乐行(frac>=0.85)里的"瘦高符号"总数 —— 上面已经算好, 零成本。
+        if _ps and _MODE != "none" and _frac >= 0.85:
+            _ps_tall += len(_tall)
         _plan.append([s, e, sub, _stripped, _hlines, _lab, True, _susp, _R])
+    # ── 织体预筛(在**任何模型调用之前**; 详见本节顶部那段长注释) ──────────────────
+    #   Stage-A(免费): 严格行的瘦高符号数够多才继续 —— 实测放过 98% 织体页、只让 31% 正常页进入 Stage-B。
+    #   Stage-B(便宜): 数"严格音乐行里会被送模型的数字块"; > 阈值 -> 记账并**直接返回, 不喂模型**。
+    #   默认阈值 450 是实测的保守值(300 页正常集上误杀 0, 仍能挡掉 49% 的织体页)。
+    #   `JP_PRESCREEN=0` 关掉; `JP_PRESCREEN_THR` 改阈值; `JP_PRESCREEN_PRE` 改 Stage-A。
+    if _ps and _ps_tall >= _prescreen_pre():
+        _ps_st = {"n_digit_strict": 0, "tall_strict": _ps_tall, "n_band_strict": 0}
+        for _p in _plan:
+            _psub, _plab, _pR = _p[2], _p[5], _p[8]
+            if _plab is None:
+                continue
+            _pcs = [c for c in _plab if 10 <= c[5] <= 50 and c[4] >= 4]
+            if not _pcs:
+                continue
+            _ptall = [c for c in _pcs if c[5] >= _pR * c[4]]
+            if len(_ptall) / len(_pcs) < 0.85:
+                continue
+            _ps_st["n_band_strict"] += 1
+            _ps_st["n_digit_strict"] += _ps_band_digits(_psub, arr[_p[0]:_p[1] + 1], _pR, _plab)
+        if _ps_st["n_digit_strict"] > _prescreen_thr():
+            _prescreen_record(img_path, _ps_st, _prescreen_thr())
+            return [], []
+    # JP_DRAWONLY=1 = 只想看切分图, 不要模型 -> 先别加载(省显存, 也不跟别的转写抢卡)
+    # (**挪到预筛之后**: 预筛命中时整个模型都不用加载)
+    if os.environ.get("JP_DRAWONLY") != "1":
+        _init()
     # 第二遍: 可疑行带交模型判"音符行 / 文字行"(几何判据无法区分"标题文字行"与
     # "音符+歌词粘连行带", 但模型看一行是简谱还是汉字文字很容易) -> 剔除文字行。
     if os.environ.get("JP_BANDCLS", "1") == "1":
