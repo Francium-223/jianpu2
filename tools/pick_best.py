@@ -10,20 +10,27 @@
   5. nline 越小越纯   6. 标题短优先
 输出: train-work/pick_best.tsv (title, 选中dir, 落选数) + train-work/drop_dup.txt(落选dir列表)
 用法: py tools/pick_best.py
+
+**定常成本**(2026-10-07 改): 本步原来要 54 分钟, 全部花在"给 4.7 万个目录找它在 batch-out 的
+输出文件"上 —— 每个目录一次 `glob.glob("batch-out/*" + d[-10:] + ".txt")`, 每次都要把
+2.6 万个文件的目录枚举一遍 ✗。现在把 `batch-out`、`kind2.tsv` 的读取各自**做一次**
+(`batch-out` 索引 + 逐目录结果缓存), 之后全是内存里的字典查询。排序口径一个字没动。
 """
-import csv, glob, re, sys
+import csv, glob, os, re, sys, time
 from guard import guard_help        # noqa: E402  `--help` 守卫(唯一实现见 tools/guard.py)
 guard_help(__doc__)
 sys.path.insert(0, "tools")
-import os
 os.chdir(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 sys.stdout.reconfigure(encoding="utf-8")
+
+T0 = time.time()
 
 rows = list(csv.DictReader(open("train-work/kind2.tsv", encoding="utf-8"), delimiter="\t"))
 for r in rows:
     r["nline"] = int(r["nline"]); r["pure"] = int(r["pure"])
     r["w"] = int(r["w"]); r["h"] = int(r["h"])
     r["wide"] = int(r.get("wide") or 0)
+DIRS = len(rows)
 
 def norm_title(d):
     """把目录名规整成"歌名", 用于判重。"""
@@ -68,43 +75,82 @@ for r in rows:
         continue
     groups.setdefault(k, []).append(r)
 
-SELECTED = {}
-for line in glob.glob("batch-out/*.txt"):
-    SELECTED[os.path.basename(line)[:-4]] = None
-import batch_transcribe as _BT
+# `batch-out` 索引(一次枚举, 替代原来每个目录一次的 glob)。
+# **旧 glob 的语义**: 旧代码是 `glob.glob("batch-out/*" + d[-10:] + ".txt")`。
+# glob 的通配符匹配**整个文件名**(不是子串搜索), 所以它要的是"文件名**以目录名后 10 个字符
+# 结尾**" —— 等价于"文件名的末 10 字符 == d[-10:]"。实测反例: 目录
+# `月亮代表我的心__jianpucn-100`(q='anpucn-100') 不会命中 `...__jianpucn-1001999.txt`
+# (它的末 10 字符是 'cn-1001999'), 也不会命中 `...__jianpucn-1001.txt`(末 10 是 'npucn-1001')。
+# 曾经按"任意 10 字符窗口"建索引, 把这两种文件都算成了命中 -> 音符数不同 -> 会换胜出版本 ✗。
+# 所以索引键 = 文件名的**末 10 字符**; 不足 10 字符的文件名另立一张表(那时查询串就是整个目录名)。
+# glob 的返回顺序 = 目录枚举顺序, 取列表第一个即与旧代码取 g[0] 相同。
+BY_WIN10 = {}
+BY_SHORT = {}
+for _f in glob.glob("batch-out/*.txt"):
+    _b = os.path.basename(_f)[:-4]
+    if len(_b) >= 10:
+        BY_WIN10.setdefault(_b[-10:], []).append(_f)
+    else:
+        BY_SHORT.setdefault(_b, []).append(_f)
+
+def _count_notes(f):
+    """读一个 txt 数音符。读不到就返回 -1(与旧代码"文件不在就算没转过"一致)。"""
+    try:
+        t = open(f, encoding="utf-8", errors="replace").read().split()
+    except OSError:
+        return -1
+    n = 0
+    for x in t:
+        y = x.lstrip("qsdh,").rstrip("'.")
+        if y and y[-1] in "1234567":
+            n += 1
+    return n
+
+# 缓存按**查询串** d[-10:] 记账(不是按目录): 命中与否只取决于这 10 个字符, 同一查询串的结果
+# 对所有目录都一样 —— 与旧代码"按目录缓存"给出的值相同, 只是更省读盘。
 _NOTES = {}
+
 
 def notes_of(d):
     """该目录已转出的音符数(没转过返回 -1)。"""
-    if d in _NOTES:
-        return _NOTES[d]
-    nm = _BT.safe_name(d)
-    f = f"batch-out/{nm}.txt"
-    if not os.path.exists(f):
-        g = glob.glob("batch-out/*" + d[-10:] + ".txt")
-        f = g[0] if g else None
-    v = -1
-    if f and os.path.exists(f):
-        t = open(f, encoding="utf-8", errors="replace").read().split()
-        v = sum(1 for x in t if x.lstrip("qsdh,").rstrip("'.") and x.lstrip("qsdh,").rstrip("'.")[-1] in "1234567")
-    _NOTES[d] = v
-    return v
+    q = d[-10:] if len(d) >= 10 else d
+    if q in _NOTES:
+        return _NOTES[q]
+    g = BY_WIN10.get(q) if len(q) >= 10 else BY_SHORT.get(q)
+    _NOTES[q] = _count_notes(g[0]) if g else -1
+    return _NOTES[q]
 
-def score(r):
-    # 关键: 也要看**转写结果的质量** —— 只看几何会选中"图大但转不出东西"的版本
-    # (实测《童年》选中了只转出 53 音符的那版)。纯简谱之间, 音符多的通常更完整。
-    return (
-        1 if r["pure"] else 0,                       # 1. 纯简谱
-        1 if "简谱" in r["dir"] else 0,               # 2. 标题带"简谱"
-        r["w"] * r["h"],                              # 3. 分辨率(大图识别更准)
-        notes_of(r["dir"]),                           # 4. 已转出音符数(多=更完整)
-        -r["nline"],                                  # 5. 越纯越好
-        -len(r["dir"]),                               # 6. 标题短
-    )
+# 打分口径一个字没改(仍是那 6 个字段、从优到劣依次比较), 只是**按需**算第 4 项(要读盘的那个):
+# 只有前 3 项与对手打平才需要比"音符数"。旧版把 4.7 万行全部先算完 -> 每行一次读盘。
+# ⚠ `functools.cmp_to_key` 不能配 `reverse=True` 用: reverse 会把比较器的返回值**取反**,
+# 于是整个排序口径颠倒(实测: 会选中音符最少的版本)。这里比较器直接给出"谁在前", 不再用 reverse;
+# 相等返回 0 -> 稳定排序保持 kind2.tsv 里的先后, 与旧版元组相等的处理一致 ✓。
+def score(a, b):
+    pa, pb = (1 if a["pure"] else 0), (1 if b["pure"] else 0)
+    if pa != pb:
+        return -1 if pa > pb else 1
+    ja, jb = (1 if "简谱" in a["dir"] else 0), (1 if "简谱" in b["dir"] else 0)
+    if ja != jb:
+        return -1 if ja > jb else 1
+    aa, ab = a["w"] * a["h"], b["w"] * b["h"]
+    if aa != ab:
+        return -1 if aa > ab else 1
+    na, nb = notes_of(a["dir"]), notes_of(b["dir"])
+    if na != nb:
+        return -1 if na > nb else 1
+    if a["nline"] != b["nline"]:
+        return -1 if a["nline"] < b["nline"] else 1
+    la, lb = len(a["dir"]), len(b["dir"])
+    if la != lb:
+        return -1 if la < lb else 1
+    return 0
+
+import functools                       # noqa: E402
+_cmp = functools.cmp_to_key(score)
 
 kept, dropped = [], []
 for k, g in groups.items():
-    g.sort(key=score, reverse=True)
+    g.sort(key=_cmp)          # 比较器已给出"谁在前"; **不能**再加 reverse=True(会把口径颠倒)
     kept.append(g[0])
     dropped += g[1:]
 
@@ -127,6 +173,15 @@ with open("train-work/drop_dup.txt", "w", encoding="utf-8") as f:
     for r in dropped:
         f.write(r["dir"] + "\n")
 print("选中 -> train-work/pick_best.tsv ; 落选 -> train-work/drop_dup.txt")
+print(f"[耗时] {time.time()-T0:.1f}s (kind2 行 {DIRS}, 读过的 batch-out 文件 {len(_NOTES)})")
+# 调试钩子: 把"每个目录数到的音符数"原样倒出来, 供新旧实现逐项对照(默认关, 不影响产线)。
+_dp = os.environ.get("JP_PICK_NOTES_DUMP")
+if _dp:
+    with open(_dp, "w", encoding="utf-8", newline="") as _f:
+        _w = csv.writer(_f, delimiter="\t")
+        for _d in sorted({r["dir"] for r in rows}):
+            _w.writerow([_d, notes_of(_d)])
+    print(f"[dump] 每目录音符数 -> {_dp}")
 print("\n多版本例子(前 10):")
 for g in sorted([g for g in groups.values() if len(g) > 1], key=lambda x: -len(x))[:10]:
     print(f"  [{len(g)} 版] {norm_title(g[0]['dir'])[:24]}")
