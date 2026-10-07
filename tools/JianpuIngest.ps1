@@ -14,6 +14,19 @@
       ③ `parse_scores.py`(在 jianpu-db 里跑)       重出 `data.jsonl`
     然后**提交并推远端**(作者 Francium-223, 末行 Co-authored-by: deepseek-ai)。
 
+    ⚠ **"积压"在本脚本里只有一个意思**(2026-10-07 实测澄清): 判据里的 `$backlog` 是
+      `|batch-out/*.txt| - |jianpu-db-out/scores/*.txt|` 的**份数差** —— 它只回答"① 值不值得现在跑",
+      **不是**"有多少成品没并进语料"。两个目录的命名口径本就不同(batch-out 是 `曲名___来源-id.txt`,
+      成品是 `曲名.txt`, 实测 11,762 vs 11,190 里同名只有 2 个), 所以这个差只能当粗代理
+      (① 刚跑完 ~40, 之后每来一份新产物 +1)。
+      "成品没入库"只有**一个权威口径**: `import_finished_scores.py` 的账
+      (成品 = 已在语料 + 按判据跳过 + 可导入), 现在每轮都整段打进日志。实测 2026-10-07 21:2x:
+      成品 11,190 = 已在语料 11,175 + 跳过 15(全是"旋律音 < 5") + **可导入 0**。
+
+    ⚠ **② 只受两道闸**: 单实例锁(`ingest.lock`)与下面的 DB 写者闸。**不受 ① 的窗口闸限制** ——
+      只要成品可导入, 本轮就照跑 ②③(它是纯 CPU/IO、只拷不覆盖、只拷不删)。探针若报 -1
+      (脚本报错/输出变了), **不当作"0 份可导入"**, 同样照跑 ②③。
+
     ⚠ **③ 从"等 CI 重出"改成"本机直接出 data.jsonl"**(2026-10-06 深夜, 实测):
       * 旧说法"本机 Windows 跑不完 parse_scores"**已过期** —— 病根是 `by_title` 拿"带反斜杠的曲名"
         当目录名(`os.mkdir("by_title\\A\\C\\A Chinese Aire \\ John...")`), 兄弟仓库 jianpu-db 的
@@ -45,6 +58,7 @@
         * 它不在跑、但**离下次触发不足 `-HoldoffMin`(默认 90 分钟)** -> 也不跑 ①
           (实测它的"整片"轮 1h21m~6h41m, 从启动到它自己 finalize 最短 28 分钟;
            我们的 ① 实测 48~91 分钟 —— 留 90 分钟起步的余量, 就不会把尾巴拖进它的 finalize);
+           ⚠ 2026-10-07 14:44 那轮 ① 已涨到 **3h19m**(全库重扫那三步是大头, 见下面的实测注释)。
         * 依据: 实测 `jp_mandopop_absorb3` 完成时刻与下次启动之间有 2min~5h59m 的空档,
           所以"只挑空档跑 ①"是能跑到的, 不需要去改动那条正在跑的链(更不该去抢它的 GPU)。
       ②③ 不受这个闸限制 —— 它只读成品目录、只往语料里**新增**文件, 与 mandopop 的转写/finalize
@@ -214,13 +228,40 @@ function Get-LineCount([string]$p) {
     return $n
 }
 
-# 成品目录里"还没入库"的份数(**只读**: import_finished_scores 默认 dry-run, 一个字都不写)。
-function Count-Importable {
+# 成品目录里"还没入库"的**账**(**只读**: import_finished_scores 默认 dry-run, 一个字都不写)。
+# 返回对象而不是一个数字: "可导入"只是账里的一项, **必须**同时记下"成品总数 / 已在语料 / 按判据跳过" ——
+# 只留一个数字, 日志里那个数就没人说得清是哪个集合的计数(2026-10-07 实测踩过: 把 ① 的"419"读成了
+# "上万份成品待导入")。
+# ⚠ `Importable = -1` 表示**探针没报数**(脚本报错/输出变了) —— 绝不能当成"0 份可导入", 见 $needImport。
+function Get-ImportProbe {
+    $r = [pscustomobject]@{ Importable = -1; Total = -1; Already = -1; Skipped = -1; Lines = @() }
     Push-Location $Root
     try {
-        $out = & $Py -u tools\import_finished_scores.py 2>&1
-        foreach ($l in $out) { if ("$l" -match '可导入\s+(\d+)\s+份') { return [int]$Matches[1] } }
-        return -1
+        $out = @(& $Py -u tools\import_finished_scores.py 2>&1)
+        $keep = @()
+        foreach ($l in $out) {
+            $s = "$l".Trim()
+            if ($s -match '^成品目录\s') {
+                $keep += $s
+                if ($s -match ':\s*(\d+)\s*份\s*$') { $r.Total = [int]$Matches[1] }
+            }
+            elseif ($s -match '^目标已有') {
+                $keep += $s
+                if ($s -match '(\d+)\s*$') { $r.Already = [int]$Matches[1] }
+            }
+            elseif ($s -match '^跳过\(') {
+                $keep += $s
+                if ($s -match '(\d+)\s*$') {
+                    if ($r.Skipped -lt 0) { $r.Skipped = [int]$Matches[1] } else { $r.Skipped += [int]$Matches[1] }
+                }
+            }
+            elseif ($s -match '可导入\s+(\d+)\s+份') {
+                $keep += $s
+                $r.Importable = [int]$Matches[1]
+            }
+        }
+        $r.Lines = $keep
+        return $r
     }
     finally { Pop-Location }
 }
@@ -296,25 +337,43 @@ $needFinalize = ($hashNow -ne $st.batch_hash)
 # **自己就会 finalize**(实测轮长 1h21m~6h41m), 所以成品平时是新的; 我们的 ① 是"它没干/落后太多"
 # 时的补位。一次 ① 实测 48~91 分钟, 而这段时间 GPU 本可以转 100~200 份 —— 每小时都跑一次 ①
 # 就是拿转写换"成品提前几小时变新", 不划算。所以加这道闸: 只有积压够大才跑。
-$backlog = $batchBefore - $finBefore
+# ⚠ **2026-10-07 14:44 那轮实测 ① 花了 3 小时 19 分**(15:07 -> 18:26, 另等在场转写 1,381s):
+#   1) kind_detect2 全库纯度扫描 4,861s(81 分钟) · 2) apply_kind_filter 1,817s · 3) pick_best 3,215s(54 分钟)
+#   · 5) to_jianpu_db 744s · 5b+6 67s。**比"48~91 分钟"贵得多, 而且这个成本与积压份数是常数关系** ——
+#   所以把门槛调小(更勤地跑 ①)只会抬高 ① 的占空比、净转写更少; 要提速得削 ① 自身的定常成本。
+# ⚠ 这是个**份数差**, 不是集合差: batch-out 的名字是 `曲名___来源-id.txt`、成品是 `曲名.txt`, 两边名字
+#   几乎不重合(2026-10-07 实测 11,762 vs 11,190, 同名只有 2 个) —— 所以它只是"batch-out 比成品多多少"
+#   的粗代理(① 刚跑完时约 40 份, 之后每来一份新产物 +1), **绝不是"待导入成品数"**。
+$backlog = [math]::Max(0, $batchBefore - $finBefore)
 # 兜底那一半: 万一 mandopop 链停了/被改了, "很久没人 finalize"也要能被我们兜住。
 # 判据用 `train-work/pick_best.tsv` 的 mtime —— finalize 第 3 步每次都写它。
 $staleH = -1
 try { $staleH = ((Get-Date) - (Get-Item (Join-Path $Root 'train-work\pick_best.tsv')).LastWriteTime).TotalHours } catch { }
 $finalizeWorth = ($backlog -ge $FinalizeMinBacklog) -or ($staleH -lt 0 -or $staleH -ge $FinalizeStaleHours)
-$importable = Count-Importable
-$needImport = ($importable -gt 0)
+$probe = Get-ImportProbe
+$importable = $probe.Importable
+# ⚠ 只有"探针明确报 0 份"才算没有待导入; -1(探针没报数)**必须**当成"可能有货"照跑 ②③ ——
+#   一个报错的探针不该有权把上万份成品静默关在成品目录里(这与"只要成品可导入就导入"直接矛盾)。
+$needImport = ($importable -ne 0)
+if ($importable -lt 0) {
+    Say '  !! 成品可导入份数: 探针没报数(import_finished_scores 报错或输出变了) -> 本轮按"可能有货"处理, 照跑 ②③'
+}
+else {
+    Say ("  成品入库账: 成品 {0} 份 = 已在语料 {1} + 按判据跳过 {2} + **可导入 {3}**" -f `
+            $probe.Total, $probe.Already, [math]::Max($probe.Skipped, 0), $importable)
+}
+foreach ($l in $probe.Lines) { Say ("  | " + $l) }
 
 # ── 秒退: ① 不划算(成品还新)、成品也没有待入库的、且没有欠着的提交 ────────────────
 if (-not $Force -and -not $DryRun -and -not $finalizeWorth -and -not $needImport -and -not $st.pending_push) {
-    Say ("秒退: 成品还新(积压 {0} < 门槛 {1}) 且 成品可导入 0 份 且 无欠提交 —— 本轮无事。({2} 秒)" -f `
+    Say ("秒退: ① 不值得跑(未进成品的 batch-out 候选 {0} 份 < 门槛 {1}) 且 成品可导入 0 份(成品未入库 0 份) 且 无欠提交 —— 本轮无事。({2} 秒)" -f `
             $backlog, $FinalizeMinBacklog, [int]((Get-Date) - $t00).TotalSeconds)
     Say '=== JianpuIngest 结束(退出码 0) ==='
     exit 0
 }
 Say ("判据: 需要 finalize = {0} (指纹 {1} vs 记账 {2}) · 成品可导入 {3} 份 · 欠提交 = {4}" -f `
         $needFinalize, $hashNow.Substring(0, 8), "$($st.batch_hash)".PadRight(8).Substring(0, 8), $importable, $st.pending_push)
-Say ("  ① 值不值得: 积压(batch-out {0} - 成品 {1}) = {2} 份(门槛 {3}) · 上次 finalize {4} 小时前(门槛 {5}h) -> {6}" -f `
+Say ("  ① 值不值得: 未进成品的候选(batch-out {0} - 成品 {1}) = {2} 份(门槛 {3}) · 上次 finalize {4} 小时前(门槛 {5}h) -> {6}" -f `
         $batchBefore, $finBefore, $backlog, $FinalizeMinBacklog, `
         $(if ($staleH -lt 0) { '无记录' } else { '{0:N1}' -f $staleH }), $FinalizeStaleHours, `
         $(if ($finalizeWorth) { '值得' } else { '**不值得(成品还新)**' }))
@@ -329,12 +388,12 @@ if (($needFinalize -and $finalizeWorth) -or $Force) {
     Say '--- 判 ① 的窗口 ---'
     $canFinalize = Test-FinalizeWindow
 }
-elseif ($needFinalize) { Say "① 本轮跳过: 积压 $backlog 份 < 门槛 $FinalizeMinBacklog 份(成品还新, 留给它自己的 finalize)" }
+elseif ($needFinalize) { Say "① 本轮跳过: 未进成品的候选 $backlog 份 < 门槛 $FinalizeMinBacklog 份(成品还新, 留给它自己的 finalize)。② 不受 ① 的窗口闸限制, 只要成品可导入照跑" }
 else { Say '① 本轮不需要(成品已跟上 batch-out), 只做 ②③' }
 
 if ($DryRun) {
-    Say ("[dry-run] 本轮会做: ① finalize = {0}; ② import {1} 份; ③ parse_scores; 之后提交推送。" -f `
-            $canFinalize, [math]::Max($importable, 0))
+    Say ("[dry-run] 本轮会做: ① finalize = {0}; ② import {1}; ③ parse_scores; 之后提交推送。" -f `
+            $canFinalize, $(if ($importable -lt 0) { '问不到(按有货处理)' } else { "$importable 份" }))
     Say '=== JianpuIngest 结束(退出码 0, dry-run 没写任何东西) ==='
     exit 0
 }
