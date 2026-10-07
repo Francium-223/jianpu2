@@ -536,7 +536,12 @@ def transcribe(img_path):
                 break
     # 第一遍: 算每个行带的几何特征 -> "确定接受(frac>=0.85)" / "可疑" / "丢弃"
     _MODE = os.environ.get("JP_ROWFILTER", "frac_abs")
-    _plan = []          # [s, e, sub, stripped, hlines, accept, suspicious]
+    _plan = []          # [s, e, sub, stripped, hlines, lab, accept, suspicious, R]
+                        # ⚠ 字段表就是下标契约: 2026-10-07 04:14 的 `4a3dafb4` 在中间插了
+                        #   `_lab`, 却漏改下面第二遍的 `p[6]`(该是 `p[7]`)与 `_plan[i][5]`
+                        #   (该是 `[6]`) —— 于是"模型判为文字行"时把 `_lab` 覆盖成 `False`,
+                        #   第三遍 `for c in _lab` 抛 TypeError, 条目整个报废(且被看门狗记成
+                        #   "已交付"、永久跳过)。改字段顺序时**必须一起改这三处**。
     for _bi, (s, e) in enumerate(bands):
         _R = _TALLR_HEAD if _bi < _head_until else _TALLR
         sub = content[s:e + 1]
@@ -589,7 +594,7 @@ def transcribe(img_path):
     # 第二遍: 可疑行带交模型判"音符行 / 文字行"(几何判据无法区分"标题文字行"与
     # "音符+歌词粘连行带", 但模型看一行是简谱还是汉字文字很容易) -> 剔除文字行。
     if os.environ.get("JP_BANDCLS", "1") == "1":
-        _si = [i for i, p in enumerate(_plan) if p[6]]
+        _si = [i for i, p in enumerate(_plan) if p[7]]      # 下标契约见 `_plan` 上方
         if _si:
             _bc = [arr[_plan[i][0]:_plan[i][1] + 1] for i in _si]
             try:
@@ -598,7 +603,7 @@ def transcribe(img_path):
                 _fl = [True] * len(_si)
             for i, f in zip(_si, _fl):
                 if not f:
-                    _plan[i][5] = False
+                    _plan[i][6] = False                     # accept; 下标契约见 `_plan` 上方
                     if os.environ.get("JP_DEBUGBAND") == "1":
                         print(f"  [行带] y={_plan[i][0]}-{_plan[i][1]} 模型判: 文字 -> 丢弃", file=sys.stderr)
     if os.environ.get("JP_DEBUGBAND") == "1":

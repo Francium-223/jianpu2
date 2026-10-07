@@ -117,6 +117,12 @@ else:
     dirs = sorted(d for d in glob.glob(os.path.join(SRC, "*")) if os.path.isdir(d))[:LIMIT]
     print(f"{SRC}: {len(dirs)} 个谱")
 done = 0
+# **失败可见性**(2026-10-07 加): 下面把异常吞成一行、**照常退出 0** —— 那是刻意的(非纯简谱/
+# 织体本来就没有产物, 退出语义不能动)。但代价是"一个 TypeError 让 84% 的条目整批报废"在看门狗
+# 那侧只表现为"失败 N 个", 而 N 个失败照样记账、照样退出 0, 谁也发现不了(实测 04:05~13:18 有
+# 5213 条就这么被记成"已交付")。这里把**异常类型 + 次数 + 首个样例行**汇总出来, 看门狗原样转发即可读。
+fail_kinds = {}
+fail_first = {}
 for i, d in enumerate(dirs):
     pages = BT.pick_pages(d) if MULTIPAGE else [p for p in [BT.pick_page(d)] if p]
     pages = [p for p in pages if p]
@@ -232,6 +238,14 @@ for i, d in enumerate(dirs):
             tail += f" 丢织体页 {dropped}"
         print(f"[{i+1}/{len(dirs)}] {name[:40]}: token {len(toks)} 数字 {d2}{tail} ({time.time()-t0:.0f}s)", flush=True)
     except Exception as ex:
-        print(f"[{i+1}/{len(dirs)}] {name[:40]}: 失败 {type(ex).__name__}", flush=True)
+        _k = type(ex).__name__
+        fail_kinds[_k] = fail_kinds.get(_k, 0) + 1
+        fail_first.setdefault(_k, traceback.format_exc().strip().splitlines()[-1][:200])
+        print(f"[{i+1}/{len(dirs)}] {name[:40]}: 失败 {_k}", flush=True)
     done += 1
+if fail_kinds:
+    print("失败汇总: " + " · ".join(f"{k} x{v}" for k, v in sorted(fail_kinds.items(), key=lambda kv: -kv[1])),
+          flush=True)
+    for _k, _v in sorted(fail_kinds.items(), key=lambda kv: -kv[1]):
+        print(f"失败样例[{_k}] 首例: {fail_first[_k]}", flush=True)
 print(f"完成 {done}/{len(dirs)}")
